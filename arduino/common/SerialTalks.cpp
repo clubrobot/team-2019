@@ -52,7 +52,11 @@ void SerialTalks::LAUNCHWARNING(unsigned char * message)
 	}
 	send(SERIALTALKS_WARNING_OPCODE, output);
 }
-
+void SerialTalks::FREE_BUFFER(void)
+{
+	Serializer output = getSerializer();
+	send(SERIALTALKS_FREE_BUFFER_OPCODE, output);
+}
 
 // SerialTalks::ostream
 
@@ -275,6 +279,7 @@ bool SerialTalks::execute()
 			continue;
 		}
 	}
+	if (length>0){ FREE_BUFFER();}
 	return ret;
 }
 

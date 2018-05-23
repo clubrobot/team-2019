@@ -11,7 +11,7 @@ from common.CRC16 import *
 from queue import Queue, Empty, LifoQueue
 from threading import Thread, RLock, Event, current_thread
 import re
-from common.serialutils import Deserializer, IntegerType, FloatType, StringType
+from common.serialutils import Deserializer, IntegerType, FloatType, StringType, SerialBuffer
 
 BAUDRATE = 115200
 
@@ -28,6 +28,7 @@ STDOUT_RETCODE = 0xFFFFFFFF
 STDERR_RETCODE = 0xFFFFFFFE
 
 WARNING_OPCODE = 0xFE
+FREE_BUFFER    = 0xFA
 
 BYTEORDER = 'little'
 ENCODING = 'utf-8'
@@ -105,6 +106,8 @@ class SerialTalks:
         except SerialException as e:
             raise ConnectionFailedError(str(e)) from None
 
+        self.serial_buffer = SerialBuffer(self.stream.write, 60)
+        self.bind(FREE_BUFFER, self.serial_buffer.reset)
         # Create a listening thread that will wait for inputs
         self.listener = SerialListener(self)
         self.listener.start()
@@ -155,7 +158,7 @@ class SerialTalks:
     def rawsend(self, rawbytes):
         try:
             if hasattr(self, 'stream') and self.stream.is_open:
-                sentbytes = self.stream.write(rawbytes)
+                sentbytes = self.serial_buffer.send(rawbytes)
                 return sentbytes
         except SerialException:
             pass
@@ -168,7 +171,7 @@ class SerialTalks:
         crc = CRCprocessBuffer(content)
         prefix = MASTER_BYTE + BYTE(len(content)) + USHORT(crc)
         self.history_lock.acquire()
-        self.history.append((crc, prefix+content))
+        self.history.append((retcode, prefix+content))
         if len(self.history)>20:
             _  = self.history.pop(0)
         self.history_lock.release()
