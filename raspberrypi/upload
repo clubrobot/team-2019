@@ -1,0 +1,56 @@
+#!/bin/bash
+
+rasp_root="~/git/clubrobot/team-2018/"
+
+# check arguments number and types.
+if [ $# -ne 2 ] && [ $# -ne 1 ]
+then
+    echo "Missing parameter : <ip> <file>"
+    exit -1
+fi
+if [ $# -eq 1 ]
+then
+    if [ -e /tmp/ip-rasp ]
+    then
+        ip=$(cat /tmp/ip-rasp)
+        file_name=$1
+        echo "Previous IP will be used"
+
+    else
+        echo "No Ip previously given !"
+        exit -2
+    fi
+fi
+if [ $# -eq 2 ]
+then
+    file_name=$2
+    if [[ $1 = [0-9]*\.[0-9]*\.[0-9]*\.[0-9]* ]]
+    then
+    ip=$1
+    else
+    echo "IP not valid !"
+    exit -3
+    fi
+    echo $ip > /tmp/ip-rasp
+fi
+
+# Catch the git root
+IFS=':'; read -a path_elements <<<"$PATH"
+for link in ${path_elements[*]}
+    do
+    if [[ $link =~ .+team-2018.* ]]
+        then 
+        local_root=$link
+    fi
+done
+local_root=$(echo $local_root | sed 's/\/team-2018\/raspberrypi/\//')
+
+# Looking for newest file to upload
+local_root_formated=$(echo $local_root | sed 's/\//\\\//g')
+files=$(find $local_root -name "$file_name")
+readarray -t files_liste <<<$files
+file_selected=$(ls -t ${files_liste[@]} | head -n 1)
+
+# Sending
+file_upload=$(echo $file_selected | sed 's/.*\/team-2018\///')
+scp $file_selected pi@$ip:$rasp_root$file_upload

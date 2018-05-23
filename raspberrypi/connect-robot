@@ -1,0 +1,28 @@
+#!/bin/bash
+
+interfaces_list=$(ifconfig | grep "^[a-zA-Z0-9]* *Link" | sed s/:.*//g)
+echo "We found theres interface network, please select one of them to etablish a connection :"
+i=0
+for interface in ${interfaces_list}
+do
+    echo "$i : $interface"
+    interfaces[$i]=$interface
+    i=`expr $i + 1`
+done
+echo "Interface seleted : " ;read selected_interface
+if [ $i -gt $selected_interface  -a $selected_interface -ge 0 ]
+then 
+echo "Disable dhclient "
+sudo dhclient -r
+echo "Set a static IP wth interface ${interfaces[$selected_interface]}"
+
+sudo ip addr del 192.168.100.55/24 dev ${interfaces[$selected_interface]} || echo "Apply new IP"
+sudo ip addr add 192.168.100.55/24 dev ${interfaces[$selected_interface]}
+ssh pi@192.168.100.50
+sudo ip addr del 192.168.100.55/24 dev ${interfaces[$selected_interface]}
+sudo dhclient -v
+exit 0
+else
+echo "Error, please select one interface on the list !"
+exit -1
+fi

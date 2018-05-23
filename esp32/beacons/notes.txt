@@ -1,0 +1,30 @@
+Ranging tests :
+
+https://github.com/thotro/arduino-dw1000/issues/6
+
+"To get absolute and correct distance measurements the module needs to be calibrated/biased (e.g. choosing values for the antenna delay) - but this should be easy then and stable ranging results are definitely more important, I think. (... the API for calibration will be available soon)"
+
+=> where is the corresponding API for antena calibration??? No API available
+https://github.com/thotro/arduino-dw1000/issues/155 => comments about antena calibration
+https://www.decawave.com/faq-page/71#t71n504
+
+https://github.com/thotro/arduino-dw1000/issues/205
+" are the antennas (these ceramic antennas from the DWM1000) pointing upwards and not lying flat on a table?
+When the signal propagation is disrupted heavily you will get these deviations."
+
+" I found that the DW1000Ranging example gives slightly better ranging performance than the regular ranging example, but still shows increasing ranging bias with measurement distance (just a little less). This is likely caused by the fact that the DW1000Ranging example operates on the 64 MHz PRF mode with long preamble."
+
+
+" I changed the timestamp correction in the correctTimestamp function from timestamp += adjustmentTime to timestamp -= adjustmentTime." (see here : https://github.com/thotro/arduino-dw1000/issues/143)
+
+
+https://github.com/thotro/arduino-dw1000/issues/62 => example of implementation
+
+
+
+https://github.com/thotro/arduino-dw1000/issues/181 => multiple tags
+
+=========================================================
+=                         BLE                           =
+=========================================================
+multi client : https://github.com/nkolban/esp32-snippets/issues/307

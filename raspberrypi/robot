@@ -1,0 +1,322 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+from argparse import ArgumentParser
+
+from arduino.buttons import ButtonCard
+from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
+from common.components import Server, Manager
+from arduino.wheeledbase import *
+from arduino.display import *
+from arduino.watersorter import *
+from arduino.sensors import *
+from common.geogebra import *
+from common.roadmap import *
+from common.serialtalks import *
+from arduino.waterlauncher import *
+from robots.Bornibus import Bornibus
+from robots.Bornibus_approval import BornibusApproval
+from robots.R128 import R128
+from robots.R128_approval import R128Approval
+from arduino.bee import *
+from beacons.balise_receiver import BaliseReceiver
+from robots.beacons_manager import BeaconsManagement
+from robots.get_robot_name import *
+from arduino.arm import RobotArm
+#if ROBOT_ID == R128_ID:
+#    from robots.color_pattern import Pattern
+
+DEV_MODE = True
+MATCH_MODE = False
+
+arduino_list = ['sensors', 'wheeledbase', 'power', 'display', 'modulescollector', 'mineralscollector', 'watershooter', 'watersorter']
+
+
+
+def start(args):
+    m = Manager()
+    m.connect()
+    if ROBOT_ID==BORNIBUS_ID:
+        button_card = ButtonCard(m)
+        ssd = SevenSegments(m)
+        b= WheeledBase(m)
+        d = WaterSorter(m)
+        l = WaterLauncher(m)
+        a = BeeActuator(m)
+        s_lat   = Sensors(m, "sensorsLat")
+        s_front = Sensors(m, "sensorsAv")
+        s_back  = Sensors(m, "sensorsAr")
+        led1 = LEDMatrix(m, 1)
+        led2 = LEDMatrix(m, 2)
+        geo = Geogebra('{}/robots/bornibus.ggb'.format(sys.path[0]))
+        rm = RoadMap.load(geo)
+        br = BaliseReceiver("192.168.12.3")
+        try:
+            br.launch()
+        except:
+            print("Balise Receiver not connected ! ")
+
+        bm = BeaconsManagement(br, "{}/robots/area.ggb".format(sys.path[0]))
+        automate = Bornibus(0, rm, geo, b, l, d, ssd, led1, led2, a, s_front, s_lat, s_back,  br, bm)
+        button_gesture = ButtonGestureMatch(button_card, l, ssd, b, m, automate.set_side)
+        button_gesture.run()
+        m.start_match()
+        button_card.disconnect()
+        try:
+            automate.run()
+        except TimeoutError:
+            pass
+        m.disconnect()
+    else:
+        button_card = ButtonCard(m)
+        ssd = SevenSegments(m)
+        b= WheeledBase(m)
+        a = BeeActuator(m)
+        s_lat   = Sensors(m, "sensorsLat")
+        s_front = Sensors(m, "sensorsAv")
+        s_back  = Sensors(m, "sensorsAr")
+        led1 = LEDMatrix(m, 1)
+        led2 = LEDMatrix(m, 2)
+        arm = RobotArm(m)
+        geo = Geogebra('{}/robots/128.ggb'.format(sys.path[0]))
+        patern = None#Pattern()
+        rm = RoadMap.load(geo)
+        br = BaliseReceiver("192.168.12.3")
+        try:
+            br.launch()
+        except:
+            print("Balise Receiver not connected ! ")
+
+        bm = BeaconsManagement(br, "{}/robots/area.ggb".format(sys.path[0]))
+        automate = R128(0, rm, geo, b, ssd, led1, led2, a, arm, s_front, s_lat, s_back,  br, bm, patern)
+        button_gesture = ButtonGestureMatch(button_card, arm, ssd, b, m, automate.set_side)
+        button_gesture.run()
+        m.start_match()
+        button_card.disconnect()
+        try:
+            automate.run()
+        except TimeoutError:
+            pass
+        m.disconnect()
+
+
+def start_approval(args):
+    m = Manager()
+    m.connect()
+    if ROBOT_ID == BORNIBUS_ID:
+        button_card = ButtonCard(m)
+        ssd = SevenSegments(m)
+        b= WheeledBase(m)
+        d = WaterSorter(m)
+        l = WaterLauncher(m)
+        a = BeeActuator(m)
+        s_lat   = Sensors(m, "sensorsLat")
+        s_front = Sensors(m, "sensorsAv")
+        s_back  = Sensors(m, "sensorsAr")
+        led1 = LEDMatrix(m, 1)
+        led2 = LEDMatrix(m, 2)
+        geo = Geogebra('{}/robots/bornibus.ggb'.format(sys.path[0]))
+        rm = RoadMap.load(geo)
+        br = BaliseReceiver("192.168.12.3")
+        try:
+            br.connect()
+        except:
+            print("Balise Receiver not connected ! ")
+
+        bm = BeaconsManagement(br, "{}/robots/area.ggb".format(sys.path[0]))
+        automate = BornibusApproval(0, rm, geo, b, l, d, ssd, led1, led2, a, s_front, s_lat, s_back,  br, bm)
+        button_gesture = ButtonGestureMatch(button_card, l, ssd, b, m, automate.set_side)
+        button_gesture.run()
+        m.start_match()
+        button_card.disconnect()
+        try:
+            automate.run()
+        except TimeoutError:
+            pass
+        m.disconnect()
+
+    else:
+        button_card = ButtonCard(m)
+        ssd = SevenSegments(m)
+        ssd.set_message("LAUNCH")
+        b= WheeledBase(m)
+        d = WaterSorter(m)
+        a = BeeActuator(m)
+        s_lat   = Sensors(m, "sensorsLat")
+        s_front = Sensors(m, "sensorsAv")
+        s_back  = Sensors(m, "sensorsAr")
+        led1 = LEDMatrix(m, 1)
+        led2 = LEDMatrix(m, 2)
+        arm = RobotArm(m)
+        geo = Geogebra('{}/robots/128.ggb'.format(sys.path[0]))
+        patern = None#Pattern()
+        rm = RoadMap.load(geo)
+        br = BaliseReceiver("192.168.12.3")
+        try:
+            br.connect()
+        except:
+            print("Balise Receiver not connected ! ")
+
+        bm = BeaconsManagement(br, "{}/robots/area.ggb".format(sys.path[0]))
+        automate = R128Approval(0, rm, geo, b, ssd, led1, led2, a, arm, s_front, s_lat, s_back,  br, bm, patern)
+        button_gesture = ButtonGestureMatch(button_card, arm, ssd, b, m, automate.set_side)
+        button_gesture.run()
+        m.start_match()
+        button_card.disconnect()
+        try:
+            automate.run()
+        except TimeoutError:
+            pass
+        m.disconnect()
+
+
+def dev_mode(args):
+    m = Manager()
+    m.connect()
+    button_card = ButtonCard(m)
+    screen = SevenSegments(m)
+    wheeledbase = WheeledBase(m)
+    button_gesture = ButtonGestureDemo(button_card, screen, m)
+    while not button_gesture.exiting: time.sleep(0.2)
+    m.disconnect()
+
+
+def getuuid(args):
+    talks = SerialTalks(args.port)
+    try:
+        talks.connect(args.timeout)
+        uuid = talks.getuuid(args.timeout)
+        if isinstance(uuid, str):
+            print(uuid)
+        else:
+            raise ValueError('\'{}\' object is not a valid UUID'.format(type(uuid)))
+    except KeyboardInterrupt:
+        pass
+    finally:
+        talks.disconnect()
+
+
+def showip(args):
+    try:
+        ssg = SerialTalks(os.path.join('/dev/arduino', 'display'))
+        ssg.connect()
+        import subprocess
+        ip = ''
+        while not ip:
+            proc = subprocess.run(['hostname', '-I'], stdout=subprocess.PIPE)
+            ip = proc.stdout.strip().decode('utf8')
+        ssg.send(0x0E, STRING(ip))
+
+        ssg.disconnect()
+    except:
+        pass
+
+
+def getlogs(args):
+    talks = SerialTalks(args.port)
+    try:
+        talks.connect(args.timeout)
+        while True:
+            sys.stdout.write(talks.getout())
+            sys.stderr.write(talks.geterr())
+    except KeyboardInterrupt:
+        pass
+    finally:
+        talks.disconnect()
+
+
+def server(args):
+    srv = Server(password=args.password, size=args.size)
+    while True:
+        try:
+            while not srv.full():
+                srv.connect(None)
+            srv.sleep_until_one_disconnected()
+
+        except KeyboardInterrupt:
+            srv.disconnect()
+            break
+        except Exception as e:
+            sys.stderr.write('{}: {}\n'.format(type(e).__name__, e))
+            continue
+
+def stop(args):
+    os.system("sudo kill `pidof python3`")
+
+
+# Update arduino programs
+def update(args):
+    import subprocess
+
+    # List all the arduino which should be updated
+    if args.arduino != "all":
+        arduinos_to_verify = [args.arduino]
+    else:
+        arduinos_to_verify = arduino_list
+
+    arduinos_to_update = []
+
+    # Verify if the code of the arduino changed since last update (can be forced)
+    if not args.force:
+        for arduino in arduinos_to_verify:
+            arduino_path = os.path.dirname(os.path.realpath(__file__)) + '/../arduino/' + arduino
+            gitdiff = subprocess.run(['/usr/bin/git', 'diff', '--quiet', '--exit-code', arduino_path])
+            if gitdiff.returncode == 0:
+                print(arduino + " up to date")
+            else:
+                arduinos_to_update += [arduino]
+
+    else:
+        arduinos_to_update = arduinos_to_verify
+
+    # Git pull
+    subprocess.run(['/usr/bin/git', 'pull', '-f'], stdout=subprocess.PIPE)
+
+    # Execute make upload for the selected arduinos
+    for arduino in arduinos_to_update:
+        arduino_path = os.path.dirname(os.path.realpath(__file__)) + '/../arduino/' + arduino
+        print("updating " + arduino)
+        subprocess.run(['/usr/bin/make', 'upload_safe', '-C', arduino_path])
+
+
+parser = ArgumentParser()
+subparsers = parser.add_subparsers()
+
+getuuid_parser = subparsers.add_parser('getuuid')
+getuuid_parser.add_argument('port', type=str)
+getuuid_parser.add_argument('-t', '--timeout', type=float, default=10)
+getuuid_parser.set_defaults(func=getuuid)
+
+getlogs_parser = subparsers.add_parser('getlogs')
+getlogs_parser.add_argument('port', type=str)
+getlogs_parser.add_argument('-t', '--timeout', type=float, default=5)
+getlogs_parser.set_defaults(func=getlogs)
+
+server_parser = subparsers.add_parser('server')
+server_parser.add_argument('-p', '--password', type=str, default=None)
+server_parser.add_argument('-s', '--size', type=int, default=4)
+server_parser.set_defaults(func=server)
+
+showip_parser = subparsers.add_parser('showip')
+showip_parser.set_defaults(func=showip)
+
+start_parser = subparsers.add_parser('start')
+start_parser.set_defaults(func=start)
+
+start_approval_parser = subparsers.add_parser('start_approval')
+start_approval_parser.set_defaults(func=start_approval)
+
+dev_parser = subparsers.add_parser('dev_mode')
+dev_parser.set_defaults(func=dev_mode)
+
+update_parser = subparsers.add_parser('update')
+update_parser.add_argument('arduino', type=str, default='all', choices=arduino_list + ['all'])
+update_parser.add_argument('-f', '--force', action="store_true", required=False, default=False)
+update_parser.set_defaults(func=update)
+
+stop_parser = subparsers.add_parser('stop')
+stop_parser.set_defaults(func=stop)
+
+
+args = parser.parse_args()
+args.func(args)
