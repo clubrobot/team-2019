@@ -46,6 +46,7 @@
 #define SERIALTALKS_GETEEPROM_OPCODE  0x4
 #define SERIALTALKS_SETEEPROM_OPCODE  0x5
 #define SERIALTALKS_WARNING_OPCODE    0xFE
+#define SERIALTALKS_FREE_BUFFER_OPCODE 0xFA
 #define SERIALTALKS_STDOUT_RETCODE 0xFFFFFFFF
 #define SERIALTALKS_STDERR_RETCODE 0xFFFFFFFE
 
@@ -158,6 +159,7 @@ private:
 	static void GETEEPROM(SerialTalks& talks, Deserializer& input, Serializer& output);
 	static void SETEEPROM(SerialTalks& talks, Deserializer& input, Serializer& output);
 	void LAUNCHWARNING(unsigned char *  message);
+	void FREE_BUFFER(void);
 };
 
 extern SerialTalks talks;
