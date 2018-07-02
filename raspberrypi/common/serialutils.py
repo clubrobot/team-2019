@@ -4,6 +4,33 @@
 import struct
 
 
+
+class SerialBuffer:
+    def __init__(self,send_method, extern_buffer_size):
+        self.stack_bytes = bytearray()
+        self.rawsend = send_method
+        self.buffer_size = extern_buffer_size
+        self.bytes_sended = 0
+
+    def send(self,bytes):
+        if self.bytes_sended >= self.buffer_size:
+            self.stack_bytes += bytes
+        else:
+            to_send, to_store = bytearray(bytes)[:min(self.buffer_size-self.bytes_sended,len(bytes))], bytearray(bytes)[min(self.buffer_size-self.bytes_sended,len(bytes)):]
+            self.stack_bytes+=to_store
+            self.bytes_sended += len(to_send)
+            return self.rawsend(to_send)
+
+    def direct_send(self,bytes):
+        return self.rawsend(bytes)
+
+    def reset(self, *args):
+        self.bytes_sended = 0
+        bytes_to_send = bytes(self.stack_bytes)
+        self.stack_bytes = bytearray()
+        self.send(bytes_to_send)
+
+
 class AbstractType:
 
 	def __call__(self, value):
