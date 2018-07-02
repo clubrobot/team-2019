@@ -116,7 +116,7 @@ class SerialTalks:
         startingtime = time.monotonic()
         while not self.is_connected:
             try:
-                output = self.execute(PING_OPCODE, timeout=0.1)
+                output = self.execute(PING_OPCODE, timeout=0.1, force=True)
                 self.is_connected = True
                 self.reset_queues()
             except TimeoutError:
@@ -155,16 +155,17 @@ class SerialTalks:
         else:
             raise KeyError('opcode {} is already bound to another instruction'.format(opcode))
 
-    def rawsend(self, rawbytes):
+    def rawsend(self, rawbytes, force=False):
         try:
             if hasattr(self, 'stream') and self.stream.is_open:
-                sentbytes = self.serial_buffer.send(rawbytes)
+                if force : sentbytes = self.serial_buffer.direct_send(rawbytes)
+                else : sentbytes = self.serial_buffer.send(rawbytes)
                 return sentbytes
         except SerialException:
             pass
         raise NotConnectedError('\'{}\' is not connected.'.format(self.port)) from None
 
-    def send(self, opcode, *args):
+    def send(self, opcode, *args, force=False):
         retcode = random.randint(0, 0xFFFFFFFF)
         content = BYTE(opcode) + ULONG(retcode) + bytes().join(args)
         # crc calculation
@@ -175,7 +176,7 @@ class SerialTalks:
         if len(self.history)>20:
             _  = self.history.pop(0)
         self.history_lock.release()
-        self.rawsend(prefix + content)
+        self.rawsend(prefix + content, force=force)
         return retcode
 
 
@@ -224,8 +225,8 @@ class SerialTalks:
         while self.poll(retcode) is not None:
             pass
 
-    def execute(self, opcode, *args, timeout=5):
-        retcode = self.send(opcode, *args)
+    def execute(self, opcode, *args, timeout=5, force=True):
+        retcode = self.send(opcode, *args, force=force)
         output = self.poll(retcode, timeout)
         return output
 
