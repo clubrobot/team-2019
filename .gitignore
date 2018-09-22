@@ -1,0 +1,61 @@
+# Linux backup files
+*~
+
+# Visual Studio Code files
+.vscode
+
+# Python files
+__pycache__
+
+# Arduino build files
+build-*
+*.o
+*.d
+*.elf
+*.hex
+*.sizeok
+
+# OS X files
+.DS_Store
+._*
+
+# PyCharm config files
+.idea/
+
+# Windows link
+*.lnk
+
+#API build
+API/CPP/html/**
+API/CPP/latex/**
+API/Python/build/**
+
+# Visual Studio 2017 files
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+
+
+
+# Arduino app files
+arduino-1.6.12/
