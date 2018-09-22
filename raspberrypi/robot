@@ -14,10 +14,6 @@ from common.geogebra import *
 from common.roadmap import *
 from common.serialtalks import *
 from arduino.waterlauncher import *
-from robots.Bornibus import Bornibus
-from robots.Bornibus_approval import BornibusApproval
-from robots.R128 import R128
-from robots.R128_approval import R128Approval
 from arduino.bee import *
 from beacons.balise_receiver import BaliseReceiver
 from robots.beacons_manager import BeaconsManagement
