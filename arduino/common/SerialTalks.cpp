@@ -58,16 +58,13 @@ void SerialTalks::GETBUFFERSIZE(SerialTalks& inst, Deserializer& input, Serializ
 }
 
 // Built-in Processing 
-void SerialTalks::LAUNCHWARNING(unsigned char * message)
+void SerialTalks::launchResend(void)
 {
 	Serializer output = getSerializer();
-	for(int i = 0;i<3;i++)
-	{
-		output.write(*(message+i));	
-	}
-	send(SERIALTALKS_WARNING_OPCODE, output);
+	output << m_lastRetcode;
+	send(SERIALTALKS_RESEND_OPCODE, output);
 }
-void SerialTalks::FREE_BUFFER(void)
+void SerialTalks::freeBuffer(void)
 {
 	Serializer output = getSerializer();
 	send(SERIALTALKS_FREE_BUFFER_OPCODE, output);
@@ -208,6 +205,7 @@ bool SerialTalks::execinstruction(byte* inputBuffer)
 	Serializer   output(m_outputBuffer);
 	byte opcode = input.read<byte>();
 	long retcode = input.read<long>();
+	m_lastRetcode = retcode;
 	if (m_instructions[opcode] != 0)
 	{
 		m_instructions[opcode](*this, input, output);
@@ -280,22 +278,18 @@ bool SerialTalks::execute()
         			m_connected = true;
 					if(m_order==SERIALTALKS_ORDER) ret |= execinstruction(m_inputBuffer);
 					else if (m_order==SERIALTALKS_RETURN) ret |= receive(m_inputBuffer);
-					m_state = SERIALTALKS_WAITING_STATE;
+					m_state = SERIALTALKS_WAITING_STATE; 
 				}
 				else
 				{
-					unsigned char message_warning[3];
-					message_warning[0] = (unsigned char) (received_crc_value);
-					message_warning[1] = (unsigned char) (received_crc_value>>8);
-					message_warning[2] = (unsigned char) 0;
-					LAUNCHWARNING(message_warning);
+					launchResend();
 					m_state = SERIALTALKS_WAITING_STATE;
 				}	
 			}
 			continue;
 		}
 	}
-	if (length>0){ FREE_BUFFER();}
+	if (length>0){ freeBuffer();}
 	return ret;
 }
 
