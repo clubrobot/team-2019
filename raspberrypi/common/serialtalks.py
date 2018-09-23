@@ -38,7 +38,7 @@ GETBUFFERSIZE_OPCODE = 0x06
 STDOUT_RETCODE = 0xFFFFFFFF
 STDERR_RETCODE = 0xFFFFFFFE
 
-WARNING_OPCODE = 0xFE
+SERIALTALKS_RESEND_OPCODE = 0xFE
 FREE_BUFFER    = 0xFA
 
 BYTEORDER = 'little'
@@ -94,9 +94,10 @@ class SerialTalks:
         self.queues_lock = RLock()
         self.history = list()
         self.history_lock = RLock()
+        self.last_retcode = -1
         # Instructions
         self.instructions = dict()
-        self.instructions[WARNING_OPCODE] = self.launch_warning_
+        self.instructions[SERIALTALKS_RESEND_OPCODE] = self.resend
 
     def __enter__(self):
         self.connect()
@@ -184,7 +185,8 @@ class SerialTalks:
         crc = CRCprocessBuffer(content)
         prefix = MASTER_BYTE + BYTE(len(content)) + USHORT(crc)
         self.history_lock.acquire()
-        self.history.append((retcode, prefix+content))
+        self.history.append((self.last_retcode, [opcode, args]))
+        self.last_retcode = retcode
         if len(self.history)>20:
             _  = self.history.pop(0)
         self.history_lock.release()
@@ -293,16 +295,19 @@ class SerialTalks:
             k += 1
         binary_file.close()
 
-    def launch_warning_(self, message):
+    def resend(self, message):
         warnings.warn("Message send corrupted !", SerialTalksWarning)
-        crc_corrupted = message.read(USHORT)
+        retcode = message.read(ULONG)
+        to_send = None
         self.history_lock.acquire()
         for i in range(len(self.history)):
-            if self.history[i][0] == crc_corrupted:
+            if self.history[i][0] == retcode:
+                to_send = self.history[i][1]
                 print("Message resend !")
-                self.rawsend(self.history[i][1])
                 break
         self.history_lock.release()
+        if not to_send is None: self.send(to_send[0], *to_send[1])
+        
 
 
     def getout(self, timeout=0):
