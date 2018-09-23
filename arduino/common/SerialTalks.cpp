@@ -52,6 +52,11 @@ void SerialTalks::SETEEPROM(SerialTalks& inst, Deserializer& input, Serializer& 
 	EEPROM.update(addr,value);
 }
 
+void SerialTalks::GETBUFFERSIZE(SerialTalks& inst, Deserializer& input, Serializer& output)
+{
+	output << SERIALTALKS_INPUT_BUFFER_SIZE;
+}
+
 // Built-in Processing 
 void SerialTalks::LAUNCHWARNING(unsigned char * message)
 {
@@ -116,6 +121,7 @@ void SerialTalks::begin(Stream& stream)
 	bind(SERIALTALKS_SETUUID_OPCODE,  SerialTalks::SETUUID);
 	bind(SERIALTALKS_GETEEPROM_OPCODE,SerialTalks::GETEEPROM);
 	bind(SERIALTALKS_SETEEPROM_OPCODE,SerialTalks::SETEEPROM);
+	bind(SERIALTALKS_GETBUFFERSIZE_OPCODE, SerialTalks::GETBUFFERSIZE);
 }
 
 int SerialTalks::send(byte opcode,Serializer output)

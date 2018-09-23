@@ -25,8 +25,8 @@ class SerialBuffer:
         self.bytes_sended = 0
         self.lock = RLock()
 
-    def send(self, bytes, force=False, timeout=1):
-        if not self.lock.acquire(blocking=not force, timeout=timeout) and force:
+    def send(self, bytes, timeout=1):
+        if not self.lock.acquire(blocking=True, timeout=timeout):
             warnings.warn("Bytes : {} can't be sended, timeout !".format(bytes), SerialBufferTimeout)
             return 0
         if self.bytes_sended >= self.buffer_size:
@@ -53,7 +53,7 @@ class SerialBuffer:
         self.bytes_sended = 0
         bytes_to_send = bytes(self.stack_bytes)
         self.stack_bytes = bytearray()
-        self.send(bytes_to_send, force=True, timeout=-1)
+        self.send(bytes_to_send, timeout=-1)
         self.lock.release()
 
 

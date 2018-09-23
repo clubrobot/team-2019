@@ -16,6 +16,7 @@ from serial.serialutil import SerialException
 import time
 import random
 import warnings
+from math import inf
 from common.CRC16 import *
 from queue import Queue, Empty, LifoQueue
 from threading import Thread, RLock, Event, current_thread
@@ -33,6 +34,7 @@ SETUUID_OPCODE = 0x02
 DISCONNECT_OPCODE = 0x03
 GETEEPROM_OPCODE = 0x04
 SETEEPROM_OPCODE = 0x05
+GETBUFFERSIZE_OPCODE = 0x06
 STDOUT_RETCODE = 0xFFFFFFFF
 STDERR_RETCODE = 0xFFFFFFFE
 
@@ -115,7 +117,7 @@ class SerialTalks:
         except SerialException as e:
             raise ConnectionFailedError(str(e)) from None
 
-        self.serial_buffer = SerialBuffer(self.stream.write, 60)
+        self.serial_buffer = SerialBuffer(self.stream.write, inf)
         self.bind(FREE_BUFFER, self.serial_buffer.reset)
         # Create a listening thread that will wait for inputs
         self.listener = SerialListener(self)
@@ -125,9 +127,11 @@ class SerialTalks:
         startingtime = time.monotonic()
         while not self.is_connected:
             try:
-                output = self.execute(PING_OPCODE, timeout=0.1, force=True)
-                self.is_connected = True
+                output = self.execute(PING_OPCODE, timeout=0.1)
+                
                 self.reset_queues()
+                self.serial_buffer.buffer_size = self.execute(GETBUFFERSIZE_OPCODE, timeout=0.5).read(INT)
+                self.is_connected = True
             except TimeoutError:
                 if time.monotonic() - startingtime > timeout:
                     self.disconnect()
@@ -164,17 +168,16 @@ class SerialTalks:
         else:
             raise KeyError('opcode {} is already bound to another instruction'.format(opcode))
 
-    def rawsend(self, rawbytes, force=False):
+    def rawsend(self, rawbytes):
         try:
             if hasattr(self, 'stream') and self.stream.is_open:
-                if force : sentbytes = self.serial_buffer.direct_send(rawbytes)
-                else : sentbytes = self.serial_buffer.send(rawbytes)
+                sentbytes = self.serial_buffer.send(rawbytes)
                 return sentbytes
         except SerialException:
             pass
         raise NotConnectedError('\'{}\' is not connected.'.format(self.port)) from None
 
-    def send(self, opcode, *args, force=False):
+    def send(self, opcode, *args):
         retcode = random.randint(0, 0xFFFFFFFF)
         content = BYTE(opcode) + ULONG(retcode) + bytes().join(args)
         # crc calculation
@@ -185,7 +188,7 @@ class SerialTalks:
         if len(self.history)>20:
             _  = self.history.pop(0)
         self.history_lock.release()
-        self.rawsend(prefix + content, force=force)
+        self.rawsend(prefix + content)
         return retcode
 
 
@@ -234,8 +237,8 @@ class SerialTalks:
         while self.poll(retcode) is not None:
             pass
 
-    def execute(self, opcode, *args, timeout=5, force=True):
-        retcode = self.send(opcode, *args, force=force)
+    def execute(self, opcode, *args, timeout=5):
+        retcode = self.send(opcode, *args)
         output = self.poll(retcode, timeout)
         return output
 
