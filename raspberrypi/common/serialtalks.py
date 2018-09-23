@@ -244,11 +244,11 @@ class SerialTalks:
 
     def receive(self, input):
         opcode = input.read(BYTE)
-        retcode = input.read(LONG)
+        retcode = input.read(ULONG)
         try:
             output = self.instructions[opcode](input)
             if output is None: return
-            content = LONG(retcode) + output
+            content = ULONG(retcode) + output
             prefix = SLAVE_BYTE + BYTE(len(content))
             self.rawsend(prefix + content)
         except KeyError:
