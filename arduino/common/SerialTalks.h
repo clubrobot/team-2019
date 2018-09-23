@@ -55,6 +55,7 @@
 #define SERIALTALKS_DISCONNECT_OPCODE 0x3
 #define SERIALTALKS_GETEEPROM_OPCODE  0x4
 #define SERIALTALKS_SETEEPROM_OPCODE  0x5
+#define SERIALTALKS_GETBUFFERSIZE_OPCODE 0x6
 #define SERIALTALKS_WARNING_OPCODE    0xFE
 #define SERIALTALKS_FREE_BUFFER_OPCODE 0xFA
 #define SERIALTALKS_STDOUT_RETCODE 0xFFFFFFFF
@@ -168,6 +169,7 @@ private:
 	static void SETUUID(SerialTalks& talks, Deserializer& input, Serializer& output);
 	static void GETEEPROM(SerialTalks& talks, Deserializer& input, Serializer& output);
 	static void SETEEPROM(SerialTalks& talks, Deserializer& input, Serializer& output);
+	static void GETBUFFERSIZE(SerialTalks& talks, Deserializer& input, Serializer& output);
 	void LAUNCHWARNING(unsigned char *  message);
 	void FREE_BUFFER(void);
 };
