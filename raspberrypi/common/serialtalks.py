@@ -38,7 +38,7 @@ GETBUFFERSIZE_OPCODE = 0x06
 STDOUT_RETCODE = 0xFFFFFFFF
 STDERR_RETCODE = 0xFFFFFFFE
 
-SERIALTALKS_RESEND_OPCODE = 0xFE
+RESEND_OPCODE = 0xFE
 FREE_BUFFER    = 0xFA
 
 BYTEORDER = 'little'
@@ -97,7 +97,7 @@ class SerialTalks:
         self.last_retcode = -1
         # Instructions
         self.instructions = dict()
-        self.instructions[SERIALTALKS_RESEND_OPCODE] = self.resend
+        self.instructions[RESEND_OPCODE] = self.resend
 
     def __enter__(self):
         self.connect()
