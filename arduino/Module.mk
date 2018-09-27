@@ -23,11 +23,24 @@ ifdef BOARD_UUID
     CPPFLAGS += -DBOARD_UUID=\"$(BOARD_UUID)\"
 endif
 
+#detect OS type
+UNAME_S := $(shell uname -s)
+
 # Guess MONITOR_PORT if not specified
 ifndef MONITOR_PORT
-    MONITOR_PORT = /dev/arduino/$(BOARD_UUID)
+	#Linux path
+    ifeq ($(UNAME_S),Linux)
+		MONITOR_PORT = /dev/arduino/$(BOARD_UUID)
+	endif
+	
+	#macos path
+	ifeq ($(UNAME_S),Darwin)
+		ARDUINO_DIR   = /Applications/Arduino.app/Contents/Java
+		MONITOR_PORT = /tmp/arduino/$(BOARD_UUID)
+	endif
+
     ifeq ($(shell test -e "$(MONITOR_PORT)"; echo $$?),1)
-        undefine MONITOR_PORT # Let Arduino.mk find it by itself
+		MONITOR_PORT = # Let Arduino.mk find it by itself
     endif
 endif
 
@@ -37,9 +50,11 @@ upload_safe:
 	$(MAKE) upload
 endif
 
-ifndef MONITOR_PORT
-upload_safe:
-	@echo $(BOARD_UUID) not connected
+ifneq ($(UNAME_S),Darwin)
+	ifndef MONITOR_PORT
+	upload_safe:
+		@echo $(BOARD_UUID) not connected
+	endif
 endif
 
 
