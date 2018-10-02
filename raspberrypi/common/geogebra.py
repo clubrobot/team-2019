@@ -6,6 +6,7 @@ import re
 from io import BytesIO
 from zipfile import ZipFile
 import os
+from time import time
 
 import math
 
@@ -242,35 +243,67 @@ class Geogebra():
 
     def get(self, label):
         element = self.root.find("./construction/element[@label='{}']".format(label))
-        if element is None:
-            raise KeyError(label)
-        if element.attrib['type'] == 'point':
-            return self._parse_point(element)
-        elif element.attrib['type'] == 'line':
+        return self.get_from_element(element)
+
+    def get_from_element(self, element):
+        begin = time()
+        type = element.attrib['type']
+        print("\t\t\tget attrib : ", time() - begin)
+
+        if type is None:
+            raise KeyError(element.get('label'))
+        if type == 'point':
+            begin = time()
+            res = self._parse_point(element)
+            t = time() - begin
+            print("\t\t\t parse point : ", t)
+            return res
+        elif type == 'line':
             return self._parse_line(element)
-        elif element.attrib['type'] == 'conic':
+        elif type == 'conic':
             return self._parse_conic(element)
-        elif element.attrib['type'] == 'segment':
+        elif type == 'segment':
             return self._parse_segment(element)
-        elif element.attrib['type'] == 'vector':
+        elif type == 'vector':
             return self._parse_vector(element)
-        elif element.attrib['type'] == 'polyline':
+        elif type == 'polyline':
             return self._parse_polyline(element)
-        elif element.attrib['type'] == 'polygon':
+        elif type == 'polygon':
             return self._parse_polygon(element)
-        elif element.attrib['type'] == 'angle':
+        elif type == 'angle':
             return self._parse_angle(element)
-        elif element.attrib['type'] == 'numeric':
+        elif type == 'numeric':
             return self._parse_numeric(element)
         else:
-            raise NotImplementedError("'{}' elements currently not handled".format(element.attrib['type']))
+            raise NotImplementedError("'{}' elements currently not handled".format(type))
 
     def getall(self, pattern):
+        begin = time()
         elements = self.root.findall('./construction/element[@label]')
-        all_labels = [element.get('label') for element in elements]
-        labels = [label for label in all_labels if re.match(pattern, label)]
-        labels = sorted(labels)
-        return [self.get(label) for label in labels]
+               
+        match_time = 0
+        get_from_element_time = 0
+        add_in_list_time = 0
+
+        elements_matched = []
+        for element in elements:
+            begin = time()
+            if re.match(pattern, element.get('label')):
+                match_time += time() - begin
+                #print("\t\tmatch : ", time() - begin)
+                begin = time()
+                res = self.get_from_element(element)
+                get_from_element_time += time() - begin
+                #print("\t\tget from element : ", time() - begin)
+                begin = time()
+                elements_matched += [res]
+                add_in_list_time += time() - begin
+                #print("\t\tadd in list : ", time() - begin)
+
+        print("match : ", match_time)
+        print("get from element : ", get_from_element_time)
+        print("add in list : ", add_in_list_time)
+        return elements_matched
 
     def _check_label(self, label):
         try:
@@ -281,11 +314,23 @@ class Geogebra():
             raise AlreadyExistsError('Label already use !')
 
     def _parse_point(self, element):
+        begin = time()
         coords = element.find('coords')
+        t = time() - begin
+        print("find coords : ", t)
+        print(coords.x)
+        begin = time()
         x = float(coords.get('x'))
         y = float(coords.get('y'))
         z = float(coords.get('z'))
-        return Geogebra.Point((x / z, y / z))
+        t = time() - begin
+        print("get coords : ", t)
+        begin = time()
+        point = Geogebra.Point((x / z, y / z))
+        t = time() - begin
+        print("create point : ", t)
+        return point
+        
 
     def _parse_line(self, element):
         coords = element.find('coords')
