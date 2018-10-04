@@ -102,10 +102,16 @@ if [ -z "$ARDMK_DIR" ]; then # ifndef ARDMK_DIR
 		sudo apt-get install arduino-mk
 
 		sudo apt-get install python-serial
-
+		
+		sudo apt-get install python3-serial
+		
+		sudo apt-get install libigraph0-dev
+		
+		sudo apt-get install python3-pip
+		
 		pip3 install python-igraph
-
-		sudo apt install libigraph-dev
+		
+		sudo pip3 install python-igraph
 
 		echo export ARDMK_DIR="/usr/share/arduino" >> "$PROFILE"
 	else
