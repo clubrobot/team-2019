@@ -45,7 +45,7 @@ endif
 
 ifeq ($(UNAME_S),Darwin)
 	UPLOAD_PORT ?= $(shell ls -1tr /tmp/arduino/$(BOARD_UUID) 2>/dev/null | tail -1)
-	UPLOAD_PORT := $(if $(UPLOAD_PORT),$(UPLOAD_PORT),/dev/tty.SLAB_USBtoUART*)
+	UPLOAD_PORT := $(if $(UPLOAD_PORT),$(UPLOAD_PORT),/dev/tty.SLAB_USBtoUART)
 endif
 
 
