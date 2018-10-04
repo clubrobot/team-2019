@@ -105,6 +105,8 @@ if [ -z "$ARDMK_DIR" ]; then # ifndef ARDMK_DIR
 
 		pip3 install python-igraph
 
+		sudo apt install libigraph-dev
+
 		echo export ARDMK_DIR="/usr/share/arduino" >> "$PROFILE"
 	else
 		# installing homebrew for macos
@@ -117,6 +119,10 @@ if [ -z "$ARDMK_DIR" ]; then # ifndef ARDMK_DIR
 		echo export ARDMK_DIR="/usr/local/opt/arduino-mk" >> "$PROFILE"
 
 		sudo sed -i "" "s_/dev/tty.usbserial*__g" "$ARDMK_DIR/Arduino.mk"
+
+		sudo easy_install pip
+
+		pip install pyserial
 
 		pip3 install pyserial
 
