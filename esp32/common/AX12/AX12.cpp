@@ -2,8 +2,8 @@
 #include "Dynamixel.h"	
 #include <Arduino.h>
 
-void AX12::SerialBegin(long baud, unsigned char rx, unsigned char tx, unsigned char control){
-	Dynamixel.begin(baud, rx, tx, control);
+void AX12::SerialBegin(long baud, unsigned char control){
+	Dynamixel.begin(baud, control);
 }
 
 void AX12::end(){
