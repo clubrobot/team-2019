@@ -148,8 +148,8 @@ private:
 	
 public:
 	
-	void begin(long baud, unsigned char Rx, unsigned char Tx);
-	void begin(long baud, unsigned char Rx, unsigned char Tx, unsigned char D_Pin);
+	void begin(long baud);
+	void begin(long baud, unsigned char D_Pin);
 	void end(void);
 	
 	int reset(unsigned char ID);

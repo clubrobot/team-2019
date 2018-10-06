@@ -48,19 +48,19 @@ int DynamixelClass::read_error(void)
 
 // Public Methods //////////////////////////////////////////////////////////////
 
-void DynamixelClass::begin(long baud,unsigned char Rx, unsigned char Tx)
+void DynamixelClass::begin(long baud)
 {	
-	DTx = Tx;
-	DRx = Rx;
+	// DTx = Tx;
+	// DRx = Rx;
 	//setRXPin(DRx);
 	//setTXPin(DTx);
 	beginCom(baud);
 	
 }
-void DynamixelClass::begin(long baud,unsigned char Rx, unsigned char Tx, unsigned char D_Pin)
+void DynamixelClass::begin(long baud, unsigned char D_Pin)
 {	
-	DTx = Tx;
-	DRx = Rx;
+	// DTx = Tx;
+	// DRx = Rx;
 	//setRXPin(DRx);
 	//setTXPin(DTx);
 	beginCom(baud);
