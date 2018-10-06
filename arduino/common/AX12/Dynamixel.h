@@ -1,5 +1,8 @@
-#ifndef __AX12_H
-#define __AX12_H
+#ifndef __DYNAMIXEL_H
+#define __DYNAMIXEL_H
+
+#include <inttypes.h>
+#include <Arduino.h>
 
 	/// EEPROM AREA  ///
 #define AX_MODEL_NUMBER_L           0
@@ -113,10 +116,6 @@
 #define Rx_MODE                     0
 #define LOCK                        1
 
-#include <inttypes.h>
-#include <Arduino.h>
-#include "../common/ShiftRegister.h"
-
 class DynamixelClass {
 private:
 	unsigned char DTx;              //		Default Serial Port 0 -> Rx  &  1 -> Tx
@@ -193,63 +192,4 @@ public:
 
 extern DynamixelClass Dynamixel;
 
-
-class AX12 {
-private: 
-	unsigned char m_id;
-	bool m_endlessMode;
-	bool m_holding;
-
-public:
-	static void SerialBegin(long baud, unsigned char rx, unsigned char tx, unsigned char control);
-	static void end();
-	void attach(unsigned char id);
-	void detach();
-
-	int ping();
-	
-	int setID(unsigned char newID);
-	int setBD(long baud);
-
-	int move(float Position);
-	int moveSpeed(float Position, float Speed);
-
-	int setEndlessMode(bool Status);
-	int turn(int Speed);
-	
-	int Nextmove(float Position);
-	int NextmoveSpeed(float Position, float Speed);
-	
-	void static action();
-
-	int setTempLimit(unsigned char Temperature);
-	int setAngleLimit(float CWLimit, float CCWLimit);
-	int setVoltageLimit(unsigned char DVoltage, unsigned char UVoltage);
-	int setMaxTorque(int MaxTorque);
-	int setMaxTorqueRAM(int MaxTorque);
-	int setSRL(unsigned char SRL);
-	int setRDT(unsigned char RDT);
-	int setLEDAlarm(unsigned char LEDAlarm);
-	int setShutdownAlarm(unsigned char SALARM);
-	int setCMargin(unsigned char CWCMargin, unsigned char CCWCMargin);
-	int setCSlope( unsigned char CWCSlope, unsigned char CCWCSlope);
-	int setPunch(int Punch);
-
-	int moving();
-	int lockRegister();
-	int savedMove();
-	
-	int readTemperature();
-	float readVoltage();
-	float readPosition();
-	float readSpeed();
-	int readTorque();
-
-	bool isHolding();
-	
-	int hold(bool Status);
-	int led(bool Status);
-	
-};
-
-#endif
+#endif /* __DYNAMIXEL_H */
