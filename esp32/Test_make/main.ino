@@ -10,20 +10,20 @@ AX12 motor1;
 
 Joint art(1,-1,1,-1,1,-1,1);
 
-float_tuple_t pos_tuple;
-float_tuple_t vel_tuple;
-float_tuple_t acc_tuple;
-float_tuple_t t_tuple;
+double_tuple_t pos_tuple;
+double_tuple_t vel_tuple;
+double_tuple_t acc_tuple;
+double_tuple_t t_tuple;
 
-float pos[4];
-float vel[4];
-float acc[4];
-float t[4];
+double pos[4];
+double vel[4];
+double acc[4];
+double t[4];
 
-float initial_pos = 0.1;
-float initial_vel = 0.1;
-float final_pos = 0.5;
-float final_vel = 1.0;
+double initial_pos = 0.1;
+double initial_vel = 0;
+double final_pos = 0.5;
+double final_vel = 0;
 
 
 void setup()
@@ -33,7 +33,7 @@ void setup()
     motor1.SerialBegin(1000000,2);
     motor1.attach(1);
 
-    std::tie(t_tuple, pos_tuple, vel_tuple, acc_tuple) = art.get_path(initial_pos,initial_vel,final_pos,final_vel,0,0.2);
+    std::tie(t_tuple, pos_tuple, vel_tuple, acc_tuple) = art.get_path(initial_pos,initial_vel,final_pos,final_vel,10,0.2);
 
     std::tie(t[0], t[1], t[2] , t[3]) = t_tuple;
     std::tie(pos[0], pos[1], pos[2] , pos[3]) = pos_tuple;
