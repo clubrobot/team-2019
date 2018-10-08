@@ -6,8 +6,11 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
+#include "Matrix.h"
 
 typedef std::tuple<double,double> coords_t;
+
+typedef std::tuple<coords_t,coords_t,coords_t> mult_coords_t;
 
 class Scara
 {
@@ -24,6 +27,8 @@ class Scara
 		Joint Theta1_joint = Joint(-M_PI,M_PI,1,-1,1,-1,1);
 		Joint Theta2_joint = Joint(-M_PI,M_PI,1,-1,1,-1,1);
 
+		Matrix m_matrix;
+
 	public:
 		Scara(double l1, double l2, coords_t joints, coords_t origin);
 		coords_t forward_kinematics(coords_t joints);
@@ -34,7 +39,11 @@ class Scara
 
 		coords_t get_joints(void);
 
+		mult_coords_t get_detailed_pos(void);
 
+		matrix_t compute_jacobian(void);
+
+		coords_t get_tool_vel(coords_t joints_vel);
 };
 
 
