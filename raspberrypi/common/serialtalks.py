@@ -94,6 +94,7 @@ class SerialTalks:
         self.queues_lock = RLock()
         self.history = list()
         self.history_lock = RLock()
+        self.alias_retcode = dict()
         self.last_retcode = -1
         # Instructions
         self.instructions = dict()
@@ -185,7 +186,7 @@ class SerialTalks:
         crc = CRCprocessBuffer(content)
         prefix = MASTER_BYTE + BYTE(len(content)) + USHORT(crc)
         self.history_lock.acquire()
-        self.history.append((self.last_retcode, [opcode, args]))
+        self.history.append((self.last_retcode, retcode, [opcode, args]))
         self.last_retcode = retcode
         if len(self.history)>20:
             _  = self.history.pop(0)
@@ -196,6 +197,8 @@ class SerialTalks:
 
     def get_queue(self, retcode):
         self.queues_lock.acquire()
+        if retcode in self.alias_retcode.keys():
+            retcode = self.alias_retcode[retcode]
         try:
             queue = self.queues_dict[retcode]
         except KeyError:
@@ -298,15 +301,21 @@ class SerialTalks:
     def resend(self, message):
         warnings.warn("Message send corrupted !", SerialTalksWarning)
         retcode = message.read(ULONG)
-        to_send = None
+        to_send, old_retcode = None, None
         self.history_lock.acquire()
         for i in range(len(self.history)):
             if self.history[i][0] == retcode:
-                to_send = self.history[i][1]
+                to_send = self.history[i][2]
+                old_retcode = self.history[i][1]
                 print("Message resend !")
                 break
         self.history_lock.release()
-        if not to_send is None: self.send(to_send[0], *to_send[1])
+        
+        if not to_send is None:
+            self.queues_lock.acquire()
+            self.alias_retcode[retcode] = old_retcode
+            self.queues_lock.release()
+            self.send(to_send[0], *to_send[1])
         
 
 
