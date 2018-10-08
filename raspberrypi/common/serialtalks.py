@@ -181,7 +181,7 @@ class SerialTalks:
 
     def send(self, opcode, *args):
         retcode = random.randint(0, 0xFFFFFFFF)
-        content = BYTE(opcode) + ULONG(retcode) + bytes().join(args)
+        content = BYTE(opcode) + ULONG(retcode) + bytes().join(args) + BYTE(0)
         # crc calculation
         crc = CRCprocessBuffer(content)
         prefix = MASTER_BYTE + BYTE(len(content)) + USHORT(crc)
@@ -300,25 +300,24 @@ class SerialTalks:
 
     def resend(self, message):
         warnings.warn("Message send corrupted !", SerialTalksWarning)
-        retcode = message.read(ULONG)
+        prev_retcode = message.read(ULONG)
         to_send, old_retcode = None, None
         self.history_lock.acquire()
         for i in range(len(self.history)):
-            if self.history[i][0] == retcode:
+            if self.history[i][0] == prev_retcode:
                 to_send = self.history[i][2]
-                old_retcode = self.history[i][1]
+                main_retcode = self.history[i][1]
                 print("Message resend !")
                 break
         self.history_lock.release()
-        
         if not to_send is None:
             self.queues_lock.acquire()
-            self.alias_retcode[retcode] = old_retcode
+            new_retcode = self.send(to_send[0], *to_send[1])
+            while main_retcode in self.alias_retcode.keys():
+                main_retcode = self.alias_retcode[main_retcode]
+            self.alias_retcode[new_retcode] = main_retcode
             self.queues_lock.release()
-            self.send(to_send[0], *to_send[1])
         
-
-
     def getout(self, timeout=0):
         return self.getlog(STDOUT_RETCODE, timeout)
 
