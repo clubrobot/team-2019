@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include "Joint.h"
 #include "Scara.h"
+#include "Matrix.h"
 
 Scara::Scara(double l1, double l2, coords_t joints, coords_t origin)
 {
@@ -107,4 +108,59 @@ coords_t Scara::get_joints(void)
     theta2 = std::fmod((theta2 + M_PI) , (2 * M_PI)) - M_PI; // Stay between -pi and pi
 
     return std::make_tuple(theta1,theta2);
+}
+
+mult_coords_t Scara::get_detailed_pos(void)
+{
+    /*
+        Returns origin, position of end of link 1, position of end of link 2
+    */
+    double theta1,theta2;
+    double x_origin,y_origin;
+
+    std::tie(theta1, theta2) = m_joints;
+    std::tie(x_origin,y_origin) = m_origin;
+
+    double x1 = m_l1 * cos(theta1) + x_origin;
+    double y1 = m_l1 * sin(theta1) + y_origin;
+
+    coords_t xy = std::make_tuple(x1, y1);
+
+    return std::make_tuple(m_origin, xy, m_tool);
+}
+
+matrix_t Scara::compute_jacobian(void)
+{
+    /*
+        Returns jacobian matrix at current state
+    */
+    double theta1,theta2;
+    std::tie(theta1, theta2) = m_joints;
+
+    double dx_dth1 = - m_l1 * sin(theta1) - m_l2 * sin(theta1 + theta2);
+
+    double dx_dth2 = - m_l2 * sin(theta1 + theta2);
+
+    double dy_dth1 = m_l1 * cos(theta1) + m_l2 * cos(theta1 + theta2);
+
+    double dy_dth2 = m_l2 * cos(theta1 + theta2);
+
+    return m_matrix.createMatrix22(dx_dth1, dx_dth2, dy_dth1, dy_dth2);
+}
+
+coords_t Scara::get_tool_vel(coords_t joints_vel)
+{
+    /*
+        Computes current tool velocity using jacobian
+    */
+    double theta1,theta2;
+    std::tie(theta1, theta2) = joints_vel;
+
+    matrix_t jt_vel = m_matrix.createMatrix21(theta1, theta2);
+
+    matrix_t jacobian = compute_jacobian();
+
+    matrix_t tl_vel = m_matrix.multMatrix22x12(jacobian , jt_vel);
+
+    return std::make_tuple(tl_vel[0][0], tl_vel[1][0]);
 }
