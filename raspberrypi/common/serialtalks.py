@@ -317,6 +317,24 @@ class SerialTalks:
                 main_retcode = self.alias_retcode[main_retcode]
             self.alias_retcode[new_retcode] = main_retcode
             self.queues_lock.release()
+
+    def re_receive(self, main_retcode):
+        to_send = None
+        self.history_lock.acquire()
+        for i in range(len(self.history)):
+            if self.history[i][1] == retcode:
+                to_send = self.history[i][2]
+                break
+        self.history_lock.release()
+        if not to_send is None:
+            self.queues_lock.acquire()
+            new_retcode = self.send(to_send[0], *to_send[1])
+            while main_retcode in self.alias_retcode.keys():
+                main_retcode = self.alias_retcode[main_retcode]
+            self.alias_retcode[new_retcode] = main_retcode
+            self.queues_lock.release()
+
+
         
     def getout(self, timeout=0):
         return self.getlog(STDOUT_RETCODE, timeout)
@@ -381,6 +399,8 @@ class SerialListener(Thread):
                     if type_packet == MASTER_BYTE: self.parent.receive(Deserializer(buffer))
                 else:
                     warnings.warn("Message receive corrupted !", SerialTalksWarning)
+                    _, retcode = Deserializer(buffer).read(BYTE, ULONG)
+                    self.parent.re_receive(retcode)
                     state = 'waiting'
 
             except NotConnectedError:
