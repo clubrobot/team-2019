@@ -7,9 +7,10 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
+
 using std::vector;
 using std::ostream;
-using std::string;
+
 #define EPSILON 0.001
 
 typedef struct
@@ -45,15 +46,6 @@ typedef struct
 	double t2;
 	double tf;
 }trajectory_time_t;
-
-    
-/*    std::cout << "var:" << std::endl;
-    for (auto const& c : t)
-    std::cout << c << ' ';
-*/
-
-
-
 
 class Joint
 {
