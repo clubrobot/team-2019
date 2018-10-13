@@ -46,3 +46,31 @@ matrix_t Matrix::multMatrix22x12(matrix_t mat22, matrix_t mat12)
 
 	return createMatrix21(a,b);
 }
+
+double Matrix::norm(matrix_t mat)
+{
+    return sqrt( pow((mat[0][0]),2) + pow((mat[0][1]),2) + pow((mat[1][0]),2) + pow(mat[1][1],2) );
+}
+
+double Matrix::det(matrix_t mat)
+{
+    return (mat[0][0] * mat[1][1]) -(mat[1][0] * mat[0][1]);
+}
+
+matrix_t Matrix::solve(matrix_t mat22, matrix_t mat12)
+{
+    matrix_t result;
+
+    double a,b,deter;
+
+    deter = det(mat22);
+
+    if(deter != 0) {
+        a = (mat12[0][0]*mat22[1][1] - mat22[0][1]*mat12[1][0])/deter;
+        b = (mat22[0][0]*mat12[1][0] - mat12[0][0]*mat22[1][0])/deter;
+    } else {
+        
+    }
+
+    return createMatrix21(a,b);
+}
