@@ -8,9 +8,31 @@
 #include <stdexcept>
 #include "Matrix.h"
 
-typedef std::tuple<double,double> coords_t;
+typedef struct
+{
+	double x;
+	double y;
+}coords_t;
 
-typedef std::tuple<coords_t,coords_t,coords_t> mult_coords_t;
+typedef struct
+{
+	double th1;
+	double th2;
+	
+}joints_t;
+
+typedef struct
+{
+	coords_t origin;
+	coords_t link1; 
+	coords_t tool; 
+}detailed_pos_t;
+
+typedef struct
+{
+	vector_t path_th1;
+	vector_t path_th2;
+}path_t;
 
 class Scara
 {
@@ -18,32 +40,38 @@ class Scara
 
 		coords_t m_origin;
 		coords_t m_tool;
-		coords_t m_joints;
+		joints_t m_joints;
 
 		double m_l1;
 		double m_l2;
 		double m_lsq;
 
-		Joint Theta1_joint = Joint(-M_PI,M_PI,1,-1,1,-1,1);
-		Joint Theta2_joint = Joint(-M_PI,M_PI,1,-1,1,-1,1);
+		Joint Theta1_joint = Joint(0,-M_PI,M_PI,-1,1,-1,1);
+		Joint Theta2_joint = Joint(1,-M_PI,M_PI,-1,1,-1,1);
 
 		Matrix m_matrix;
 
 	public:
-		Scara(double l1, double l2, coords_t joints, coords_t origin);
-		coords_t forward_kinematics(coords_t joints);
+		Scara(double l1, double l2, joints_t joints, coords_t origin);
+		coords_t forward_kinematics(joints_t joints);
 
-		coords_t inverse_kinematics(coords_t tool);
+		joints_t inverse_kinematics(coords_t tool);
 
 		coords_t get_tool(void);
 
-		coords_t get_joints(void);
+		joints_t get_joints(void);
 
-		mult_coords_t get_detailed_pos(void);
+		detailed_pos_t get_detailed_pos(void);
 
 		matrix_t compute_jacobian(void);
 
-		coords_t get_tool_vel(coords_t joints_vel);
+		coords_t get_tool_vel(joints_t joints_vel);
+
+		joints_t get_joints_vel(coords_t tool_vel);
+
+		path_t get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t);
+
+		double synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel);
 };
 
 
