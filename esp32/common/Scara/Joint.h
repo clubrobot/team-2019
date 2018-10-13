@@ -3,14 +3,56 @@
 
 #include <Arduino.h>
 #include <tuple>
+#include <vector>
 #include <iostream>
 #include <string>
 #include <stdexcept>
+using std::vector;
+using std::ostream;
+using std::string;
 #define EPSILON 0.001
 
-typedef std::tuple<double,double,double,double> double_tuple_t;
+typedef struct
+{
+	double a0;
+	double a1;
+	double a2;
+}polynom_t;
 
-typedef std::tuple<double_tuple_t , double_tuple_t , double_tuple_t , double_tuple_t> tuple_type_t;
+typedef struct 
+{
+	vector<double> t;
+	vector<double> pos;
+	vector<double> vel;
+	vector<double> acc;
+}vector_t;
+
+typedef struct
+{
+	double pos_min;
+	double pos_max;
+
+	double vel_min;
+	double vel_max;
+
+	double acc_min;
+	double acc_max;
+}constraints_t;
+
+typedef struct
+{
+	double t1;
+	double t2;
+	double tf;
+}trajectory_time_t;
+
+    
+/*    std::cout << "var:" << std::endl;
+    for (auto const& c : t)
+    std::cout << c << ' ';
+*/
+
+
 
 
 class Joint
@@ -20,16 +62,13 @@ class Joint
 		int m_id;
 
 		// constraints 
-		double m_pos_min;
-		double m_pos_max;
+		constraints_t m_constraints;
 
-		double m_velocity_min;
-		double m_velocity_max;
+		double polyval(polynom_t polynome, double x);
+		polynom_t polyder(polynom_t poly);
 
-		double m_acc_min;
-		double m_acc_max;
-
-		double polyval(std::tuple<double,double,double>polynome, double x);
+		vector<double> vector_polyval(polynom_t polynome, vector<double> x);
+		template<typename T>vector<T> arange(T start, T stop, T step);
 		
 	public:
 
@@ -37,17 +76,17 @@ class Joint
 
 		bool trajectory_is_feasible(double initial_pos, double initial_vel, double final_pos, double final_vel);
 
-		tuple_type_t get_path(double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync, double delta_t);
+		vector_t get_path(double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync, double delta_t);
 
-		tuple_type_t trapezoidal_profile(double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync,double tf_lim, double delta_t);
+		vector_t trapezoidal_profile(double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync,double tf_lim, double delta_t);
 
-		tuple_type_t doubleramp_profile(double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync,double tf_lim, double delta_t);
+		vector_t doubleramp_profile(double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync,double tf_lim, double delta_t);
 
-		tuple_type_t generic_profile(double initial_pos, double initial_vel, double final_pos, double final_vel, double tf_sync, double tf_lim,double delta_t, int sign_traj, int sign_sync, double vel_c);
+		vector_t generic_profile(double initial_pos, double initial_vel, double final_pos, double final_vel, double tf_sync, double tf_lim,double delta_t, int sign_traj, int sign_sync, double vel_c);
 
-		double_tuple_t polynomial_piece_profile(std::tuple<double,double,double>polynome, double start, double stop, double delta);
+		vector_t polynomial_piece_profile(polynom_t polynome, double start, double stop, double delta);
 
-		std::tuple<double,double,double> time_to_destination(double initial_pos, double initial_vel, double final_pos, double final_vel);
+		trajectory_time_t time_to_destination(double initial_pos, double initial_vel, double final_pos, double final_vel);
 
 		int trajectory_sign(double initial_pos, double initial_vel, double final_pos, double final_vel);
 
