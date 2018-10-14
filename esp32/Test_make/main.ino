@@ -12,9 +12,25 @@ AX12 motor1;
 coords_t tool;
 
 coords_t coord;
+coords_t vel;
 
 joints_t joints;
 
+path_t chemin;
+
+/* debug */
+template<typename T>
+ostream& operator<< (ostream& out, const vector<T>& v) {
+    out << "{";
+    size_t last = v.size() - 1;
+    for(size_t i = 0; i < v.size(); ++i) {
+        out << v[i];
+        if (i != last) 
+            out << ", ";
+    }
+    out << "}";
+    return out;
+}
 
 
 void setup()
@@ -23,6 +39,9 @@ void setup()
 
     coord.x = 0;
     coord.y = 0;
+
+    vel.x = 0;
+    vel.y = 0;
 
     joints.th1 = 0;
     joints.th2 = 0;
@@ -35,22 +54,18 @@ void setup()
     tool.x = -8.41;
     tool.y = 16.28;
 
-    Serial.print("x: ");
-    Serial.println(tool.x);
-    Serial.print("y: ");
-    Serial.println(tool.y);
 
-    joints = arm.inverse_kinematics(tool);
+    chemin = arm.get_path(coord,vel,tool,vel,0.2);
 
-    Serial.print("th1 rad: ");
-    Serial.println(joints.th1);
-    Serial.print("th2 rad: ");
-    Serial.println(joints.th2);
+    std::cout << chemin.path_th1.t << std::endl;
+    std::cout << chemin.path_th1.pos << std::endl;
+    std::cout << chemin.path_th1.vel << std::endl;
+    std::cout << chemin.path_th1.acc << std::endl;
 
-    Serial.print("th1 deg: ");
-    Serial.println(joints.th1*(180/M_PI));
-    Serial.print("th2 deg: ");
-    Serial.println(joints.th2*(180/M_PI));
+    std::cout << chemin.path_th2.t << std::endl;
+    std::cout << chemin.path_th2.pos << std::endl;
+    std::cout << chemin.path_th2.vel << std::endl;
+    std::cout << chemin.path_th2.acc << std::endl;
 }
 
 void loop()
