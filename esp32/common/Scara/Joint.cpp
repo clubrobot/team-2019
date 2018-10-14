@@ -6,20 +6,6 @@
 
 #include "Joint.h"
 
-/* debug */
-template<typename T>
-ostream& operator<< (ostream& out, const vector<T>& v) {
-    out << "{";
-    size_t last = v.size() - 1;
-    for(size_t i = 0; i < v.size(); ++i) {
-        out << v[i];
-        if (i != last) 
-            out << ", ";
-    }
-    out << "}";
-    return out;
-}
-
 
 Joint::Joint(int id, double pos_min, double pos_max, double velociy_min, double velociy_max, double acc_min, double acc_max)
 {
@@ -52,7 +38,7 @@ polynom_t Joint::polyder(polynom_t poly)
     return dp;
 }
 
-vector<double> vector_polyval(polynom_t polynome, vector<double> x)
+vector<double> Joint::vector_polyval(polynom_t polynome, vector<double> x)
 {
     vector<double> values;
     int size = x.size();
