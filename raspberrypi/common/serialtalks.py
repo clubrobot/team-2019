@@ -181,7 +181,7 @@ class SerialTalks:
 
     def send(self, opcode, *args):
         retcode = random.randint(0, 0xFFFFFFFF)
-        content = BYTE(opcode) + ULONG(retcode) + bytes().join(args) + BYTE(0)
+        content = BYTE(opcode) + ULONG(retcode) + bytes().join(args) 
         # crc calculation
         crc = CRCprocessBuffer(content)
         prefix = MASTER_BYTE + BYTE(len(content)) + USHORT(crc)
@@ -191,7 +191,7 @@ class SerialTalks:
         if len(self.history)>20:
             _  = self.history.pop(0)
         self.history_lock.release()
-        self.rawsend(prefix + content)
+        self.rawsend(prefix + content + BYTE(0))
         return retcode
 
 
