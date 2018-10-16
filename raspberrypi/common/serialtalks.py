@@ -322,7 +322,7 @@ class SerialTalks:
         to_send = None
         self.history_lock.acquire()
         for i in range(len(self.history)):
-            if self.history[i][1] == retcode:
+            if self.history[i][1] == main_retcode:
                 to_send = self.history[i][2]
                 break
         self.history_lock.release()
@@ -399,7 +399,7 @@ class SerialListener(Thread):
                     if type_packet == MASTER_BYTE: self.parent.receive(Deserializer(buffer))
                 else:
                     warnings.warn("Message receive corrupted !", SerialTalksWarning)
-                    _, retcode = Deserializer(buffer).read(BYTE, ULONG)
+                    _, retcode = Deserializer(buffer).read(ULONG)
                     self.parent.re_receive(retcode)
                     state = 'waiting'
 
