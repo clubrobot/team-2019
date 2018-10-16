@@ -287,8 +287,6 @@ class Geogebra():
             if command.attrib["name"] in parse_by_command:               
                 figure = self._parse_segment_from_command(command)
                 roadmap += [figure]
-        for figure in roadmap:
-            print(figure)
         return roadmap
         
     def _check_label(self, label):
