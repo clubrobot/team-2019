@@ -3,6 +3,16 @@
 #include <EEPROM.h>
 
 
+// This library is free software from Club robot Insa Rennes sources; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+
+
 // Global instance
 
 SerialTalks talks;
@@ -42,17 +52,23 @@ void SerialTalks::SETEEPROM(SerialTalks& inst, Deserializer& input, Serializer& 
 	EEPROM.update(addr,value);
 }
 
-// Built-in Processing 
-void SerialTalks::LAUNCHWARNING(unsigned char * message)
+void SerialTalks::GETBUFFERSIZE(SerialTalks& inst, Deserializer& input, Serializer& output)
 {
-	Serializer output = getSerializer();
-	for(int i = 0;i<3;i++)
-	{
-		output.write(*(message+i));	
-	}
-	send(SERIALTALKS_WARNING_OPCODE, output);
+	output << SERIALTALKS_INPUT_BUFFER_SIZE;
 }
 
+// Built-in Processing 
+void SerialTalks::launchResend(void)
+{
+	Serializer output = getSerializer();
+	output << m_lastRetcode;
+	send(SERIALTALKS_RESEND_OPCODE, output);
+}
+void SerialTalks::freeBuffer(void)
+{
+	Serializer output = getSerializer();
+	send(SERIALTALKS_FREE_BUFFER_OPCODE, output);
+}
 
 // SerialTalks::ostream
 
@@ -102,6 +118,7 @@ void SerialTalks::begin(Stream& stream)
 	bind(SERIALTALKS_SETUUID_OPCODE,  SerialTalks::SETUUID);
 	bind(SERIALTALKS_GETEEPROM_OPCODE,SerialTalks::GETEEPROM);
 	bind(SERIALTALKS_SETEEPROM_OPCODE,SerialTalks::SETEEPROM);
+	bind(SERIALTALKS_GETBUFFERSIZE_OPCODE, SerialTalks::GETBUFFERSIZE);
 }
 
 int SerialTalks::send(byte opcode,Serializer output)
@@ -188,6 +205,7 @@ bool SerialTalks::execinstruction(byte* inputBuffer)
 	Serializer   output(m_outputBuffer);
 	byte opcode = input.read<byte>();
 	long retcode = input.read<long>();
+	m_lastRetcode = retcode;
 	if (m_instructions[opcode] != 0)
 	{
 		m_instructions[opcode](*this, input, output);
@@ -260,21 +278,18 @@ bool SerialTalks::execute()
         			m_connected = true;
 					if(m_order==SERIALTALKS_ORDER) ret |= execinstruction(m_inputBuffer);
 					else if (m_order==SERIALTALKS_RETURN) ret |= receive(m_inputBuffer);
-					m_state = SERIALTALKS_WAITING_STATE;
+					m_state = SERIALTALKS_WAITING_STATE; 
 				}
 				else
 				{
-					unsigned char message_warning[3];
-					message_warning[0] = (unsigned char) (received_crc_value);
-					message_warning[1] = (unsigned char) (received_crc_value>>8);
-					message_warning[2] = (unsigned char) 0;
-					LAUNCHWARNING(message_warning);
+					launchResend();
 					m_state = SERIALTALKS_WAITING_STATE;
 				}	
 			}
 			continue;
 		}
 	}
+	if (length>0){ freeBuffer();}
 	return ret;
 }
 
