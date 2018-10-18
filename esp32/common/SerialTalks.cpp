@@ -44,7 +44,7 @@ void SerialTalks::SETEEPROM(SerialTalks& inst, Deserializer& input, Serializer& 
 
 void SerialTalks::GETBUFFERSIZE(SerialTalks& inst, Deserializer& input, Serializer& output)
 {
-	output << SERIALTALKS_INPUT_BUFFER_SIZE;
+	output.write<int>(SERIALTALKS_INPUT_BUFFER_SIZE);
 }
 
 // Built-in Processing 
