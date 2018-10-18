@@ -51,6 +51,8 @@ void VelocityController::process(float timestep)
 		{
 			m_leftWheel ->setVelocity(0);
 			m_rightWheel->setVelocity(0);
+			m_linSpinGoal = m_linSetpoint;
+			m_angSpinGoal = m_angSetpoint;
 			disable();
 		}
 	}
