@@ -11,7 +11,7 @@
 #include "../common/PositionController.h"
 #include "../common/PurePursuit.h"
 #include "../common/TurnOnTheSpot.h"
-#include "../common/mathutils.h"
+
 #include <math.h>
 
 // Global variables
@@ -36,56 +36,6 @@ extern PurePursuit   purePursuit;
 extern TurnOnTheSpot turnOnTheSpot;
 
 // Instructions
-
-
-void DISABLE(SerialTalks& talks, Deserializer& input, Serializer& output)
-{
-	velocityControl.disable();
-	positionControl.disable();
-	leftWheel .setVelocity(0);
-	rightWheel.setVelocity(0);	
-}
-
-void GOTO_DELTA(SerialTalks& talks, Deserializer& input, Serializer& output)
-{
-	purePursuit.reset();
-	positionControl.disable();
-
-	Position initial_pos =  odometry.getPosition();
-
-	float dx = input.read<float>();
-	float dy = input.read<float>();
-
-	Position target_pos;
-	target_pos.x = initial_pos.x + dx*cos(initial_pos.theta)    + dy*-1*sin(initial_pos.theta);
-	target_pos.y = initial_pos.y + dx*sin(initial_pos.theta) + dy*cos(initial_pos.theta);
-	
-	target_pos.theta = atan2(target_pos.y-initial_pos.y,target_pos.x-initial_pos.x);
-	int direction;
-	
-	initial_pos.theta = inrange(initial_pos.theta,-M_PI,M_PI);
-
-	if (fabs(inrange(target_pos.theta - initial_pos.theta,-M_PI,M_PI))<(M_PI/2))
-	{
-		direction = PurePursuit::FORWARD;
-	}else{
-		direction = PurePursuit::BACKWARD;
-	}
-	
-	purePursuit.setDirection((PurePursuit::Direction) direction);
-	purePursuit.addWaypoint(PurePursuit::Waypoint(initial_pos.x, initial_pos.y));
-	purePursuit.addWaypoint(PurePursuit::Waypoint(target_pos.x, target_pos.y));
-
-	purePursuit.setFinalAngle(target_pos.theta);
-
-	positionControl.setPosSetpoint(Position(target_pos.x, target_pos.y, target_pos.theta + direction * M_PI));
-	
-	// Enable PurePursuit controller
-	velocityControl.enable();
-	positionControl.setMoveStrategy(purePursuit);
-	positionControl.enable();
-
-}
 
 void SET_OPENLOOP_VELOCITIES(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
@@ -155,19 +105,9 @@ void ADD_PUREPURSUIT_WAYPOINT(SerialTalks& talks, Deserializer& input, Serialize
 void START_TURNONTHESPOT(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
 	Position posSetpoint = odometry.getPosition();
-	float initTheta = posSetpoint.theta;
 	posSetpoint.theta = input.read<float>();
-	float angPosSetpoint = inrange((posSetpoint.theta - initTheta), -M_PI, M_PI);
 	velocityControl.enable();
 	positionControl.setPosSetpoint(posSetpoint);
-	if(input.read<byte>()){
-		if(angPosSetpoint>0) turnOnTheSpot.setDirection(TurnOnTheSpot::CLOCK);
-		else                 turnOnTheSpot.setDirection(TurnOnTheSpot::TRIG);
-	}
-	else{
-		if(angPosSetpoint>0) turnOnTheSpot.setDirection(TurnOnTheSpot::TRIG);
-		else                 turnOnTheSpot.setDirection(TurnOnTheSpot::CLOCK);
-	}
 	positionControl.setMoveStrategy(turnOnTheSpot);
 	positionControl.enable();
 }
@@ -179,21 +119,6 @@ void POSITION_REACHED(SerialTalks& talks, Deserializer& input, Serializer& outpu
 	output.write<byte>(positionReached);
 	output.write<byte>(spinUrgency);
 }
-
-void GET_VELOCITIES_WANTED(SerialTalks& talks, Deserializer& input, Serializer& output)
-{
-
-	if(input.read<byte>())
-	{
-		output.write<float>(velocityControl.getLinOutput());
-		output.write<float>(velocityControl.getAngOutput());
-	}else
-	{
-		output.write<float>(velocityControl.getLinSpinGoal());
-		output.write<float>(velocityControl.getAngSpinGoal());
-	}
-}
-
 
 void SET_POSITION(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
@@ -507,8 +432,4 @@ void GET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& ou
 		break;
 	}
 }
-void RESET_PARAMETERS(SerialTalks& talks, Deserializer& input, Serializer& output)
-{
-;
-//NOTHING TODO
-}
+
