@@ -34,6 +34,9 @@ public:
 	float getLinSetpoint() const {return m_linSetpoint;}
 	float getAngSetpoint() const {return m_angSetpoint;}
 
+	float getLinOutput() const {return m_linVelOutput;}
+	float getAngOutput() const {return m_angVelOutput;}
+
 	float getAxleTrack() const {return m_axleTrack;}
 
 	void load(int address);
