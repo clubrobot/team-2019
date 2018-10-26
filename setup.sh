@@ -93,13 +93,26 @@ else
 	#install esptool.py to correct mac os esp32 error
 	pip install esptool
 
-	sudo cp $ESP_ROOT/tools/esptool.py $ESP_ROOT/tools/esptool
+	sudo mv $ESP_ROOT/tools/esptool.py $ESP_ROOT/tools/esptool
 fi
 
 # Install Arduino-Makefile if it is not already installed
 if [ -z "$ARDMK_DIR" ]; then # ifndef ARDMK_DIR
 	if [ "$(uname -s)" = 'Linux' ]; then
 		sudo apt-get install arduino-mk
+
+		sudo apt-get install python-serial
+		
+		sudo apt-get install python3-serial
+		
+		sudo apt-get install libigraph0-dev
+		
+		sudo apt-get install python3-pip
+		
+		pip3 install python-igraph
+		
+		sudo pip3 install python-igraph
+
 		echo export ARDMK_DIR="/usr/share/arduino" >> "$PROFILE"
 	else
 		# installing homebrew for macos
@@ -112,6 +125,14 @@ if [ -z "$ARDMK_DIR" ]; then # ifndef ARDMK_DIR
 		echo export ARDMK_DIR="/usr/local/opt/arduino-mk" >> "$PROFILE"
 
 		sudo sed -i "" "s_/dev/tty.usbserial*__g" "$ARDMK_DIR/Arduino.mk"
+
+		sudo easy_install pip
+
+		pip install pyserial
+
+		pip3 install pyserial
+
+		pip3 install python-igraph
 	fi
 
 fi
@@ -130,7 +151,7 @@ if [ "$(uname -s)" = 'Linux' ]; then
 	echo -e $UDEVRULE | sudo tee "$UDEVRULES_DIRECTORY/serialtalks.rules" > /dev/null
 	sudo udevadm control --reload-rules
 else
-	git clone https://github.com/aronisch/SerialRenamerDaemon.git
+	git clone https://github.com/clubrobot/SerialRenamerDaemon.git
 	cd SerialRenamerDaemon
 	sudo make install
 fi

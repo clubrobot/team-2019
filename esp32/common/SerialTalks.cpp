@@ -42,15 +42,22 @@ void SerialTalks::SETEEPROM(SerialTalks& inst, Deserializer& input, Serializer& 
 	EEPROM.commit();
 }
 
+void SerialTalks::GETBUFFERSIZE(SerialTalks& inst, Deserializer& input, Serializer& output)
+{
+	output.write<int>(SERIALTALKS_INPUT_BUFFER_SIZE);
+}
+
 // Built-in Processing 
-void SerialTalks::LAUNCHWARNING(unsigned char * message)
+void SerialTalks::launchResend(void)
 {
 	Serializer output = getSerializer();
-	for(int i = 0;i<3;i++)
-	{
-		output.write(*(message+i));	
-	}
-	send(SERIALTALKS_WARNING_OPCODE, output);
+	output << m_lastRetcode;
+	send(SERIALTALKS_RESEND_OPCODE, output);
+}
+void SerialTalks::freeBuffer(void)
+{
+	Serializer output = getSerializer();
+	send(SERIALTALKS_FREE_BUFFER_OPCODE, output);
 }
 
 // SerialTalks::ostream
@@ -106,6 +113,7 @@ void SerialTalks::begin(Stream& stream)
 	bind(SERIALTALKS_DISCONNECT_OPCODE,SerialTalks::DISCONNECT);
 	bind(SERIALTALKS_GETEEPROM_OPCODE, SerialTalks::GETEEPROM);
 	bind(SERIALTALKS_SETEEPROM_OPCODE, SerialTalks::SETEEPROM);
+	bind(SERIALTALKS_GETBUFFERSIZE_OPCODE, SerialTalks::GETBUFFERSIZE);
 }
 int SerialTalks::send(byte opcode,Serializer output)
 {
@@ -189,7 +197,7 @@ bool SerialTalks::execinstruction(byte* inputBuffer)
 	Serializer   output(m_outputBuffer);
 	byte opcode = input.read<byte>();
 	long retcode = input.read<long>();
-
+	m_lastRetcode = retcode;
 	if (m_instructions[opcode] != 0)
 	{
 		m_instructions[opcode](*this, input, output);
@@ -266,11 +274,7 @@ bool SerialTalks::execute()
 				}
 				else
 				{
-					unsigned char message_warning[3];
-					message_warning[0] = (unsigned char) (received_crc_value);
-					message_warning[1] = (unsigned char) (received_crc_value>>8);
-					message_warning[2] = (unsigned char) 0;
-					LAUNCHWARNING(message_warning);
+					launchResend();
 					m_state = SERIALTALKS_WAITING_STATE;
 				}	
 			}
