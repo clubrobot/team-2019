@@ -10,12 +10,8 @@
 
 
 MyCapteur Sensor(14, 42); // Objet permettant d'utiliser les deux capteurs en même temps
-
-const uint8_t nbEchantillons = 5;
-uint16_t echantillon[nbEchantillons];
-MoyenneGlissante MG(nbEchantillons, echantillon);
-
-int activation_MG = 0;
+MoyenneGlissante MG(0, NULL);
+int nb_echantillon_MG = 0;
 
 void setup() {
 
@@ -42,7 +38,7 @@ void loop() {
    //MG.AddElement(Sensor.readRangeContinuousMillimeters());
    talks.execute();
    if (Sensor.timeoutOccurred()) { Serial.println(" TIMEOUT"); }
-   if (activation_MG>0) {
+   if (nb_echantillon_MG>0) {
      MG.AddElement(Sensor.readRangeContinuousMillimeters());
      //Serial.println(MG.getAverage());
    }
