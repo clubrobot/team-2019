@@ -12,7 +12,6 @@
 
 
 #include <Arduino.h>
-#include "QueueArray.h"
 #include "serialutils.h"
 #include "CRC16.h"
 
