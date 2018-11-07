@@ -1,21 +1,20 @@
 #include <Arduino.h>
-
 #include <Wire.h>
+
 #include "../common/SerialTalks.h"
 
 #include "Sensor_IR.h"
-#include "Traitements.h"
 #include "instructions.h"
+#include "Vect_Sensor.h"
 
 
 
-MyCapteur Sensor(14, 42); // Objet permettant d'utiliser les deux capteurs en même temps
-MoyenneGlissante MG(0, NULL);
-int nb_echantillon_MG = 0;
+MyCapteur Sensor1 = MyCapteur(14, 42); // Objet permettant d'utiliser les deux capteurs en même temps
+Vect_Sensor<MyCapteur*> Sensors = {&Sensor1}; // On créé une liste particulière pour éviter les boucles for dans le .ino ?
 
 void setup() {
 
-  Sensor.begin();
+  Sensors.begin();
   Serial.begin(SERIALTALKS_BAUDRATE);
   talks.begin(Serial);
   Wire.begin();
@@ -25,22 +24,15 @@ void setup() {
   talks.bind(START_CONTINUOUS_OPCODE, START_CONTINUOUS);
   talks.bind(STOP_CONTINUOUS_OPCODE, STOP_CONTINUOUS);
 
-  Sensor.bind(); // Permet d'ajuster les différentes adresses pour l'I2C
-  Sensor.init();
+  Sensors.bind(); // Permet d'ajuster les différentes adresses pour l'I2C
+  Sensors.init();
 
-  Sensor.configureDefault();
-  //Sensor.startContinuous();// A enlever si SerialTalks fonctionne !!
+  Sensors.configureDefault();
 
 }
 
 void loop() {
-   //Serial.println(Sensor.readRangeContinuousMillimeters());
-   //MG.AddElement(Sensor.readRangeContinuousMillimeters());
    talks.execute();
-   if (Sensor.timeoutOccurred()) { Serial.println(" TIMEOUT"); }
-   if (nb_echantillon_MG>0) {
-     MG.AddElement(Sensor.readRangeContinuousMillimeters());
-     //Serial.println(MG.getAverage());
-   }
-   //Serial.println(Sensor.readRangeContinuousMillimeters());
+   if (Sensors.timeoutOccurred()) { Serial.println(" TIMEOUT"); }
+   Sensors.update();
 }

@@ -3,24 +3,11 @@
 #include "VL6180X.h"
 #include <Wire.h>
 
-MyCapteur::MyCapteur(int pin1, int pin2, int _Adresse1, int _Adresse2){
-  XSHUT_pin1 = pin1;
-  XSHUT_pin2 = pin2;
-  Adresse1 = _Adresse1;
-  Adresse2 = _Adresse2;
-}
-
-MyCapteur::MyCapteur(int pin1, int _Adresse2){
-  XSHUT_pin1 = pin1;
-  Adresse2 = _Adresse2;
-}
-
-/*MyCapteur::~MyCapteur(){
-  //stopContinuous();
-}*/
-
 void MyCapteur::begin(void){
-  // A placer avant le Serial.begin() !!!
+  /**
+    !!! A placer AVANT le Serial.begin() !!!
+    Utile pour pouvoir changer les adresses I2C
+  */
   pinMode(XSHUT_pin1, OUTPUT);
   if (XSHUT_pin2!=-1){
     pinMode(XSHUT_pin2, OUTPUT);
@@ -29,7 +16,10 @@ void MyCapteur::begin(void){
 
 
 void MyCapteur::bind(void){
-  // Peut être il peut y avoir une erreur si Adresse est égale à 41
+  /**
+    Change les Adressses I2C
+  */
+  // Peut être qu'il peut y avoir une erreur si Adresse est égale à 41
   if (XSHUT_pin2==-1){
     B.setAddress(Adresse2);
     pinMode(XSHUT_pin1, INPUT); // On rallume le premier sans changer son adresse par défaut
@@ -45,31 +35,46 @@ void MyCapteur::bind(void){
   }
 }
 
-bool MyCapteur::init(void){
+void MyCapteur::init(void){
+  /**
+    On initialise les capteurs
+  */
   A.init();
   B.init();
-  return 1;
 }
 
-void MyCapteur::setTimeout(uint16_t timeout){
+void MyCapteur::setTimeout(uint16_t timeout=500){
+  /**
+    Pour la lecture en continue, on initialise le Timeout
+  */
   A.setTimeout(timeout);
   //B.setTimeout(1000); // bug donc on utilise la  fonction RangeSingle (reste la plus rapide)
 }
 
 void MyCapteur::configureDefault(void){
+  /**
+    On effectue une configuration par défaut : La plus rapide possible
+  */
   B.configureDefault();
-  B.setScaling(1);
-  A.setMeasurementTimingBudget(200000);
+  B.setScaling(1); // Précision max
+  A.setMeasurementTimingBudget(200000); // Précision max (au détriment du temps de calcul)
 }
 
 void MyCapteur::startContinuous(uint32_t period_ms){
-  setTimeout(500); // Ajouter le Sensor1et2.setScaling à 1 et le Sensor1et2.setTimeout à 500 à HIGH_ACCURACY
+  /**
+    Commence le mode continu (Pour le capteur A) # Le B étant plus rapide que le A en restant en Single Range
+  */
+  setTimeout(500);
+  is_continuous = true;
   A.startContinuous();
   //B.startRangeContinuous(); // bug donc on utilise la  fonction RangeSingle (reste la plus rapide)
 }
 
 uint16_t MyCapteur::readRangeContinuousMillimeters(void){
-  if (B.readRangeSingleMillimeters()<50.0){
+  /**
+    Choix de la valeur à retourner en fonction de la distance lu par le capteur B (le plus précis)
+  */
+  if (B.readRangeSingleMillimeters()<dist_switch){
     //return B.readRangeContinuousMillimeters(); // bug donc on utilise la  fonction RangeSingle (reste la plus rapide)
     return B.readRangeSingleMillimeters();
   }
@@ -79,13 +84,19 @@ uint16_t MyCapteur::readRangeContinuousMillimeters(void){
 }
 
 void MyCapteur::stopContinuous(void){
+  /**
+    Arrête le Mode continu
+  */
+  is_continuous = false;
   A.stopContinuous();
   B.stopContinuous();
 }
 
 uint16_t MyCapteur::readRangeSingleMillimeters(void){
-
-  if (B.readRangeSingleMillimeters()<50.0){
+  /**
+    Permet de lire une valeur sans avoir activé le mode continu (Prend donc plus de temps)
+  */
+  if (B.readRangeSingleMillimeters()<dist_switch){
     return B.readRangeSingleMillimeters();
   }
   else {
@@ -94,5 +105,8 @@ uint16_t MyCapteur::readRangeSingleMillimeters(void){
 }
 
 bool MyCapteur::timeoutOccurred(void){
+  /**
+    Dans le cas du mode continu, indique si un Timeout a été détecté
+  */
   return (A.timeoutOccurred() || B.timeoutOccurred());
 }

@@ -2,7 +2,7 @@
 #define __INSTRUCTIONS_H__
 
 #include "Sensor_IR.h"
-#include "Traitements.h"
+#include "Vect_Sensor.h"
 #include "../common/SerialTalks.h"
 
 

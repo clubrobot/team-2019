@@ -2,16 +2,20 @@
 #define TRAITEMENTS_h
 
 #include <Arduino.h>
-#define OB 8190
+
+/*
+  Class permettant la mise en œuvre de la moyenne glissante
+*/
 
 class MoyenneGlissante
 {
 
   public:
     MoyenneGlissante() : _size(0), _echantillon(NULL){};
-    MoyenneGlissante(uint8_t size, uint16_t* echantillon) : _size(size), _echantillon(echantillon){};
-    void reset(uint8_t size, uint16_t* echantillon){delete [] _echantillon; clear(); _size = size; _echantillon = echantillon;}; // appelle du 'destructeur' puis du constructeur
-    void clear(void);
+    ~MoyenneGlissante(){delete [] _echantillon;};
+    MoyenneGlissante(uint8_t size) : _size(size){_echantillon = new uint16_t[ size ];};
+    void reset(uint8_t size){delete [] _echantillon; clear(); _size = size; _echantillon = new uint16_t[ size ];}; // appelle du 'destructeur' puis du constructeur
+    void clear(void){_cnt = 0; _idx = 0;};
     void AddElement(uint16_t elt);
     float getAverage(void) const;
 
