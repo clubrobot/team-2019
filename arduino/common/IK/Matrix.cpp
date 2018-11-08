@@ -1,10 +1,7 @@
 #include <Arduino.h>
 #include <math.h>
 #include <cmath>
-#include <tuple>
-#include <iostream>
-#include <string>
-#include <stdexcept>
+#include <String.h>
 #include "Joint.h"
 #include "IK.h"
 #include "Matrix.h"

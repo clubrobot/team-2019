@@ -1,13 +1,13 @@
 #include <Arduino.h>
 #include <math.h>
 #include <cmath>
-#include <tuple>
-#include <iostream>
-#include <string>
-#include <stdexcept>
+#include <String.h>
 #include "Joint.h"
 #include "IK.h"
 #include "Matrix.h"
+
+#define MIN(a,b) ((a)<(b)?(a):(b));
+#define MAX(a,b) ((a)>(b)?(a):(b));
 
 IK::IK(double l1, double l2, double l3, joints_t joints, coords_t origin)
 {
@@ -243,7 +243,7 @@ double IK::synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t
 
     trajectory_time_t t_theta3 = Theta3_joint.time_to_destination(start_pos.th3, start_vel.th3, target_pos.th3, target_vel.th3);
 
-    double maxi = max(t_theta1.tf, t_theta2.tf);
+    double maxi = MAX(t_theta1.tf, t_theta2.tf);
     
-    return max(maxi, t_theta3.tf);
+    return MAX(maxi, t_theta3.tf);
 }

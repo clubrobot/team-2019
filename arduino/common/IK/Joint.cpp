@@ -1,7 +1,5 @@
 #include <Arduino.h>
-#include <iostream>
-#include <string>
-#include <stdexcept>
+#include <String.h>
 
 #include "Joint.h"
 
