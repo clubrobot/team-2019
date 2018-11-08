@@ -6,20 +6,20 @@
 class ShiftRegister
 {
 	public:
-		void attach(int latchpin, int clockpin, int datapin);
+		void attach(uint8_t latchpin, uint8_t clockpin, uint8_t datapin);
 		void SetHigh(int pos);
 		void SetLow (int pos);
 		void write(int pos, int state);
 
 	//protected:
-		void update();
+		void shift();
 
-		int m_LATCH;
-		int m_CLOCK;
-		int m_DATA;
+		uint8_t m_LATCH;
+		uint8_t m_CLOCK;
+		uint8_t m_DATA;
 
-		uint8_t m_register;
+		volatile uint8_t m_register;
 };
 
-
+//extern ShiftRegister shift;
 #endif // __SHIFTREGISTER_H__
