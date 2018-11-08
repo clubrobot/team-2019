@@ -82,7 +82,7 @@ class Joint
 
 		int trajectory_sign(double initial_pos, double initial_vel, double final_pos, double final_vel);
 
-
+		~Joint();
 };
 
 #endif /* __JOINT_H */

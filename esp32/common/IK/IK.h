@@ -1,5 +1,5 @@
-#ifndef __SCARA_H
-#define __SCARA_H
+#ifndef __IK_H
+#define __IK_H
 #include "Joint.h"
 #include <Arduino.h>
 #include <tuple>
@@ -12,19 +12,22 @@ typedef struct
 {
 	double x;
 	double y;
+	double phi;
 }coords_t;
 
 typedef struct
 {
 	double th1;
 	double th2;
+	double th3;
 	
 }joints_t;
 
 typedef struct
 {
 	coords_t origin;
-	coords_t link1; 
+	coords_t link1;
+	coords_t link2;
 	coords_t tool; 
 }detailed_pos_t;
 
@@ -32,9 +35,10 @@ typedef struct
 {
 	vector_t path_th1;
 	vector_t path_th2;
+	vector_t path_th3;
 }path_t;
 
-class Scara
+class IK
 {
 	private:
 
@@ -44,15 +48,17 @@ class Scara
 
 		double m_l1;
 		double m_l2;
+		double m_l3;
 		double m_lsq;
 
-		Joint Theta1_joint = Joint(0,-M_PI,M_PI,-1,1,-1,1);
-		Joint Theta2_joint = Joint(1,-M_PI,M_PI,-1,1,-1,1);
+		Joint Theta1_joint = Joint(0, -M_PI, M_PI, -1, 1, -1, 1);
+		Joint Theta2_joint = Joint(1, -M_PI, M_PI, -1, 1, -1, 1);
+		Joint Theta3_joint = Joint(2, -M_PI, M_PI, -1, 1, -1, 1);
 
 		Matrix m_matrix;
 
 	public:
-		Scara(double l1, double l2, joints_t joints, coords_t origin);
+		IK(double l1, double l2, double l3, joints_t joints, coords_t origin);
 		coords_t forward_kinematics(joints_t joints);
 
 		joints_t inverse_kinematics(coords_t tool);
@@ -72,7 +78,9 @@ class Scara
 		path_t get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t);
 
 		double synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel);
+
+		~IK();
 };
 
 
-#endif /* __SCARA_H */
+#endif /* __IK_H */

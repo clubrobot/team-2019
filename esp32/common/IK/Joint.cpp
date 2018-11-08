@@ -21,7 +21,10 @@ Joint::Joint(int id, double pos_min, double pos_max, double velociy_min, double 
 	m_constraints.acc_min = acc_min;
 	m_constraints.acc_max = acc_max;
 }
-
+Joint::~Joint()
+{
+    
+}
 double Joint::polyval(polynom_t polynome, double x)
 {
 	return polynome.a2*pow(x,2) + polynome.a1 * x + polynome.a0;
@@ -63,13 +66,13 @@ bool Joint::trajectory_is_feasible(double initial_pos, double initial_vel, doubl
 
 	if(final_pos > (m_constraints.pos_max + EPSILON) || final_pos < (m_constraints.pos_min - EPSILON))
 	{
-        //throw string("Target position unreachable by joint");
+        //throw String("Target position unreachable by joint");
 		return false;
 	}
 
 	if(final_vel > (m_constraints.vel_max + EPSILON) || final_vel < (m_constraints.vel_min - EPSILON))
 	{
-        //throw string("Target velocity unreachable by joint");
+        //throw String("Target velocity unreachable by joint");
 		return false;
 	}
 
@@ -77,7 +80,7 @@ bool Joint::trajectory_is_feasible(double initial_pos, double initial_vel, doubl
 
 	if((final_pos + delta_p_dec) > (m_constraints.pos_max + EPSILON) || (final_pos + delta_p_dec) < (m_constraints.pos_min - EPSILON))
 	{
-        //throw string("Target position unreachable at specified velocity by joint");
+        //throw String("Target position unreachable at specified velocity by joint");
 		return false;
 	}
 
@@ -255,7 +258,7 @@ vector_t Joint::polynomial_piece_profile(polynom_t polynome, double start, doubl
 
     if (stop < start)
     {
-       //throw string('Non causal trajectory profile requested') 
+       //throw String("Non causal trajectory profile requested"); 
     }
         
     polynom_t polynome_dot = polyder(polynome);
@@ -274,23 +277,26 @@ vector_t Joint::polynomial_piece_profile(polynom_t polynome, double start, doubl
 
 trajectory_time_t Joint::time_to_destination(double initial_pos, double initial_vel, double final_pos, double final_vel)
 {
+    trajectory_time_t time_traj;
 
     if(!trajectory_is_feasible(initial_pos, initial_vel, final_pos, final_vel))
     {
-        //return std::make_tuple(-1,-1,-1);
+        //throw String("Trajectory is not feasible"); 
     }
 
     double delta_p = final_pos - initial_pos;
 
     if(delta_p == 0)
     {
-        //return std::make_tuple(0,0,0);
+        time_traj.t1 = 0;
+        time_traj.t2 = 0;
+        time_traj.tf = 0;
+        return time_traj;
     }
 
     int sign_traj = trajectory_sign(initial_pos, initial_vel, final_pos, final_vel);
 
-    trajectory_time_t time_traj;
-
+   
     time_traj.t1 = (sign_traj * m_constraints.vel_max - initial_vel) / (sign_traj * m_constraints.acc_max);
 
     time_traj.t2 = (1 / m_constraints.vel_max) * ((pow(final_vel,2) + pow(initial_vel,2 - 2 * sign_traj * initial_vel) / (2 * m_constraints.acc_max) + (sign_traj * delta_p)));
