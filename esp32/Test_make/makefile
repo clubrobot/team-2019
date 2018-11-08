@@ -10,8 +10,10 @@ COMMON = ../common
 LIBS = $(ESP_LIBS)/EEPROM \
 	   $(COMMON)/SerialTalks.cpp \
 	   $(COMMON)/CRC16.cpp \
-	   $(COMMON)/AX12 \
-	   $(COMMON)/Scara
+	   $(COMMON)/IK \
+	   $(COMMON)/ShiftRegAX12.cpp \
+	   $(COMMON)/ShiftRegister.cpp \
+	   instructions.cpp
 
 
 CPPFLAGS = -fexceptions
