@@ -2,10 +2,7 @@
 #define __IK_H
 #include "Joint.h"
 #include <Arduino.h>
-#include <tuple>
-#include <iostream>
-#include <string>
-#include <stdexcept>
+#include <String.h>
 #include "Matrix.h"
 
 typedef struct

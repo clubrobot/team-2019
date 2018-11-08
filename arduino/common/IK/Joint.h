@@ -2,10 +2,8 @@
 #define __JOINT_H
 
 #include <Arduino.h>
-#include <vector>
-#include <iostream>
-#include <string>
-#include <stdexcept>
+#include <ArduinoSTL.h>
+#include <String.h>
 
 using std::vector;
 using std::ostream;

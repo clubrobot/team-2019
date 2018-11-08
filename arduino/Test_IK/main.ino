@@ -6,6 +6,9 @@
 #include "instructions.h"
 #include "../common/IK/IK.h"
 #include "../common/IK/Arm.h"
+#include "../common/SoftwareSerial.h"
+#include "../common/ShiftRegister.h"
+#include "../common/ShiftRegAX12.h"
 
 /* debug */
 template<typename T>
@@ -23,7 +26,7 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
 
 ShiftRegAX12 servoax;
 ShiftRegister shift;
-
+SoftwareSerial SoftSerial(RX_AX12,TX_AX12);
 // coords_t tool;
 // coords_t coord;
 // coords_t vel;
@@ -41,9 +44,6 @@ void setup()
     //talks.begin(Serial);
     //talks.bind(GET_TOOL_OPCODE,GET_TOOL);
     //talks.bind(GET_PATH_OPCODE,GET_PATH);
-    PIN_FUNC_SELECT( IO_MUX_GPIO13_REG, PIN_FUNC_GPIO);
-    PIN_FUNC_SELECT( IO_MUX_GPIO12_REG, PIN_FUNC_GPIO);
-    PIN_FUNC_SELECT( IO_MUX_GPIO15_REG, PIN_FUNC_GPIO);
 
     pinMode(LATCHPIN, OUTPUT);
     pinMode(CLOCKPIN, OUTPUT);
