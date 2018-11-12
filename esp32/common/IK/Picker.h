@@ -1,5 +1,6 @@
-#ifndef __IK_H
-#define __IK_H
+#ifndef __PICKER_H
+#define __PICKER_H
+
 #include "Joint.h"
 #include <Arduino.h>
 #include <tuple>
@@ -38,7 +39,7 @@ typedef struct
 	vector_t path_th3;
 }path_t;
 
-class IK
+class Picker
 {
 	private:
 
@@ -55,10 +56,10 @@ class IK
 		Joint Theta2_joint = Joint(1, -M_PI, M_PI, -1, 1, -1, 1);
 		Joint Theta3_joint = Joint(2, -M_PI, M_PI, -1, 1, -1, 1);
 
-		Matrix m_matrix;
+		Matrix3 m_matrix;
 
 	public:
-		IK(double l1, double l2, double l3, joints_t joints, coords_t origin);
+		Picker(double l1, double l2, double l3, joints_t joints, coords_t origin);
 		coords_t forward_kinematics(joints_t joints);
 
 		joints_t inverse_kinematics(coords_t tool);
@@ -79,8 +80,8 @@ class IK
 
 		double synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel);
 
-		~IK();
+		~Picker();
 };
 
 
-#endif /* __IK_H */
+#endif /* __PICKER_H */

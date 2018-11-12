@@ -5,7 +5,7 @@
 #include <math.h>
 #include <HardwareSerial.h>
 #include "../ShiftRegAX12.h"
-#include "3dof.h"
+#include "Picker.h"
 
 #define ARM_LEN_1 10.0
 #define ARM_LEN_2 10.0
@@ -41,7 +41,7 @@ class Arm
 
 	private:
 
-		IK *m_kinematics;
+		Picker *m_kinematics;
 		
 
 		coords_t m_tool;
