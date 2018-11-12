@@ -6,7 +6,7 @@
 #include <string>
 #include <stdexcept>
 #include "Joint.h"
-#include "IK.h"
+#include "3dof.h"
 #include "Matrix.h"
 
 IK::IK(double l1, double l2, double l3, joints_t joints, coords_t origin)

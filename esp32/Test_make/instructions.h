@@ -1,7 +1,7 @@
 #ifndef __INSTRUCTIONS_H__
 #define __INSTRUCTIONS_H__
 
-#include "../common/IK/IK.h"
+#include "../common/IK/3dof.h"
 #include "../common/SerialTalks.h"
 
 #define GET_PATH_OPCODE      0x10

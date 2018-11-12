@@ -27,7 +27,7 @@ Joint::~Joint()
 }
 double Joint::polyval(polynom_t polynome, double x)
 {
-	return polynome.a2*pow(x,2) + polynome.a1 * x + polynome.a0;
+	return polynome.a2 * pow(x,2) + polynome.a1 * x + polynome.a0;
 }
 
 polynom_t Joint::polyder(polynom_t poly)
@@ -61,7 +61,6 @@ template<typename T>vector<T> Joint::arange(T start, T stop, T step)
 
 bool Joint::trajectory_is_feasible(double initial_pos, double initial_vel, double final_pos, double final_vel)
 {
-
 	// checks boundaries to determine feasibility
 
 	if(final_pos > (m_constraints.pos_max + EPSILON) || final_pos < (m_constraints.pos_min - EPSILON))

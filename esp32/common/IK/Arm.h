@@ -5,7 +5,7 @@
 #include <math.h>
 #include <HardwareSerial.h>
 #include "../ShiftRegAX12.h"
-#include "IK.h"
+#include "3dof.h"
 
 #define ARM_LEN_1 10.0
 #define ARM_LEN_2 10.0
