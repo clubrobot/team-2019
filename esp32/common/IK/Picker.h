@@ -3,6 +3,7 @@
 
 #include "Joint.h"
 #include <Arduino.h>
+#include "Joint.h"
 #include <tuple>
 #include <iostream>
 #include <string>
@@ -38,6 +39,7 @@ typedef struct
 	vector_t path_th2;
 	vector_t path_th3;
 }path_t;
+
 
 class Picker
 {
@@ -81,6 +83,11 @@ class Picker
 		double synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel);
 
 		~Picker();
+
+		constraints_t x_axis;
+		constraints_t y_axis;
+		constraints_t phi_axis;
+
 };
 
 

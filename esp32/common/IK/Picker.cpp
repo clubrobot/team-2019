@@ -19,6 +19,10 @@ Picker::Picker(double l1, double l2, double l3, joints_t joints, coords_t origin
 	m_l2		= l2;
     m_l3        = l3;
 	m_lsq   	= pow(l1,2)+pow(l2,2);
+
+    x_axis   = {-(m_l1 + m_l2 + m_l3), (m_l1 + m_l2 + m_l3), -1, 1, -1, 1};
+	y_axis   = {-(m_l1 + m_l2 + m_l3), (m_l1 + m_l2 + m_l3), -1, 1, -1, 1};
+	phi_axis = {-M_PI, M_PI , -1, 1, -1, 1};
 }
 Picker::~Picker()
 {
