@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include "../common/SerialTalks.h"
 #include "instructions.h"
-#include "../common/IK/3dof.h"
+#include "../common/IK/Picker.h"
 #include "../common/IK/Arm.h"
 
 /* debug */
@@ -34,7 +34,7 @@ ShiftRegister shift;
 
 // Arm arm(5,5,0);
 
-//IK arm(10,10,5,joints,coord);
+//Picker arm(10,10,5,joints,coord);
 
 void setup()
 {
