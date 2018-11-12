@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include "../common/SerialTalks.h"
 #include "instructions.h"
-#include "../common/IK/IK.h"
+#include "../common/IK/3dof.h"
 #include "../common/IK/Arm.h"
 
 /* debug */

@@ -2,7 +2,7 @@
 #define __MATRIX_H
 
 #include <Arduino.h>
-#include "IK.h"
+#include "3dof.h"
 
 
 typedef double** matrix_t;

@@ -1,7 +1,7 @@
 #include "instructions.h"
 #include <vector>
 #include "../common/SerialTalks.h"
-#include "../common/IK/IK.h"
+#include "../common/IK/3dof.h"
 #include "../common/IK/Arm.h"
 
 extern Arm arm;

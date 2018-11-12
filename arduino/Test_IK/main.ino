@@ -34,7 +34,7 @@ SoftwareSerial SoftSerial(RX_AX12,TX_AX12);
 
 // path_t chemin;
 
-// Arm arm(5,5,0);
+Arm arm(5,5,0);
 
 //IK arm(10,10,5,joints,coord);
 
@@ -67,10 +67,10 @@ void setup()
 
     servoax.move(150.0);
 
-    // arm.attach(2,1,3);
-    // arm.begin();
+    arm.attach(2,1,3);
+    arm.begin();
 
-    // arm.reach_position();
+    arm.reach_position();
 
     // coord.x = 0;
     // coord.y = 0;

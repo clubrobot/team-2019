@@ -6,7 +6,7 @@
 #include <string>
 #include <stdexcept>
 #include "Joint.h"
-#include "IK.h"
+#include "3dof.h"
 #include "Matrix.h"
 
 Matrix::Matrix()

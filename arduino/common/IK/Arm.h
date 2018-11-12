@@ -11,13 +11,12 @@
 #define ARM_LEN_2 10.0
 #define ARM_LEN_3 5.0
 
-#define RX_AX12 16
-#define TX_AX12 17
+#define RX_AX12 A0
+#define TX_AX12 A1
 
-#define LATCHPIN	13
+#define LATCHPIN	10
 #define CLOCKPIN	12
 #define DATAPIN		5 
-
 #define AX12_DATA_CONTROL	0
 
 extern ShiftRegAX12 servoax;
