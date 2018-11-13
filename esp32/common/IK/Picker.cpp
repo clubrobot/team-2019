@@ -23,6 +23,8 @@ Picker::Picker(double l1, double l2, double l3, joints_t joints, coords_t origin
     x_axis   = {-(m_l1 + m_l2 + m_l3), (m_l1 + m_l2 + m_l3), -1, 1, -1, 1};
 	y_axis   = {-(m_l1 + m_l2 + m_l3), (m_l1 + m_l2 + m_l3), -1, 1, -1, 1};
 	phi_axis = {-M_PI, M_PI , -1, 1, -1, 1};
+
+    m_flip_elbow = FLIP_ELBOW_FRONT;
 }
 Picker::~Picker()
 {
@@ -76,7 +78,7 @@ joints_t Picker::get_joints(void)
     doty = (m_tool.y - m_origin.y) - (m_l3 * sin(m_tool.phi));
 
     costh = (pow(dotx,2) + pow(doty,2) - pow(m_l1,2) - pow(m_l2, 2)) / (2 * m_l1 * m_l2);
-    sinth = sqrt(1 - pow(costh,2));
+    sinth = m_flip_elbow * sqrt(1 - pow(costh,2));
 
     k1 = m_l1 + (m_l2 * costh);
     k2 = m_l2 * sinth ;
