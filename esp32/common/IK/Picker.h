@@ -10,6 +10,9 @@
 #include <stdexcept>
 #include "Matrix.h"
 
+#define FLIP_ELBOW_FRONT (double)1
+#define FLIP_ELBOW_BACK  (double)-1
+
 typedef struct
 {
 	double x;
@@ -38,6 +41,10 @@ typedef struct
 	vector_t path_th1;
 	vector_t path_th2;
 	vector_t path_th3;
+
+	coords_t pos;
+
+    bool feasible;
 }path_t;
 
 
@@ -87,6 +94,8 @@ class Picker
 		constraints_t x_axis;
 		constraints_t y_axis;
 		constraints_t phi_axis;
+
+		double m_flip_elbow;
 
 };
 
