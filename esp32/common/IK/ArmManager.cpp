@@ -2,15 +2,29 @@
 
 #include "ArmManager.h"
 
-
-
-ArmManager::ArmManager(Picker *arm, workspace_t ws_front, workspace_t ws_back, double time_resolution)
+bool double_equals(double a, double b, double epsilon = 0.001)
 {
-    m_arm       = arm;
+    return std::abs(a - b) < epsilon;
+}
+
+ArmManager::ArmManager(workspace_t ws_front, workspace_t ws_back, double time_resolution)
+{
     m_ws_front  = ws_front;
     m_ws_back   = ws_back;
     m_dt        = time_resolution;
     m_tool      = {0,0,0};
+
+    joints_t joints;
+    joints.th1 = 0;
+    joints.th2 = 0;
+    joints.th3 = 0;
+
+    coords_t origin;
+    origin.x   = 0;
+    origin.y   = 0;
+    origin.phi = 0;
+
+    m_arm = new Picker(10,10,5,joints,origin);
 }
 
 path_t ArmManager::merge_trajectories(path_t traj_a, path_t traj_b)
@@ -59,13 +73,17 @@ workspace_t ArmManager::workspace_containing_position(coords_t position)
     {
         return m_ws_front;
     }
-    if(position_within_workspace(position, m_ws_back))
+    if(position_within_workspace(position, m_ws_front))
     {
         return m_ws_back;
     }
     else
     {
-        m_arm->forward_kinematics({0,0,0});
+        joints_t joints;
+        joints.th1 = 0;
+        joints.th2 = 0;
+        joints.th3 = 0;
+        m_arm->forward_kinematics(joints);
         return m_ws_front;
     }    
 }
@@ -74,10 +92,8 @@ bool ArmManager::workspace_within_constraints(workspace_t workspace)
 {
     if ((workspace.x_min < m_arm->x_axis.pos_min) \
             || (workspace.x_max > m_arm->x_axis.pos_max) \
-            || (workspace.y_max > m_arm->y_axis.pos_max) \
-            || (workspace.y_max > m_arm->y_axis.pos_max) \
-            || (workspace.phi_max > m_arm->phi_axis.pos_max) \
-            || (workspace.phi_max > m_arm->phi_axis.pos_max))
+            || (workspace.y_min < m_arm->y_axis.pos_min) \
+            || (workspace.y_max > m_arm->y_axis.pos_max))
     {
         return false;
     }
@@ -89,16 +105,16 @@ bool ArmManager::workspace_within_constraints(workspace_t workspace)
 
 workspace_t ArmManager::clip_workspace_to_constraints(workspace_t workspace)
 {
-    double x_min = max(workspace.x_min, m_arm->x_axis.pos_min);
-    double x_max = min(workspace.x_max, m_arm->x_axis.pos_max);
+    workspace_t new_ws;
+    new_ws.x_min = max(workspace.x_min, m_arm->x_axis.pos_min);
+    new_ws.x_max = min(workspace.x_max, m_arm->x_axis.pos_max);
         
-    double y_min = max(workspace.y_min, m_arm->y_axis.pos_min);
-    double y_max = min(workspace.y_max, m_arm->y_axis.pos_max);
+    new_ws.y_min = max(workspace.y_min, m_arm->y_axis.pos_min);
+    new_ws.y_max = min(workspace.y_max, m_arm->y_axis.pos_max);
 
-    double phi_min = max(workspace.phi_min, m_arm->phi_axis.pos_min);
-    double phi_max = min(workspace.phi_max, m_arm->phi_axis.pos_max);
+    new_ws.elbow_orientation = workspace.elbow_orientation;
 
-    return (workspace_t){x_min, x_max, y_min, y_max, phi_min, phi_max, workspace.elbow_orientation};
+    return new_ws;
 }
 
 bool ArmManager::position_within_workspace(coords_t position, workspace_t workspace)
@@ -106,9 +122,7 @@ bool ArmManager::position_within_workspace(coords_t position, workspace_t worksp
     if ((position.x < workspace.x_min) \
             || (position.x > workspace.x_max) \
             || (position.y < workspace.y_min) \
-            || (position.y > workspace.y_max) \
-            || (position.phi < workspace.phi_min) \
-            || (position.phi > workspace.phi_max))
+            || (position.y > workspace.y_max))
     {
         return false;
     }
@@ -120,7 +134,11 @@ bool ArmManager::position_within_workspace(coords_t position, workspace_t worksp
 
 coords_t ArmManager::workspace_center(workspace_t workspace)
 {
-    return {(workspace.x_min + workspace.x_max) / 2, (workspace.y_min + workspace.y_max) / 2, -1};
+    coords_t coord;
+    coord.x = (workspace.x_min + workspace.x_max) / 2;
+    coord.y = (workspace.y_min + workspace.y_max) / 2;
+    coord.phi = 0;
+    return coord;
 }
 
 path_t ArmManager::go_to(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel)
@@ -132,6 +150,7 @@ path_t ArmManager::go_to(coords_t start_pos, coords_t start_vel, coords_t target
     bool traj_is_unfeasible = false;
 
     new_traj = goto_workspace(start_pos, start_vel, target_pos, target_vel, new_ws);
+
     if(new_traj.feasible != true)
     {
         m_tool = start_pos;
@@ -147,8 +166,8 @@ path_t ArmManager::go_to(coords_t start_pos, coords_t start_vel, coords_t target
     }
     else
     {
-        m_tool = target_pos;
-        m_arm->inverse_kinematics(m_tool);
+       m_tool = target_pos;
+       m_arm->inverse_kinematics(m_tool);
     }
     
     return new_traj;
@@ -158,10 +177,13 @@ path_t ArmManager::go_home(coords_t start_pos, coords_t start_vel)
 {
     //Define home position as target position
     joints_t start_joints_pos = m_arm->inverse_kinematics(start_pos);
-    joints_t target_joints_pos = {-M_PI/2, 2*M_PI/3, start_joints_pos.th3};
+    joints_t target_joints_pos = {0, 0, 0};
 
     coords_t target_pos = m_arm->forward_kinematics(target_joints_pos);
-    coords_t target_vel = {0,0,0};
+    coords_t target_vel;
+    target_vel.x    = 0;
+    target_vel.y    = 0;
+    target_vel.phi  = 0;
 
     workspace_t new_ws = workspace_containing_position(target_pos);
 
@@ -182,37 +204,44 @@ path_t ArmManager::go_home(coords_t start_pos, coords_t start_vel)
 }
 path_t ArmManager::goto_workspace(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, workspace_t new_workspace)
 {
+    path_t new_traj;
     // Check that new position is within workspace
     if (!position_within_workspace(target_pos, new_workspace))
     {
-        m_workspace = new_workspace;
-    }
-    // Compute sequence to move from old workspace to the new position
-    // in the new workspace defined
-    if(new_workspace.elbow_orientation == m_arm->m_flip_elbow)
-    {
-        return goto_position(start_pos, start_vel, target_pos, target_vel);
+        //error
     }
 
+    m_workspace = new_workspace;
+
+    new_traj.feasible = true;
+    // Compute sequence to move from old workspace to the new position
+    // in the new workspace defined
+    if(double_equals(new_workspace.elbow_orientation,m_arm->m_flip_elbow))
+    {
+        new_traj = goto_position(start_pos, start_vel, target_pos, target_vel);
+        new_traj.feasible = true;
+        return new_traj;
+    }
     //Else, we need to flip the elbow!
     joints_t start_joints = m_arm->inverse_kinematics(start_pos);
     joints_t inter_joints = start_joints;
     inter_joints.th2 = 0.0;
         
     coords_t inter_pos = m_arm->forward_kinematics(inter_joints);
-    coords_t inter_vel = {0.0, 0.0, 0.0};
+    coords_t inter_vel;
+    inter_vel.x     = 0;
+    inter_vel.y     = 0;
+    inter_vel.phi   = 0;
 
     //Go to intermediary point (singularity)
     path_t new_traja;
     new_traja = goto_position(start_pos, start_vel, inter_pos, inter_vel);
 
-    m_arm->m_flip_elbow *= -1;
+    m_arm->m_flip_elbow *= (double)-1;
 
     //Go to target
     path_t new_trajb;
     new_trajb = goto_position(inter_pos, inter_vel, target_pos, target_vel);
-
-    path_t new_traj;
 
     new_traj = merge_trajectories(new_traja, new_trajb);
 

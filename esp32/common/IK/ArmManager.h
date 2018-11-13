@@ -1,6 +1,7 @@
 #ifndef __ARMMANAGER_H
 #define __ARMMANAGER_H
 
+#include <Arduino.h>
 #include "Picker.h"
 #include "Joint.h"
 
@@ -12,10 +13,7 @@ typedef struct
     double y_min;
     double y_max;
 
-    double phi_min;
-    double phi_max;
-
-    int elbow_orientation;
+    double elbow_orientation;
 }workspace_t;
 
 
@@ -24,7 +22,7 @@ class ArmManager
 {
     public:
 
-        ArmManager(Picker *arm, workspace_t ws_front, workspace_t ws_back, double time_resolution);
+        ArmManager(workspace_t ws_front, workspace_t ws_back, double time_resolution);
         workspace_t workspace_containing_position(coords_t position);
         bool        workspace_within_constraints(workspace_t workspace);
         workspace_t clip_workspace_to_constraints(workspace_t workspace);
@@ -36,9 +34,8 @@ class ArmManager
         path_t      goto_position(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel);
         double      estimated_time_of_arrival(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel);
 
-        Picker* m_arm;
+       Picker *m_arm;
         
-
     private:
 
         path_t merge_trajectories(path_t traj_a, path_t traj_b);
