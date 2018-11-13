@@ -120,7 +120,12 @@ class SerialTalks:
             raise ConnectionFailedError(str(e)) from None
 
         self.serial_buffer = SerialBuffer(self.stream.write, inf)
-        self.bind(FREE_BUFFER, self.serial_buffer.reset)
+
+        # Try to bind FREE_BUFFER funct
+        try:
+            self.bind(FREE_BUFFER, self.serial_buffer.reset)
+        except KeyError: # If it's not the first connect executed 
+            pass
         # Create a listening thread that will wait for inputs
         self.listener = SerialListener(self)
         self.listener.start()
