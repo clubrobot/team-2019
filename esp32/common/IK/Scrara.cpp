@@ -109,7 +109,7 @@ detailed_pos_t Scara::get_detailed_pos(void)
     new_pos.link1.y = m_l1 * sin(m_joints.th1) + m_origin.y;
 
     new_pos.origin  = m_origin;
-    new_pos.tool    =  m_tool;
+    new_pos.tool    = m_tool;
 
     return new_pos;
 }

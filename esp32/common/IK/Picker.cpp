@@ -72,6 +72,7 @@ coords_t Picker::get_tool(void)
 joints_t Picker::get_joints(void)
 {
     joints_t new_joints;
+
     double dotx,doty,costh,sinth,k1,k2;
 
     dotx = (m_tool.x - m_origin.x) - (m_l3 * cos(m_tool.phi));
@@ -119,23 +120,23 @@ matrix_t Picker::compute_jacobian(void)
         Returns jacobian matrix at current state
     */
 
-    double dx_dth1 = - m_l1 * sin(m_joints.th1) - m_l2 * sin(m_joints.th1 + m_joints.th2);
+    double dx_dth1 = - m_l1 * sin(m_joints.th1) - m_l2 * sin(m_joints.th1 + m_joints.th2) - m_l3 * sin(m_joints.th1 + m_joints.th2 + m_joints.th3);
 
-    double dx_dth2 = - m_l2 * sin(m_joints.th1 + m_joints.th2);
+    double dx_dth2 = - m_l2 * sin(m_joints.th1 + m_joints.th2) - m_l3 * sin(m_joints.th1 + m_joints.th2 + m_joints.th3);
 
-    double dx_dth3;
+    double dx_dth3 = - m_l3 * sin(m_joints.th1 + m_joints.th2 + m_joints.th3);;
 
-    double dy_dth1 = m_l1 * cos(m_joints.th1) + m_l2 * cos(m_joints.th1 + m_joints.th2);
+    double dy_dth1 = m_l1 * cos(m_joints.th1) + m_l2 * cos(m_joints.th1 + m_joints.th2) + m_l3 * cos(m_joints.th1 + m_joints.th2 + m_joints.th3);
 
-    double dy_dth2 = m_l2 * cos(m_joints.th1 + m_joints.th2);
+    double dy_dth2 = m_l2 * cos(m_joints.th1 + m_joints.th2) + m_l3 * cos(m_joints.th1 + m_joints.th2 + m_joints.th3);
 
-    double dy_dth3;
+    double dy_dth3 = m_l3 * cos(m_joints.th1 + m_joints.th2 + m_joints.th3);;
 
-    double dphi_dth1;
+    double dphi_dth1 = 1;
 
-    double dphi_dth2;
+    double dphi_dth2 = 1;
 
-    double dphi_dth3;
+    double dphi_dth3 = 1;
 
     return m_matrix.createMatrix33(dx_dth1, dx_dth2, dx_dth3, dy_dth1, dy_dth2, dy_dth3, dphi_dth1, dphi_dth2, dphi_dth3);
 }
