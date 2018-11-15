@@ -41,7 +41,7 @@ Vector<double> Joint::vector_polyval(polynom_t polynome, Vector<double> x)
     Vector<double> values;
     int size = x.size();
     for(int i = 0; i<size; i++)
-        values.push_back(polynome.a2*pow(x.at(i),2) + polynome.a1 * x.at(i) + polynome.a0);
+        values.push_back(polynome.a2*pow(x[i],2) + polynome.a1 * x[i] + polynome.a0);
     return values;
 }
 
@@ -215,28 +215,28 @@ vector_t Joint::generic_profile(double initial_pos, double initial_vel, double f
     vector_t complete_path;
 
     // time vecor
-    complete_path.t.insert( complete_path.t.end(), traj1.t.begin(), traj1.t.end());
-    complete_path.t.insert( complete_path.t.end(), traj2.t.begin(), traj2.t.end());
-    complete_path.t.insert( complete_path.t.end(), traj3.t.begin(), traj3.t.end());
-    complete_path.t.insert( complete_path.t.end(), traj4.t.begin(), traj4.t.end());
+    complete_path.t.insert_back(traj1.t.begin(), traj1.t.end());
+    complete_path.t.insert_back(traj2.t.begin(), traj2.t.end());
+    complete_path.t.insert_back(traj3.t.begin(), traj3.t.end());
+    complete_path.t.insert_back(traj4.t.begin(), traj4.t.end());
 
     // pos vector
-    complete_path.pos.insert( complete_path.pos.end(), traj1.pos.begin(), traj1.pos.end());
-    complete_path.pos.insert( complete_path.pos.end(), traj2.pos.begin(), traj2.pos.end());
-    complete_path.pos.insert( complete_path.pos.end(), traj3.pos.begin(), traj3.pos.end());
-    complete_path.pos.insert( complete_path.pos.end(), traj4.pos.begin(), traj4.pos.end());
+    complete_path.pos.insert_back(traj1.pos.begin(), traj1.pos.end());
+    complete_path.pos.insert_back(traj2.pos.begin(), traj2.pos.end());
+    complete_path.pos.insert_back(traj3.pos.begin(), traj3.pos.end());
+    complete_path.pos.insert_back(traj4.pos.begin(), traj4.pos.end());
 
     // velocity vector
-    complete_path.vel.insert( complete_path.vel.end(), traj1.vel.begin(), traj1.vel.end());
-    complete_path.vel.insert( complete_path.vel.end(), traj2.vel.begin(), traj2.vel.end());
-    complete_path.vel.insert( complete_path.vel.end(), traj3.vel.begin(), traj3.vel.end());
-    complete_path.vel.insert( complete_path.vel.end(), traj4.vel.begin(), traj4.vel.end());
+    complete_path.vel.insert_back(traj1.vel.begin(), traj1.vel.end());
+    complete_path.vel.insert_back(traj2.vel.begin(), traj2.vel.end());
+    complete_path.vel.insert_back(traj3.vel.begin(), traj3.vel.end());
+    complete_path.vel.insert_back(traj4.vel.begin(), traj4.vel.end());
 
     //acceleration vector
-    complete_path.acc.insert( complete_path.acc.end(), traj1.acc.begin(), traj1.acc.end());
-    complete_path.acc.insert( complete_path.acc.end(), traj2.acc.begin(), traj2.acc.end());
-    complete_path.acc.insert( complete_path.acc.end(), traj3.acc.begin(), traj3.acc.end());
-    complete_path.acc.insert( complete_path.acc.end(), traj4.acc.begin(), traj4.acc.end());
+    complete_path.acc.insert_back(traj1.acc.begin(), traj1.acc.end());
+    complete_path.acc.insert_back(traj2.acc.begin(), traj2.acc.end());
+    complete_path.acc.insert_back(traj3.acc.begin(), traj3.acc.end());
+    complete_path.acc.insert_back(traj4.acc.begin(), traj4.acc.end());
 
     return complete_path;
 }
@@ -258,8 +258,8 @@ vector_t Joint::polynomial_piece_profile(polynom_t polynome, double start, doubl
     polynom_t polynome_dot = polyder(polynome);
     polynom_t polynome_dot_dot = polyder(polynome_dot);
 
-    vector<double> time = arange<double>(start, stop, delta);
-    vector<double> dtime = arange<double>(0, stop-start, delta);
+    Vector<double> time = arange<double>(start, stop, delta);
+    Vector<double> dtime = arange<double>(0, stop-start, delta);
 
     piece.t = time;
     piece.pos = vector_polyval(polynome, dtime);
