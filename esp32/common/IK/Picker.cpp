@@ -193,7 +193,6 @@ joints_t Picker::get_joints_vel(coords_t tool_vel)
 
 path_t Picker::get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t)
 {
-
     joints_t start_joints_pos = inverse_kinematics(start_pos);
         
     joints_t start_joints_vel = get_joints_vel(start_vel);

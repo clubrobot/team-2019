@@ -5,18 +5,19 @@
 #include <math.h>
 #include <HardwareSerial.h>
 #include "../ShiftRegAX12.h"
-#include "IK.h"
+#include "Picker.h"
 
 #define ARM_LEN_1 10.0
 #define ARM_LEN_2 10.0
 #define ARM_LEN_3 5.0
 
-#define RX_AX12 A0
-#define TX_AX12 A1
+#define RX_AX12 16
+#define TX_AX12 17
 
-#define LATCHPIN	10
+#define LATCHPIN	13
 #define CLOCKPIN	12
 #define DATAPIN		5 
+
 #define AX12_DATA_CONTROL	0
 
 extern ShiftRegAX12 servoax;
@@ -40,7 +41,7 @@ class Arm
 
 	private:
 
-		IK *m_kinematics;
+		Picker *m_kinematics;
 		
 
 		coords_t m_tool;

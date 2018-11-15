@@ -1,15 +1,14 @@
 #include <Arduino.h>
 #include <math.h>
-#include <cmath>
 #include <String.h>
 #include "Joint.h"
-#include "IK.h"
+#include "Picker.h"
 #include "Matrix.h"
 
 #define MIN(a,b) ((a)<(b)?(a):(b));
 #define MAX(a,b) ((a)>(b)?(a):(b));
 
-IK::IK(double l1, double l2, double l3, joints_t joints, coords_t origin)
+Picker::Picker(double l1, double l2, double l3, joints_t joints, coords_t origin)
 {
 	m_joints 	= joints;
 	m_origin	= origin;
@@ -19,18 +18,24 @@ IK::IK(double l1, double l2, double l3, joints_t joints, coords_t origin)
 	m_l2		= l2;
     m_l3        = l3;
 	m_lsq   	= pow(l1,2)+pow(l2,2);
+
+    x_axis   = {-(m_l1 + m_l2 + m_l3), (m_l1 + m_l2 + m_l3), -1, 1, -1, 1};
+	y_axis   = {-(m_l1 + m_l2 + m_l3), (m_l1 + m_l2 + m_l3), -1, 1, -1, 1};
+	phi_axis = {-M_PI, M_PI , -1, 1, -1, 1};
+
+    m_flip_elbow = FLIP_ELBOW_FRONT;
 }
-IK::~IK()
+Picker::~Picker()
 {
     
 }
-coords_t IK::forward_kinematics(joints_t joints)
+coords_t Picker::forward_kinematics(joints_t joints)
 {
 	m_joints = joints;
 	return get_tool();
 }
 
-joints_t IK::inverse_kinematics(coords_t tool)
+joints_t Picker::inverse_kinematics(coords_t tool)
 {
     double dotx = (m_tool.x - m_origin.x) - (m_l3 * cos(m_tool.phi));
     double doty = (m_tool.y - m_origin.y) - (m_l3 * sin(m_tool.phi));
@@ -48,7 +53,7 @@ joints_t IK::inverse_kinematics(coords_t tool)
     return m_joints;
 }
 
-coords_t IK::get_tool(void)
+coords_t Picker::get_tool(void)
 {
     coords_t new_cords;
 
@@ -63,7 +68,7 @@ coords_t IK::get_tool(void)
     return new_cords;
 }
 
-joints_t IK::get_joints(void)
+joints_t Picker::get_joints(void)
 {
     joints_t new_joints;
     double dotx,doty,costh,sinth,k1,k2;
@@ -72,7 +77,7 @@ joints_t IK::get_joints(void)
     doty = (m_tool.y - m_origin.y) - (m_l3 * sin(m_tool.phi));
 
     costh = (pow(dotx,2) + pow(doty,2) - pow(m_l1,2) - pow(m_l2, 2)) / (2 * m_l1 * m_l2);
-    sinth = sqrt(1 - pow(costh,2));
+    sinth = m_flip_elbow * sqrt(1 - pow(costh,2));
 
     k1 = m_l1 + (m_l2 * costh);
     k2 = m_l2 * sinth ;
@@ -81,14 +86,14 @@ joints_t IK::get_joints(void)
     new_joints.th2 = atan2(sinth, costh);
     new_joints.th3 = m_tool.phi - new_joints.th1 - new_joints.th2;
 
-    new_joints.th1 = std::fmod((new_joints.th1 + M_PI) , 2* M_PI) - M_PI; // Stay between -pi and pi
-    new_joints.th2 = std::fmod((new_joints.th2 + M_PI) , 2* M_PI) - M_PI; // Stay between -pi and pi
-    new_joints.th3 = std::fmod((new_joints.th3 + M_PI) , 2* M_PI) - M_PI; // Stay between -pi and pi
+    new_joints.th1 = fmod((new_joints.th1 + M_PI) , 2* M_PI) - M_PI; // Stay between -pi and pi
+    new_joints.th2 = fmod((new_joints.th2 + M_PI) , 2* M_PI) - M_PI; // Stay between -pi and pi
+    new_joints.th3 = fmod((new_joints.th3 + M_PI) , 2* M_PI) - M_PI; // Stay between -pi and pi
 
     return new_joints;
 }
 
-detailed_pos_t IK::get_detailed_pos(void)
+detailed_pos_t Picker::get_detailed_pos(void)
 {
     /*
         Returns origin, position of end of link 1, position of end of link 2
@@ -107,7 +112,7 @@ detailed_pos_t IK::get_detailed_pos(void)
     return new_pos;
 }
 
-matrix_t IK::compute_jacobian(void)
+matrix_t Picker::compute_jacobian(void)
 {
     /*
         Returns jacobian matrix at current state
@@ -134,7 +139,7 @@ matrix_t IK::compute_jacobian(void)
     return m_matrix.createMatrix33(dx_dth1, dx_dth2, dx_dth3, dy_dth1, dy_dth2, dy_dth3, dphi_dth1, dphi_dth2, dphi_dth3);
 }
 
-coords_t IK::get_tool_vel(joints_t joints_vel)
+coords_t Picker::get_tool_vel(joints_t joints_vel)
 {
     /*
         Computes current tool velocity using jacobian
@@ -154,7 +159,7 @@ coords_t IK::get_tool_vel(joints_t joints_vel)
     return new_vel;
 }
 
-joints_t IK::get_joints_vel(coords_t tool_vel)
+joints_t Picker::get_joints_vel(coords_t tool_vel)
 {
     /*
         Computes current tool velocity using jacobian
@@ -185,9 +190,8 @@ joints_t IK::get_joints_vel(coords_t tool_vel)
     return vel;
 }
 
-path_t IK::get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t)
+path_t Picker::get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t)
 {
-
     joints_t start_joints_pos = inverse_kinematics(start_pos);
         
     joints_t start_joints_vel = get_joints_vel(start_vel);
@@ -228,7 +232,7 @@ path_t IK::get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos,
     return new_path;
 }
 
-double IK::synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel)
+double Picker::synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel)
 {
     /*        
     Return largest time to destination to use slowest joint as synchronisation

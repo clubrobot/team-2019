@@ -1,9 +1,13 @@
-#ifndef __IK_H
-#define __IK_H
+#ifndef __PICKER_H
+#define __PICKER_H
+
 #include "Joint.h"
 #include <Arduino.h>
-#include <String.h>
+#include "Joint.h"
 #include "Matrix.h"
+
+#define FLIP_ELBOW_FRONT (double)1
+#define FLIP_ELBOW_BACK  (double)-1
 
 typedef struct
 {
@@ -33,9 +37,14 @@ typedef struct
 	vector_t path_th1;
 	vector_t path_th2;
 	vector_t path_th3;
+
+	coords_t pos;
+
+    bool feasible;
 }path_t;
 
-class IK
+
+class Picker
 {
 	private:
 
@@ -52,10 +61,10 @@ class IK
 		Joint Theta2_joint = Joint(1, -M_PI, M_PI, -1, 1, -1, 1);
 		Joint Theta3_joint = Joint(2, -M_PI, M_PI, -1, 1, -1, 1);
 
-		Matrix m_matrix;
+		Matrix3 m_matrix;
 
 	public:
-		IK(double l1, double l2, double l3, joints_t joints, coords_t origin);
+		Picker(double l1, double l2, double l3, joints_t joints, coords_t origin);
 		coords_t forward_kinematics(joints_t joints);
 
 		joints_t inverse_kinematics(coords_t tool);
@@ -76,8 +85,15 @@ class IK
 
 		double synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel);
 
-		~IK();
+		~Picker();
+
+		constraints_t x_axis;
+		constraints_t y_axis;
+		constraints_t phi_axis;
+
+		double m_flip_elbow;
+
 };
 
 
-#endif /* __IK_H */
+#endif /* __PICKER_H */

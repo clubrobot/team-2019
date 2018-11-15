@@ -74,7 +74,7 @@ void ShiftDynamixelClass::begin(long baud,unsigned char Rx, unsigned char Tx, un
 		//setRXPin(DRx);
 		//setTXPin(DTx);
 		//Serial.begin(9600, SERIAL_8N1, 16, 17);
-		//beginCom(baud);
+		beginCom(baud);
 		Direction_Pin = D_Pin;
 }
 

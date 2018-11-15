@@ -10,7 +10,7 @@ Arm::Arm(double x, double y, double phi)
 	m_coord.y	= y;
 	m_coord.phi	= phi;
 
-	m_kinematics = new IK(ARM_LEN_1, ARM_LEN_2 ,ARM_LEN_3, m_joints, m_coord);
+	m_kinematics = new Picker(ARM_LEN_1, ARM_LEN_2 ,ARM_LEN_3, m_joints, m_coord);
 
 	servoax.SerialBegin(9600, RX_AX12, TX_AX12, AX12_DATA_CONTROL);
 
