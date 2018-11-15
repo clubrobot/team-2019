@@ -4,20 +4,23 @@
 #include "../common/IK/Picker.h"
 #include "../common/IK/ArmManager.h"
 #include "../common/IK/Arm.h"
+#include "../common/Vector.h"
+
+template<class T> inline Print &operator <<(Print &obj, T arg) { obj.print(arg); return obj; }
 
 /* debug */
-template<typename T>
-ostream& operator<< (ostream& out, const vector<T>& v) {
-    out << "{";
-    size_t last = v.size() - 1;
-    for(size_t i = 0; i < v.size(); ++i) {
-        out << v[i];
-        if (i != last) 
-            out << ", ";
-    }
-    out << "}";
-    return out;
-}
+// template<typename T>
+// Print& operator<< (Print& out, const Vector<T>& v) {
+//     out << "{";
+//     int last = v.size() - 1;
+//     for(int i = 0; i < v.size(); ++i) {
+//         out << v[i];
+//         if (i != last) 
+//             out << ", ";
+//     }
+//     out << "}";
+//     return out;
+// }
 
 coords_t tool = {0.0,0.0,0.0};
 coords_t coord = {0.0,0.0,0.0};
@@ -46,42 +49,39 @@ void setup()
 
     ArmManager arm_manager(ws_side, ws_front, 0.2);
 
-    tool = arm_manager.m_arm->get_tool();
+    // tool = arm_manager.m_arm->get_tool();
 
-    coord.x   = 0;
-    coord.y   = 0;
-    coord.phi = 0;
+    // coord.x   = 0;
+    // coord.y   = 0;
+    // coord.phi = 0;
 
-    vel.x   = 0;
-    vel.y   = 0;
-    vel.phi = 0;
+    // vel.x   = 0;
+    // vel.y   = 0;
+    // vel.phi = 0;
 
-    tool.x   = 5.0;
-    tool.y   = 5.0;
-    tool.phi = 0.0;
+    // tool.x   = 5.0;
+    // tool.y   = 5.0;
+    // tool.phi = 0.0;
 
-    coord = arm_manager.m_arm->get_tool();
+    // coord = arm_manager.m_arm->get_tool();
 
-    chemin = arm_manager.go_to(coord, vel , tool , vel);
+    // chemin = arm_manager.go_to(coord, vel , tool , vel);
     //chemin = arm_manager.goto_workspace(coord, vel , tool , vel, ws_side);
     //chemin = arm_manager.goto_position(coord, vel , tool , vel);
     //chemin = arm.get_path(coord, vel , tool , vel, 0.2);
 
 
-    std::cout << "t : " << chemin.path_th1.t << std::endl;
-    std::cout << "pos : " << chemin.path_th1.pos << std::endl;
-    std::cout << "vel : " << chemin.path_th1.vel << std::endl;
-    std::cout << std::endl;
+    Serial << "t : " ;//<< chemin.path_th1.t;
+    // Serial << "pos : " << chemin.path_th1.pos;
+    // Serial << "vel : " << chemin.path_th1.vel;
 
-    std::cout << "t : " << chemin.path_th2.t << std::endl;
-    std::cout << "pos : " << chemin.path_th2.pos << std::endl;
-    std::cout << "vel : " << chemin.path_th2.vel << std::endl;
-    std::cout << std::endl;
+    // Serial << "t : " << chemin.path_th2.t;
+    // Serial << "pos : " << chemin.path_th2.pos;
+    // Serial << "vel : " << chemin.path_th2.vel;
 
-    std::cout << "t : " << chemin.path_th3.t << std::endl;
-    std::cout << "pos : " << chemin.path_th3.pos << std::endl;
-    std::cout << "vel : " << chemin.path_th3.vel << std::endl;
-    std::cout << std::endl;
+    // Serial << "t : " << chemin.path_th3.t;
+    // Serial << "pos : " << chemin.path_th3.pos;
+    // Serial << "vel : " << chemin.path_th3.vel;
 
 }
 

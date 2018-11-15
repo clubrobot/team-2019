@@ -35,37 +35,37 @@ path_t ArmManager::merge_trajectories(path_t traj_a, path_t traj_b)
     path_t new_path;
 
     // path th1
-    new_path.path_th1.t.insert(new_path.path_th1.t.end(), traj_a.path_th1.t.begin(), traj_a.path_th1.t.end());
-    new_path.path_th1.pos.insert(new_path.path_th1.pos.end(), traj_a.path_th1.pos.begin(), traj_a.path_th1.pos.end());
-    new_path.path_th1.vel.insert(new_path.path_th1.vel.end(), traj_a.path_th1.vel.begin(), traj_a.path_th1.vel.end());
-    new_path.path_th1.acc.insert(new_path.path_th1.acc.end(), traj_a.path_th1.acc.begin(), traj_a.path_th1.acc.end());
+    new_path.path_th1.t.insert_back(traj_a.path_th1.t.begin(), traj_a.path_th1.t.end());
+    new_path.path_th1.pos.insert_back(traj_a.path_th1.pos.begin(), traj_a.path_th1.pos.end());
+    new_path.path_th1.vel.insert_back(traj_a.path_th1.vel.begin(), traj_a.path_th1.vel.end());
+    new_path.path_th1.acc.insert_back(traj_a.path_th1.acc.begin(), traj_a.path_th1.acc.end());
 
-    new_path.path_th1.t.insert(new_path.path_th1.t.end(), traj_b.path_th1.t.begin(), traj_b.path_th1.t.end());
-    new_path.path_th1.pos.insert(new_path.path_th1.pos.end(), traj_b.path_th1.pos.begin(), traj_b.path_th1.pos.end());
-    new_path.path_th1.vel.insert(new_path.path_th1.vel.end(), traj_b.path_th1.vel.begin(), traj_b.path_th1.vel.end());
-    new_path.path_th1.acc.insert(new_path.path_th1.acc.end(), traj_b.path_th1.acc.begin(), traj_b.path_th1.acc.end());
+    new_path.path_th1.t.insert_back(traj_b.path_th1.t.begin(), traj_b.path_th1.t.end());
+    new_path.path_th1.pos.insert_back(traj_b.path_th1.pos.begin(), traj_b.path_th1.pos.end());
+    new_path.path_th1.vel.insert_back(traj_b.path_th1.vel.begin(), traj_b.path_th1.vel.end());
+    new_path.path_th1.acc.insert_back(traj_b.path_th1.acc.begin(), traj_b.path_th1.acc.end());
 
     // path th2
-    new_path.path_th2.t.insert(new_path.path_th2.t.end(), traj_a.path_th2.t.begin(), traj_a.path_th2.t.end());
-    new_path.path_th2.pos.insert(new_path.path_th2.pos.end(), traj_a.path_th2.pos.begin(), traj_a.path_th2.pos.end());
-    new_path.path_th2.vel.insert(new_path.path_th2.vel.end(), traj_a.path_th2.vel.begin(), traj_a.path_th2.vel.end());
-    new_path.path_th2.acc.insert(new_path.path_th2.acc.end(), traj_a.path_th2.acc.begin(), traj_a.path_th2.acc.end());
+    new_path.path_th2.t.insert_back(traj_a.path_th2.t.begin(), traj_a.path_th2.t.end());
+    new_path.path_th2.pos.insert_back(traj_a.path_th2.pos.begin(), traj_a.path_th2.pos.end());
+    new_path.path_th2.vel.insert_back(traj_a.path_th2.vel.begin(), traj_a.path_th2.vel.end());
+    new_path.path_th2.acc.insert_back(traj_a.path_th2.acc.begin(), traj_a.path_th2.acc.end());
 
-    new_path.path_th2.t.insert(new_path.path_th2.t.end(), traj_b.path_th2.t.begin(), traj_b.path_th2.t.end());
-    new_path.path_th2.pos.insert(new_path.path_th2.pos.end(), traj_b.path_th2.pos.begin(), traj_b.path_th2.pos.end());
-    new_path.path_th2.vel.insert(new_path.path_th2.vel.end(), traj_b.path_th2.vel.begin(), traj_b.path_th2.vel.end());
-    new_path.path_th2.acc.insert(new_path.path_th2.acc.end(), traj_b.path_th2.acc.begin(), traj_b.path_th2.acc.end());
+    new_path.path_th2.t.insert_back(traj_b.path_th2.t.begin(), traj_b.path_th2.t.end());
+    new_path.path_th2.pos.insert_back(traj_b.path_th2.pos.begin(), traj_b.path_th2.pos.end());
+    new_path.path_th2.vel.insert_back(traj_b.path_th2.vel.begin(), traj_b.path_th2.vel.end());
+    new_path.path_th2.acc.insert_back(traj_b.path_th2.acc.begin(), traj_b.path_th2.acc.end());
 
     // path th3
-    new_path.path_th3.t.insert(new_path.path_th3.t.end(), traj_a.path_th3.t.begin(), traj_a.path_th3.t.end());
-    new_path.path_th3.pos.insert(new_path.path_th3.pos.end(), traj_a.path_th3.pos.begin(), traj_a.path_th3.pos.end());
-    new_path.path_th3.vel.insert(new_path.path_th3.vel.end(), traj_a.path_th3.vel.begin(), traj_a.path_th3.vel.end());
-    new_path.path_th3.acc.insert(new_path.path_th3.acc.end(), traj_a.path_th3.acc.begin(), traj_a.path_th3.acc.end());
+    new_path.path_th3.t.insert_back(traj_a.path_th3.t.begin(), traj_a.path_th3.t.end());
+    new_path.path_th3.pos.insert_back(traj_a.path_th3.pos.begin(), traj_a.path_th3.pos.end());
+    new_path.path_th3.vel.insert_back(traj_a.path_th3.vel.begin(), traj_a.path_th3.vel.end());
+    new_path.path_th3.acc.insert_back(traj_a.path_th3.acc.begin(), traj_a.path_th3.acc.end());
 
-    new_path.path_th3.t.insert(new_path.path_th3.t.end(), traj_b.path_th3.t.begin(), traj_b.path_th3.t.end());
-    new_path.path_th3.pos.insert(new_path.path_th3.pos.end(), traj_b.path_th3.pos.begin(), traj_b.path_th3.pos.end());
-    new_path.path_th3.vel.insert(new_path.path_th3.vel.end(), traj_b.path_th3.vel.begin(), traj_b.path_th3.vel.end());
-    new_path.path_th3.acc.insert(new_path.path_th3.acc.end(), traj_b.path_th3.acc.begin(), traj_b.path_th1.acc.end());
+    new_path.path_th3.t.insert_back(traj_b.path_th3.t.begin(), traj_b.path_th3.t.end());
+    new_path.path_th3.pos.insert_back(traj_b.path_th3.pos.begin(), traj_b.path_th3.pos.end());
+    new_path.path_th3.vel.insert_back(traj_b.path_th3.vel.begin(), traj_b.path_th3.vel.end());
+    new_path.path_th3.acc.insert_back(traj_b.path_th3.acc.begin(), traj_b.path_th1.acc.end());
 
     return new_path;    
 }
