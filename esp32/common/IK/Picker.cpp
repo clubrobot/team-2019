@@ -130,15 +130,9 @@ matrix_t Picker::compute_jacobian(void)
 
     double dy_dth2 = m_l2 * cos(m_joints.th1 + m_joints.th2) + m_l3 * cos(m_joints.th1 + m_joints.th2 + m_joints.th3);
 
-    double dy_dth3 = m_l3 * cos(m_joints.th1 + m_joints.th2 + m_joints.th3);;
+    double dy_dth3 = m_l3 * cos(m_joints.th1 + m_joints.th2 + m_joints.th3);
 
-    double dphi_dth1 = 1;
-
-    double dphi_dth2 = 1;
-
-    double dphi_dth3 = 1;
-
-    return m_matrix.createMatrix33(dx_dth1, dx_dth2, dx_dth3, dy_dth1, dy_dth2, dy_dth3, dphi_dth1, dphi_dth2, dphi_dth3);
+    return m_matrix.createMatrix33(dx_dth1, dx_dth2, dx_dth3, dy_dth1, dy_dth2, dy_dth3, 1.0, 1.0, 1.0);
 }
 
 coords_t Picker::get_tool_vel(joints_t joints_vel)
