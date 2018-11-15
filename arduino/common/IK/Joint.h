@@ -2,7 +2,7 @@
 #define __JOINT_H
 
 #include <Arduino.h>
-#include <../common/Vector.h>
+#include "../Vector.h"
 #include <String.h>
 
 #define EPSILON 0.001
