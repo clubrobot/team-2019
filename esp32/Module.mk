@@ -40,7 +40,7 @@ UNAME_S := $(shell uname -s)
 # Serial flashing parameters
 ifeq ($(UNAME_S),Linux)
 	UPLOAD_PORT ?= $(shell ls -1tr /dev/arduino/$(BOARD_UUID) 2>/dev/null | tail -1)
-	UPLOAD_PORT := $(if $(UPLOAD_PORT),$(UPLOAD_PORT),/dev/ttyS0)
+	UPLOAD_PORT := $(if $(UPLOAD_PORT),$(UPLOAD_PORT),$(shell find /dev/ttyUSB* | head -n 1))
 endif
 
 ifeq ($(UNAME_S),Darwin)

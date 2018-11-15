@@ -51,8 +51,9 @@
 #define SERIALTALKS_DISCONNECT_OPCODE 0x3
 #define SERIALTALKS_GETEEPROM_OPCODE  0x4
 #define SERIALTALKS_SETEEPROM_OPCODE  0x5
-#define SERIALTALKS_WARNING_OPCODE    0xFE
-
+#define SERIALTALKS_GETBUFFERSIZE_OPCODE 0x6
+#define SERIALTALKS_RESEND_OPCODE    0xFE
+#define SERIALTALKS_FREE_BUFFER_OPCODE 0xFA
 #define SERIALTALKS_STDOUT_RETCODE 0xFFFFFFFF
 #define SERIALTALKS_STDERR_RETCODE 0xFFFFFFFE
 
@@ -148,7 +149,7 @@ protected: // Protected methods
 	byte        m_bytesNumber;
 	byte        m_bytesCounter;
 	long        m_lastTime;
-
+	unsigned long m_lastRetcode;
 
 	// for cyclic redundancy check
 	CRC16 m_crc;
@@ -161,13 +162,16 @@ protected: // Protected methods
 
 private:
 
+	void launchResend(void);
+	void freeBuffer(void);
+
 	static void PING   (SerialTalks& talks, Deserializer& input, Serializer& output);
 	static void GETUUID(SerialTalks& talks, Deserializer& input, Serializer& output);
 	static void SETUUID(SerialTalks& talks, Deserializer& input, Serializer& output);
 	static void DISCONNECT(SerialTalks& talks, Deserializer& input, Serializer& output){ESP.restart();}
 	static void GETEEPROM(SerialTalks& talks, Deserializer& input, Serializer& output);
 	static void SETEEPROM(SerialTalks& talks, Deserializer& input, Serializer& output);
-	void LAUNCHWARNING(unsigned char * message);
+	static void GETBUFFERSIZE(SerialTalks& talks, Deserializer& input, Serializer& output);
 };
 
 extern SerialTalks talks;

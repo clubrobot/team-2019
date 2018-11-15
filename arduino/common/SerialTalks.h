@@ -1,8 +1,17 @@
 #ifndef __SERIALTALKS_H__
 #define __SERIALTALKS_H__
 
+// This library is free software from Club robot Insa Rennes sources; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+
+
 #include <Arduino.h>
-#include "QueueArray.h"
 #include "serialutils.h"
 #include "CRC16.h"
 
@@ -45,7 +54,9 @@
 #define SERIALTALKS_DISCONNECT_OPCODE 0x3
 #define SERIALTALKS_GETEEPROM_OPCODE  0x4
 #define SERIALTALKS_SETEEPROM_OPCODE  0x5
-#define SERIALTALKS_WARNING_OPCODE    0xFE
+#define SERIALTALKS_GETBUFFERSIZE_OPCODE 0x6
+#define SERIALTALKS_RESEND_OPCODE    0xFE
+#define SERIALTALKS_FREE_BUFFER_OPCODE 0xFA
 #define SERIALTALKS_STDOUT_RETCODE 0xFFFFFFFF
 #define SERIALTALKS_STDERR_RETCODE 0xFFFFFFFE
 
@@ -140,7 +151,7 @@ protected: // Protected methods
 	byte        m_bytesNumber;
 	byte        m_bytesCounter;
 	long        m_lastTime;
-
+	unsigned long m_lastRetcode;
 	// for cyclic redundancy check
 	CRC16 m_crc;
 
@@ -152,12 +163,15 @@ protected: // Protected methods
 
 private:
 
+	void launchResend(void);
+	void freeBuffer(void);
+
 	static void PING   (SerialTalks& talks, Deserializer& input, Serializer& output);
 	static void GETUUID(SerialTalks& talks, Deserializer& input, Serializer& output);
 	static void SETUUID(SerialTalks& talks, Deserializer& input, Serializer& output);
 	static void GETEEPROM(SerialTalks& talks, Deserializer& input, Serializer& output);
 	static void SETEEPROM(SerialTalks& talks, Deserializer& input, Serializer& output);
-	void LAUNCHWARNING(unsigned char *  message);
+	static void GETBUFFERSIZE(SerialTalks& talks, Deserializer& input, Serializer& output);
 };
 
 extern SerialTalks talks;
