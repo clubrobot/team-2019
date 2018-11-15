@@ -1,8 +1,4 @@
 #include <Arduino.h>
-#include <tuple>
-#include <iostream>
-#include <string>
-#include <stdexcept>
 #include "../common/SerialTalks.h"
 #include "instructions.h"
 #include "../common/IK/Picker.h"

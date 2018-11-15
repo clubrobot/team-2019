@@ -2,11 +2,8 @@
 #define __JOINT_H
 
 #include <Arduino.h>
-#include <ArduinoSTL.h>
+#include <../common/Vector.h>
 #include <String.h>
-
-using std::vector;
-using std::ostream;
 
 #define EPSILON 0.001
 
@@ -19,10 +16,10 @@ typedef struct
 
 typedef struct 
 {
-	vector<double> t;
-	vector<double> pos;
-	vector<double> vel;
-	vector<double> acc;
+	Vector<double> t;
+	Vector<double> pos;
+	Vector<double> vel;
+	Vector<double> acc;
 }vector_t;
 
 typedef struct
@@ -56,8 +53,8 @@ class Joint
 		double polyval(polynom_t polynome, double x);
 		polynom_t polyder(polynom_t poly);
 
-		vector<double> vector_polyval(polynom_t polynome, vector<double> x);
-		template<typename T>vector<T> arange(T start, T stop, T step);
+		Vector<double> vector_polyval(polynom_t polynome, Vector<double> x);
+		template<typename T>Vector<T> arange(T start, T stop, T step);
 		
 	public:
 

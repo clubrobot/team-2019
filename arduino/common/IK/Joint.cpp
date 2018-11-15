@@ -1,6 +1,4 @@
 #include <Arduino.h>
-#include <String.h>
-
 #include "Joint.h"
 
 
@@ -24,7 +22,7 @@ Joint::~Joint()
 }
 double Joint::polyval(polynom_t polynome, double x)
 {
-	return polynome.a2*pow(x,2) + polynome.a1 * x + polynome.a0;
+	return polynome.a2 * pow(x,2) + polynome.a1 * x + polynome.a0;
 }
 
 polynom_t Joint::polyder(polynom_t poly)
@@ -38,9 +36,9 @@ polynom_t Joint::polyder(polynom_t poly)
     return dp;
 }
 
-vector<double> Joint::vector_polyval(polynom_t polynome, vector<double> x)
+Vector<double> Joint::vector_polyval(polynom_t polynome, Vector<double> x)
 {
-    vector<double> values;
+    Vector<double> values;
     int size = x.size();
     for(int i = 0; i<size; i++)
         values.push_back(polynome.a2*pow(x.at(i),2) + polynome.a1 * x.at(i) + polynome.a0);
@@ -48,9 +46,9 @@ vector<double> Joint::vector_polyval(polynom_t polynome, vector<double> x)
 }
 
 
-template<typename T>vector<T> Joint::arange(T start, T stop, T step) 
+template<typename T>Vector<T> Joint::arange(T start, T stop, T step) 
 {
-    vector<T> values;
+    Vector<T> values;
     for (T value = start; value < stop; value += step)
         values.push_back(value);
     return values;
@@ -58,7 +56,6 @@ template<typename T>vector<T> Joint::arange(T start, T stop, T step)
 
 bool Joint::trajectory_is_feasible(double initial_pos, double initial_vel, double final_pos, double final_vel)
 {
-
 	// checks boundaries to determine feasibility
 
 	if(final_pos > (m_constraints.pos_max + EPSILON) || final_pos < (m_constraints.pos_min - EPSILON))
