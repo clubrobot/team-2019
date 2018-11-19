@@ -9,9 +9,9 @@
 #include "Picker.h"
 #include "Matrix.h"
 
-Picker::Picker(double l1, double l2, double l3, joints_t joints, coords_t origin)
+void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t origin)
 {
-	m_joints 	= joints;
+    m_joints 	= joints;
 	m_origin	= origin;
 	m_tool	 	= get_tool();
 
