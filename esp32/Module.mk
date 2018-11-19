@@ -78,10 +78,16 @@ BOOT_LOADER ?= $(ESP_ROOT)/bootloaders/eboot/eboot.elf
 #====================================================================================
 
 START_TIME := $(shell perl -e "print time();")
+OS ?= $(shell uname -s)
 
 # Utility functions
 git_description = $(shell git -C  $(1) describe --tags --always --dirty 2>/dev/null || echo Unknown)
 time_string = $(shell date +$(1))
+ifeq ($(OS), Darwin)
+  find_files = $(shell find -E $2 -regex ".*\.($1)")
+else
+  find_files = $(shell find $2 -regextype posix-egrep -regex ".*\.($1)")
+endif
 
 # ESP Arduino directories
 OS ?= $(shell uname -s)
