@@ -2,9 +2,6 @@
 #include <vector>
 #include "../common/SerialTalks.h"
 #include "../common/IK/Picker.h"
-#include "../common/IK/Arm.h"
-
-extern Arm arm;
 
 // void GET_TOOL(SerialTalks& talks, Deserializer& input, Serializer& output)
 // {
@@ -31,15 +28,15 @@ extern Arm arm;
 
 void GET_PATH(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
-    joints_t joints;
+    // joints_t joints;
 
-    double x = input.read<float>();
-    double y = input.read<float>();
-    double phi = input.read<float>();
-    arm.set_pos(x, y, phi);
-    joints = arm.reach_position();
+    // double x = input.read<float>();
+    // double y = input.read<float>();
+    // double phi = input.read<float>();
+    // arm.set_pos(x, y, phi);
+    // joints = arm.reach_position();
 
-    output.write<float>(joints.th1);
-    output.write<float>(joints.th2);
-    output.write<float>(joints.th3);
+    // output.write<float>(joints.th1);
+    // output.write<float>(joints.th2);
+    // output.write<float>(joints.th3);
 }

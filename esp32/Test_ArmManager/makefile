@@ -12,8 +12,7 @@ LIBS = $(ESP_LIBS)/EEPROM \
 	   $(COMMON)/CRC16.cpp \
 	   $(COMMON)/IK \
 	   $(COMMON)/ShiftRegAX12.cpp \
-	   $(COMMON)/ShiftRegister.cpp \
-	   instructions.cpp
+	   $(COMMON)/ShiftRegister.cpp
 
 
 CPPFLAGS = -fexceptions

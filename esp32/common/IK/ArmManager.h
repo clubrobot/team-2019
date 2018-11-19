@@ -5,6 +5,14 @@
 #include "Picker.h"
 #include "Joint.h"
 
+#define LINK1_LEN 10.0
+#define LINK2_LEN 10.0
+#define LINK3_LEN 5.0
+
+#define ORIGIN_X 0.0
+#define ORIGIN_Y 0.0
+#define ORIGIN_PHI 0.0
+
 typedef struct
 {
     double x_min;
@@ -16,13 +24,11 @@ typedef struct
     double elbow_orientation;
 }workspace_t;
 
-
-
 class ArmManager
 {
     public:
 
-        ArmManager(workspace_t ws_front, workspace_t ws_back, double time_resolution);
+        void        init(workspace_t ws_front, workspace_t ws_back, double time_resolution);
         workspace_t workspace_containing_position(coords_t position);
         bool        workspace_within_constraints(workspace_t workspace);
         workspace_t clip_workspace_to_constraints(workspace_t workspace);
@@ -34,7 +40,7 @@ class ArmManager
         path_t      goto_position(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel);
         double      estimated_time_of_arrival(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel);
 
-       Picker *m_arm;
+        Picker m_arm;
         
     private:
 
