@@ -26,7 +26,6 @@
 
 int DynamixelClass::read_error(void)
 {
-	#if (AX_READ_ERROR == 1)
 		Time_Counter = 0;
 		while((availableData() < 5) & (Time_Counter < TIME_OUT)){  // Wait for Data
 			Time_Counter++;
@@ -42,7 +41,6 @@ int DynamixelClass::read_error(void)
 				return (Error_Byte);
 			}
 		}
-	#endif
 	return (-1);											 // No Ax Response
 }
 
