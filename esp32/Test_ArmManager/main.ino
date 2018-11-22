@@ -66,7 +66,7 @@ void setup()
     arm_manager.init_workspace(ws_side, ws_front);                      /*      init workspaces      */
     arm_manager.set_origin(ORIGIN_X, ORIGIN_Y, ORIGIN_PHI);             /*      set arm origin       */
     arm_manager.attach(ID1, ID2, ID3, LINK1_LEN, LINK2_LEN, LINK3_LEN); /*      attach ax12 motors   */
-    arm_manager.init_arm(5,5,0);                                        /*      init arm at pos      */
+    arm_manager.init_arm(8,8,0);                                        /*      init arm at pos      */
     
     /* begin TrajectoryManager */
     // traj_manager.goto_path(5.0,5.0,0.0);
