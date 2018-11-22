@@ -1,42 +1,39 @@
 #include "instructions.h"
 #include <vector>
 #include "../common/SerialTalks.h"
-#include "../common/IK/Picker.h"
+#include "../common/IK/ArmManager.h"
+#include "../common/IK/TrajectoryManager.h"
 
-// void GET_TOOL(SerialTalks& talks, Deserializer& input, Serializer& output)
-// {
-//     coords_t tool;
-//     joints_t joints;
+extern TrajectoryManager traj_manager;
 
-//     tool.x      = input.read<float>();
-//     tool.y      = input.read<float>();
-//     tool.phi    = input.read<float>();
-
-//     joints = arm.inverse_kinematics(tool);
-
-//     output.write<float>(joints.th1);
-//     output.write<float>(joints.th2);
-//     output.write<float>(joints.th3);
-
-//     tool = arm.forward_kinematics(joints);
-
-//     output.write<float>(tool.x);
-//     output.write<float>(tool.y);
-//     output.write<float>(tool.phi);
-// }
-
-
-void GET_PATH(SerialTalks& talks, Deserializer& input, Serializer& output)
+void MOVE_DIRECTLY(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
-    // joints_t joints;
+    double trajectory_time, x, y, phi;
 
-    // double x = input.read<float>();
-    // double y = input.read<float>();
-    // double phi = input.read<float>();
-    // arm.set_pos(x, y, phi);
-    // joints = arm.reach_position();
+    x   = (double)input.read<float>();
+    y   = (double)input.read<float>();
+    phi = (double)input.read<float>();
 
-    // output.write<float>(joints.th1);
-    // output.write<float>(joints.th2);
-    // output.write<float>(joints.th3);
+    trajectory_time = traj_manager.goto_directly(x, y, phi);
+
+    output.write<float>((float)trajectory_time);
+}
+
+
+void MOVE_PATH(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+    double trajectory_time, x, y, phi;
+
+    x   = (double)input.read<float>();
+    y   = (double)input.read<float>();
+    phi = (double)input.read<float>();
+
+    trajectory_time = traj_manager.goto_path(x, y, phi);
+
+    output.write<float>((float)trajectory_time);
+}
+
+void IS_ARRIVED(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+    output.write<int>((int)traj_manager.is_arrived());
 }
