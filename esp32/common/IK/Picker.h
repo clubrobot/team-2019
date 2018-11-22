@@ -61,9 +61,9 @@ class Picker
 		double m_l3;
 		double m_lsq;
 
-		Joint Theta1_joint = Joint(0, -M_PI/6, (3*M_PI)/2, -1, 1, -1, 1);
-		Joint Theta2_joint = Joint(1, -M_PI/6, (3*M_PI)/2, -1, 1, -1, 1);
-		Joint Theta3_joint = Joint(2, -M_PI/6, (3*M_PI)/2, -1, 1, -1, 1);
+		Joint Theta1_joint = Joint(0, 0, (5*M_PI)/3, -1, 1, -1, 1);
+		Joint Theta2_joint = Joint(1, 0, (5*M_PI)/3, -1, 1, -1, 1);
+		Joint Theta3_joint = Joint(2, 0, (5*M_PI)/3, -1, 1, -1, 1);
 
 		Matrix3 m_matrix;
 
