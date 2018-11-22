@@ -8,9 +8,9 @@
 #define RUNNING_CORE 0
 
 typedef enum{
-    ARRIVED,
-    ON_THE_ROAD,
-    ERROR,
+    ARRIVED     = 0X00,
+    ON_THE_ROAD = 0X01,
+    ERROR       = 0X02,
 }is_arrived_t;
 
 typedef struct

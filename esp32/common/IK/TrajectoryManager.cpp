@@ -22,9 +22,9 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
 }
 
 
-static bool double_equals(double a, double b, double epsilon = 0.001)
+static bool equals(double* a, double* b, double epsilon = 0.3)
 {
-    return std::abs(a - b) < epsilon;
+    return ((std::abs(a[0] - b[0]) < epsilon) && (std::abs(a[1] - b[1]) < epsilon) && (std::abs(a[2] - b[2]) < epsilon));
 }
 /* task withouth path */
 static void task_directly(void * param) 
@@ -35,9 +35,11 @@ static void task_directly(void * param)
     int element_number;
     joints_t joints;
 
+    bool pos_reached = false;
+    double pos[3];
+    double wait_pos[3];
+
     std::cout << "GOTO DIRECTLY TASK CREATED" << std::endl;
-    /* set default delay */
-    xDelay= 10 / portTICK_PERIOD_MS;
 
     /* take semaphore */
     xSemaphoreTake(task_param->semaphore,  ( TickType_t ) -1  );
@@ -47,9 +49,44 @@ static void task_directly(void * param)
 
     xSemaphoreGive(task_param->semaphore);
 
-    std::cout << "th1 : " << joints.th1 << std::endl;
-    std::cout << "th2 : " << joints.th2 << std::endl;
-    std::cout << "th3 : " << joints.th3 << std::endl;
+    pos[0] = AX12_COORDS(joints.th1);
+    pos[1] = AX12_COORDS(joints.th2);
+    pos[2] = AX12_COORDS(joints.th3);
+        
+    xSemaphoreTake(task_param->semaphore,  ( TickType_t ) -1);
+    /* set pos and velocity to AX12 motor */
+    arm_manager.m_AX1.move(pos[0]);
+    arm_manager.m_AX2.move(pos[1]);
+    arm_manager.m_AX3.move(pos[2]);
+
+    xSemaphoreGive(task_param->semaphore);
+
+    /* check error or if position is reached */
+    while(!pos_reached)
+    {
+        xSemaphoreTake(task_param->semaphore,  ( TickType_t ) -1);
+
+        wait_pos[0] = arm_manager.m_AX1.readPosition();
+        wait_pos[1] = arm_manager.m_AX2.readPosition();
+        wait_pos[2] = arm_manager.m_AX3.readPosition();
+
+        xSemaphoreGive(task_param->semaphore);
+
+        if(equals(pos, wait_pos))
+        {
+            /* switch to nex pos in path */
+            pos_reached = true;
+        }
+        else
+        {
+            /* sleep */
+            vTaskDelay(100/portTICK_PERIOD_MS);
+        }
+    }    
+
+    std::cout << "th1 : " << AX12_COORDS(joints.th1) << std::endl;
+    std::cout << "th2 : " << AX12_COORDS(joints.th2) << std::endl;
+    std::cout << "th3 : " << AX12_COORDS(joints.th3) << std::endl;
 
     std::cout << "GOTO DIRECTLY TASK DELETED" << std::endl;
 
@@ -57,7 +94,6 @@ static void task_directly(void * param)
     {
         vTaskDelete(directly_handle);
     }
-    
 }
 
 static void task_path(void * param) 
@@ -67,6 +103,11 @@ static void task_path(void * param)
     static TickType_t xDelay;
     int element_number;
     path_t chemin;
+
+    bool pos_reached = false;
+    double pos[3];
+    double vel[3];
+    double wait_pos[3];
 
     std::cout << "PATH TASK CREATED" << std::endl;
     /* set default delay */
@@ -84,24 +125,52 @@ static void task_path(void * param)
     /* get the size of path */
     element_number = chemin.path_th1.t.size();
 
-    // for(int i = 0; i < element_number ; i++)
-    // {
-    //     xSemaphoreTake(task_param->semaphore,  ( TickType_t ) -1  );
-    //     /* take first element in path */
+    for(int i = 0; i < element_number ; i++)
+    {
+        pos_reached = false;
 
-    //     /* set pos and velocity to AX12 motor */
+        pos[0] = AX12_COORDS(chemin.path_th1.pos[i]);
+        vel[0] = AX12_SPEED(chemin.path_th1.vel[i]);
 
-    //     /* check error or if position is reached */
+        pos[1] = AX12_COORDS(chemin.path_th2.pos[i]);
+        vel[1] = AX12_SPEED(chemin.path_th2.vel[i]);
 
-    //     /* switch to nex pos in path */
+        pos[2] = AX12_COORDS(chemin.path_th3.pos[i]);
+        vel[2] = AX12_SPEED(chemin.path_th3.vel[i]);
+        
+        xSemaphoreTake(task_param->semaphore,  ( TickType_t ) -1);
+        /* set pos and velocity to AX12 motor */
+        arm_manager.m_AX1.moveSpeed(pos[0], vel[0]);
+        arm_manager.m_AX2.moveSpeed(pos[1], vel[1]);
+        arm_manager.m_AX3.moveSpeed(pos[2], vel[2]);
 
-    //     /* get waiting time in ms*/
-    //     xDelay = (chemin.path_th1.t.at(i) * 100)/portTICK_PERIOD_MS;
-    //     xSemaphoreGive(task_param->semaphore);
+        xSemaphoreGive(task_param->semaphore);
 
-    //     /* sleep */
-    //     vTaskDelay(xDelay);
-    // }
+        /* check error or if position is reached */
+        while(!pos_reached)
+        {
+            xSemaphoreTake(task_param->semaphore,  ( TickType_t ) -1);
+
+            wait_pos[0] = arm_manager.m_AX1.readPosition();
+            wait_pos[1] = arm_manager.m_AX2.readPosition();
+            wait_pos[2] = arm_manager.m_AX3.readPosition();
+
+            xSemaphoreGive(task_param->semaphore);
+
+            if(equals(pos, wait_pos))
+            {
+                /* switch to nex pos in path */
+                pos_reached = true;
+            }
+            else
+            {
+                /* get waiting time in ms*/
+                xDelay = (chemin.path_th1.t[i] * 100)/portTICK_PERIOD_MS;
+                /* sleep */
+                vTaskDelay(xDelay);
+            }
+        }
+    }
 
     std::cout << "t : " << chemin.path_th1.t << std::endl;
     std::cout << "pos : " << chemin.path_th1.pos << std::endl;
