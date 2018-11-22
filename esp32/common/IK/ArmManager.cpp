@@ -6,24 +6,53 @@ static bool double_equals(double a, double b, double epsilon = 0.001)
     return std::abs(a - b) < epsilon;
 }
 
-void ArmManager::init(workspace_t ws_front, workspace_t ws_back, double time_resolution)
+ArmManager::ArmManager(double time_resolution)
+{
+    m_dt = time_resolution;
+}
+void ArmManager::init_workspace(workspace_t ws_front, workspace_t ws_back)
 {
     m_ws_front  = ws_front;
     m_ws_back   = ws_back;
-    m_dt        = time_resolution;
-    m_tool      = {0,0,0};
+}
 
-    joints_t joints;
-    joints.th1 = 0;
-    joints.th2 = 0;
-    joints.th3 = 0;
+void ArmManager::set_origin(double x, double y, double phi)
+{
+    m_origin.x   = x;
+    m_origin.y   = y;
+    m_origin.phi = phi;
+}
 
-    coords_t origin;
-    origin.x   = ORIGIN_X;
-    origin.y   = ORIGIN_Y;
-    origin.phi = ORIGIN_PHI;
+void ArmManager::attach(int id_1, int id_2, int id_3, double l1, double l2, double l3)
+{
+    m_id1 = id_1;
+    m_id2 = id_2;
+    m_id3 = id_3;
 
-    m_arm.init(LINK1_LEN, LINK2_LEN, LINK3_LEN,joints,origin);
+    m_len1 = l1;
+    m_len2 = l2;
+    m_len3 = l3;
+}
+
+void ArmManager::init_arm(double x, double y, double phi)
+{
+    ShiftRegAX12::SerialBegin(9600, 0, 0, 0);
+    
+    m_AX1.attach(m_id1);
+    m_AX2.attach(m_id2);
+    m_AX3.attach(m_id3);
+
+    m_arm.init(m_len1, m_len2, m_len3, m_joints, m_origin);
+
+    m_tool.x    = x;
+    m_tool.y    = y;
+    m_tool.phi  = phi;
+
+    m_joints = m_arm.inverse_kinematics(m_tool);
+
+    m_AX1.move(AX12_COORDS(m_joints.th1));
+    m_AX2.move(AX12_COORDS(m_joints.th2));
+    m_AX3.move(AX12_COORDS(m_joints.th3));
 }
 
 path_t ArmManager::merge_trajectories(path_t traj_a, path_t traj_b)
