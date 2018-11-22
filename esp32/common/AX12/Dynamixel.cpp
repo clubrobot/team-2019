@@ -2,14 +2,12 @@
 #include <Arduino.h>
 #include "HardwareSerial.h"
 
-HardwareSerial HardSerial(2);// Macro for the selection of the Serial Port
-
-#define sendData(args)  (HardSerial.write(args))    // Write Over Serial
-#define availableData() (HardSerial.available())    // Check Serial Data Available
-#define readData()      (HardSerial.read())         // Read Serial Data
-#define peekData()      ((unsigned byte) HardSerial.peek())         // Peek Serial Data
-#define beginCom(args)  (HardSerial.begin(args))    // Begin Serial Comunication
-#define endCom()        (HardSerial.end())          // End Serial Comunication
+#define sendData(args)  (Serial2.write(args))    // Write Over Serial
+#define availableData() (Serial2.available())    // Check Serial Data Available
+#define readData()      (Serial2.read())         // Read Serial Data
+#define peekData()      ((unsigned byte) Serial2.peek())         // Peek Serial Data
+#define beginCom(args)  (Serial2.begin(args))    // Begin Serial Comunication
+#define endCom()        (Serial2.end())          // End Serial Comunication
 
 //#define setRXPin(args)  (SoftSerial.setRX(args))    // Set Rx Serial Pin
 //#define setTXPin(args)  (SoftSerial.setTX(args))    // Set Tx Serial Pin
@@ -28,21 +26,23 @@ HardwareSerial HardSerial(2);// Macro for the selection of the Serial Port
 
 int DynamixelClass::read_error(void)
 {
-	Time_Counter = 0;
-	while((availableData() < 5) & (Time_Counter < TIME_OUT)){  // Wait for Data
-		Time_Counter++;
-		delayus(1000);
-	}
-	while (availableData() > 0){
-		Incoming_Byte = readData();
-		if ( (Incoming_Byte == 255) & (peekData() == 255) ){
-			readData();                                    // Start Bytes
-			readData();                                    // Ax-12 ID
-			readData();                                    // Length
-			Error_Byte = readData();                       // Error
-			return (Error_Byte);
+	#if (AX_READ_ERROR == 1)
+		Time_Counter = 0;
+		while((availableData() < 5) & (Time_Counter < TIME_OUT)){  // Wait for Data
+			Time_Counter++;
+			delayus(1000);
 		}
-	}
+		while (availableData() > 0){
+			Incoming_Byte = readData();
+			if ( (Incoming_Byte == 255) & (peekData() == 255) ){
+				readData();                                    // Start Bytes
+				readData();                                    // Ax-12 ID
+				readData();                                    // Length
+				Error_Byte = readData();                       // Error
+				return (Error_Byte);
+			}
+		}
+	#endif
 	return (-1);											 // No Ax Response
 }
 
@@ -54,7 +54,7 @@ void DynamixelClass::begin(long baud)
 	// DRx = Rx;
 	//setRXPin(DRx);
 	//setTXPin(DTx);
-	beginCom(baud);
+	Serial2.begin(baud);
 	
 }
 void DynamixelClass::begin(long baud, unsigned char D_Pin)
