@@ -84,7 +84,7 @@ float Odometry::getAngVel() const
 	m_mutex.acquire();
 	float result = m_angVel;
 	m_mutex.release();
-	return m_angVel;
+	return result;
 }
 
 float Odometry::getAxleTrack() const
@@ -92,12 +92,12 @@ float Odometry::getAxleTrack() const
 	m_mutex.acquire();
 	float result = m_axleTrack;
 	m_mutex.release();
-	return m_axleTrack;
+	return result;
 } 
 float Odometry::getSlippage () const
 {
 	m_mutex.acquire();
 	float result = m_slippage;
 	m_mutex.release();
-	return m_slippage;
+	return result;
 }
