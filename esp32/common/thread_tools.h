@@ -28,12 +28,27 @@ class Semaphore
 };
 
 
-class Mutex : public Semaphore
+class Mutex
 {
-    public:
-        Mutex() : Semaphore(1,1){};
-};
+    SemaphoreHandle_t _core;
 
+    public:
+        Mutex()
+        {
+            _core = xSemaphoreCreateMutex();
+            if(_core==NULL) throw -1;
+        }
+
+        bool acquire(int wait_time=-1) const
+        {
+            return (pdTRUE == xSemaphoreTake( _core, ( TickType_t ) wait_time ));
+        }
+        bool release() const
+        {
+            return (pdTRUE == xSemaphoreGive( _core));
+        }
+
+};
 
 class Thread
 {
