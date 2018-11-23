@@ -32,3 +32,64 @@ void DifferentialController::save(int address) const
 	EEPROM.put(address, m_axleTrack); address += sizeof(m_axleTrack);
 	EEPROM.commit();
 }
+
+void DifferentialController::setInputs(float linInput, float angInput)
+{
+	m_mutex.acquire();
+	m_linInput = linInput;
+	m_angInput = angInput;
+	m_mutex.release();
+}
+
+void DifferentialController::setSetpoints(float linSetpoint, float angSetpoint)
+{
+	m_mutex.acquire();
+	m_linSetpoint = linSetpoint;
+	m_angSetpoint = angSetpoint;
+	m_mutex.release();
+}
+
+void DifferentialController::setAxleTrack(float axleTrack)
+{
+	m_mutex.acquire();
+	m_axleTrack = axleTrack;
+	m_mutex.release();
+}
+
+float DifferentialController::getLinSetpoint() const
+{
+	m_mutex.acquire();
+	float result = m_linSetpoint;
+	m_mutex.release();
+	return result;
+} 
+float DifferentialController::getAngSetpoint() const
+{
+	m_mutex.acquire();
+	float result = m_angSetpoint;
+	m_mutex.release();
+	return result;
+} 
+
+float DifferentialController::getLinOutput() const
+{
+	m_mutex.acquire();
+	float result = m_linVelOutput;
+	m_mutex.release();
+	return result;
+} 
+float DifferentialController::getAngOutput() const
+{
+	m_mutex.acquire();
+	float result = m_angVelOutput;
+	m_mutex.release();
+	return result;
+} 
+
+float DifferentialController::getAxleTrack() const
+{
+	m_mutex.acquire();
+	float result = m_axleTrack;
+	m_mutex.release();
+	return result;
+}
