@@ -17,7 +17,7 @@ void MoyenneGlissante::AddElement(uint16_t elt){
   }
 }
 
-float MoyenneGlissante::getAverage() const{
+float MoyenneGlissante::getAverage(void) const{
   /**
     Calcul la moyenne sur le nombre d'échantillons entré en paramètre
     Les OOB ne sont pas pris en compte dans la moyenne, mais sont indiqués au bout de NB_NOP OOB

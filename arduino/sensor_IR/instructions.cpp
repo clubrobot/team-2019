@@ -4,7 +4,7 @@
 
 // Montage : A relié à XSHUT au pin 14 | B relié à rien (excepté la commande I2C)
 //extern MyCapteur Sensor1;
-extern Vect_Sensor<MyCapteur*> Sensors;
+extern Vect_Sensor<Sensor_base*> Sensors;
 
 void GET_SINGLE_MESURE(SerialTalks& inst, Deserializer& input, Serializer& output)
 {

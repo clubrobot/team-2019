@@ -9,8 +9,8 @@ LOCAL_CPP_SRCS = \
 	instructions.cpp \
 	Sensor_IR.cpp \
 	Traitements.cpp \
-	VL53L0X.cpp \
-	VL6180X.cpp \
+	$(COMMON)/VL53L0X.cpp \
+	$(COMMON)/VL6180X.cpp \
 	$(COMMON)/SerialTalks.cpp \
 	$(COMMON)/CRC16.cpp
 

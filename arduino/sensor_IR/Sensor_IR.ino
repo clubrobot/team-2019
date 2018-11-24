@@ -3,14 +3,18 @@
 
 #include "../common/SerialTalks.h"
 
+#include "Sensor_base.h"
 #include "Sensor_IR.h"
+#include "Sensor_1_IR.h"
+#include "Sensor_2_IR.h"
 #include "instructions.h"
 #include "Vect_Sensor.h"
 
 
 
-MyCapteur Sensor1 = MyCapteur(14, 42); // Objet permettant d'utiliser les deux capteurs en même temps
-Vect_Sensor<MyCapteur*> Sensors = {&Sensor1}; // On créé une liste particulière pour éviter les boucles for dans le .ino ?
+Sensor_1_IR Sensor1 = Sensor_1_IR(14, 42);
+Sensor_2_IR Sensor2 = Sensor_2_IR(15, 43);
+Vect_Sensor<Sensor_base*> Sensors = {&Sensor1, &Sensor2}; // On créé une liste particulière pour éviter les boucles for dans le .ino
 
 void setup() {
 

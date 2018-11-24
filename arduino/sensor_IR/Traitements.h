@@ -18,6 +18,7 @@ class MoyenneGlissante
     void clear(void){_cnt = 0; _idx = 0;};
     void AddElement(uint16_t elt);
     float getAverage(void) const;
+    int getNbEchantillonsMG(void){return _size;}
 
   private:
     uint16_t* _echantillon = NULL;

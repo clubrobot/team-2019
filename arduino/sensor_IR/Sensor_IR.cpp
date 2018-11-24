@@ -1,9 +1,9 @@
-#include "Sensor_IR.h"
-#include "VL53L0X.h"
-#include "VL6180X.h"
 #include <Wire.h>
 
-void MyCapteur::begin(void){
+#include "Sensor_IR.h"
+
+
+void Sensor_IR::begin(void){
   /**
     !!! A placer AVANT le Serial.begin() !!!
     Utile pour pouvoir changer les adresses I2C
@@ -15,7 +15,7 @@ void MyCapteur::begin(void){
 }
 
 
-void MyCapteur::bind(void){
+void Sensor_IR::bind(void){
   /**
     Change les Adressses I2C
   */
@@ -32,10 +32,11 @@ void MyCapteur::bind(void){
     pinMode(XSHUT_pin2, INPUT);
     delay(10);
     B.setAddress(Adresse2);
+    delay(10);
   }
 }
 
-void MyCapteur::init(void){
+void Sensor_IR::init(void){
   /**
     On initialise les capteurs
   */
@@ -43,7 +44,7 @@ void MyCapteur::init(void){
   B.init();
 }
 
-void MyCapteur::setTimeout(uint16_t timeout=500){
+void Sensor_IR::setTimeout(uint16_t timeout=500){
   /**
     Pour la lecture en continue, on initialise le Timeout
   */
@@ -51,7 +52,7 @@ void MyCapteur::setTimeout(uint16_t timeout=500){
   //B.setTimeout(1000); // bug donc on utilise la  fonction RangeSingle (reste la plus rapide)
 }
 
-void MyCapteur::configureDefault(void){
+void Sensor_IR::configureDefault(void){
   /**
     On effectue une configuration par défaut : La plus rapide possible
   */
@@ -60,7 +61,7 @@ void MyCapteur::configureDefault(void){
   A.setMeasurementTimingBudget(200000); // Précision max (au détriment du temps de calcul)
 }
 
-void MyCapteur::startContinuous(uint32_t period_ms){
+void Sensor_IR::startContinuous(uint32_t period_ms){
   /**
     Commence le mode continu (Pour le capteur A) # Le B étant plus rapide que le A en restant en Single Range
   */
@@ -70,7 +71,7 @@ void MyCapteur::startContinuous(uint32_t period_ms){
   //B.startRangeContinuous(); // bug donc on utilise la  fonction RangeSingle (reste la plus rapide)
 }
 
-uint16_t MyCapteur::readRangeContinuousMillimeters(void){
+uint16_t Sensor_IR::readRangeContinuousMillimeters(void){
   /**
     Choix de la valeur à retourner en fonction de la distance lu par le capteur B (le plus précis)
   */
@@ -83,7 +84,7 @@ uint16_t MyCapteur::readRangeContinuousMillimeters(void){
   }
 }
 
-void MyCapteur::stopContinuous(void){
+void Sensor_IR::stopContinuous(void){
   /**
     Arrête le Mode continu
   */
@@ -92,7 +93,7 @@ void MyCapteur::stopContinuous(void){
   B.stopContinuous();
 }
 
-uint16_t MyCapteur::readRangeSingleMillimeters(void){
+uint16_t Sensor_IR::readRangeSingleMillimeters(void){
   /**
     Permet de lire une valeur sans avoir activé le mode continu (Prend donc plus de temps)
   */
@@ -104,7 +105,7 @@ uint16_t MyCapteur::readRangeSingleMillimeters(void){
   }
 }
 
-bool MyCapteur::timeoutOccurred(void){
+bool Sensor_IR::timeoutOccurred(void){
   /**
     Dans le cas du mode continu, indique si un Timeout a été détecté
   */

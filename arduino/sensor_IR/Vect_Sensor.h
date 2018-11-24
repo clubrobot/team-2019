@@ -1,31 +1,8 @@
-/**
-  #include <iostream>
-  #include "initializer_list.h"
-  #include "Vect_Sensor.h"
-
-  using namespace std;
-
-  int main()
-  {
-    Vect_Sensor<int> A = {5,2,3,4,1};
-    Vect_Sensor<int> B = A[{1,3}];
-    int nb[] = {1,3};
-    Vect_Sensor<int> C = A[nb];
-    A=B;
-    cout<<A[0]<<A[1]<<endl;
-    cout<<B[0]<<B[1]<<endl;
-    cout<<C[0]<<C[1]<<endl;
-
-    return 0;
-  }
-*/
-
 #ifndef VECT_SENSOR_h
 #define VECT_SENSOR_h
 
 #include <Arduino.h>
-#include "initializer_list.h"
-#include "Sensor_IR.h"
+#include "../common/initializer_list.h"
 
 using namespace std;
 
