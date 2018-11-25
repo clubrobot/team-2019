@@ -151,7 +151,7 @@ if [ "$(uname -s)" = 'Linux' ]; then
 	echo -e $UDEVRULE | sudo tee "$UDEVRULES_DIRECTORY/serialtalks.rules" > /dev/null
 	sudo udevadm control --reload-rules
 else
-	git clone https://github.com/aronisch/SerialRenamerDaemon.git
+	git clone https://github.com/clubrobot/SerialRenamerDaemon.git
 	cd SerialRenamerDaemon
 	sudo make install
 fi

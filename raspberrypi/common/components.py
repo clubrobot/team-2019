@@ -6,7 +6,7 @@ from types import MethodType
 from threading import RLock
 import warnings
 from common.tcptalks import TCPTalks, TCPTalksServer, NotConnectedError
-from common.serialtalks import WARNING_OPCODE
+from common.serialtalks import RESEND_OPCODE
 COMPONENTS_SERVER_DEFAULT_PORT = 25566
 
 CREATE_SERIALTALKS_COMPONENT_OPCODE = 0x10
@@ -54,8 +54,9 @@ try:
         def receive(self, input, timeout=0.5):
             opcode = input.read(BYTE)
             retcode = input.read(LONG)
-            if opcode == WARNING_OPCODE:
-                self.launch_warning_(input)
+            # TODO redo with a try except on keyerror
+            if opcode == RESEND_OPCODE:
+                self.resend(input)
                 return
 
             opcode =str(opcode) + self.uuid

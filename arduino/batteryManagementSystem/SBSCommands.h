@@ -1,8 +1,7 @@
 #ifndef SRC_SBMINFO_H_
 #define SRC_SBMINFO_H_
 
-// standard I2C address for Smart Battery packs
-#define SBM_DEVICE_ADDRESS					0x0B
+#define BMS_DEVICE_ADDRESS					0x0B
 
 //for further detail check bq78350-R1 technical references (sluubd3c)
 
@@ -27,6 +26,9 @@
 #define AT_RATE								0x04
 #define AT_RATE_TIME_TO_FULL				0x05
 #define AT_RATE_TIME_TO_EMPTY				0x06
+#define RUN_TIME_TO_EMPTY                   0x11
+#define AVERAGE_TIME_TO_EMPTY               0x12
+#define AVERAGE_TIME_TO_FULL                0x13
 #define CELL3_VOLTAGE						0x3D
 #define CELL2_VOLTAGE						0x3E
 #define CELL1_VOLTAGE						0x3F

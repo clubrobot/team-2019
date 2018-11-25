@@ -44,17 +44,20 @@ ifndef MONITOR_PORT
     endif
 endif
 
+all : build-nano-atmega328
+
 # Create alternative upload. Abort if the arduino with the right uuid is not finded
+
 ifdef MONITOR_PORT
 upload_safe:
 	$(MAKE) upload
 endif
 
 ifneq ($(UNAME_S),Darwin)
-	ifndef MONITOR_PORT
-	upload_safe:
-		@echo $(BOARD_UUID) not connected
-	endif
+ifndef MONITOR_PORT
+upload_safe:
+	@echo $(BOARD_UUID) not connected
+endif
 endif
 
 
