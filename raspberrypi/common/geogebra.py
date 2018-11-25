@@ -244,7 +244,7 @@ class Geogebra():
         if type(element) is str:
            element = self.root.find("./construction/element[@label='{}']".format(element))
         if element is None:
-            raise KeyError(label)
+            raise KeyError()
         if element.attrib['type'] == 'point':
             return self._parse_point(element)
         elif element.attrib['type'] == 'line':
@@ -265,7 +265,23 @@ class Geogebra():
             return self._parse_numeric(element)
         else:
             raise NotImplementedError("'{}' elements currently not handled".format(element.attrib['type']))
-    
+
+    def get_from_command(self, element):
+        if type(element) is str:
+            element = self.root.find("./construction/element[@label='{}']".format(element))
+        if element is None:
+            raise KeyError()
+        elif element.attrib['name'] == 'Segment':
+            return self._parse_segment_from_command(element)
+        elif element.attrib['name'] == 'Vector':
+            return self._parse_vector_from_command(element)
+        elif element.attrib['name'] == 'Polyline':
+            return self._parse_polyline_from_command(element)
+        elif element.attrib['name'] == 'Polygon':
+            return self._parse_polygon_from_command(element)
+        else:
+            raise NotImplementedError("'{}' elements currently not handled".format(element.attrib['type']))
+
     def getall(self, pattern):
         elements = self.root.findall('./construction/element[@label]')
         all_labels = [element.get('label') for element in elements]
@@ -275,19 +291,19 @@ class Geogebra():
         parse_by_element = ["point", "line", "conic", "angle", "numeric"]
         parse_by_command = ["Segment", "Vector", "Polyline", "Polygon"]
 
-        roadmap = []
+        map_ = []
         for label in labels:
             element = self.root.find("./construction/element[@label='{}']".format(label))
             if element.attrib['type'] in parse_by_element:
                 figure = self.get(element)
-                roadmap += [figure] 
+                map_ += [figure]
 
         commands = self.root.findall('./construction/command')
         for command in commands:
-            if command.attrib["name"] in parse_by_command:               
-                figure = self._parse_segment_from_command(command)
-                roadmap += [figure]
-        return roadmap
+            if re.match(pattern, command.find("output").attrib["a0"]) and command.attrib["name"] in parse_by_command:
+                figure = self.get_from_command(command)
+                map_ += [figure]
+        return map_
         
     def _check_label(self, label):
         try:
@@ -338,7 +354,7 @@ class Geogebra():
         command = self.root.find("./construction/command[@name='Segment']/output[@a0='{}']/..".format(label))
          
         if command is not None:
-            return _parse_segment_from_command(command)
+            return self._parse_segment_from_command(command)
         for command in self.root.findall("./construction/command[@name='Polygon']"):
             if not label in command.find('output').attrib.values():
                 continue
@@ -361,7 +377,7 @@ class Geogebra():
         command = self.root.find("./construction/command[@name='Vector']/output[@a0='{}']/..".format(label))
         if command is None:
             raise ValueError("inexistant 'Vector' command")
-        return _parse_vector_from_command(command)
+        return self._parse_vector_from_command(command)
 
     def _parse_vector_from_command(self, command):
         input = command.find('input')
@@ -374,9 +390,9 @@ class Geogebra():
         command = self.root.find("./construction/command[@name='PolyLine']/output[@a0='{}']/..".format(label))
         if command is None:
             raise ValueError("inexistant 'PolyLine' command")
-        return _parse_polyline_from_command(command)
+        return self._parse_polyline_from_command(command)
 
-    def _parse_polyline_from_command(command):
+    def _parse_polyline_from_command(self, command):
         input = command.find('input')
         labels = [input.get(key) for key in sorted(input.attrib.keys())]
         return Geogebra.PolyLine([self.get(label) for label in labels])
@@ -386,9 +402,9 @@ class Geogebra():
         command = self.root.find("./construction/command[@name='Polygon']/output[@a0='{}']/..".format(label))
         if command is None:
             raise ValueError("inexistant 'Polygon' command")
-        return _parse_polygon_from_command(command)
+        return self._parse_polygon_from_command(command)
 
-    def _parse_polygon_from_command(command):
+    def _parse_polygon_from_command(self, command):
         input = command.find('input')
         try:
             numvertices = int(input.get('a2'))
