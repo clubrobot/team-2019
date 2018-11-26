@@ -52,7 +52,7 @@ typedef struct
 	int th1_error;
 	int th2_error;
 	int th3_error;
-}arm_error_t;
+}ik_error_t;
 
 namespace IK
 {
@@ -84,7 +84,7 @@ class Picker
 
 		void flip_elbow(int elbow);
 
-		arm_error_t get_error();
+		ik_error_t get_error();
 
 		void reset_error();
 		
