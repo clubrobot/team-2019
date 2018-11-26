@@ -11,9 +11,8 @@ LIBS = $(ESP_LIBS)/EEPROM \
 	   $(COMMON)/SerialTalks.cpp \
 	   $(COMMON)/CRC16.cpp \
 	   $(COMMON)/IK \
-	   $(COMMON)/ShiftRegister.cpp \
-	   $(COMMON)/ShiftRegAX12.cpp \
-	   $(COMMON)/new_AX12.cpp 
+	   $(COMMON)/AX12
+	   
 
 
 
