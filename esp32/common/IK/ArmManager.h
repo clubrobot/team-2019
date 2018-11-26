@@ -4,11 +4,11 @@
 #include <Arduino.h>
 #include "Picker.h"
 #include "Joint.h"
-#include "ShiftRegAX12.h"
+#include "../AX12/AX12.h"
 
 #define AX12_SPEED(x) (x * ( 60.0 / (2.0 * M_PI)))
 
-#define AX12_COORDS(x) (( x * ( 180.0 / M_PI )) + 60.0)
+#define AX12_COORDS(x) (( x * (180.0 / M_PI)))
 
 typedef struct
 {
@@ -21,11 +21,11 @@ typedef struct
     double elbow_orientation;
 }workspace_t;
 
-class ArmManager
+class ArmManager : public Picker
 {
     public:
 
-        ArmManager(double time_resolution);
+        ArmManager(double dt = 0.2);
 
         void        init_workspace(workspace_t ws_front, workspace_t ws_back);
         void        set_origin(double x, double y, double phi);
@@ -39,11 +39,9 @@ class ArmManager
         path_t      goto_position(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel);
         double      estimated_time_of_arrival(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel);
 
-        Picker m_arm;
-
-        ShiftRegAX12 m_AX1;
-        ShiftRegAX12 m_AX2;
-        ShiftRegAX12 m_AX3;
+        AX12 m_AX1;
+        AX12 m_AX2;
+        AX12 m_AX3;
         
     private:
 
