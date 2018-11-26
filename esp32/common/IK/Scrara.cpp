@@ -9,6 +9,9 @@
 #include "Scara.h"
 #include "Matrix.h"
 
+namespace IK
+{
+
 Scara::Scara(double l1, double l2, joints_t joints, coords_t origin)
 {
 	m_joints 	= joints;
@@ -229,3 +232,5 @@ double Scara::synchronisation_time(joints_t start_pos, joints_t start_vel, joint
     
     return max(t_theta1.tf, t_theta2.tf);
 }
+
+} /* end of namespace */

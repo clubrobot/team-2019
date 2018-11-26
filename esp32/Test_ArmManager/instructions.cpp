@@ -4,6 +4,8 @@
 #include "../common/IK/ArmManager.h"
 #include "../common/IK/TrajectoryManager.h"
 
+using namespace IK;
+
 extern TrajectoryManager traj_manager;
 
 void MOVE_DIRECTLY(SerialTalks& talks, Deserializer& input, Serializer& output)

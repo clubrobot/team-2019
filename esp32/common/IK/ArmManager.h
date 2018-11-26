@@ -21,6 +21,9 @@ typedef struct
     double elbow_orientation;
 }workspace_t;
 
+namespace IK
+{
+
 class ArmManager : public Picker
 {
     public:
@@ -76,5 +79,7 @@ class ArmManager : public Picker
         arm_error_t m_kinematics_errors;
         int m_motors_errors;
 };
+
+}
 
 #endif /* __ARMMANAGER_H */

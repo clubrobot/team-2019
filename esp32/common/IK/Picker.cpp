@@ -9,6 +9,9 @@
 #include "Picker.h"
 #include "Matrix.h"
 
+namespace IK
+{
+
 void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or)
 {
     m_joints 	= joints;
@@ -267,3 +270,5 @@ double Picker::synchronisation_time(joints_t start_pos, joints_t start_vel, join
     
     return max(maxi, t_theta3.tf);
 }
+
+} /* end of namespace */

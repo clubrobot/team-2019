@@ -9,6 +9,8 @@
 #include "../common/IK/ArmManager.h"
 #include "../common/IK/TrajectoryManager.h"
 
+using namespace IK;
+
 #define LINK1_LEN 10.0
 #define LINK2_LEN 10.0
 #define LINK3_LEN 3.8

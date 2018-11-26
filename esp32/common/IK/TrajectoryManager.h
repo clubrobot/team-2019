@@ -22,6 +22,9 @@ typedef struct
 
 }trajectory_task_pv_t;
 
+namespace IK
+{
+
 class TrajectoryManager : public ArmManager
 {
 
@@ -45,8 +48,8 @@ class TrajectoryManager : public ArmManager
         status_t m_status;
 
         trajectory_task_pv_t m_task_parameters;
-       
-        
 };
+
+}
 
 #endif /* __TRAJECTORYMANAGER_H */

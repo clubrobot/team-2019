@@ -54,6 +54,8 @@ typedef struct
 	int th3_error;
 }arm_error_t;
 
+namespace IK
+{
 
 class Picker
 {
@@ -116,5 +118,6 @@ class Picker
 
 };
 
+}
 
 #endif /* __PICKER_H */
