@@ -30,59 +30,33 @@ TrajectoryManager traj_manager;
 
 void setup()
 {
+    /* init Serial talks */
     Serial.begin(SERIALTALKS_BAUDRATE);
     talks.begin(Serial);
 
+    /* bind methods */
     talks.bind(MOVE_DIRECTLY_OPCODE, MOVE_DIRECTLY);
     talks.bind(MOVE_PATH_OPCODE, MOVE_PATH);
     talks.bind(IS_ARRIVED_OPCODE, IS_ARRIVED);
     talks.bind(GO_HOME_OPCODE, GO_HOME);
 
+    /* front worksapce coordinate */
+    workspace_t ws_front = {0, 20.5, 0, 20.5, -1.0};
 
-
-    workspace_t ws_side = {-20.5,
-                        20.5,
-                        -20.5,
-                        20.5,
-                        -1.0};
-
-    workspace_t ws_front = {-abs(20 + 20),
-                        -abs(20 - 20),
-                        -20,
-                        20,
-                        -1.0};
+    /* back worksapce coordinate */
+    workspace_t ws_back = {-20.5, 0, 0, 20.5, 1.0};
 
     /* init TrajectoryManager */
-    traj_manager.init_workspace(ws_side, ws_front);                      /*      init workspaces      */
+    traj_manager.init_workspace(ws_front, ws_back);                      /*      init workspaces      */
     traj_manager.set_origin(ORIGIN_X, ORIGIN_Y, ORIGIN_PHI);             /*      set arm origin       */
     traj_manager.attach(ID1, ID2, ID3, LINK1_LEN, LINK2_LEN, LINK3_LEN); /*      attach ax12 motors   */
-    traj_manager.init_arm(5,5,0,FLIP_ELBOW_FRONT);                                        /*      init arm at pos      */
+    traj_manager.init_arm(5,5,0,FLIP_ELBOW_FRONT);                       /*      init arm at pos      */
 
-    
-
+    traj_manager.goto_directly(20.0, 3.8, M_PI/2);
 }
 
 void loop()
 {  
-    traj_manager.goto_directly(20.0, 3.8, M_PI/2);
-    delay(1000);
-    traj_manager.goto_directly(20.0, 3.8, M_PI/3);
-    delay(1000);
-    traj_manager.goto_directly(20.0, 3.8, M_PI/4);
-    delay(1000);
-    traj_manager.goto_directly(20.0, 3.8, M_PI/6);
-    delay(1000);
-    traj_manager.goto_directly(20.0, 3.8, M_PI/0);
-    delay(1000);
-
-    traj_manager.goto_directly(20.0, 3.8, M_PI/6);
-    delay(1000);
-    traj_manager.goto_directly(20.0, 3.8, M_PI/4);
-    delay(1000);
-    traj_manager.goto_directly(20.0, 3.8, M_PI/3);
-    delay(1000);
-    traj_manager.goto_directly(20.0, 3.8, M_PI/2);
-    delay(1000);
     talks.execute();
 }
 

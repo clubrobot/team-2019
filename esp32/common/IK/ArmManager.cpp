@@ -289,6 +289,7 @@ path_t ArmManager::goto_workspace(coords_t start_pos, coords_t start_vel, coords
     m_workspace = new_workspace;
 
     new_traj.feasible = true;
+    
     // Compute sequence to move from old workspace to the new position
     // in the new workspace defined
     if(double_equals(new_workspace.elbow_orientation,Picker::m_flip_elbow))
