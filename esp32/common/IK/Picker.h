@@ -68,9 +68,9 @@ class Picker
 		double m_l3;
 		double m_lsq;
 
-		Joint Theta1_joint = Joint(0, 0, M_PI, -1, 1, -1, 1);
-		Joint Theta2_joint = Joint(1, -(5*M_PI)/6, (5*M_PI)/6, -1, 1, -1, 1);
-		Joint Theta3_joint = Joint(2, -(5*M_PI)/6, (5*M_PI)/6, -1, 1, -1, 1);
+		Joint Theta1_joint = Joint(0, 		0	 ,  M_PI	 , -M_PI/2, M_PI/2, -1, 1);
+		Joint Theta2_joint = Joint(1, -(5*M_PI)/6, (5*M_PI)/6, -M_PI/2, M_PI/2, -1, 1);
+		Joint Theta3_joint = Joint(2, -(5*M_PI)/6, (5*M_PI)/6, -M_PI/2, M_PI/2, -1, 1);
 
 		Matrix3 m_matrix;
 
@@ -78,7 +78,7 @@ class Picker
 
 	public:
 
-		void init(double l1, double l2, double l3, joints_t joints, coords_t origin);
+		void init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or);
 
 		void flip_elbow(int elbow);
 

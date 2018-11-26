@@ -54,7 +54,7 @@ void setup()
     traj_manager.init_workspace(ws_side, ws_front);                      /*      init workspaces      */
     traj_manager.set_origin(ORIGIN_X, ORIGIN_Y, ORIGIN_PHI);             /*      set arm origin       */
     traj_manager.attach(ID1, ID2, ID3, LINK1_LEN, LINK2_LEN, LINK3_LEN); /*      attach ax12 motors   */
-    traj_manager.init_arm(5,5,0);                                        /*      init arm at pos      */
+    traj_manager.init_arm(5,5,0,FLIP_ELBOW_FRONT);                                        /*      init arm at pos      */
 
     
 

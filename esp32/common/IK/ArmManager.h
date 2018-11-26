@@ -30,7 +30,7 @@ class ArmManager : public Picker
         void        init_workspace(workspace_t ws_front, workspace_t ws_back);
         void        set_origin(double x, double y, double phi);
         void        attach(int id_1, int id_2, int id_3, double l1, double l2, double l3);
-        void        init_arm(double x, double y, double phi);
+        void        init_arm(double x, double y, double phi, int elbow_or);
 
         bool kinematics_error();
         bool motors_error();

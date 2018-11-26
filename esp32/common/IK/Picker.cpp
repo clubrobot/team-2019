@@ -9,7 +9,7 @@
 #include "Picker.h"
 #include "Matrix.h"
 
-void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t origin)
+void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or)
 {
     m_joints 	= joints;
 	m_origin	= origin;
@@ -22,9 +22,9 @@ void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t ori
 
     x_axis   = {-(m_l1 + m_l2 + m_l3), (m_l1 + m_l2 + m_l3), -1, 1, -1, 1};
 	y_axis   = {-(m_l1 + m_l2 + m_l3), (m_l1 + m_l2 + m_l3), -1, 1, -1, 1};
-	phi_axis = {-M_PI, M_PI , -1, 1, -1, 1};
+	phi_axis = {-(5*M_PI)/6, (5*M_PI)/6 , -1, 1, -1, 1};
 
-    m_flip_elbow = FLIP_ELBOW_FRONT;
+    m_flip_elbow = elbow_or;
 }
 
 void Picker::flip_elbow(int elbow)
