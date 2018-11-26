@@ -1,6 +1,5 @@
 #include "Dynamixel.h"	
 #include <Arduino.h>
-#include "HardwareSerial.h"
 
 #define sendData(args)  (Serial2.write(args))    // Write Over Serial
 #define availableData() (Serial2.available())    // Check Serial Data Available
