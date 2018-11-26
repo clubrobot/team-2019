@@ -73,9 +73,9 @@ void ArmManager::init_arm(double x, double y, double phi, int elbow_or)
 
     m_joints = Picker::inverse_kinematics(m_tool);
 
-    m_AX1.move(AX12_COORDS(m_joints.th1));
-    m_AX2.move(AX12_COORDS(m_joints.th2));
-    m_AX3.move(AX12_COORDS(m_joints.th3));
+    m_AX1.move(AX12_COORDS(m_joints.th1) + 60);
+    m_AX2.move(AX12_COORDS(m_joints.th2) + 150);
+    m_AX3.move(AX12_COORDS(m_joints.th3) + 150);
 }
 
 bool ArmManager::kinematics_error()
@@ -342,6 +342,5 @@ double ArmManager::estimated_time_of_arrival(coords_t start_pos, coords_t start_
 
     return Picker::synchronisation_time(start_joints_pos, start_joints_vel, target_joints_pos, target_joints_vel);
 }
-
 
 } /* end of namespace */

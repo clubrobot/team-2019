@@ -76,7 +76,8 @@ class ArmManager : public Picker
         double m_len2;
         double m_len3;
 
-        arm_error_t m_kinematics_errors;
+        ik_error_t m_kinematics_errors;
+
         int m_motors_errors;
 };
 

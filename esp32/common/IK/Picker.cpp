@@ -35,7 +35,7 @@ void Picker::flip_elbow(int elbow)
     m_flip_elbow = elbow;
 }
 
-arm_error_t Picker::get_error()
+ik_error_t Picker::get_error()
 {
     m_error.th1_error = Theta1_joint.get_error();
     m_error.th2_error = Theta2_joint.get_error();
