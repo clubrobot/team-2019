@@ -19,7 +19,20 @@ Joint::Joint(int id, double pos_min, double pos_max, double velociy_min, double 
 
 	m_constraints.acc_min = acc_min;
 	m_constraints.acc_max = acc_max;
+
+    m_error_byte = NO_ERROR;
 }
+
+int Joint::get_error()
+{
+    return m_error_byte;
+}
+
+void Joint::reset_error()
+{
+    m_error_byte = NO_ERROR;
+}
+
 Joint::~Joint()
 {
     
@@ -64,13 +77,13 @@ bool Joint::trajectory_is_feasible(double initial_pos, double initial_vel, doubl
 
 	if(final_pos > (m_constraints.pos_max + EPSILON) || final_pos < (m_constraints.pos_min - EPSILON))
 	{
-        //throw String("Target position unreachable by joint");
+        m_error_byte += TARGET_POSITION_UNREACHABLE;
 		return false;
 	}
 
 	if(final_vel > (m_constraints.vel_max + EPSILON) || final_vel < (m_constraints.vel_min - EPSILON))
 	{
-        //throw String("Target velocity unreachable by joint");
+        m_error_byte += TARGET_VELOCITY_UNREACHABLE;
 		return false;
 	}
 
@@ -78,7 +91,8 @@ bool Joint::trajectory_is_feasible(double initial_pos, double initial_vel, doubl
 
 	if((final_pos + delta_p_dec) > (m_constraints.pos_max + EPSILON) || (final_pos + delta_p_dec) < (m_constraints.pos_min - EPSILON))
 	{
-        //throw String("Target position unreachable at specified velocity by joint");
+        m_error_byte += TARGET_VELOCITY_UNREACHABLE;
+        m_error_byte += TARGET_POSITION_UNREACHABLE;
 		return false;
 	}
 
@@ -255,8 +269,8 @@ vector_t Joint::polynomial_piece_profile(polynom_t polynome, double start, doubl
     vector_t piece;
 
     if (stop < start)
-    {
-       //throw String("Non causal trajectory profile requested"); 
+    { 
+       m_error_byte += NON_CAUSAL_TRAJECTORY;
     }
         
     polynom_t polynome_dot = polyder(polynome);
@@ -279,7 +293,7 @@ trajectory_time_t Joint::time_to_destination(double initial_pos, double initial_
 
     if(!trajectory_is_feasible(initial_pos, initial_vel, final_pos, final_vel))
     {
-        //throw String("Trajectory is not feasible"); 
+        m_error_byte += TRAJECTORY_IS_NOT_FEASIBLE;
     }
 
     double delta_p = final_pos - initial_pos;
