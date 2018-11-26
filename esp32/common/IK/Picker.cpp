@@ -26,6 +26,12 @@ void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t ori
 
     m_flip_elbow = FLIP_ELBOW_FRONT;
 }
+
+void Picker::flip_elbow(int elbow)
+{
+    m_flip_elbow = elbow;
+}
+
 Picker::~Picker()
 {
     
@@ -88,9 +94,9 @@ joints_t Picker::get_joints(void)
     new_joints.th2 = atan2(sinth, costh);
     new_joints.th3 = m_tool.phi - new_joints.th1 - new_joints.th2;
 
-    new_joints.th1 = std::fmod((new_joints.th1 + M_PI) , 2* M_PI) ;//- M_PI; // Stay between -pi and pi
-    new_joints.th2 = std::fmod((new_joints.th2 + M_PI) , 2* M_PI) ;//- M_PI; // Stay between -pi and pi
-    new_joints.th3 = std::fmod((new_joints.th3 + M_PI) , 2* M_PI) ;//- M_PI; // Stay between -pi and pi
+    new_joints.th1 = std::fmod((new_joints.th1 + (M_PI)) , 2*M_PI) - M_PI; // Stay between -pi and pi
+    new_joints.th2 = std::fmod((new_joints.th2 + (M_PI)) , 2*M_PI) - M_PI; // Stay between -pi and pi
+    new_joints.th3 = std::fmod((new_joints.th3 + (M_PI)) , 2*M_PI) - M_PI; // Stay between -pi and pi
 
     return new_joints;
 }
