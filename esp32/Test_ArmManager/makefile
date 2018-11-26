@@ -11,8 +11,7 @@ LIBS = $(ESP_LIBS)/EEPROM \
 	   $(COMMON)/SerialTalks.cpp \
 	   $(COMMON)/CRC16.cpp \
 	   $(COMMON)/IK \
-	   $(COMMON)/ShiftRegAX12.cpp \
-	   $(COMMON)/ShiftRegister.cpp
+	   $(COMMON)/AX12
 
 
 CPPFLAGS = -fexceptions
