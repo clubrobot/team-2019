@@ -32,6 +32,21 @@ void Picker::flip_elbow(int elbow)
     m_flip_elbow = elbow;
 }
 
+arm_error_t Picker::get_error()
+{
+    m_error.th1_error = Theta1_joint.get_error();
+    m_error.th2_error = Theta2_joint.get_error();
+    m_error.th3_error = Theta3_joint.get_error();
+    return m_error;
+}
+
+void Picker::reset_error()
+{
+    Theta1_joint.reset_error();
+    Theta2_joint.reset_error();
+    Theta3_joint.reset_error();
+}
+        
 Picker::~Picker()
 {
     
@@ -240,7 +255,6 @@ double Picker::synchronisation_time(joints_t start_pos, joints_t start_vel, join
     Return largest time to destination to use slowest joint as synchronisation
         reference
     */
-
 
     // Compute time to destination for all joints
     trajectory_time_t t_theta1 = Theta1_joint.time_to_destination(start_pos.th1, start_vel.th1, target_pos.th1, target_vel.th1);
