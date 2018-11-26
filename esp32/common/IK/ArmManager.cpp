@@ -34,7 +34,7 @@ void ArmManager::attach(int id_1, int id_2, int id_3, double l1, double l2, doub
     m_len3 = l3;
 }
 
-void ArmManager::init_arm(double x, double y, double phi)
+void ArmManager::init_arm(double x, double y, double phi, int elbow_or)
 {
     AX12::SerialBegin(9600, 2);
     
@@ -62,7 +62,7 @@ void ArmManager::init_arm(double x, double y, double phi)
     m_AX2.hold(OFF);
     m_AX3.hold(OFF);
 
-    Picker::init(m_len1, m_len2, m_len3, m_joints, m_origin);
+    Picker::init(m_len1, m_len2, m_len3, m_joints, m_origin, elbow_or);
 
     m_tool.x    = x;
     m_tool.y    = y;
