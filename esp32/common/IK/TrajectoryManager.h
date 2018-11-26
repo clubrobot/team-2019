@@ -11,12 +11,11 @@ typedef enum{
     ARRIVED     = 0X00,
     ON_THE_ROAD = 0X01,
     ERROR       = 0X02,
-}is_arrived_t;
+}status_t;
 
 typedef struct
 {
     SemaphoreHandle_t semaphore;
-    is_arrived_t      is_arrived;
 
     coords_t start_coord;
     coords_t vel;
@@ -24,19 +23,25 @@ typedef struct
 
 }trajectory_task_pv_t;
 
-class TrajectoryManager
+class TrajectoryManager : public ArmManager
 {
 
     public :
-        TrajectoryManager();
+        TrajectoryManager(double dt = 0.2) : ArmManager(dt) {m_task_parameters.semaphore = xSemaphoreCreateMutex();}
         /* go directly to pos */
         double goto_directly(double x, double y, double phi);
         /* go to pos with path */
         double goto_path(double x, double y, double phi);
 
-        is_arrived_t is_arrived(void){return m_task_parameters.is_arrived;}
+        double goto_home();
+
+        void set_status(status_t status){m_status = status;}
+
+        status_t get_status(){return m_status;}
 
     private :
+
+        status_t m_status;
 
         trajectory_task_pv_t m_task_parameters;
        
