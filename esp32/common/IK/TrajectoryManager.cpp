@@ -3,6 +3,7 @@
 #include "Picker.h"
 #include "ArmManager.h"
 
+
 extern TrajectoryManager traj_manager;
 
 static TaskHandle_t path_handle;
@@ -40,12 +41,12 @@ static void task_directly(void * param)
     double wait_pos[3];
 
     /* take semaphore */
-    xSemaphoreTake(task_param->semaphore,  ( TickType_t ) -1  );
+    traj_manager.m_mutex.acquire();
 
     /* compute path for trajectory */
     joints = traj_manager.inverse_kinematics(task_param->end_coord);
 
-    xSemaphoreGive(task_param->semaphore);
+    traj_manager.m_mutex.release();
 
     if(!traj_manager.kinematics_error())
     {
@@ -53,26 +54,27 @@ static void task_directly(void * param)
         pos[1] = AX12_COORDS(joints.th2) + 150;
         pos[2] = AX12_COORDS(joints.th3) + 150;
             
-        xSemaphoreTake(task_param->semaphore,  ( TickType_t ) -1);
+        traj_manager.m_mutex.acquire();
+
         /* set pos and velocity to AX12 motor */
         traj_manager.m_AX1.move(pos[0]);
         traj_manager.m_AX2.move(pos[1]);
         traj_manager.m_AX3.move(pos[2]);
 
-        xSemaphoreGive(task_param->semaphore);
+        traj_manager.m_mutex.release();
 
         if(!traj_manager.motors_error())
         {
             /* check error or if position is reached */
             while(!pos_reached)
             {
-                xSemaphoreTake(task_param->semaphore,  ( TickType_t ) -1);
+                traj_manager.m_mutex.acquire();
 
                 wait_pos[0] = traj_manager.m_AX1.readPosition();
                 wait_pos[1] = traj_manager.m_AX2.readPosition();
                 wait_pos[2] = traj_manager.m_AX3.readPosition();
 
-                xSemaphoreGive(task_param->semaphore);
+                traj_manager.m_mutex.release();
 
                 if(equals(pos, wait_pos))
                 {
@@ -121,13 +123,13 @@ static void task_path(void * param)
     xDelay= 10 / portTICK_PERIOD_MS;
 
     /* take semaphore */
-    xSemaphoreTake(task_param->semaphore,  ( TickType_t ) -1  );
+    traj_manager.m_mutex.acquire();
 
     /* compute path for trajectory */
     chemin = traj_manager.go_to(task_param->start_coord, task_param->vel , task_param->end_coord , task_param->vel);
 
     /* give semaphore */
-    xSemaphoreGive(task_param->semaphore);
+    traj_manager.m_mutex.release();
 
     /* get the size of path */
     element_number = chemin.path_th1.t.size();
@@ -222,13 +224,13 @@ static void task_home(void * param)
     xDelay= 10 / portTICK_PERIOD_MS;
 
     /* take semaphore */
-    xSemaphoreTake(task_param->semaphore,  ( TickType_t ) -1  );
+    traj_manager.m_mutex.acquire();
 
     /* compute path for trajectory */
     chemin = traj_manager.go_home(task_param->start_coord, task_param->vel);
 
     /* give semaphore */
-    xSemaphoreGive(task_param->semaphore);
+    traj_manager.m_mutex.release();
 
     /* get the size of path */
     element_number = chemin.path_th1.t.size();
@@ -318,7 +320,7 @@ double TrajectoryManager::goto_directly(double x, double y, double phi)
     m_task_parameters.end_coord.y   = y;
     m_task_parameters.end_coord.phi = phi;
 
-    xSemaphoreTake(m_task_parameters.semaphore,  ( TickType_t ) -1  );
+    m_mutex.acquire();
 
     m_task_parameters.start_coord = traj_manager.get_tool();
     /* compute an estimation of trajectory time */
@@ -326,7 +328,7 @@ double TrajectoryManager::goto_directly(double x, double y, double phi)
                                                                           m_task_parameters.vel,\
                                                                           m_task_parameters.end_coord, \
                                                                           m_task_parameters.vel);
-    xSemaphoreGive(m_task_parameters.semaphore);
+    m_mutex.release();
 
     xTaskCreatePinnedToCore(
                     task_directly,      /* Function to implement the task */
@@ -354,14 +356,14 @@ double TrajectoryManager::goto_path(double x, double y, double phi)
     m_task_parameters.end_coord.y   = y;
     m_task_parameters.end_coord.phi = phi;
 
-    xSemaphoreTake(m_task_parameters.semaphore,  ( TickType_t ) -1  );
+    m_mutex.acquire();
 
     m_task_parameters.start_coord = traj_manager.get_tool();
     time_to_arrival               = traj_manager.estimated_time_of_arrival(m_task_parameters.start_coord,\
                                                                           m_task_parameters.vel,\
                                                                           m_task_parameters.end_coord,
                                                                           m_task_parameters.vel);
-    xSemaphoreGive(m_task_parameters.semaphore);
+    m_mutex.release();
 
     xTaskCreatePinnedToCore(
                     task_path,          /* Function to implement the task */
@@ -383,11 +385,11 @@ double TrajectoryManager::goto_home()
     set_status(ON_THE_ROAD);
     m_task_parameters.vel           = {0.0,0.0,0.0};
 
-    xSemaphoreTake(m_task_parameters.semaphore,  ( TickType_t ) -1  );
+    m_mutex.acquire();
 
     m_task_parameters.start_coord = traj_manager.get_tool();
 
-    xSemaphoreGive(m_task_parameters.semaphore);
+    m_mutex.release();
 
     xTaskCreatePinnedToCore(
                     task_home,          /* Function to implement the task */
