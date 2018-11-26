@@ -1,24 +1,21 @@
 #include <Arduino.h>
 #include "../common/SerialTalks.h"
-#include "../common/ShiftRegister.h"
-#include "../common/ShiftRegAX12.h"
+
+#include "../common/AX12/AX12.h"
 #include "instructions.h"
 
 #define USE_SHIFTREG 1
 
-#define LATCHPIN	10
-#define CLOCKPIN	12
-#define DATAPIN		5 
+// #define LATCHPIN	19
+// #define CLOCKPIN	18
+// #define DATAPIN		5 
 
-ShiftRegAX12 servoax;
+AX12 servoax;
 
-ShiftRegister shift;
+//ShiftRegister shift;
 
 void setup()
 {
-    pinMode(LATCHPIN, OUTPUT);
-    pinMode(CLOCKPIN, OUTPUT);
-    pinMode(DATAPIN , OUTPUT);
 
 	//Starting SerialTalks
 	Serial.begin(SERIALTALKS_BAUDRATE);
@@ -29,9 +26,9 @@ void setup()
     // talks.bind(SET_ANGLES_OPCODE,SET_ANGLES);
     /***************************************************/
     //initialise ShiftRegister
-    shift.attach(LATCHPIN,CLOCKPIN,DATAPIN);
+    //shift.attach(LATCHPIN,CLOCKPIN,DATAPIN);
 
-    ShiftRegAX12::SerialBegin(9600, 0, 0, 0);
+    AX12::SerialBegin(9600, 2);
 
     servoax.attach(254);
     //servoax.setSRL(1); // Respond only to READ_DATA instructions
@@ -42,8 +39,6 @@ void setup()
     servoax.hold(OFF);
 
     servoax.move(150.0);
-
-    
 }
 
 void loop()
