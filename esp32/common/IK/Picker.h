@@ -47,6 +47,13 @@ typedef struct
     bool feasible;
 }path_t;
 
+typedef struct
+{
+	int th1_error;
+	int th2_error;
+	int th3_error;
+}arm_error_t;
+
 
 class Picker
 {
@@ -67,12 +74,17 @@ class Picker
 
 		Matrix3 m_matrix;
 
+		arm_error_t m_error;
+
 	public:
-		//Picker(double l1, double l2, double l3, joints_t joints, coords_t origin);
 
 		void init(double l1, double l2, double l3, joints_t joints, coords_t origin);
 
 		void flip_elbow(int elbow);
+
+		arm_error_t get_error();
+
+		void reset_error();
 		
 		coords_t forward_kinematics(joints_t joints);
 
