@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "Picker.h"
 #include "ArmManager.h"
+#include "thread_tools.h"
 
 #define RUNNING_CORE 0
 
@@ -15,8 +16,6 @@ typedef enum{
 
 typedef struct
 {
-    SemaphoreHandle_t semaphore;
-
     coords_t start_coord;
     coords_t vel;
     coords_t end_coord;
@@ -27,7 +26,7 @@ class TrajectoryManager : public ArmManager
 {
 
     public :
-        TrajectoryManager(double dt = 0.2) : ArmManager(dt) {m_task_parameters.semaphore = xSemaphoreCreateMutex();}
+        TrajectoryManager(double dt = 0.2) : ArmManager(dt){}
         /* go directly to pos */
         double goto_directly(double x, double y, double phi);
         /* go to pos with path */
@@ -38,6 +37,8 @@ class TrajectoryManager : public ArmManager
         void set_status(status_t status){m_status = status;}
 
         status_t get_status(){return m_status;}
+
+        Mutex m_mutex;
 
     private :
 
