@@ -47,6 +47,15 @@ typedef struct
 	double tf;
 }trajectory_time_t;
 
+typedef enum
+{
+	NO_ERROR					= 0X00,
+	TRAJECTORY_IS_NOT_FEASIBLE 	= 0X01,
+	NON_CAUSAL_TRAJECTORY		= 0X02,
+	TARGET_POSITION_UNREACHABLE	= 0X03,
+	TARGET_VELOCITY_UNREACHABLE	= 0X04,
+}joint_error_t;
+
 class Joint
 {
 
@@ -61,10 +70,16 @@ class Joint
 
 		vector<double> vector_polyval(polynom_t polynome, vector<double> x);
 		template<typename T>vector<T> arange(T start, T stop, T step);
+
+		int m_error_byte;
 		
 	public:
 
 		Joint(int id, double pos_min, double pos_max, double velociy_min, double velociy_max, double acc_min, double acc_max);
+
+		int get_error();
+
+		void reset_error();
 
 		bool trajectory_is_feasible(double initial_pos, double initial_vel, double final_pos, double final_vel);
 
