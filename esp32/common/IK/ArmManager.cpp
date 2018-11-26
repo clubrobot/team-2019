@@ -6,9 +6,9 @@ static bool double_equals(double a, double b, double epsilon = 0.001)
     return std::abs(a - b) < epsilon;
 }
 
-ArmManager::ArmManager(double time_resolution)
+ArmManager::ArmManager(double dt)
 {
-    m_dt = time_resolution;
+    m_dt = dt;
 }
 void ArmManager::init_workspace(workspace_t ws_front, workspace_t ws_back)
 {
@@ -36,19 +36,39 @@ void ArmManager::attach(int id_1, int id_2, int id_3, double l1, double l2, doub
 
 void ArmManager::init_arm(double x, double y, double phi)
 {
-    ShiftRegAX12::SerialBegin(9600, 0, 0, 0);
+    AX12::SerialBegin(9600, 2);
     
     m_AX1.attach(m_id1);
     m_AX2.attach(m_id2);
     m_AX3.attach(m_id3);
 
-    m_arm.init(m_len1, m_len2, m_len3, m_joints, m_origin);
+    m_AX1.setLEDAlarm(32); // max torque only
+    m_AX2.setLEDAlarm(32); // max torque only
+    m_AX3.setLEDAlarm(32); // max torque only
+
+    m_AX1.setShutdownAlarm(32); // max torque only
+    m_AX2.setShutdownAlarm(32); // max torque only
+    m_AX3.setShutdownAlarm(32); // max torque only
+
+    m_AX1.setMaxTorque(1023);
+    m_AX2.setMaxTorque(1023);
+    m_AX3.setMaxTorque(1023);
+
+    m_AX1.setEndlessMode(OFF);
+    m_AX2.setEndlessMode(OFF);
+    m_AX3.setEndlessMode(OFF);
+
+    m_AX1.hold(OFF);
+    m_AX2.hold(OFF);
+    m_AX3.hold(OFF);
+
+    Picker::init(m_len1, m_len2, m_len3, m_joints, m_origin);
 
     m_tool.x    = x;
     m_tool.y    = y;
     m_tool.phi  = phi;
 
-    m_joints = m_arm.inverse_kinematics(m_tool);
+    m_joints = Picker::inverse_kinematics(m_tool);
 
     m_AX1.move(AX12_COORDS(m_joints.th1));
     m_AX2.move(AX12_COORDS(m_joints.th2));
@@ -111,17 +131,17 @@ workspace_t ArmManager::workspace_containing_position(coords_t position)
         joints.th1 = 0;
         joints.th2 = 0;
         joints.th3 = 0;
-        m_arm.forward_kinematics(joints);
+        Picker::forward_kinematics(joints);
         return m_ws_front;
     }    
 }
 
 bool ArmManager::workspace_within_constraints(workspace_t workspace)
 {
-    if ((workspace.x_min < m_arm.x_axis.pos_min) \
-            || (workspace.x_max > m_arm.x_axis.pos_max) \
-            || (workspace.y_min < m_arm.y_axis.pos_min) \
-            || (workspace.y_max > m_arm.y_axis.pos_max))
+    if ((workspace.x_min < Picker::x_axis.pos_min) \
+            || (workspace.x_max > Picker::x_axis.pos_max) \
+            || (workspace.y_min < Picker::y_axis.pos_min) \
+            || (workspace.y_max > Picker::y_axis.pos_max))
     {
         return false;
     }
@@ -134,11 +154,11 @@ bool ArmManager::workspace_within_constraints(workspace_t workspace)
 workspace_t ArmManager::clip_workspace_to_constraints(workspace_t workspace)
 {
     workspace_t new_ws;
-    new_ws.x_min = max(workspace.x_min, m_arm.x_axis.pos_min);
-    new_ws.x_max = min(workspace.x_max, m_arm.x_axis.pos_max);
+    new_ws.x_min = max(workspace.x_min, Picker::x_axis.pos_min);
+    new_ws.x_max = min(workspace.x_max, Picker::x_axis.pos_max);
         
-    new_ws.y_min = max(workspace.y_min, m_arm.y_axis.pos_min);
-    new_ws.y_max = min(workspace.y_max, m_arm.y_axis.pos_max);
+    new_ws.y_min = max(workspace.y_min, Picker::y_axis.pos_min);
+    new_ws.y_max = min(workspace.y_max, Picker::y_axis.pos_max);
 
     new_ws.elbow_orientation = workspace.elbow_orientation;
 
@@ -182,7 +202,7 @@ path_t ArmManager::go_to(coords_t start_pos, coords_t start_vel, coords_t target
     if(new_traj.feasible != true)
     {
         m_tool = start_pos;
-        m_arm.inverse_kinematics(m_tool);
+        Picker::inverse_kinematics(m_tool);
         traj_is_unfeasible = true;
     }
 
@@ -190,12 +210,12 @@ path_t ArmManager::go_to(coords_t start_pos, coords_t start_vel, coords_t target
     {
         new_traj = go_home(start_pos, start_vel);
         m_tool = new_traj.pos;
-        m_arm.inverse_kinematics(m_tool);
+        Picker::inverse_kinematics(m_tool);
     }
     else
     {
        m_tool = target_pos;
-       m_arm.inverse_kinematics(m_tool);
+       Picker::inverse_kinematics(m_tool);
     }
     
     return new_traj;
@@ -204,10 +224,10 @@ path_t ArmManager::go_to(coords_t start_pos, coords_t start_vel, coords_t target
 path_t ArmManager::go_home(coords_t start_pos, coords_t start_vel)
 {
     //Define home position as target position
-    joints_t start_joints_pos = m_arm.inverse_kinematics(start_pos);
-    joints_t target_joints_pos = {0, 0, 0};
+    joints_t start_joints_pos = Picker::inverse_kinematics(start_pos);
+    joints_t target_joints_pos = {5, 5, 0};
 
-    coords_t target_pos = m_arm.forward_kinematics(target_joints_pos);
+    coords_t target_pos = Picker::forward_kinematics(target_joints_pos);
     coords_t target_vel;
     target_vel.x    = 0;
     target_vel.y    = 0;
@@ -221,7 +241,7 @@ path_t ArmManager::go_home(coords_t start_pos, coords_t start_vel)
     if(new_traj.feasible != true)
     {
         m_tool = start_pos;
-        m_arm.inverse_kinematics(m_tool);
+        Picker::inverse_kinematics(m_tool);
         new_traj =  goto_workspace(start_pos, start_vel, target_pos, target_vel, new_ws);
     }
 
@@ -244,18 +264,18 @@ path_t ArmManager::goto_workspace(coords_t start_pos, coords_t start_vel, coords
     new_traj.feasible = true;
     // Compute sequence to move from old workspace to the new position
     // in the new workspace defined
-    if(double_equals(new_workspace.elbow_orientation,m_arm.m_flip_elbow))
+    if(double_equals(new_workspace.elbow_orientation,Picker::m_flip_elbow))
     {
         new_traj = goto_position(start_pos, start_vel, target_pos, target_vel);
         new_traj.feasible = true;
         return new_traj;
     }
     //Else, we need to flip the elbow!
-    joints_t start_joints = m_arm.inverse_kinematics(start_pos);
+    joints_t start_joints = Picker::inverse_kinematics(start_pos);
     joints_t inter_joints = start_joints;
     inter_joints.th2 = 0.0;
         
-    coords_t inter_pos = m_arm.forward_kinematics(inter_joints);
+    coords_t inter_pos = Picker::forward_kinematics(inter_joints);
     coords_t inter_vel;
     inter_vel.x     = 0;
     inter_vel.y     = 0;
@@ -265,7 +285,7 @@ path_t ArmManager::goto_workspace(coords_t start_pos, coords_t start_vel, coords
     path_t new_traja;
     new_traja = goto_position(start_pos, start_vel, inter_pos, inter_vel);
 
-    m_arm.m_flip_elbow *= (double)-1;
+    Picker::m_flip_elbow *= (double)-1;
 
     //Go to target
     path_t new_trajb;
@@ -279,18 +299,18 @@ path_t ArmManager::goto_workspace(coords_t start_pos, coords_t start_vel, coords
 
 path_t ArmManager::goto_position(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel)
 {
-    return m_arm.get_path(start_pos, start_vel, target_pos, target_vel, m_dt);
+    return Picker::get_path(start_pos, start_vel, target_pos, target_vel, m_dt);
 }
 
 double ArmManager::estimated_time_of_arrival(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel)
 {
-    joints_t start_joints_pos = m_arm.inverse_kinematics(start_pos);
-    m_arm.compute_jacobian();
-    joints_t start_joints_vel = m_arm.get_joints_vel(start_vel);
+    joints_t start_joints_pos = Picker::inverse_kinematics(start_pos);
+    Picker::compute_jacobian();
+    joints_t start_joints_vel = Picker::get_joints_vel(start_vel);
 
-    joints_t target_joints_pos = m_arm.inverse_kinematics(target_pos);
-    m_arm.compute_jacobian();
-    joints_t target_joints_vel = m_arm.get_joints_vel(target_vel);
+    joints_t target_joints_pos = Picker::inverse_kinematics(target_pos);
+    Picker::compute_jacobian();
+    joints_t target_joints_vel = Picker::get_joints_vel(target_vel);
 
-    return m_arm.synchronisation_time(start_joints_pos, start_joints_vel, target_joints_pos, target_joints_vel);
+    return Picker::synchronisation_time(start_joints_pos, start_joints_vel, target_joints_pos, target_joints_vel);
 }
