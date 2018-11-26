@@ -75,6 +75,30 @@ void ArmManager::init_arm(double x, double y, double phi)
     m_AX3.move(AX12_COORDS(m_joints.th3));
 }
 
+bool ArmManager::kinematics_error()
+{
+    arm_error_t m_kinematics_errors = Picker::get_error();
+
+    if(m_kinematics_errors.th1_error != 0)
+    {
+        return true;
+    }
+    else if(m_kinematics_errors.th2_error != 0)
+    {
+        return true;
+    }
+    else if(m_kinematics_errors.th3_error != 0)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool ArmManager::motors_error()
+{
+
+}
+
 path_t ArmManager::merge_trajectories(path_t traj_a, path_t traj_b)
 {
     path_t new_path;
