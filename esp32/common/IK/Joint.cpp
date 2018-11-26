@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include "Joint.h"
 
+namespace IK
+{
 
 Joint::Joint(int id, double pos_min, double pos_max, double velociy_min, double velociy_max, double acc_min, double acc_max)
 {
@@ -355,3 +357,5 @@ int Joint::trajectory_sign(double initial_pos, double initial_vel, double final_
     	return 1;
     }
 }
+
+} /* end of namespace */

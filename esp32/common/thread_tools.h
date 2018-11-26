@@ -4,8 +4,6 @@
 
 #include <pthread.h>
 
-
-
 class Semaphore
 {
     SemaphoreHandle_t _core;

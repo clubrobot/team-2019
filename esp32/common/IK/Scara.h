@@ -34,6 +34,9 @@ typedef struct
 	vector_t path_th2;
 }path_t;
 
+namespace IK
+{
+
 class Scara
 {
 	private:
@@ -74,5 +77,6 @@ class Scara
 		double synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel);
 };
 
+}
 
 #endif /* __SCARA_H */

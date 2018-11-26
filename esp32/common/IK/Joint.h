@@ -56,6 +56,9 @@ typedef enum
 	TARGET_VELOCITY_UNREACHABLE	= 0X04,
 }joint_error_t;
 
+namespace IK
+{
+
 class Joint
 {
 
@@ -99,5 +102,7 @@ class Joint
 
 		~Joint();
 };
+
+}
 
 #endif /* __JOINT_H */

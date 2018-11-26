@@ -9,7 +9,6 @@ MOVE_DIRECTLY_OPCODE    = 0X10
 MOVE_PATH_OPCODE        = 0X11
 IS_ARRIVED_OPCODE       = 0X12
 
-
 x 	= 10
 y	= 10
 phi = 0

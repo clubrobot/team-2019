@@ -3,6 +3,7 @@
 #include "Picker.h"
 #include "ArmManager.h"
 
+using namespace IK;
 
 extern TrajectoryManager traj_manager;
 
@@ -307,6 +308,9 @@ static void task_home(void * param)
     }
 }
 
+namespace IK
+{
+
 /* go directly to pos */
 double TrajectoryManager::goto_directly(double x, double y, double phi)
 {
@@ -403,3 +407,4 @@ double TrajectoryManager::goto_home()
     return time_to_arrival;
 }
 
+} /* end of namespace */

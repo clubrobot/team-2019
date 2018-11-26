@@ -6,6 +6,9 @@ static bool double_equals(double a, double b, double epsilon = 0.001)
     return std::abs(a - b) < epsilon;
 }
 
+namespace IK
+{
+
 ArmManager::ArmManager(double dt)
 {
     m_dt = dt;
@@ -338,3 +341,6 @@ double ArmManager::estimated_time_of_arrival(coords_t start_pos, coords_t start_
 
     return Picker::synchronisation_time(start_joints_pos, start_joints_vel, target_joints_pos, target_joints_vel);
 }
+
+
+} /* end of namespace */

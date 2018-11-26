@@ -6,6 +6,9 @@
 
 typedef double** matrix_t;
 
+namespace IK
+{
+
 class Matrix3
 {	
 	public:
@@ -31,6 +34,8 @@ class Matrix2
 		double det(matrix_t mat);
 		matrix_t solve(matrix_t mat22, matrix_t mat12);
 };
+
+}
 
 
 

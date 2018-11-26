@@ -2,6 +2,9 @@
 #include <math.h>
 #include "Matrix.h"
 
+namespace IK
+{
+
 matrix_t Matrix3::createMatrix33(double X1, double X2, double X3, double Y1, double Y2, double Y3, double Z1, double Z2, double Z3)
 {
     double** matrix = 0;
@@ -167,3 +170,5 @@ matrix_t Matrix2::solve(matrix_t mat22, matrix_t mat12)
 
     return createMatrix21(a,b);
 }
+
+} /* end of namespace */
