@@ -3,11 +3,11 @@ from common.geogebra import Geogebra
 import math
 from shapely.affinity import *
 class ObstacleMap:
-    nb_phi = 100
-    nb_r = 300
+    nb_phi = 50
+    nb_r = 20
     def __init__(self, polygons=list()):
         self.obstacles = [Polygon(p) for p in polygons]
-        print(len(self.obstacles), "polygones")
+        #print(len(self.obstacles), "polygones")
 
     def add_obstacle(self, polygon):
         self.obstacles += [Polygon(polygon)]
@@ -16,7 +16,7 @@ class ObstacleMap:
     def get_polar_histo(self, p, distance_max):
         histo = ([x/self.nb_phi*2*math.pi for x in range(0, self.nb_phi)],
                  [None for i in range(0, self.nb_phi)])
-        print(histo[0])
+        #print(histo[0])
         for phi_i in range(self.nb_phi):
             p2 = Point(p)
             phi = phi_i / self.nb_phi * 2 * math.pi
@@ -64,6 +64,13 @@ class ObstacleMap:
         return [gap for gap in self.get_gaps(histo)
                 if self.get_gap_width(histo, gap) >= min_width]
 
+    def get_nearest_gap(self, gaps, angle):
+        nearest = None
+        for gap in gaps:
+            if nearest is None or \
+                abs(self.get_angle_of_gap(gap) - angle) < abs(self.get_angle_of_gap(nearest) - angle):
+                nearest = gap
+        return nearest
 
 
     def get_gap_width(self, histo, gap):
@@ -72,6 +79,40 @@ class ObstacleMap:
         p2 = Point(math.cos(histo[0][(gap[1]+1)%self.nb_phi]) * histo[1][(gap[1]+1)%self.nb_phi],
                    math.sin(histo[0][(gap[1]+1)%self.nb_phi]) * histo[1][(gap[1]+1)%self.nb_phi])
         return p1.distance(p2)
+
+    def get_angle_guide(self, robot, goal, min_width=500, distance_max=1000, alpha=1000):
+        histo = self.get_polar_histo(robot, distance_max)
+
+        #import matplotlib.pyplot as plt
+        #plt.plot(histo[0], histo[1])
+        #plt.show()
+
+        gaps = self.get_admissible_gaps(histo, min_width)
+
+        #print("admissible_gap = ", gaps)
+
+        d_min = min(x for x in histo[1] if x is not None)
+        #print("d_min = ", d_min)
+
+        angle_to_goal = math.atan2(goal.y - robot.y, goal.x - robot.x)
+
+        #print("angle_to_goal = ", angle_to_goal)
+
+        gap = self.get_nearest_gap(gaps, angle_to_goal)
+        #print("nearest_gap = ", gap)
+        if gap is None:
+            return None
+        angle_to_gap = self.get_angle_of_gap(gap)
+
+        #print("angle_to_gap = ", angle_to_gap)
+
+        return ((alpha/d_min) * angle_to_gap + angle_to_goal)/(alpha/d_min + 1)
+
+
+
+
+
+
 
 
 
