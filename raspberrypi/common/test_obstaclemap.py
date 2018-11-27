@@ -1,8 +1,16 @@
 from common.obstaclemap import *
 from shapely.geometry import *
+from common.geogebra import *
 import math
 
-obsmap = ObstacleMap.load("test_obstacle.ggb")
+geo = Geogebra("test_obstacle.ggb")
+
+robot = Point(geo.get("origin"))
+
+goal = Point(geo.get("goal"))
+
+
+obsmap = ObstacleMap.load(geo)
 #print("map loaded")
 #histo = obsmap.get_polar_histo(Point(800, 2000), 1000)
 #print(histo[1])
@@ -15,18 +23,16 @@ obsmap = ObstacleMap.load("test_obstacle.ggb")
 #
 #print(obsmap.get_admissible_gaps(histo, 500))
 #
-
-robot = Point(800, 2000)
-goal = Point(1500, 2400)
 step = 50
 path = []
 i = 0
 while i < 500: #robot.distance(goal) > 10:
     angle_guide = obsmap.get_angle_guide(robot, goal)
     if angle_guide is None:
+        print("error")
         break
     #print("angle guide : ", angle_guide)
-    robot = Point(robot.x + math.cos(angle_guide) * step, robot.y + math.sin(angle_guide)* step)
+    robot = Point(robot.x + math.cos(angle_guide) * step, robot.y + math.sin(angle_guide) * step)
     path += [(robot.x, robot.y)]
     i += 1
 
@@ -35,8 +41,10 @@ while i < 500: #robot.distance(goal) > 10:
 #plt.show()
 
 file = open("list_point", "w")
+file.write("Execute[{")
 for (x, y) in path:
     file.write("\"(" + str(round(x)) + ", " + str(round(y)) + ")\",")
+file.write("}]")
 
 file.close()
 

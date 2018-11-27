@@ -3,8 +3,10 @@ from common.geogebra import Geogebra
 import math
 from shapely.affinity import *
 class ObstacleMap:
-    nb_phi = 50
+    nb_phi = 30
     nb_r = 20
+    INFINI = 100000
+
     def __init__(self, polygons=list()):
         self.obstacles = [Polygon(p) for p in polygons]
         #print(len(self.obstacles), "polygones")
@@ -51,13 +53,17 @@ class ObstacleMap:
                     state = START
 
         if state is END:
-            gaps[0] = (start, gaps[0][1]+self.nb_phi)
+            if len(gaps) >= 1:
+                gaps[0] = (start, gaps[0][1]+self.nb_phi)
+            else:
+                gaps += [(start, self.nb_phi)]
         return gaps
 
     def get_angle_of_gap(self, gap):
-        return ((gap[1] + gap[0])/2 % self.nb_phi) / self.nb_phi * 2*math.pi
+        return ((gap[1] + gap[0])/2 % self.nb_phi) / self   .nb_phi * 2*math.pi
 
-    def is_angle_in_gap(self, angle, gap):
+    @staticmethod
+    def is_angle_in_gap(angle, gap):
         return gap[0] <= angle < gap[1]
 
     def get_admissible_gaps(self, histo, min_width):
@@ -68,53 +74,53 @@ class ObstacleMap:
         nearest = None
         for gap in gaps:
             if nearest is None or \
-                abs(self.get_angle_of_gap(gap) - angle) < abs(self.get_angle_of_gap(nearest) - angle):
+               abs(self.get_angle_of_gap(gap) - angle) < abs(self.get_angle_of_gap(nearest) - angle):
                 nearest = gap
         return nearest
 
-
     def get_gap_width(self, histo, gap):
+        if abs(gap[0] - gap[1]) > self.nb_phi/2:
+            return self.INFINI
         p1 = Point(math.cos(histo[0][(gap[0]-1)%self.nb_phi]) * histo[1][(gap[0]-1)%self.nb_phi],
                    math.sin(histo[0][(gap[0]-1)%self.nb_phi]) * histo[1][(gap[0]-1)%self.nb_phi])
         p2 = Point(math.cos(histo[0][(gap[1]+1)%self.nb_phi]) * histo[1][(gap[1]+1)%self.nb_phi],
                    math.sin(histo[0][(gap[1]+1)%self.nb_phi]) * histo[1][(gap[1]+1)%self.nb_phi])
         return p1.distance(p2)
 
-    def get_angle_guide(self, robot, goal, min_width=500, distance_max=1000, alpha=1000):
+    def get_angle_guide(self, robot, goal, min_width=500, distance_max=1000, alpha=500):
         histo = self.get_polar_histo(robot, distance_max)
 
         #import matplotlib.pyplot as plt
         #plt.plot(histo[0], histo[1])
         #plt.show()
 
+
+
         gaps = self.get_admissible_gaps(histo, min_width)
 
-        #print("admissible_gap = ", gaps)
+        print("\n NEW")
+        print("gaps : ", [(gap[0] * 360/self.nb_phi, gap[1] * 360/self.nb_phi) for gap in self.get_gaps(histo)])
+        print("admissible_gap = ", [self.get_angle_of_gap(gap)*360/2/math.pi for gap in gaps])
 
         d_min = min(x for x in histo[1] if x is not None)
-        #print("d_min = ", d_min)
+        print("d_min = ", d_min)
 
-        angle_to_goal = math.atan2(goal.y - robot.y, goal.x - robot.x)
+        angle_to_goal = math.atan2(goal.y - robot.y, goal.x - robot.x) % (2*math.pi)
 
-        #print("angle_to_goal = ", angle_to_goal)
+        print("angle_to_goal = ", angle_to_goal*360/2/math.pi)
 
         gap = self.get_nearest_gap(gaps, angle_to_goal)
-        #print("nearest_gap = ", gap)
+        print("nearest_gap = ", gap)
         if gap is None:
             return None
         angle_to_gap = self.get_angle_of_gap(gap)
 
-        #print("angle_to_gap = ", angle_to_gap)
+        print("angle_to_gap = ", angle_to_gap * 360/2/math.pi)
 
-        return ((alpha/d_min) * angle_to_gap + angle_to_goal)/(alpha/d_min + 1)
+        angle_guide = ((alpha/d_min) * angle_to_gap + angle_to_goal)/(alpha/d_min + 1)
 
-
-
-
-
-
-
-
+        print("angle_guide = ", angle_guide * 360/2/math.pi)
+        return angle_guide
 
     @staticmethod # Factory function
     def load(geogebra, pattern="poly*"):
