@@ -76,7 +76,7 @@ class Picker
 
 		Matrix3 m_matrix;
 
-		arm_error_t m_error;
+		ik_error_t m_error;
 
 	public:
 
