@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
+#include "thread_tools.h"
 
 using std::vector;
 using std::ostream;
@@ -60,47 +61,44 @@ namespace IK
 {
 
 class Joint
-{
-
-	private :
-		int m_id;
-
-		// constraints 
-		constraints_t m_constraints;
-
-		double polyval(polynom_t polynome, double x);
-		polynom_t polyder(polynom_t poly);
-
-		vector<double> vector_polyval(polynom_t polynome, vector<double> x);
-		template<typename T>vector<T> arange(T start, T stop, T step);
-
-		int m_error_byte;
-		
+{		
 	public:
-
+		/* Joint constructor */
 		Joint(int id, double pos_min, double pos_max, double velociy_min, double velociy_max, double acc_min, double acc_max);
-
+		
+		/* error management */
 		int get_error();
-
 		void reset_error();
 
-		bool trajectory_is_feasible(double initial_pos, double initial_vel, double final_pos, double final_vel);
-
-		vector_t get_path(double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync, double delta_t);
-
-		vector_t trapezoidal_profile(double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync,double tf_lim, double delta_t);
-
-		vector_t doubleramp_profile(double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync,double tf_lim, double delta_t);
-
-		vector_t generic_profile(double initial_pos, double initial_vel, double final_pos, double final_vel, double tf_sync, double tf_lim,double delta_t, int sign_traj, int sign_sync, double vel_c);
-
-		vector_t polynomial_piece_profile(polynom_t polynome, double start, double stop, double delta);
-
+		/* get joint path */
+		vector_t get_path (double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync, double delta_t);
+		/* get time to reach position */
 		trajectory_time_t time_to_destination(double initial_pos, double initial_vel, double final_pos, double final_vel);
 
-		int trajectory_sign(double initial_pos, double initial_vel, double final_pos, double final_vel);
+	private :
+		/* private methods */
+		double 			polyval       (polynom_t polynome, double x);
+		polynom_t 		polyder       (polynom_t poly);
+		vector<double> 	vector_polyval(polynom_t polynome, vector<double> x);
 
-		~Joint();
+		template<typename T>vector<T> arange(T start, T stop, T step);
+
+		/* trajectory generation utils */
+		bool 		trajectory_is_feasible  (double initial_pos, double initial_vel, double final_pos, double final_vel);
+		vector_t 	trapezoidal_profile	    (double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync,double tf_lim, double delta_t);
+		vector_t 	doubleramp_profile      (double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync,double tf_lim, double delta_t);
+		vector_t 	generic_profile         (double initial_pos, double initial_vel, double final_pos, double final_vel, double tf_sync, double tf_lim,double delta_t, int sign_traj, int sign_sync, double vel_c);
+		int 		trajectory_sign		    (double initial_pos, double initial_vel, double final_pos, double final_vel);
+		vector_t 	polynomial_piece_profile(polynom_t polynome, double start, double stop, double delta);
+		
+		/* private variables */
+		int m_error_byte;
+		int m_id;
+
+		/* constraints */
+		constraints_t m_constraints;
+
+		Mutex m_mutex;
 };
 
 }
