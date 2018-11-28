@@ -6,6 +6,7 @@
 #include "Joint.h"
 #include "MotorWrapper.h"
 #include "../AX12/AX12.h"
+#include "thread_tools.h"
 
 #define AX12_SPEED(x) (x * ( 60.0 / (2.0 * M_PI)))
 
@@ -82,6 +83,8 @@ class ArmManager : public Picker, public MotorWrapper
         ik_error_t m_kinematics_errors;
 
         int m_motors_errors;
+
+        Mutex m_mutex;
 };
 
 }
