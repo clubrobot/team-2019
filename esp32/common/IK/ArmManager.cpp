@@ -39,31 +39,9 @@ void ArmManager::attach(int id_1, int id_2, int id_3, double l1, double l2, doub
 
 void ArmManager::init_arm(double x, double y, double phi, int elbow_or)
 {
-    AX12::SerialBegin(9600, 2);
-    
-    m_AX1.attach(m_id1);
-    m_AX2.attach(m_id2);
-    m_AX3.attach(m_id3);
-
-    m_AX1.setLEDAlarm(32); // max torque only
-    m_AX2.setLEDAlarm(32); // max torque only
-    m_AX3.setLEDAlarm(32); // max torque only
-
-    m_AX1.setShutdownAlarm(32); // max torque only
-    m_AX2.setShutdownAlarm(32); // max torque only
-    m_AX3.setShutdownAlarm(32); // max torque only
-
-    m_AX1.setMaxTorque(1023);
-    m_AX2.setMaxTorque(1023);
-    m_AX3.setMaxTorque(1023);
-
-    m_AX1.setEndlessMode(OFF);
-    m_AX2.setEndlessMode(OFF);
-    m_AX3.setEndlessMode(OFF);
-
-    m_AX1.hold(OFF);
-    m_AX2.hold(OFF);
-    m_AX3.hold(OFF);
+    MotorWrapper::attach(m_id1, m_id2, m_id3);
+    MotorWrapper::init();
+    MotorWrapper::init_offsets(LINK1_OFFSET, LINK2_OFFSET, LINK3_OFFSET);
 
     Picker::init(m_len1, m_len2, m_len3, m_joints, m_origin, elbow_or);
 
@@ -73,14 +51,12 @@ void ArmManager::init_arm(double x, double y, double phi, int elbow_or)
 
     m_joints = Picker::inverse_kinematics(m_tool);
 
-    m_AX1.move(AX12_COORDS(m_joints.th1) + 60);
-    m_AX2.move(AX12_COORDS(m_joints.th2) + 150);
-    m_AX3.move(AX12_COORDS(m_joints.th3) + 150);
+    MotorWrapper::move(CONVERT_DEG(m_joints.th1), CONVERT_DEG(m_joints.th2), CONVERT_DEG(m_joints.th3));
 }
 
 bool ArmManager::kinematics_error()
 {
-    arm_error_t m_kinematics_errors = Picker::get_error();
+    ik_error_t m_kinematics_errors = Picker::get_error();
 
     if(m_kinematics_errors.th1_error != 0)
     {
@@ -99,7 +75,7 @@ bool ArmManager::kinematics_error()
 
 bool ArmManager::motors_error()
 {
-
+    return false;
 }
 
 path_t ArmManager::merge_trajectories(path_t traj_a, path_t traj_b)
