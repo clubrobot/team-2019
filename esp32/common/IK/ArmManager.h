@@ -4,11 +4,18 @@
 #include <Arduino.h>
 #include "Picker.h"
 #include "Joint.h"
+#include "MotorWrapper.h"
 #include "../AX12/AX12.h"
 
 #define AX12_SPEED(x) (x * ( 60.0 / (2.0 * M_PI)))
 
 #define AX12_COORDS(x) (( x * (180.0 / M_PI)))
+
+#define CONVERT_DEG(x) (( x * (180.0 / M_PI)))
+
+#define LINK1_OFFSET 60.0
+#define LINK2_OFFSET 150.0
+#define LINK3_OFFSET 150.0
 
 typedef struct
 {
@@ -24,7 +31,7 @@ typedef struct
 namespace IK
 {
 
-class ArmManager : public Picker
+class ArmManager : public Picker, public MotorWrapper
 {
     public:
 
@@ -44,10 +51,6 @@ class ArmManager : public Picker
         path_t      go_home(coords_t start_pos, coords_t start_vel);
         path_t      goto_position(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel);
         double      estimated_time_of_arrival(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel);
-
-        AX12 m_AX1;
-        AX12 m_AX2;
-        AX12 m_AX3;
         
     private:
 
