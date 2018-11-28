@@ -9,6 +9,7 @@
 #include <string>
 #include <stdexcept>
 #include "Matrix.h"
+#include "thread_tools.h"
 
 #define FLIP_ELBOW_FRONT (double)1
 #define FLIP_ELBOW_BACK  (double)-1
@@ -59,7 +60,41 @@ namespace IK
 
 class Picker
 {
+	public:
+
+		void init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or);
+		
+		void flip_elbow(int elbow);
+
+		ik_error_t get_error();
+		void reset_error();
+		
+		coords_t forward_kinematics(joints_t joints);
+
+		joints_t inverse_kinematics(coords_t tool);
+
+		coords_t get_tool(void);
+
+		joints_t get_joints(void);
+
+		detailed_pos_t get_detailed_pos(void);
+
+		coords_t get_tool_vel(joints_t joints_vel);
+
+		joints_t get_joints_vel(coords_t tool_vel);
+
+		path_t get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t);
+
+		double synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel);
+
+		double m_flip_elbow;
+		constraints_t x_axis;
+		constraints_t y_axis;
+		constraints_t phi_axis;
+
 	private:
+
+		matrix_t compute_jacobian(void);
 
 		coords_t m_origin;
 		coords_t m_tool;
@@ -78,43 +113,7 @@ class Picker
 
 		ik_error_t m_error;
 
-	public:
-
-		void init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or);
-
-		void flip_elbow(int elbow);
-
-		ik_error_t get_error();
-
-		void reset_error();
-		
-		coords_t forward_kinematics(joints_t joints);
-
-		joints_t inverse_kinematics(coords_t tool);
-
-		coords_t get_tool(void);
-
-		joints_t get_joints(void);
-
-		detailed_pos_t get_detailed_pos(void);
-
-		matrix_t compute_jacobian(void);
-
-		coords_t get_tool_vel(joints_t joints_vel);
-
-		joints_t get_joints_vel(coords_t tool_vel);
-
-		path_t get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t);
-
-		double synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel);
-
-		~Picker();
-
-		constraints_t x_axis;
-		constraints_t y_axis;
-		constraints_t phi_axis;
-
-		double m_flip_elbow;
+		Mutex m_mutex;
 
 };
 
