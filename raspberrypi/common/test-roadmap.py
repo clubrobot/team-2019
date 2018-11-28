@@ -12,3 +12,4 @@ print("FIN GEOGEBRA ", time.time() - begin)
 print("ROADMAP ", time.time() - begin)
 rm = RoadMap.load(geo)
 print("Fin Chargement ", time.time() - begin)
+
