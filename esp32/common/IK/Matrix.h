@@ -20,6 +20,8 @@ class Matrix3
 		double norm(matrix_t mat);
 		double det(matrix_t mat);
 		matrix_t solve(matrix_t mat33, matrix_t mat13);
+
+		void free(matrix_t m);
 };
 
 class Matrix2
@@ -33,6 +35,8 @@ class Matrix2
 		double norm(matrix_t mat);
 		double det(matrix_t mat);
 		matrix_t solve(matrix_t mat22, matrix_t mat12);
+		
+		void free(matrix_t m);
 };
 
 }

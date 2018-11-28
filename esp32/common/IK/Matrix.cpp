@@ -105,6 +105,14 @@ matrix_t Matrix3::solve(matrix_t mat33, matrix_t mat13)
     return createMatrix31(a,b,c);
 }
 
+void Matrix3::free(matrix_t m)
+{
+    delete m[0];
+    delete m[1];
+    delete m[2];
+    delete m;
+}
+
 matrix_t Matrix2::createMatrix22(double X1, double X2, double Y1, double Y2)
 {
     double** matrix = 0;
@@ -169,6 +177,13 @@ matrix_t Matrix2::solve(matrix_t mat22, matrix_t mat12)
     }
 
     return createMatrix21(a,b);
+}
+
+void Matrix2::free(matrix_t m)
+{
+    delete m[0];
+    delete m[1];
+    delete m;
 }
 
 } /* end of namespace */
