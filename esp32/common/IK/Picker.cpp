@@ -176,6 +176,10 @@ coords_t Picker::get_tool_vel(joints_t joints_vel)
     new_vel.y   = tl_vel[1][0];
     new_vel.phi = tl_vel[2][0];
 
+    m_matrix.free(jt_vel);
+    m_matrix.free(jacobian);
+    m_matrix.free(tl_vel);
+
     return new_vel;
 }
 
@@ -206,6 +210,10 @@ joints_t Picker::get_joints_vel(coords_t tool_vel)
     vel.th1 = joints_vel[0][0];
     vel.th2 = joints_vel[1][0];
     vel.th3 = joints_vel[2][0];
+
+    m_matrix.free(tool_v);
+    m_matrix.free(jacobian);
+    m_matrix.free(joints_vel);
 
     return vel;
 }
