@@ -3,8 +3,8 @@ from common.geogebra import Geogebra
 import math
 from shapely.affinity import *
 class ObstacleMap:
-    nb_phi = 100
-    nb_r = 20
+    nb_phi = 50
+    nb_r = 10
     INFINITE = 100000
 
     last_angle_guide = None
@@ -62,7 +62,12 @@ class ObstacleMap:
         return gaps
 
     def get_angle_of_gap(self, gap):
-        return ((gap[1] + gap[0])/2 % self.nb_phi) / self   .nb_phi * 2*math.pi
+        return ((gap[1] + gap[0])/2 % self.nb_phi) / self.nb_phi * 2*math.pi
+
+
+    # TODO
+    def get_middle_of_gap(self, gap):
+        return ((gap[1] + gap[0]) / 2 % self.nb_phi) / self.nb_phi
 
     @staticmethod
     def is_angle_in_gap(angle, gap):
@@ -72,26 +77,52 @@ class ObstacleMap:
         return [gap for gap in self.get_gaps(histo)
                 if self.get_gap_width(histo, gap) >= min_width]
 
-    def get_nearest_gap(self, gaps, angle):
-        nearest = None
+    def get_nearest_gap(self, gaps, angle_to_goal):
+        if not gaps:
+            return None
+        value = self.angle_difference(self.get_angle_of_gap(gaps[0]), angle_to_goal) * \
+                (1 if self.last_angle_guide is None else
+                 math.pi - self.angle_difference(self.get_angle_of_gap(gaps[0]), self.last_angle_guide))
+        nearest = gaps[0]
+        best_value = value
         for gap in gaps:
-            if nearest is None or \
-               abs(self.get_angle_of_gap(gap) - angle) < abs(self.get_angle_of_gap(nearest) - angle):
+            value = self.angle_difference(self.get_angle_of_gap(gap), angle_to_goal) * \
+                    (1 if self.last_angle_guide is None else
+                     math.pi - self.angle_difference(self.get_angle_of_gap(gap), self.last_angle_guide))
+            if value > best_value:
                 nearest = gap
+                best_value = value
         return nearest
 
     def get_gap_width(self, histo, gap):
-        if abs(gap[0] - gap[1]) > self.nb_phi/2:
+        if abs(gap[0] - gap[1]) >= self.nb_phi/2:
             return self.INFINITE
-        p1 = Point(math.cos(histo[0][(gap[0]-1) % self.nb_phi]) * histo[1][(gap[0]-1) % self.nb_phi],
-                   math.sin(histo[0][(gap[0]-1) % self.nb_phi]) * histo[1][(gap[0]-1) % self.nb_phi])
-        p2 = Point(math.cos(histo[0][(gap[1]+1) % self.nb_phi]) * histo[1][(gap[1]+1) % self.nb_phi],
-                   math.sin(histo[0][(gap[1]+1) % self.nb_phi]) * histo[1][(gap[1]+1) % self.nb_phi])
-        return p1.distance(p2)
+        min_distance = self.INFINITE
+        i = gap[0] - 1
+        print("angle_of_gap = ", self.get_angle_of_gap(gap)*180/math.pi)
+        while histo[1][i] is not None and self.angle_difference(self.get_angle_of_gap(gap), histo[0][i]) < math.pi/2:
+            j = (gap[1] + 1) % self.nb_phi
+            while histo[1][j] is not None and self.angle_difference(self.get_angle_of_gap(gap), histo[0][j]) < math.pi/2:
+                p1 = Point(math.cos(histo[0][i % self.nb_phi]) * histo[1][i % self.nb_phi],
+                           math.sin(histo[0][i % self.nb_phi]) * histo[1][i % self.nb_phi])
+                p2 = Point(math.cos(histo[0][j % self.nb_phi]) * histo[1][j % self.nb_phi],
+                           math.sin(histo[0][j % self.nb_phi]) * histo[1][j % self.nb_phi])
 
-    def get_angle_guide(self, robot, goal, min_width=500, distance_max=None, alpha=500):
-        if distance_max is None:
-            distance_max = robot.distance(goal)
+                distance = p1.distance(p2)
+               # print("distance between : ", histo[0][i % self.nb_phi]*180/math.pi, " and ", histo[0][j % self.nb_phi]*180/math.pi, " = ", round(distance))
+               # print("first angle_diff = ", self.angle_difference(self.get_angle_of_gap(gap), histo[0][i])*180/math.pi)
+               # print("snd   angle_diff = ", self.angle_difference(self.get_angle_of_gap(gap), histo[0][j])*180/math.pi)
+                if distance < min_distance:
+                    min_distance = distance
+                j = (j+1) % self.nb_phi
+            i = (i-1) % self.nb_phi
+
+        print("gap_width : ", gap, " = ", min_distance)
+
+        return min_distance
+
+    def get_angle_guide(self, robot, goal, min_width=300, distance_max=500, alpha_mobile=500, alpha_static=200.0):
+        distance_max = min(robot.distance(goal), distance_max)
 
         histo = self.get_polar_histo(robot, distance_max)
 
@@ -105,6 +136,11 @@ class ObstacleMap:
         print("gaps : ", [(gap[0] * 360/self.nb_phi, gap[1] * 360/self.nb_phi) for gap in self.get_gaps(histo)])
         print("admissible_gap = ", [self.get_angle_of_gap(gap)*360/2/math.pi for gap in gaps])
 
+        if not gaps:
+            print("no admissible gaps")
+            return None
+
+
         histo_not_none = [x for x in histo[1] if x is not None]
         if not histo_not_none:
             d_min = self.INFINITE
@@ -116,25 +152,30 @@ class ObstacleMap:
         print("angle_to_goal = ", angle_to_goal*360/2/math.pi)
 
         gap = self.get_nearest_gap(gaps, angle_to_goal)
-        print("nearest_gap = ", self.get_angle_of_gap(gap±))
+        print("nearest_gap = ", self.get_angle_of_gap(gap) * 360/2/math.pi)
         if gap is None:
+            print("no nearest gap")
             return None
         angle_to_gap = self.get_angle_of_gap(gap)
 
         print("angle_to_gap = ", angle_to_gap * 360/2/math.pi)
-        print("angle_to_gap_weight = ", alpha/d_min)
+        print("angle_to_gap_weight = ", alpha_static/d_min)
 
-        angle_guide = self.angle_average(angle_to_goal, angle_to_gap, 1, alpha/d_min)
-        if self.last_angle_guide is not None:
-            angle_guide = self.angle_average(angle_guide, self.last_angle_guide)
+        angle_guide = self.angle_average(angle_to_goal, angle_to_gap, w1=1, w2=(alpha_static/d_min)**2)
         print("angle_guide = ", angle_guide * 360 / 2 / math.pi)
+        if self.last_angle_guide is not None:
+            angle_guide = self.angle_average(angle_guide, self.last_angle_guide,
+                                             w2=max(1, min(2.0, (d_min/alpha_static/2))))
+            print("last_angle_guide = ", self.last_angle_guide * 360 / 2 / math.pi)
+
+        print("new_angle_guide = ", angle_guide * 360 / 2 / math.pi)
+
         #if self.last_angle_guide is not None:
         #    print("last_angle_guide = ", self.last_angle_guide * 360 / 2 / math.pi)
         #if self.last_angle_guide is not None and self.angle_difference(self.last_angle_guide, angle_guide) > 3*math.pi/4:
         #    angle_guide = (angle_guide + math.pi) % (2*math.pi)
 
         self.last_angle_guide = angle_guide
-        print("new_angle_guide = ", angle_guide * 360/2/math.pi)
         return angle_guide
 
     @staticmethod
@@ -144,7 +185,6 @@ class ObstacleMap:
             return 2*math.pi - abs_diff
         else:
             return abs_diff
-
 
     @staticmethod
     def angle_average(a1, a2, w1=1, w2=1):
