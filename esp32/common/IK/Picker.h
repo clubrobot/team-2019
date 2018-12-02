@@ -11,8 +11,8 @@
 #include "Matrix.h"
 #include "thread_tools.h"
 
-#define FLIP_ELBOW_FRONT (double)1
-#define FLIP_ELBOW_BACK  (double)-1
+constexpr double FLIP_ELBOW_FRONT = 1;
+constexpr double FLIP_ELBOW_BACK  = -1;
 
 typedef struct
 {
@@ -59,7 +59,7 @@ class Picker
 		
 		coords_t forward_kinematics(joints_t joints) throw();
 
-		joints_t inverse_kinematics(coords_t tool) throw();
+		joints_t inverse_kinematics(coords_t tool);
 
 		coords_t get_tool(void) const throw();
 

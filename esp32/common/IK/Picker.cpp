@@ -60,7 +60,7 @@ coords_t Picker::forward_kinematics(joints_t joints) throw()
     return ret;
 }
 
-joints_t Picker::inverse_kinematics(coords_t tool) throw()
+joints_t Picker::inverse_kinematics(coords_t tool)
 {
      
     joints_t ret;
