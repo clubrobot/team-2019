@@ -44,16 +44,7 @@ typedef struct
 	vector_t path_th3;
 
 	coords_t pos;
-
-    bool feasible;
 }path_t;
-
-typedef struct
-{
-	int th1_error;
-	int th2_error;
-	int th3_error;
-}ik_error_t;
 
 namespace IK
 {
@@ -65,23 +56,22 @@ class Picker
 		void init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or);
 		
 		void flip_elbow(int elbow);
-
-		ik_error_t get_error();
-		void reset_error();
 		
 		coords_t forward_kinematics(joints_t joints);
 
 		joints_t inverse_kinematics(coords_t tool);
 
-		coords_t get_tool(void);
+		coords_t get_tool(void) const ;
 
-		joints_t get_joints(void);
+		joints_t get_joints(void) const ;
 
 		detailed_pos_t get_detailed_pos(void);
 
 		coords_t get_tool_vel(joints_t joints_vel);
 
 		joints_t get_joints_vel(coords_t tool_vel);
+
+		matrix_t compute_jacobian(void);
 
 		path_t get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t);
 
@@ -94,8 +84,6 @@ class Picker
 
 	private:
 
-		matrix_t compute_jacobian(void);
-
 		coords_t m_origin;
 		coords_t m_tool;
 		joints_t m_joints;
@@ -105,18 +93,21 @@ class Picker
 		double m_l3;
 		double m_lsq;
 
-		Joint Theta1_joint = Joint(0, 		0	 ,  M_PI	 , -M_PI/2, M_PI/2, -1, 1);
-		Joint Theta2_joint = Joint(1, -(5*M_PI)/6, (5*M_PI)/6, -M_PI/2, M_PI/2, -1, 1);
-		Joint Theta3_joint = Joint(2, -(5*M_PI)/6, (5*M_PI)/6, -M_PI/2, M_PI/2, -1, 1);
+		Joint Theta1_joint = Joint(0, 		0	 ,  M_PI	 , -2, 2, -2, 2);
+		Joint Theta2_joint = Joint(1, -(5*M_PI)/6, (5*M_PI)/6, -2, 2, -2, 2);
+		Joint Theta3_joint = Joint(2, -(5*M_PI)/6, (5*M_PI)/6, -2, 2, -2, 2);
 
 		Matrix3 m_matrix;
-
-		ik_error_t m_error;
 
 		Mutex m_mutex;
 
 };
 
+/***** Debug *****/
+ostream& operator<< (ostream& out, const coords_t& c);
+ostream& operator<< (ostream& out, const joints_t& j);
+ostream& operator<< (ostream& out, const detailed_pos_t& d);
+ostream& operator<< (ostream& out, const path_t& p);
 }
 
 #endif /* __PICKER_H */

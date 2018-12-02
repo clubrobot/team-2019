@@ -43,9 +43,6 @@ class ArmManager : public Picker, public MotorWrapper
         void        attach(int id_1, int id_2, int id_3, double l1, double l2, double l3);
         void        init_arm(double x, double y, double phi, int elbow_or);
 
-        bool kinematics_error();
-        bool motors_error();
-
         workspace_t clip_workspace_to_constraints(workspace_t workspace);
         coords_t    workspace_center(workspace_t workspace);
         path_t      go_to(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel);
@@ -79,10 +76,6 @@ class ArmManager : public Picker, public MotorWrapper
         double m_len1;
         double m_len2;
         double m_len3;
-
-        ik_error_t m_kinematics_errors;
-
-        int m_motors_errors;
 
         Mutex m_mutex;
 };

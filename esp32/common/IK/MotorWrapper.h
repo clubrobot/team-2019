@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "../AX12/AX12.h"
+#include "thread_tools.h"
 
 namespace IK
 {
@@ -37,6 +38,8 @@ class MotorWrapper
         AX12 m_AX1;
         AX12 m_AX2;
         AX12 m_AX3;
+
+        Mutex m_mutex;
 };
 
 }
