@@ -172,8 +172,7 @@ double TrajectoryManager::goto_directly(double x, double y, double phi)
     m_task_parameters.end_coord.x   = x;
     m_task_parameters.end_coord.y   = y;
     m_task_parameters.end_coord.phi = phi;
-
-     
+  
     m_task_parameters.start_coord = traj_manager.get_tool();
 
     std::cout << "start : " << m_task_parameters.start_coord.x << std::endl;
@@ -184,8 +183,6 @@ double TrajectoryManager::goto_directly(double x, double y, double phi)
                                                                           m_task_parameters.vel,\
                                                                           m_task_parameters.end_coord, \
                                                                           m_task_parameters.vel);
-
-     
 
     xTaskCreatePinnedToCore(
                     task_directly,      /* Function to implement the task */
@@ -213,14 +210,12 @@ double TrajectoryManager::goto_path(double x, double y, double phi)
     m_task_parameters.end_coord.y   = y;
     m_task_parameters.end_coord.phi = phi;
 
-     
 
     m_task_parameters.start_coord = traj_manager.get_tool();
     time_to_arrival               = traj_manager.estimated_time_of_arrival(m_task_parameters.start_coord,\
                                                                           m_task_parameters.vel,\
                                                                           m_task_parameters.end_coord,
                                                                           m_task_parameters.vel);
-     
 
     xTaskCreatePinnedToCore(
                     task_path,          /* Function to implement the task */
@@ -242,11 +237,7 @@ double TrajectoryManager::goto_home()
     set_status(ON_THE_ROAD);
     m_task_parameters.vel           = {0.0,0.0,0.0};
 
-     
-
     m_task_parameters.start_coord = traj_manager.get_tool();
-
-     
 
     xTaskCreatePinnedToCore(
                     task_home,          /* Function to implement the task */
@@ -262,14 +253,11 @@ double TrajectoryManager::goto_home()
 
 void TrajectoryManager::set_status(status_t status) throw()
 {
-     
     m_status = status;
-     
 }
 
 status_t TrajectoryManager::get_status() throw()
 {
-     
     status_t ret = m_status;
      
     return ret;

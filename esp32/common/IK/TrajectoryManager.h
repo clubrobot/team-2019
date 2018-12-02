@@ -6,8 +6,8 @@
 #include "ArmManager.h"
 #include "thread_tools.h"
 
-#define RUNNING_CORE 0
-#define TIMEOUT      10
+constexpr int RUNNING_CORE = 0;
+constexpr int TIMEOUT      = 10;
 
 typedef enum{
     ARRIVED     = 0X00,
