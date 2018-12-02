@@ -36,15 +36,15 @@ class ArmManager : public Picker, public MotorWrapper
 {
     public:
 
-        ArmManager(double dt = 0.2);
+        ArmManager(double dt = 0.2) throw();
 
-        void        init_workspace(workspace_t ws_front, workspace_t ws_back);
-        void        set_origin(double x, double y, double phi);
-        void        attach(int id_1, int id_2, int id_3, double l1, double l2, double l3);
-        void        init_arm(double x, double y, double phi, int elbow_or);
+        void        init_workspace(workspace_t ws_front, workspace_t ws_back) throw();
+        void        set_origin(coords_t origin) throw();
+        void        attach(int id_1, int id_2, int id_3, double l1, double l2, double l3) throw();
+        void        init_arm(coords_t initial_pos, int elbow_or);
 
-        workspace_t clip_workspace_to_constraints(workspace_t workspace);
-        coords_t    workspace_center(workspace_t workspace);
+        workspace_t clip_workspace_to_constraints(workspace_t workspace) throw();
+        coords_t    workspace_center(workspace_t workspace) throw();
         path_t      go_to(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel);
         path_t      go_home(coords_t start_pos, coords_t start_vel);
         path_t      goto_position(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel);
@@ -52,10 +52,10 @@ class ArmManager : public Picker, public MotorWrapper
         
     private:
 
-        path_t      merge_trajectories(path_t traj_a, path_t traj_b);
-        workspace_t workspace_containing_position(coords_t position);
-        bool        workspace_within_constraints(workspace_t workspace);
-        bool        position_within_workspace(coords_t position, workspace_t workspace);
+        path_t      merge_trajectories(path_t traj_a, path_t traj_b) throw();
+        workspace_t workspace_containing_position(coords_t position) throw();
+        bool        workspace_within_constraints(workspace_t workspace) throw();
+        bool        position_within_workspace(coords_t position, workspace_t workspace) throw();
         path_t      goto_workspace(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, workspace_t new_workspace);
 
         workspace_t m_ws_front;
