@@ -2,15 +2,12 @@
 #define __JOINT_H
 
 #include <Arduino.h>
-#include <tuple>
 #include <vector>
 #include <iostream>
-#include <string>
-#include <stdexcept>
 #include "thread_tools.h"
 
 using namespace std;
-#define EPSILON 0.001
+constexpr double EPSILON = 0.001;
 
 typedef struct
 {

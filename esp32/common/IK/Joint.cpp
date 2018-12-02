@@ -1,10 +1,5 @@
 #include <Arduino.h>
-#include <tuple>
-#include <iostream>
-#include <string>
-#include <stdexcept>
 #include "Joint.h"
-
 
 namespace IK
 {
@@ -22,8 +17,6 @@ Joint::Joint(int id, double pos_min, double pos_max, double velociy_min, double 
 
 	m_constraints.acc_min = acc_min;
 	m_constraints.acc_max = acc_max;
-
-     
 }
 
 double Joint::polyval(polynom_t polynome, double x) throw()
@@ -59,7 +52,6 @@ vector<double> Joint::vector_polyval(polynom_t polynome, vector<double> x) throw
 
 template<typename T>vector<T> Joint::arange(T start, T stop, T step) throw()
 {
-
     vector<T> values;
     for (T value = start; value < stop; value += step)
         values.push_back(value);
@@ -300,7 +292,6 @@ vector_t Joint::polynomial_piece_profile(polynom_t polynome, double start, doubl
 
 trajectory_time_t Joint::time_to_destination(double initial_pos, double initial_vel, double final_pos, double final_vel)
 {
-     
     trajectory_time_t time_traj;
 
     if(!trajectory_is_feasible(initial_pos, initial_vel, final_pos, final_vel))
@@ -326,8 +317,6 @@ trajectory_time_t Joint::time_to_destination(double initial_pos, double initial_
     time_traj.t2 = (1 / m_constraints.vel_max) * ((pow(final_vel,2) + pow(initial_vel,2) - 2 * sign_traj * initial_vel) / (2 * m_constraints.acc_max) + (sign_traj * delta_p));
 
     time_traj.tf = time_traj.t2 - (final_vel - sign_traj * m_constraints.vel_max) / (sign_traj * m_constraints.acc_max);
-
-     
 
     return time_traj;
 }
