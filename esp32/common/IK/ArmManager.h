@@ -14,9 +14,9 @@
 
 #define CONVERT_DEG(x) (( x * (180.0 / M_PI)))
 
-#define LINK1_OFFSET 60.0
-#define LINK2_OFFSET 150.0
-#define LINK3_OFFSET 150.0
+constexpr double LINK1_OFFSET = 60.0;
+constexpr double LINK2_OFFSET = 150.0;
+constexpr double LINK3_OFFSET = 150.0;
 
 typedef struct
 {
