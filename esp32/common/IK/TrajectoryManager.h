@@ -7,6 +7,7 @@
 #include "thread_tools.h"
 
 #define RUNNING_CORE 0
+#define TIMEOUT      10
 
 typedef enum{
     ARRIVED     = 0X00,
@@ -29,6 +30,7 @@ class TrajectoryManager : public ArmManager
 {
 
     public :
+    
         TrajectoryManager(double dt = 0.2) : ArmManager(dt){}
         /* go directly to pos */
         double goto_directly(double x, double y, double phi);
@@ -37,17 +39,17 @@ class TrajectoryManager : public ArmManager
 
         double goto_home();
 
-        void set_status(status_t status){m_status = status;}
+        void set_status(status_t status);
 
-        status_t get_status(){return m_status;}
-
-        Mutex m_mutex;
+        status_t get_status();
 
     private :
 
         status_t m_status;
 
         trajectory_task_pv_t m_task_parameters;
+
+        Mutex m_mutex;
 };
 
 }

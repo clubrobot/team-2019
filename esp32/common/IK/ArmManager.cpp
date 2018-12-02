@@ -11,36 +11,36 @@ namespace IK
 
 ArmManager::ArmManager(double dt)
 {
-    m_mutex.acquire();
+     
 
     m_dt = dt;
 
-    m_mutex.release();
+     
 }
 void ArmManager::init_workspace(workspace_t ws_front, workspace_t ws_back)
 {
-    m_mutex.acquire();
+     
 
     m_ws_front  = ws_front;
     m_ws_back   = ws_back;
 
-    m_mutex.release();
+     
 }
 
 void ArmManager::set_origin(double x, double y, double phi)
 {
-    m_mutex.acquire();
+     
 
     m_origin.x   = x;
     m_origin.y   = y;
     m_origin.phi = phi;
 
-    m_mutex.release();
+     
 }
 
 void ArmManager::attach(int id_1, int id_2, int id_3, double l1, double l2, double l3)
 {
-    m_mutex.acquire();
+     
 
     m_id1 = id_1;
     m_id2 = id_2;
@@ -50,13 +50,13 @@ void ArmManager::attach(int id_1, int id_2, int id_3, double l1, double l2, doub
     m_len2 = l2;
     m_len3 = l3;
 
-    m_mutex.release();
+     
 }
 
 void ArmManager::init_arm(double x, double y, double phi, int elbow_or)
 {
-    m_mutex.acquire();
-
+     
+    
     MotorWrapper::attach(m_id1, m_id2, m_id3);
     MotorWrapper::init();
     MotorWrapper::init_offsets(LINK1_OFFSET, LINK2_OFFSET, LINK3_OFFSET);
@@ -68,53 +68,14 @@ void ArmManager::init_arm(double x, double y, double phi, int elbow_or)
     m_tool.phi  = phi;
 
     m_joints = Picker::inverse_kinematics(m_tool);
-
+    
     MotorWrapper::move(CONVERT_DEG(m_joints.th1), CONVERT_DEG(m_joints.th2), CONVERT_DEG(m_joints.th3));
 
-    m_mutex.release();
-}
-
-bool ArmManager::kinematics_error()
-{
-    m_mutex.acquire();
-
-    bool ret = false;
-    
-    ik_error_t m_kinematics_errors = Picker::get_error();
-
-    if(m_kinematics_errors.th1_error != 0)
-    {
-        ret = true;
-    }
-    else if(m_kinematics_errors.th2_error != 0)
-    {
-        ret = true;
-    }
-    else if(m_kinematics_errors.th3_error != 0)
-    {
-        ret = true;
-    }
-
-    m_mutex.release();
-
-    return ret;
-}
-
-bool ArmManager::motors_error()
-{
-    m_mutex.acquire();
-
-    bool ret = false;
-
-    m_mutex.release();
-
-    return ret;
+     
 }
 
 path_t ArmManager::merge_trajectories(path_t traj_a, path_t traj_b)
 {
-    m_mutex.acquire();
-
     path_t new_path;
 
     // path th1
@@ -148,9 +109,9 @@ path_t ArmManager::merge_trajectories(path_t traj_a, path_t traj_b)
     new_path.path_th3.t.insert(new_path.path_th3.t.end(), traj_b.path_th3.t.begin(), traj_b.path_th3.t.end());
     new_path.path_th3.pos.insert(new_path.path_th3.pos.end(), traj_b.path_th3.pos.begin(), traj_b.path_th3.pos.end());
     new_path.path_th3.vel.insert(new_path.path_th3.vel.end(), traj_b.path_th3.vel.begin(), traj_b.path_th3.vel.end());
-    new_path.path_th3.acc.insert(new_path.path_th3.acc.end(), traj_b.path_th3.acc.begin(), traj_b.path_th1.acc.end());
+    new_path.path_th3.acc.insert(new_path.path_th3.acc.end(), traj_b.path_th3.acc.begin(), traj_b.path_th3.acc.end());
 
-    m_mutex.release();
+     
 
     return new_path;    
 }
@@ -159,35 +120,30 @@ workspace_t ArmManager::workspace_containing_position(coords_t position)
 {
     workspace_t ret;
 
-    if(position_within_workspace(position, m_ws_back))
-    {
-        m_mutex.acquire();
-        ret = m_ws_front;
-        m_mutex.release();
-    }
     if(position_within_workspace(position, m_ws_front))
     {
-        m_mutex.acquire();
-        ret = m_ws_back;
-        m_mutex.release();
+        ret = m_ws_front;
+    }
+    else if(position_within_workspace(position, m_ws_back))
+    {
+        ret = m_ws_back;  
     }
     else
     {
-        m_mutex.acquire();
+         
         joints_t joints;
         joints.th1 = 0;
         joints.th2 = 0;
         joints.th3 = 0;
         Picker::forward_kinematics(joints);
-        ret = m_ws_front;
-        m_mutex.release();
+        ret = m_ws_front;  
     }    
     return ret;
 }
 
 bool ArmManager::workspace_within_constraints(workspace_t workspace)
 {
-    m_mutex.acquire();
+     
 
     bool ret;
 
@@ -203,14 +159,14 @@ bool ArmManager::workspace_within_constraints(workspace_t workspace)
         ret = true;
     }     
 
-    m_mutex.release();
+     
 
     return ret;
 }
 
 workspace_t ArmManager::clip_workspace_to_constraints(workspace_t workspace)
 {
-    m_mutex.acquire();
+     
 
     workspace_t new_ws;
     new_ws.x_min = max(workspace.x_min, Picker::x_axis.pos_min);
@@ -221,21 +177,17 @@ workspace_t ArmManager::clip_workspace_to_constraints(workspace_t workspace)
 
     new_ws.elbow_orientation = workspace.elbow_orientation;
 
-    m_mutex.release();
+     
 
     return new_ws;
 }
 
 bool ArmManager::position_within_workspace(coords_t position, workspace_t workspace)
 {
-    m_mutex.acquire();
-
     bool ret;
 
-    if ((position.x < workspace.x_min) \
-            || (position.x > workspace.x_max) \
-            || (position.y < workspace.y_min) \
-            || (position.y > workspace.y_max))
+    if ((position.x < workspace.x_min) || (position.x > workspace.x_max) \
+    || (position.y < workspace.y_min) || (position.y > workspace.y_max))
     {
         ret = false;
     }
@@ -244,21 +196,19 @@ bool ArmManager::position_within_workspace(coords_t position, workspace_t worksp
         ret = true;
     }
 
-    m_mutex.release();
-
     return ret;
 }
 
 coords_t ArmManager::workspace_center(workspace_t workspace)
 {
-    m_mutex.acquire();
+     
 
     coords_t coord;
     coord.x = (workspace.x_min + workspace.x_max) / 2;
     coord.y = (workspace.y_min + workspace.y_max) / 2;
     coord.phi = 0;
 
-    m_mutex.release();
+     
 
     return coord;
 }
@@ -271,16 +221,18 @@ path_t ArmManager::go_to(coords_t start_pos, coords_t start_vel, coords_t target
 
     bool traj_is_unfeasible = false;
 
-    new_traj = goto_workspace(start_pos, start_vel, target_pos, target_vel, new_ws);
-
-    m_mutex.acquire();
-
-    if(new_traj.feasible != true)
+    try
+    { 
+        new_traj = goto_workspace(start_pos, start_vel, target_pos, target_vel, new_ws);
+    }
+    catch(const string& err)
     {
         m_tool = start_pos;
         Picker::inverse_kinematics(m_tool);
         traj_is_unfeasible = true;
     }
+
+     
 
     if(traj_is_unfeasible)
     {
@@ -294,18 +246,18 @@ path_t ArmManager::go_to(coords_t start_pos, coords_t start_vel, coords_t target
        Picker::inverse_kinematics(m_tool);
     }
     
-    m_mutex.release();
+     
 
     return new_traj;
 }
 
 path_t ArmManager::go_home(coords_t start_pos, coords_t start_vel)
 {
-    m_mutex.acquire();
+     
 
     //Define home position as target position
     joints_t start_joints_pos = Picker::inverse_kinematics(start_pos);
-    joints_t target_joints_pos = {5, 5, 0};
+    joints_t target_joints_pos = {10, 5, 0};
 
     coords_t target_pos = Picker::forward_kinematics(target_joints_pos);
     coords_t target_vel;
@@ -313,28 +265,18 @@ path_t ArmManager::go_home(coords_t start_pos, coords_t start_vel)
     target_vel.y    = 0;
     target_vel.phi  = 0;
 
-    m_mutex.release();
+     
 
     workspace_t new_ws = workspace_containing_position(target_pos);
 
     path_t new_traj;
     new_traj = goto_workspace(start_pos, start_vel, target_pos, target_vel, new_ws);
 
-    m_mutex.acquire();
-    
-    if(new_traj.feasible != true)
-    {
-        m_tool = start_pos;
-        Picker::inverse_kinematics(m_tool);
-        m_mutex.release();
-        new_traj =  goto_workspace(start_pos, start_vel, target_pos, target_vel, new_ws);
-    }
-
-    m_mutex.acquire();
+     
 
     new_traj.pos = target_pos;
 
-    m_mutex.release();
+     
     
     return new_traj;
      
@@ -345,27 +287,23 @@ path_t ArmManager::goto_workspace(coords_t start_pos, coords_t start_vel, coords
     // Check that new position is within workspace
     if (!position_within_workspace(target_pos, new_workspace))
     {
-        //error
+        throw string("Target position not within new workspace boundaries, target may be out of defined workspaces");
     }
-    m_mutex.acquire();
+     
     m_workspace = new_workspace;
-
-    new_traj.feasible = true;
     
     // Compute sequence to move from old workspace to the new position
     // in the new workspace defined
     if(double_equals(new_workspace.elbow_orientation,Picker::m_flip_elbow))
     {
-        m_mutex.release();
         new_traj = goto_position(start_pos, start_vel, target_pos, target_vel);
-        new_traj.feasible = true;
-
         return new_traj;
     }
-    m_mutex.acquire();
+
     //Else, we need to flip the elbow!
     joints_t start_joints = Picker::inverse_kinematics(start_pos);
     joints_t inter_joints = start_joints;
+    inter_joints.th1 = M_PI/2;
     inter_joints.th2 = 0.0;
         
     coords_t inter_pos = Picker::forward_kinematics(inter_joints);
@@ -374,21 +312,18 @@ path_t ArmManager::goto_workspace(coords_t start_pos, coords_t start_vel, coords
     inter_vel.y     = 0;
     inter_vel.phi   = 0;
 
+
     //Go to intermediary point (singularity)
     path_t new_traja;
-    m_mutex.release();
-
     new_traja = goto_position(start_pos, start_vel, inter_pos, inter_vel);
-
-    m_mutex.acquire();
-
+   
     Picker::m_flip_elbow *= (double)-1;
 
-    m_mutex.release();
     //Go to target
     path_t new_trajb;
     
     new_trajb = goto_position(inter_pos, inter_vel, target_pos, target_vel);
+
     new_traj = merge_trajectories(new_traja, new_trajb);
     
     //Return trajectory to execute for adjustment
@@ -397,19 +332,17 @@ path_t ArmManager::goto_workspace(coords_t start_pos, coords_t start_vel, coords
 
 path_t ArmManager::goto_position(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel)
 {
-    m_mutex.acquire();
+     
     path_t ret;
 
     ret = Picker::get_path(start_pos, start_vel, target_pos, target_vel, m_dt);
-
-    m_mutex.release();
 
     return ret;
 }
 
 double ArmManager::estimated_time_of_arrival(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel)
 {
-    m_mutex.acquire();
+     
 
     double ret;
 
@@ -421,7 +354,7 @@ double ArmManager::estimated_time_of_arrival(coords_t start_pos, coords_t start_
 
     ret = Picker::synchronisation_time(start_joints_pos, start_joints_vel, target_joints_pos, target_joints_vel);
 
-    m_mutex.release();
+     
 
     return ret;
 }

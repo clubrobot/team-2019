@@ -5,13 +5,12 @@
 #include <stdexcept>
 #include "Joint.h"
 
+
 namespace IK
 {
 
-Joint::Joint(int id, double pos_min, double pos_max, double velociy_min, double velociy_max, double acc_min, double acc_max)
+Joint::Joint(int id, double pos_min, double pos_max, double velociy_min, double velociy_max, double acc_min, double acc_max) throw()
 {
-    m_mutex.acquire();
-
 	m_id = id;
 
 	// constraints 
@@ -24,70 +23,41 @@ Joint::Joint(int id, double pos_min, double pos_max, double velociy_min, double 
 	m_constraints.acc_min = acc_min;
 	m_constraints.acc_max = acc_max;
 
-    m_error_byte = NO_ERROR;
-
-    m_mutex.release();
+     
 }
 
-int Joint::get_error()
-{
-    m_mutex.acquire();
-
-    int ret;
-    ret = m_error_byte;
-
-    m_mutex.release();
-
-    return ret;
-}
-
-void Joint::reset_error()
-{
-    m_mutex.acquire();
-
-    m_error_byte = NO_ERROR;
-
-    m_mutex.release();
-}
-
-double Joint::polyval(polynom_t polynome, double x)
+double Joint::polyval(polynom_t polynome, double x) throw()
 {
     double ret;
 
 	ret =  polynome.a2 * pow(x,2) + polynome.a1 * x + polynome.a0;
 
-
     return ret;
-    
 }
 
-polynom_t Joint::polyder(polynom_t poly)
+polynom_t Joint::polyder(polynom_t poly) throw()
 {
-
     polynom_t dp;
 
     dp.a0 = poly.a1;
     dp.a1 = 2*poly.a2;
     dp.a2 = 0;
 
-
     return dp;
 }
 
-vector<double> Joint::vector_polyval(polynom_t polynome, vector<double> x)
+vector<double> Joint::vector_polyval(polynom_t polynome, vector<double> x) throw()
 {
-
     vector<double> values;
     int size = x.size();
     for(int i = 0; i<size; i++)
         values.push_back(polynome.a2*pow(x.at(i),2) + polynome.a1 * x.at(i) + polynome.a0);
 
-
     return values;
 }
 
 
-template<typename T>vector<T> Joint::arange(T start, T stop, T step) 
+template<typename T>vector<T> Joint::arange(T start, T stop, T step) throw()
 {
 
     vector<T> values;
@@ -102,15 +72,13 @@ bool Joint::trajectory_is_feasible(double initial_pos, double initial_vel, doubl
 	// checks boundaries to determine feasibility
 	if(final_pos > (m_constraints.pos_max + EPSILON) || final_pos < (m_constraints.pos_min - EPSILON))
 	{
-        m_error_byte += TARGET_POSITION_UNREACHABLE;
-
+        throw string("Target position unreachable by joint");
 		return false;
 	}
 
 	if(final_vel > (m_constraints.vel_max + EPSILON) || final_vel < (m_constraints.vel_min - EPSILON))
 	{
-        m_error_byte += TARGET_VELOCITY_UNREACHABLE;
-        
+        throw string("Target velocity unreachable by joint");
 		return false;
 	}
 
@@ -118,10 +86,7 @@ bool Joint::trajectory_is_feasible(double initial_pos, double initial_vel, doubl
 
 	if((final_pos + delta_p_dec) > (m_constraints.pos_max + EPSILON) || (final_pos + delta_p_dec) < (m_constraints.pos_min - EPSILON))
 	{
-        m_error_byte += TARGET_VELOCITY_UNREACHABLE;
-        m_error_byte += TARGET_POSITION_UNREACHABLE;
-
-        m_mutex.release();
+        throw string("Target position unreachable at specified velocity by joint");
 
 		return false;
 	}
@@ -129,7 +94,7 @@ bool Joint::trajectory_is_feasible(double initial_pos, double initial_vel, doubl
     return true;
 }
 
-vector_t Joint::get_path(double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync, double delta_t)
+vector_t Joint::get_path(double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync, double delta_t) throw()
 {
 	/*
         Generates a time optimal trajectory
@@ -140,7 +105,7 @@ vector_t Joint::get_path(double initial_pos, double initial_vel , double final_p
         final_vel - final velocity
         tf_sync - duration of the trajectory (synchronisation time)
     */
-    m_mutex.acquire();
+     
     vector_t ret ;
 
     // Compute limit time
@@ -162,10 +127,12 @@ vector_t Joint::get_path(double initial_pos, double initial_vel , double final_p
         vel_c = initial_vel;
     }
 
-    double tf_lim = (delta_p / vel_c) + (0.5 * sign_traj * (vel_c - final_vel) / m_constraints.acc_max) + (0.5 * sign_traj * (initial_vel - vel_c) / m_constraints.acc_max);
+    double tf_lim = (delta_p / vel_c) \
+                    + (0.5 * sign_traj * (vel_c - final_vel) / m_constraints.acc_max)\
+                    + (0.5 * sign_traj * (initial_vel - vel_c) / m_constraints.acc_max);
 
     //Determine shape of trajectory
-    if( (tf_sync < tf_lim) || (initial_vel == 0 &&& final_vel == 0))
+    if( (tf_sync < tf_lim) || (initial_vel == 0 && final_vel == 0))
     {
     	ret = trapezoidal_profile(initial_pos, initial_vel, final_pos, final_vel, tf_sync, tf_lim, delta_t);
     }
@@ -173,11 +140,11 @@ vector_t Joint::get_path(double initial_pos, double initial_vel , double final_p
     {
         ret = doubleramp_profile(initial_pos, initial_vel, final_pos, final_vel, tf_sync, tf_lim, delta_t);
     }
-    m_mutex.release();
+     
     return ret;
 }
 
-vector_t Joint::trapezoidal_profile(double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync,double tf_lim, double delta_t)
+vector_t Joint::trapezoidal_profile(double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync,double tf_lim, double delta_t) throw()
 {
 	/*
         Generate a trapezoidal profile to reach target
@@ -196,16 +163,18 @@ vector_t Joint::trapezoidal_profile(double initial_pos, double initial_vel , dou
         sign_traj = 1;
     }
 
-    double b = m_constraints.acc_max * tf_sync + sign_traj * initial_vel;
+    double b = (m_constraints.acc_max * tf_sync) + (sign_traj * initial_vel);
 
-    double vel_c = 0.5 * ( b - sqrt( pow(b,2) - 4 * sign_traj * m_constraints.acc_max * delta_p - 2 * pow((initial_vel - final_vel),2) ) );
+    double vel_c = 0.5 * ( b - sqrt( pow(b,2) \
+                    - 4 * sign_traj * m_constraints.acc_max * delta_p \
+                    - 2 * pow((initial_vel - final_vel),2) ) );
 
     ret = generic_profile(initial_pos, initial_vel, final_pos, final_vel, tf_sync, tf_lim, delta_t, sign_traj, 1, vel_c);
 
     return ret;
 }
 
-vector_t Joint::doubleramp_profile(double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync,double tf_lim, double delta_t)
+vector_t Joint::doubleramp_profile(double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync,double tf_lim, double delta_t) throw()
 {
 	/*
         Generate a double ramp profile to reach target
@@ -231,16 +200,15 @@ vector_t Joint::doubleramp_profile(double initial_pos, double initial_vel , doub
     return ret;
 }
 
-vector_t Joint::generic_profile(double initial_pos, double initial_vel, double final_pos, double final_vel, double tf_sync, double tf_lim,double delta_t, int sign_traj, int sign_sync, double vel_c)
+vector_t Joint::generic_profile(double initial_pos, double initial_vel, double final_pos, double final_vel, double tf_sync, double tf_lim,double delta_t, int sign_traj, int sign_sync, double vel_c) throw()
 {
  	/*
         Generate a generic profile (valid for trapezoidal and double ramp)
     */
 
-    double t1 = (sign_traj * vel_c - initial_vel) / (sign_traj * m_constraints.acc_max);
+    double t1 = (sign_traj * (vel_c - initial_vel)) / (sign_traj * m_constraints.acc_max);
     double t2 = tf_sync - abs(vel_c - final_vel) / m_constraints.acc_max;
 
-    
     polynom_t poly;
 
     // First piece
@@ -313,7 +281,7 @@ vector_t Joint::polynomial_piece_profile(polynom_t polynome, double start, doubl
 
     if (stop < start)
     { 
-       m_error_byte += NON_CAUSAL_TRAJECTORY;
+        throw string("Non causal trajectory profile requested");
     }
         
     polynom_t polynome_dot = polyder(polynome);
@@ -332,12 +300,12 @@ vector_t Joint::polynomial_piece_profile(polynom_t polynome, double start, doubl
 
 trajectory_time_t Joint::time_to_destination(double initial_pos, double initial_vel, double final_pos, double final_vel)
 {
-    m_mutex.acquire();
+     
     trajectory_time_t time_traj;
 
     if(!trajectory_is_feasible(initial_pos, initial_vel, final_pos, final_vel))
     {
-        m_error_byte += TRAJECTORY_IS_NOT_FEASIBLE;
+        throw string("Trajectory is not feasibile");
     }
 
     double delta_p = final_pos - initial_pos;
@@ -347,25 +315,24 @@ trajectory_time_t Joint::time_to_destination(double initial_pos, double initial_
         time_traj.t1 = 0;
         time_traj.t2 = 0;
         time_traj.tf = 0;
-        m_mutex.release();
+         
         return time_traj;
     }
 
     int sign_traj = trajectory_sign(initial_pos, initial_vel, final_pos, final_vel);
 
-   
     time_traj.t1 = (sign_traj * m_constraints.vel_max - initial_vel) / (sign_traj * m_constraints.acc_max);
 
-    time_traj.t2 = (1 / m_constraints.vel_max) * ((pow(final_vel,2) + pow(initial_vel,2 - 2 * sign_traj * initial_vel) / (2 * m_constraints.acc_max) + (sign_traj * delta_p)));
+    time_traj.t2 = (1 / m_constraints.vel_max) * ((pow(final_vel,2) + pow(initial_vel,2) - 2 * sign_traj * initial_vel) / (2 * m_constraints.acc_max) + (sign_traj * delta_p));
 
     time_traj.tf = time_traj.t2 - (final_vel - sign_traj * m_constraints.vel_max) / (sign_traj * m_constraints.acc_max);
 
-    m_mutex.release();
+     
 
     return time_traj;
 }
 
-int Joint::trajectory_sign(double initial_pos, double initial_vel, double final_pos, double final_vel)
+int Joint::trajectory_sign(double initial_pos, double initial_vel, double final_pos, double final_vel) throw()
 {
 	/*
         Get sign of trajectory to be executed
@@ -402,6 +369,39 @@ int Joint::trajectory_sign(double initial_pos, double initial_vel, double final_
     {
     	return 1;
     }
+}
+
+/****** DEBUG *****/
+template<typename T>
+ostream& operator<< (ostream& out, const vector<T>& v) {
+    out << "{";
+    size_t last = v.size() - 1;
+    for(size_t i = 0; i < v.size(); ++i) {
+        out << v[i];
+        if (i != last) 
+            out << ", ";
+    }
+    out << "}";
+    return out;
+}
+ostream& operator<< (ostream& out, const vector_t& v)
+{
+    out << "Vector_t : "<< endl;
+    out << " t:";
+    out << v.t<< endl;
+    out << " pos:";
+    out << v.pos<< endl;
+    out << " vel:";
+    out << v.vel<< endl;
+    
+    return out;
+}
+
+ostream& operator<< (ostream& out, const trajectory_time_t& t)
+{
+    out << "Trejectory time : " << endl;
+    out << "t1: "<< t.t1 << " t2 : "<< t.t2 << " tf: "<< t.tf << endl;
+    return out;
 }
 
 } /* end of namespace */
