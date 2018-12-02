@@ -9,7 +9,7 @@ static bool double_equals(double a, double b, double epsilon = 0.001)
 namespace IK
 {
 
-ArmManager::ArmManager(double dt)
+ArmManager::ArmManager(double dt) throw()
 {
      
 
@@ -17,7 +17,7 @@ ArmManager::ArmManager(double dt)
 
      
 }
-void ArmManager::init_workspace(workspace_t ws_front, workspace_t ws_back)
+void ArmManager::init_workspace(workspace_t ws_front, workspace_t ws_back) throw()
 {
      
 
@@ -27,18 +27,18 @@ void ArmManager::init_workspace(workspace_t ws_front, workspace_t ws_back)
      
 }
 
-void ArmManager::set_origin(double x, double y, double phi)
+void ArmManager::set_origin(coords_t origin) throw()
 {
      
 
-    m_origin.x   = x;
-    m_origin.y   = y;
-    m_origin.phi = phi;
+    m_origin.x   = origin.x;
+    m_origin.y   = origin.y;
+    m_origin.phi = origin.phi;
 
      
 }
 
-void ArmManager::attach(int id_1, int id_2, int id_3, double l1, double l2, double l3)
+void ArmManager::attach(int id_1, int id_2, int id_3, double l1, double l2, double l3) throw()
 {
      
 
@@ -53,7 +53,7 @@ void ArmManager::attach(int id_1, int id_2, int id_3, double l1, double l2, doub
      
 }
 
-void ArmManager::init_arm(double x, double y, double phi, int elbow_or)
+void ArmManager::init_arm(coords_t initial_pos, int elbow_or)
 {
      
     
@@ -63,9 +63,9 @@ void ArmManager::init_arm(double x, double y, double phi, int elbow_or)
 
     Picker::init(m_len1, m_len2, m_len3, m_joints, m_origin, elbow_or);
 
-    m_tool.x    = x;
-    m_tool.y    = y;
-    m_tool.phi  = phi;
+    m_tool.x    = initial_pos.x;
+    m_tool.y    = initial_pos.y;
+    m_tool.phi  = initial_pos.phi;
 
     m_joints = Picker::inverse_kinematics(m_tool);
     
@@ -74,7 +74,7 @@ void ArmManager::init_arm(double x, double y, double phi, int elbow_or)
      
 }
 
-path_t ArmManager::merge_trajectories(path_t traj_a, path_t traj_b)
+path_t ArmManager::merge_trajectories(path_t traj_a, path_t traj_b) throw()
 {
     path_t new_path;
 
@@ -116,7 +116,7 @@ path_t ArmManager::merge_trajectories(path_t traj_a, path_t traj_b)
     return new_path;    
 }
 
-workspace_t ArmManager::workspace_containing_position(coords_t position)
+workspace_t ArmManager::workspace_containing_position(coords_t position) throw()
 {
     workspace_t ret;
 
@@ -141,7 +141,7 @@ workspace_t ArmManager::workspace_containing_position(coords_t position)
     return ret;
 }
 
-bool ArmManager::workspace_within_constraints(workspace_t workspace)
+bool ArmManager::workspace_within_constraints(workspace_t workspace) throw()
 {
      
 
@@ -164,7 +164,7 @@ bool ArmManager::workspace_within_constraints(workspace_t workspace)
     return ret;
 }
 
-workspace_t ArmManager::clip_workspace_to_constraints(workspace_t workspace)
+workspace_t ArmManager::clip_workspace_to_constraints(workspace_t workspace) throw()
 {
      
 
@@ -182,7 +182,7 @@ workspace_t ArmManager::clip_workspace_to_constraints(workspace_t workspace)
     return new_ws;
 }
 
-bool ArmManager::position_within_workspace(coords_t position, workspace_t workspace)
+bool ArmManager::position_within_workspace(coords_t position, workspace_t workspace) throw()
 {
     bool ret;
 
@@ -199,7 +199,7 @@ bool ArmManager::position_within_workspace(coords_t position, workspace_t worksp
     return ret;
 }
 
-coords_t ArmManager::workspace_center(workspace_t workspace)
+coords_t ArmManager::workspace_center(workspace_t workspace) throw()
 {
      
 
@@ -231,8 +231,6 @@ path_t ArmManager::go_to(coords_t start_pos, coords_t start_vel, coords_t target
         Picker::inverse_kinematics(m_tool);
         traj_is_unfeasible = true;
     }
-
-     
 
     if(traj_is_unfeasible)
     {
