@@ -53,25 +53,25 @@ class Picker
 {
 	public:
 
-		void init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or);
+		void init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or) throw();
 		
-		void flip_elbow(int elbow);
+		void flip_elbow(int elbow) throw();
 		
-		coords_t forward_kinematics(joints_t joints);
+		coords_t forward_kinematics(joints_t joints) throw();
 
-		joints_t inverse_kinematics(coords_t tool);
+		joints_t inverse_kinematics(coords_t tool) throw();
 
-		coords_t get_tool(void) const ;
+		coords_t get_tool(void) const throw();
 
-		joints_t get_joints(void) const ;
+		joints_t get_joints(void) const throw();
 
-		detailed_pos_t get_detailed_pos(void);
+		detailed_pos_t get_detailed_pos(void) const throw();
 
-		coords_t get_tool_vel(joints_t joints_vel);
+		coords_t get_tool_vel(joints_t joints_vel) throw();
 
 		joints_t get_joints_vel(coords_t tool_vel);
 
-		matrix_t compute_jacobian(void);
+		matrix_t compute_jacobian(void) throw();
 
 		path_t get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t);
 

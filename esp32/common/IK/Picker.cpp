@@ -12,7 +12,7 @@
 namespace IK
 {
 
-void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or)
+void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or) throw()
 {
      
 
@@ -37,7 +37,7 @@ void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t ori
      
 }
 
-void Picker::flip_elbow(int elbow)
+void Picker::flip_elbow(int elbow) throw()
 {
      
 
@@ -46,7 +46,7 @@ void Picker::flip_elbow(int elbow)
      
 }
 
-coords_t Picker::forward_kinematics(joints_t joints)
+coords_t Picker::forward_kinematics(joints_t joints) throw()
 {
      
 
@@ -60,7 +60,7 @@ coords_t Picker::forward_kinematics(joints_t joints)
     return ret;
 }
 
-joints_t Picker::inverse_kinematics(coords_t tool)
+joints_t Picker::inverse_kinematics(coords_t tool) throw()
 {
      
     joints_t ret;
@@ -90,7 +90,7 @@ joints_t Picker::inverse_kinematics(coords_t tool)
     return ret;
 }
 
-coords_t Picker::get_tool(void) const
+coords_t Picker::get_tool(void) const throw()
 {
      
     coords_t new_cords;
@@ -106,7 +106,7 @@ coords_t Picker::get_tool(void) const
     return new_cords;
 }
 
-joints_t Picker::get_joints(void) const
+joints_t Picker::get_joints(void) const throw()
 {
      
     joints_t new_joints;
@@ -134,7 +134,7 @@ joints_t Picker::get_joints(void) const
     return new_joints;
 }
 
-detailed_pos_t Picker::get_detailed_pos(void)
+detailed_pos_t Picker::get_detailed_pos(void) const throw()
 {
     /*
         Returns origin, position of end of link 1, position of end of link 2
@@ -154,7 +154,7 @@ detailed_pos_t Picker::get_detailed_pos(void)
     return new_pos;
 }
 
-matrix_t Picker::compute_jacobian(void)
+matrix_t Picker::compute_jacobian(void) throw()
 {
     /*
         Returns jacobian matrix at current state
@@ -180,7 +180,7 @@ matrix_t Picker::compute_jacobian(void)
 
 }
 
-coords_t Picker::get_tool_vel(joints_t joints_vel)
+coords_t Picker::get_tool_vel(joints_t joints_vel) throw()
 {
     /*
         Computes current tool velocity using jacobian
