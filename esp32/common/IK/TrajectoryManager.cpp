@@ -20,27 +20,22 @@ static bool equals(double* a, double* b, double epsilon = 0.3)
 static void task_directly(void * param) 
 {
     trajectory_task_pv_t* task_param = (trajectory_task_pv_t*)param;
-    static TickType_t xDelay;
-    int element_number;
-    joints_t joints;
 
-    bool pos_reached = false;
-    double pos[3];
-    double wait_pos[3];
+    joints_t joints;
 
     /* compute path for trajectory */
     joints = traj_manager.inverse_kinematics(task_param->end_coord);
-
-         
+   
     /* set pos and velocity to AX12 motor */
     traj_manager.move(CONVERT_DEG(joints.th1), CONVERT_DEG(joints.th2), CONVERT_DEG(joints.th3));
 
     /* check error or if position is reached */
-    // while(!traj_manager.position_reached())
-    // {
-    //     /* sleep */
-    //     delay(100);
-    // }    
+    while(!traj_manager.position_reached())
+    {
+        /* sleep */
+        delay(100);
+    }    
+
     traj_manager.set_status(ARRIVED);
     
     if( directly_handle != NULL )
@@ -62,15 +57,71 @@ static void task_path(void * param)
     double vel[3];
     double wait_pos[3];
 
-    // /* set default delay */
+    /* set default delay */
     xDelay= 10 / portTICK_PERIOD_MS;
-
 
     /* compute path for trajectory */
     chemin = traj_manager.go_to(task_param->start_coord, task_param->vel , task_param->end_coord , task_param->vel);
 
-    // /* get the size of path */
-     element_number = chemin.path_th1.t.size();
+    cout << chemin << endl;
+    /* get the size of path */
+    element_number = chemin.path_th1.t.size();
+
+    // for(int i = 0; i < element_number ; i++)
+    // {
+    //     pos_reached = false;
+
+    //     pos[0] = CONVERT_DEG(chemin.path_th1.pos[i]);
+    //     vel[0] = AX12_SPEED(chemin.path_th1.vel[i]);
+
+    //     pos[1] = CONVERT_DEG(chemin.path_th2.pos[i]);
+    //     vel[1] = AX12_SPEED(chemin.path_th2.vel[i]);
+
+    //     pos[2] = CONVERT_DEG(chemin.path_th3.pos[i]);
+    //     vel[2] = AX12_SPEED(chemin.path_th3.vel[i]);
+        
+
+    //     traj_manager.moveSpeed(pos[0], 1000, pos[1], 1000, pos[2], 1000);
+
+    //     /* check error or if position is reached */
+    //     while(!traj_manager.position_reached())
+    //     {
+    //         /* get waiting time in ms*/
+    //         xDelay = (chemin.path_th1.t[i] * 100)/portTICK_PERIOD_MS;
+    //         /* sleep */
+    //         vTaskDelay(xDelay);
+    //     }    
+    // }
+
+    traj_manager.set_status(ARRIVED);
+
+    if( path_handle != NULL )
+    {
+        vTaskDelete(path_handle);
+    }
+}
+
+static void task_home(void * param) 
+{
+    /* cast input parameter */
+    trajectory_task_pv_t* task_param = (trajectory_task_pv_t*)param;
+    static TickType_t xDelay;
+    int element_number;
+    path_t chemin;
+
+    bool pos_reached = false;
+    double pos[3];
+    double vel[3];
+    double wait_pos[3];
+
+    /* set default delay */
+    xDelay= 10 / portTICK_PERIOD_MS;
+
+    /* compute path for trajectory */
+    chemin = traj_manager.go_home(task_param->start_coord, task_param->vel);
+
+     /* get the size of path */
+    element_number = chemin.path_th1.t.size();
 
     for(int i = 0; i < element_number ; i++)
     {
@@ -98,102 +149,8 @@ static void task_path(void * param)
         }    
     }
 
-    
     traj_manager.set_status(ARRIVED);
-
-    if( path_handle != NULL )
-    {
-        vTaskDelete(path_handle);
-    }
-}
-
-static void task_home(void * param) 
-{
-    /* cast input parameter */
-    trajectory_task_pv_t* task_param = (trajectory_task_pv_t*)param;
-    static TickType_t xDelay;
-    int element_number;
-    path_t chemin;
-
-    bool pos_reached = false;
-    double pos[3];
-    double vel[3];
-    double wait_pos[3];
-
-    std::cout << "PATH TASK CREATED" << std::endl;
-    /* set default delay */
-    xDelay= 10 / portTICK_PERIOD_MS;
-
-    /* compute path for trajectory */
-    chemin = traj_manager.go_home(task_param->start_coord, task_param->vel);
-
-
-    /* get the size of path */
-    element_number = chemin.path_th1.t.size();
-
-    // for(int i = 0; i < element_number ; i++)
-    // {
-    //     pos_reached = false;
-
-    //     pos[0] = AX12_COORDS(chemin.path_th1.pos[i]);
-    //     vel[0] = AX12_SPEED(chemin.path_th1.vel[i]);
-
-    //     pos[1] = AX12_COORDS(chemin.path_th2.pos[i]);
-    //     vel[1] = AX12_SPEED(chemin.path_th2.vel[i]);
-
-    //     pos[2] = AX12_COORDS(chemin.path_th3.pos[i]);
-    //     vel[2] = AX12_SPEED(chemin.path_th3.vel[i]);
-        
-    //     
-    //     /* set pos and velocity to AX12 motor */
-    //     traj_manager.m_AX1.moveSpeed(pos[0], vel[0]);
-    //     traj_manager.m_AX2.moveSpeed(pos[1], vel[1]);
-    //     traj_manager.m_AX3.moveSpeed(pos[2], vel[2]);
-
-
-    //     /* check error or if position is reached */
-    //     while(!pos_reached)
-    //     {
-    //        
-
-    //         wait_pos[0] = traj_manager.m_AX1.readPosition();
-    //         wait_pos[1] = traj_manager.m_AX2.readPosition();
-    //         wait_pos[2] = traj_manager.m_AX3.readPosition();
-
-    //         if(equals(pos, wait_pos))
-    //         {
-    //             /* switch to nex pos in path */
-    //             pos_reached = true;
-    //         }
-    //         else
-    //         {
-    //             /* get waiting time in ms*/
-    //             xDelay = (chemin.path_th1.t[i] * 100)/portTICK_PERIOD_MS;
-    //             /* sleep */
-    //             vTaskDelay(xDelay);
-    //         }
-    //     }
-    // }
-
-    std::cout << "t : " << chemin.path_th1.t << std::endl;
-    std::cout << "pos : " << chemin.path_th1.pos << std::endl;
-    std::cout << "vel : " << chemin.path_th1.vel << std::endl;
-    std::cout << std::endl;
-
-    std::cout << "t : " << chemin.path_th2.t << std::endl;
-    std::cout << "pos : " << chemin.path_th2.pos << std::endl;
-    std::cout << "vel : " << chemin.path_th2.vel << std::endl;
-    std::cout << std::endl;
-
-    std::cout << "t : " << chemin.path_th3.t << std::endl;
-    std::cout << "pos : " << chemin.path_th3.pos << std::endl;
-    std::cout << "vel : " << chemin.path_th3.vel << std::endl;
-    std::cout << std::endl;
-
-   traj_manager.set_status(ARRIVED);
-
-    //std::cout << "PATH TASK DELETED" << std::endl;
-
+    
     if( home_handle != NULL )
     {
         vTaskDelete(home_handle);
@@ -303,14 +260,14 @@ double TrajectoryManager::goto_home()
     return time_to_arrival;
 }
 
-void TrajectoryManager::set_status(status_t status)
+void TrajectoryManager::set_status(status_t status) throw()
 {
      
     m_status = status;
      
 }
 
-status_t TrajectoryManager::get_status()
+status_t TrajectoryManager::get_status() throw()
 {
      
     status_t ret = m_status;
