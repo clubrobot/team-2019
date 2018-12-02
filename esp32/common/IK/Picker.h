@@ -3,11 +3,6 @@
 
 #include "Joint.h"
 #include <Arduino.h>
-#include "Joint.h"
-#include <tuple>
-#include <iostream>
-#include <string>
-#include <stdexcept>
 #include "Matrix.h"
 #include "thread_tools.h"
 

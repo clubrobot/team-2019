@@ -1,27 +1,16 @@
 #include <Arduino.h>
 #include <math.h>
-#include <cmath>
-#include <tuple>
-#include <iostream>
-#include <string>
-#include <stdexcept>
-#include "Joint.h"
 #include "Picker.h"
-#include "Matrix.h"
 
 namespace IK
 {
 
 void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or) throw()
 {
-     
-
     m_joints 	= joints;
 	m_origin	= origin;
-    
      
 	m_tool	 	= get_tool();
-     
 
 	m_l1		= l1;
 	m_l2		= l2;
@@ -33,27 +22,17 @@ void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t ori
 	phi_axis = {-(5*M_PI)/6, (5*M_PI)/6 , -1, 1, -1, 1};
 
     m_flip_elbow = elbow_or;
-
-     
 }
 
 void Picker::flip_elbow(int elbow) throw()
 {
-     
-
     m_flip_elbow = elbow;
-
-     
 }
 
 coords_t Picker::forward_kinematics(joints_t joints) throw()
 {
-     
-
     coords_t ret;
 	m_joints = joints;
-
-     
 
 	ret = get_tool();
 
@@ -62,7 +41,6 @@ coords_t Picker::forward_kinematics(joints_t joints) throw()
 
 joints_t Picker::inverse_kinematics(coords_t tool)
 {
-     
     joints_t ret;
 
     double dotx = (m_tool.x - m_origin.x) - (m_l3 * cos(m_tool.phi));
@@ -79,20 +57,16 @@ joints_t Picker::inverse_kinematics(coords_t tool)
     else
     {
         m_tool = tool;
-
          
         m_joints = get_joints();
-
          
         ret = m_joints;
-         
     }      
     return ret;
 }
 
 coords_t Picker::get_tool(void) const throw()
 {
-     
     coords_t new_cords;
 
     new_cords.x     = m_l1 * cos(m_joints.th1) + m_l2 * cos(m_joints.th1 + m_joints.th2) + m_l3 * cos(m_joints.th1 + m_joints.th2 + m_joints.th3);
@@ -108,7 +82,6 @@ coords_t Picker::get_tool(void) const throw()
 
 joints_t Picker::get_joints(void) const throw()
 {
-     
     joints_t new_joints;
 
     double dotx,doty,costh,sinth,k1,k2;
@@ -130,7 +103,6 @@ joints_t Picker::get_joints(void) const throw()
     new_joints.th2 = std::fmod((new_joints.th2 + (M_PI)) , 2*M_PI) - M_PI; // Stay between -pi and pi
     new_joints.th3 = std::fmod((new_joints.th3 + (M_PI)) , 2*M_PI) - M_PI; // Stay between -pi and pi
 
-     
     return new_joints;
 }
 
@@ -138,8 +110,7 @@ detailed_pos_t Picker::get_detailed_pos(void) const throw()
 {
     /*
         Returns origin, position of end of link 1, position of end of link 2
-    */
-     
+    */ 
     detailed_pos_t new_pos;
 
     new_pos.link1.x = m_l1 * cos(m_joints.th1) + m_origin.x;
@@ -159,7 +130,6 @@ matrix_t Picker::compute_jacobian(void) throw()
     /*
         Returns jacobian matrix at current state
     */
-     
     matrix_t ret;
 
     double dx_dth1 = - m_l1 * sin(m_joints.th1) - m_l2 * sin(m_joints.th1 + m_joints.th2) - m_l3 * sin(m_joints.th1 + m_joints.th2 + m_joints.th3);
@@ -177,7 +147,6 @@ matrix_t Picker::compute_jacobian(void) throw()
     ret = m_matrix.createMatrix33(dx_dth1, dx_dth2, dx_dth3, dy_dth1, dy_dth2, dy_dth3, 1.0, 1.0, 1.0);
      
     return ret;
-
 }
 
 coords_t Picker::get_tool_vel(joints_t joints_vel) throw()
@@ -185,12 +154,10 @@ coords_t Picker::get_tool_vel(joints_t joints_vel) throw()
     /*
         Computes current tool velocity using jacobian
     */
-     
     coords_t new_vel;
 
     matrix_t jt_vel = m_matrix.createMatrix31(joints_vel.th1, joints_vel.th2, joints_vel.th3);
 
-     
     matrix_t jacobian = compute_jacobian();
      
     matrix_t tl_vel = m_matrix.multMatrix33x13(jacobian , jt_vel);
@@ -211,7 +178,6 @@ joints_t Picker::get_joints_vel(coords_t tool_vel)
     /*
         Computes current tool velocity using jacobian
     */
-     
     joints_t vel;
     vel.th1 = 0;
     vel.th2 = 0;
@@ -241,14 +207,12 @@ joints_t Picker::get_joints_vel(coords_t tool_vel)
     m_matrix.free(tool_v);
     m_matrix.free(jacobian);
     m_matrix.free(joints_vel);
-
      
     return vel;
 }
 
 path_t Picker::get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t)
 {
-
     joints_t start_joints_pos = inverse_kinematics(start_pos);
         
     joints_t start_joints_vel = get_joints_vel(start_vel);
@@ -294,7 +258,6 @@ double Picker::synchronisation_time(joints_t start_pos, joints_t start_vel, join
     Return largest time to destination to use slowest joint as synchronisation
         reference
     */
-     
     // Compute time to destination for all joints
     trajectory_time_t t_theta1 = Theta1_joint.time_to_destination(start_pos.th1, start_vel.th1, target_pos.th1, target_vel.th1);
 
