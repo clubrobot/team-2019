@@ -103,10 +103,10 @@ void MotorWrapper::move(double th1, double th2, double th3)
     m_th3 = th3 + m_offset3;
 
 
-    std::cout << "th1 : " << m_th1 << std::endl;
-    std::cout << "th2 : " << m_th2 << std::endl;
-    std::cout << "th3 : " << m_th3 << std::endl;
-    std::cout << std::endl;
+    // std::cout << "th1 : " << m_th1 << std::endl;
+    // std::cout << "th2 : " << m_th2 << std::endl;
+    // std::cout << "th3 : " << m_th3 << std::endl;
+    // std::cout << std::endl;
 
     m_AX1.move(m_th1);
     m_AX2.move(m_th2);
@@ -139,13 +139,13 @@ bool MotorWrapper::position_reached()
 {
      
 
-    std::cout << m_AX1.readPosition() << std::endl;
-    std::cout << m_th1 << std::endl;
-    std::cout << m_AX2.readPosition() << std::endl;
-    std::cout << m_th2 << std::endl;
-    std::cout << m_AX3.readPosition() << std::endl;
-    std::cout << m_th3 << std::endl;
-    std::cout << std::endl;
+    // std::cout << m_AX1.readPosition() << std::endl;
+    // std::cout << m_th1 << std::endl;
+    // std::cout << m_AX2.readPosition() << std::endl;
+    // std::cout << m_th2 << std::endl;
+    // std::cout << m_AX3.readPosition() << std::endl;
+    // std::cout << m_th3 << std::endl;
+    // std::cout << std::endl;
     if( equals(m_AX1.readPosition(),m_th1) && equals(m_AX2.readPosition(),m_th2) && equals(m_AX3.readPosition(),m_th3))
     {
          
