@@ -31,7 +31,7 @@ class TrajectoryManager : public ArmManager
 
     public :
     
-        TrajectoryManager(double dt = 0.2) : ArmManager(dt){}
+        TrajectoryManager(double dt = 0.2) throw() : ArmManager(dt){}
         /* go directly to pos */
         double goto_directly(double x, double y, double phi);
         /* go to pos with path */
@@ -39,9 +39,9 @@ class TrajectoryManager : public ArmManager
 
         double goto_home();
 
-        void set_status(status_t status);
+        void set_status(status_t status) throw();
 
-        status_t get_status();
+        status_t get_status() throw();
 
     private :
 
