@@ -26,7 +26,7 @@ using namespace IK;
 /* debug */
 template<typename T> ostream& operator<< (ostream& out, const vector<T>& v);
 
-TrajectoryManager traj_manager;
+TrajectoryManager traj_manager(0.5);
 
 void setup()
 {
@@ -41,18 +41,38 @@ void setup()
     talks.bind(GO_HOME_OPCODE, GO_HOME);
 
     /* front worksapce coordinate */
-    workspace_t ws_front = {0, 20.5, 0, 20.5, -1.0};
+    workspace_t ws_front = {0, 20.5, -5, 20.5, -1.0};
 
     /* back worksapce coordinate */
-    workspace_t ws_back = {-20.5, 0, 0, 20.5, 1.0};
+    workspace_t ws_back = {-20.5, 0, -5, 20.5, 1.0};
 
     /* init TrajectoryManager */
-    traj_manager.init_workspace(ws_front, ws_back);                      /*      init workspaces      */
-    traj_manager.set_origin(ORIGIN_X, ORIGIN_Y, ORIGIN_PHI);             /*      set arm origin       */
-    traj_manager.attach(ID1, ID2, ID3, LINK1_LEN, LINK2_LEN, LINK3_LEN); /*      attach ax12 motors   */
-    traj_manager.init_arm(5,5,0,FLIP_ELBOW_FRONT);                       /*      init arm at pos      */
+    try
+    {
 
-    traj_manager.goto_directly(20.0, 3.8, M_PI/2);
+        traj_manager.init_workspace(ws_front, ws_back);                      /*      init workspaces      */
+        traj_manager.set_origin(ORIGIN_X, ORIGIN_Y, ORIGIN_PHI);             /*      set arm origin       */
+        traj_manager.attach(ID1, ID2, ID3, LINK1_LEN, LINK2_LEN, LINK3_LEN); /*      attach ax12 motors   */
+        traj_manager.init_arm(3.8,20,0,FLIP_ELBOW_FRONT);                    /*      init arm at pos      */
+
+        path_t path;
+        path = traj_manager.go_to({5,5,0},{0,0,0},{10,0,0}, {0,0,0});
+        cout << path << endl;
+        delay(1000);
+
+        path = traj_manager.go_to({10,0,0},{0,0,0},{10,0,0}, {0,0,0});
+        cout << path << endl;
+        delay(1000);
+
+        path = traj_manager.go_to({5,5,0},{0,0,0},{30,0,0}, {0,0,0});
+        cout << path << endl;
+        delay(1000);
+    }
+    catch(const string& err)
+    {
+        cout << "error : " << err << endl;
+    }
+    
 }
 
 void loop()

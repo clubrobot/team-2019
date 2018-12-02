@@ -11,7 +11,7 @@ _GOTO_HOME_OPCODE     = 0X14
 
 class arm(SerialTalks):
 
-    def __init__(self, uuid='/dev/tty.SLAB_USBtoUART'):
+    def __init__(self, uuid="/dev/tty.SLAB_USBtoUART"):
         SerialTalks.__init__(self, uuid)
 
     def goto_directly(self, x ,y, phi):
