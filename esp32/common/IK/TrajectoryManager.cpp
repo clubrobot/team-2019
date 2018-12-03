@@ -263,4 +263,21 @@ status_t TrajectoryManager::get_status() throw()
     return ret;
 }
 
+double TrajectoryManager::convert_deg(double theta)
+{
+    double th;
+
+    th =  theta * (180.0 / M_PI);
+
+    return th;
+}
+double TrajectoryManager::convert_speed(double theta_speed)
+{
+    double speed;
+
+    speed = theta_speed * ( 60.0 / (2.0 * M_PI));
+
+    return speed;
+}
+
 } /* end of namespace */

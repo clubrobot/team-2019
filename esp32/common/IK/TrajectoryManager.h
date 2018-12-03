@@ -45,6 +45,9 @@ class TrajectoryManager : public ArmManager
 
     private :
 
+        double convert_deg(double theta);
+        double convert_speed(double theta_speed);
+
         status_t m_status;
 
         trajectory_task_pv_t m_task_parameters;
