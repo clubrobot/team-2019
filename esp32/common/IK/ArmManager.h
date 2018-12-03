@@ -10,8 +10,6 @@
 
 #define AX12_SPEED(x) (x * ( 60.0 / (2.0 * M_PI)))
 
-#define AX12_COORDS(x) (( x * (180.0 / M_PI)))
-
 #define CONVERT_DEG(x) (( x * (180.0 / M_PI)))
 
 constexpr double LINK1_OFFSET = 60.0;

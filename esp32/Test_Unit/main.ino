@@ -14,7 +14,7 @@
 using namespace IK;
 using namespace std;
 
-TrajectoryManager traj_manager(0.5);
+TrajectoryManager traj_manager(DELTA_T);
 
 void setup()
 {
@@ -22,18 +22,8 @@ void setup()
     Serial.begin(SERIALTALKS_BAUDRATE);
     talks.begin(Serial);
 
-    joints_t joint = {0,0,0};
-    coords_t  tool = {0,0,0};
-
-    /* front worksapce coordinate */
-    workspace_t ws_front = {0, 20.5, -5, 20.5, -1.0};
-
-    /* back worksapce coordinate */
-    workspace_t ws_back = {-20.5, 0, -5, 20.5, 1.0};
-
     /* init TrajectoryManager */
-
-    traj_manager.init_workspace(ws_front, ws_back);                         /*      init workspaces      */
+    traj_manager.init_workspace(WS_FRONT, WS_BACK);                         /*      init workspaces      */
     traj_manager.set_origin(ORIGIN);                                        /*      set arm origin       */
     traj_manager.attach(ID1, ID2, ID3, LINK1_LEN, LINK2_LEN, LINK3_LEN);    /*      attach ax12 motors   */
     traj_manager.init_arm(INITIAL_POS,FLIP_ELBOW_FRONT);                    /*      init arm at pos      */
