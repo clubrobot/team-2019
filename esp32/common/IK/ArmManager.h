@@ -7,25 +7,12 @@
 #include "MotorWrapper.h"
 #include "../AX12/AX12.h"
 #include "thread_tools.h"
+#include "arm_config.h"
+#include "datatype.h"
 
 #define AX12_SPEED(x) (x * ( 60.0 / (2.0 * M_PI)))
 
 #define CONVERT_DEG(x) (( x * (180.0 / M_PI)))
-
-constexpr double LINK1_OFFSET = 60.0;
-constexpr double LINK2_OFFSET = 150.0;
-constexpr double LINK3_OFFSET = 150.0;
-
-typedef struct
-{
-    double x_min;
-    double x_max;
-
-    double y_min;
-    double y_max;
-
-    double elbow_orientation;
-}workspace_t;
 
 namespace IK
 {

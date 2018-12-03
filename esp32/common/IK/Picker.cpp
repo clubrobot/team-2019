@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <math.h>
 #include "Picker.h"
+#include "arm_config.h"
 
 namespace IK
 {
