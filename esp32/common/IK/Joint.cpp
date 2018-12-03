@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "Joint.h"
-
+#include "arm_config.h"
 namespace IK
 {
 

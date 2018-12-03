@@ -5,41 +5,7 @@
 #include <Arduino.h>
 #include "Matrix.h"
 #include "thread_tools.h"
-
-constexpr double FLIP_ELBOW_FRONT = 1;
-constexpr double FLIP_ELBOW_BACK  = -1;
-
-typedef struct
-{
-	double x;
-	double y;
-	double phi;
-}coords_t;
-
-typedef struct
-{
-	double th1;
-	double th2;
-	double th3;
-	
-}joints_t;
-
-typedef struct
-{
-	coords_t origin;
-	coords_t link1;
-	coords_t link2;
-	coords_t tool; 
-}detailed_pos_t;
-
-typedef struct
-{
-	vector_t path_th1;
-	vector_t path_th2;
-	vector_t path_th3;
-
-	coords_t pos;
-}path_t;
+#include "datatype.h"
 
 namespace IK
 {

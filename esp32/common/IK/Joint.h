@@ -5,52 +5,9 @@
 #include <vector>
 #include <iostream>
 #include "thread_tools.h"
+#include "datatype.h"
 
 using namespace std;
-constexpr double EPSILON = 0.001;
-
-typedef struct
-{
-	double a0;
-	double a1;
-	double a2;
-}polynom_t;
-
-typedef struct 
-{
-	vector<double> t;
-	vector<double> pos;
-	vector<double> vel;
-	vector<double> acc;
-}vector_t;
-
-typedef struct
-{
-	double pos_min;
-	double pos_max;
-
-	double vel_min;
-	double vel_max;
-
-	double acc_min;
-	double acc_max;
-}constraints_t;
-
-typedef struct
-{
-	double t1;
-	double t2;
-	double tf;
-}trajectory_time_t;
-
-typedef enum
-{
-	NO_ERROR					= 0X00,
-	TRAJECTORY_IS_NOT_FEASIBLE 	= 0X01,
-	NON_CAUSAL_TRAJECTORY		= 0X02,
-	TARGET_POSITION_UNREACHABLE	= 0X03,
-	TARGET_VELOCITY_UNREACHABLE	= 0X04,
-}joint_error_t;
 
 namespace IK
 {

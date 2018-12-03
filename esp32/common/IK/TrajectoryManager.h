@@ -5,9 +5,7 @@
 #include "Picker.h"
 #include "ArmManager.h"
 #include "thread_tools.h"
-
-constexpr int RUNNING_CORE = 0;
-constexpr int TIMEOUT      = 10;
+#include "arm_config.h"
 
 typedef enum{
     ARRIVED     = 0X00,

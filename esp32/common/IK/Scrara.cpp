@@ -8,6 +8,7 @@
 #include "Joint.h"
 #include "Scara.h"
 #include "Matrix.h"
+#include "arm_config.h"
 
 namespace IK
 {

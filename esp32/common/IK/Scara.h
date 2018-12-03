@@ -7,32 +7,7 @@
 #include <string>
 #include <stdexcept>
 #include "Matrix.h"
-
-typedef struct
-{
-	double x;
-	double y;
-}coords_t;
-
-typedef struct
-{
-	double th1;
-	double th2;
-	
-}joints_t;
-
-typedef struct
-{
-	coords_t origin;
-	coords_t link1; 
-	coords_t tool; 
-}detailed_pos_t;
-
-typedef struct
-{
-	vector_t path_th1;
-	vector_t path_th2;
-}path_t;
+#include "datatype.h"
 
 namespace IK
 {
