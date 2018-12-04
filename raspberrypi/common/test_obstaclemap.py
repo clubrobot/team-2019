@@ -12,41 +12,22 @@ goal = Point(geo.get("goal"))
 
 
 obsmap = ObstacleMap.load(geo)
-#print("map loaded")
-#histo = obsmap.get_polar_histo(Point(800, 2000), 1000)
-#print(histo[1])
-#gaps = obsmap.get_gaps(histo)
-#print(gaps)
-#for gap in gaps:
-#    print(gap)
-#    print("width : ", obsmap.get_gap_width(histo, gap))
-#    print("angle : ", obsmap.get_angle_of_gap(gap) * 360/2/math.pi)
-#
-#print(obsmap.get_admissible_gaps(histo, 500))
-#
-max_step = 100
-min_step = 10
-alpha_static = 500
+
+alpha_static = 800
 robot_width = 300
+step = 200
 path = []
 i = 0
-print("start")
-while i < 100 and robot.distance(goal) > max_step:
-    print("\nPOINT N°" + str(i))
+while i < 100 and robot.distance(goal) > step:
     angle_guide = obsmap.get_angle_guide(robot, goal, distance_max=1000, alpha_static=alpha_static, min_width=robot_width)
-    #step = min(max_step, max_step * (d_min/alpha_static)/2)
-    #step = max(min_step, step)
-    step = max_step
+
     if angle_guide is None:
-        print("error")
         break
-    #print("angle guide : ", angle_guide)
     robot = Point(robot.x + math.cos(angle_guide) * step, robot.y + math.sin(angle_guide) * step)
     path += [(robot.x, robot.y)]
     i += 1
 
 pts = [Point(p) for p in path]
-print("transformed in points")
 nb_pts = i
 done = [False for _ in range(nb_pts)]
 j = 0
@@ -62,20 +43,12 @@ while j < nb_pts:
     window = Polygon(
         [(p.x - robot_width, p.y - robot_width), (p.x + robot_width, p.y - robot_width),
          (p.x + robot_width, p.y + robot_width), (p.x - robot_width, p.y + robot_width)])
-    print("fenetre : ", window)
     for k in range(nb_pts):
         if not done[k] and window.contains(pts[k]):
             done[k] = True
             pts_win += [pts[k]]
-    print(len(pts_win), " points traités")
     pts_f += [(mean([p.x for p in pts_win]), mean([p.y for p in pts_win]))]
 
-
-
-
-#import matplotlib.pyplot as plt
-#plt.plot([x for (x, y) in path], [y for (x, y) in path])
-#plt.show()
 
 file = open("list_point", "w")
 file.write("Execute[{")
@@ -83,6 +56,8 @@ i = 0
 for (x, y) in [(p.x, p.y) for p in pts]:
     file.write("\"P_{" + str(i) + "} = (" + str(round(x)) + ", " + str(round(y)) + ")\",")
     i += 1
+file.seek(0, os.SEEK_END)
+file.seek(file.tell() - 1, os.SEEK_SET)
 file.write("}]")
 file.close()
 
@@ -90,6 +65,8 @@ file = open("list_point_filtered", "w")
 file.write("Execute[{")
 for (x, y) in pts_f:
     file.write("\"(" + str(round(x)) + ", " + str(round(y)) + ")\",")
+file.seek(0, os.SEEK_END)
+file.seek(file.tell() - 1, os.SEEK_SET)
 file.write("}]")
 
 file.close()
