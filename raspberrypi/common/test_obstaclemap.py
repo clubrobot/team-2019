@@ -26,12 +26,14 @@ obsmap = ObstacleMap.load(geo)
 #
 max_step = 100
 min_step = 10
-alpha_static = 200.0
+alpha_static = 500
+robot_width = 300
 path = []
 i = 0
 print("start")
-while i < 50 and robot.distance(goal) > max_step:
-    angle_guide = obsmap.get_angle_guide(robot, goal, distance_max=1000, alpha_static=alpha_static, min_width=300)
+while i < 100 and robot.distance(goal) > max_step:
+    print("\nPOINT N°" + str(i))
+    angle_guide = obsmap.get_angle_guide(robot, goal, distance_max=1000, alpha_static=alpha_static, min_width=robot_width)
     #step = min(max_step, max_step * (d_min/alpha_static)/2)
     #step = max(min_step, step)
     step = max_step
@@ -58,8 +60,8 @@ while j < nb_pts:
     done[j] = True
     pts_win = [p]
     window = Polygon(
-        [(p.x - alpha_static*2, p.y - alpha_static*2), (p.x + alpha_static*2, p.y - alpha_static*2),
-         (p.x + alpha_static*2, p.y + alpha_static*2), (p.x - alpha_static*2, p.y + alpha_static*2)])
+        [(p.x - robot_width, p.y - robot_width), (p.x + robot_width, p.y - robot_width),
+         (p.x + robot_width, p.y + robot_width), (p.x - robot_width, p.y + robot_width)])
     print("fenetre : ", window)
     for k in range(nb_pts):
         if not done[k] and window.contains(pts[k]):
@@ -77,8 +79,10 @@ while j < nb_pts:
 
 file = open("list_point", "w")
 file.write("Execute[{")
+i = 0
 for (x, y) in [(p.x, p.y) for p in pts]:
-    file.write("\"(" + str(round(x)) + ", " + str(round(y)) + ")\",")
+    file.write("\"P_{" + str(i) + "} = (" + str(round(x)) + ", " + str(round(y)) + ")\",")
+    i += 1
 file.write("}]")
 file.close()
 
