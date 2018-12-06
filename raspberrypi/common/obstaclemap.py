@@ -8,10 +8,9 @@ class ObstacleMap:
     nb_phi = 50
     nb_r = 20
     INFINITE = 100000
-
     last_angle_guide = None
 
-    def __init__(self, polygons=list()):
+    def __init__(self, polygons=[]):
         self.obstacles = [Polygon(p) for p in polygons]
 
     def add_obstacle(self, polygon):
@@ -71,25 +70,18 @@ class ObstacleMap:
             return abs_diff
 
     @staticmethod
-    def angle_average(a1, a2, w1=1, w2=1):
+    def angle_average(a1, a2, w1=1.0, w2=1.0):
         x = math.cos(a1) * w1 + math.cos(a2) * w2
         y = math.sin(a1) * w1 + math.sin(a2) * w2
         return math.atan2(y, x) % (2*math.pi)
 
-    @staticmethod
     def get_middle_of_gap_basic(self, gap):
         return ((gap[1] + gap[0])/2 % self.nb_phi) / self.nb_phi * 2*math.pi
-
 
     def get_middle_of_gap(self, histo, gap):
         p1, p2 = self.get_nearest_points_of_gap(histo, gap)
         if p1 is None and p2 is None:
             return None
-        d1 = p1.distance(Point([0, 0]))
-        d2 = p2.distance(Point([0, 0]))
-        phi_1 = math.atan2(p1.y, p1.x) % (2*math.pi)
-        phi_2 = math.atan2(p2.y, p2.x) % (2*math.pi)
-
         p_middle = Point((p1.x + p2.x)/2, (p1.y + p2.y) / 2)
 
         angle = math.atan2(p_middle.y, p_middle.x) % (2*math.pi)
@@ -175,7 +167,7 @@ class ObstacleMap:
         angle_to_gap = self.get_middle_of_gap(histo, gap)
 
         if angle_to_gap is not None:
-            angle_guide = self.angle_average(angle_to_goal, angle_to_gap, w1=1, w2=(alpha_static/d_min)**2)
+            angle_guide = self.angle_average(angle_to_goal, angle_to_gap, w1=1.0, w2=(alpha_static/d_min)**2)
         else:
             angle_guide = angle_to_goal
 
