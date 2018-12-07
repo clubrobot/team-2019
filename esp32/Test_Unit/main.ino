@@ -16,6 +16,9 @@ using namespace std;
 
 TrajectoryManager traj_manager(DELTA_T);
 
+double x = 10;
+double y = 10;
+
 void setup()
 {
     /* init Serial talks */
@@ -26,21 +29,66 @@ void setup()
     traj_manager.init_workspace(WS_FRONT, WS_BACK);                         /*      init workspaces      */
     traj_manager.set_origin(ORIGIN);                                        /*      set arm origin       */
     traj_manager.attach(ID1, ID2, ID3, LINK1_LEN, LINK2_LEN, LINK3_LEN);    /*      attach ax12 motors   */
-    traj_manager.init_arm(INITIAL_POS,FLIP_ELBOW_FRONT);                    /*      init arm at pos      */
+    traj_manager.init_arm(INITIAL_POS,FLIP_ELBOW_BACK);                    /*      init arm at pos      */
 
+    while(traj_manager.get_status() != ARRIVED);
     double t;
     try
     {
-        t = traj_manager.goto_path(10,10,0);
+        t = traj_manager.goto_path(15,10,0);
         cout << "trajectory time : "<< t << endl;
     }
     catch(const string& err)
     {
         cout << "error : " << err << endl;
     }
+
+  
 }
 
 void loop()
 {  
-    talks.execute();
+    // while(traj_manager.get_status() != ARRIVED);
+    // delay(2000);
+    // double t;
+    // try
+    // {
+    //     t = traj_manager.goto_path(15,15,0);
+    //     cout << "trajectory time : "<< t << endl;
+    // }
+    // catch(const string& err)
+    // {
+    //     cout << "error : " << err << endl;
+    // }
+
+    // while(traj_manager.get_status() != ARRIVED);
+    // delay(2000);
+    //  try
+    // {
+    //     t = traj_manager.goto_path(10,15,0);
+    //     cout << "trajectory time : "<< t << endl;
+    // }
+    // catch(const string& err)
+    // {
+    //     cout << "error : " << err << endl;
+    // }
+
+  
+
+    // while(traj_manager.get_status() != ARRIVED);
+    // delay(2000);
+    //  try
+    // {
+    //     t = traj_manager.goto_path(10,15,0);
+    //     cout << "trajectory time : "<< t << endl;
+    // }
+    // catch(const string& err)
+    // {
+    //     cout << "error : " << err << endl;
+    // }
+    
+        //traj_manager.motor_read();
+        // delay(1000);
+        // cout << "....."<<endl;
+    //talks.execute();
 }
