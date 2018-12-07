@@ -22,10 +22,13 @@ class MotorWrapper
         void moveSpeed(double th1, double th1_speed, double th2,double th2_speed, double th3, double th3_speed);
 
         bool position_reached();
+        void motor_read();
 
     private:
 
-        bool equals(double a, double b, double epsilon = 0.5);
+        
+
+        bool equals(double a, double b, double epsilon = 2);
 
         double m_th1;
         double m_th2;
@@ -38,6 +41,8 @@ class MotorWrapper
         AX12 m_AX1;
         AX12 m_AX2;
         AX12 m_AX3;
+
+        AX12 m_AX_Broadcast;
 
         Mutex m_mutex;
 };
