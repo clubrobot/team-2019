@@ -26,40 +26,9 @@ void ArmManager::set_origin(coords_t origin) throw()
     m_origin.phi = origin.phi;  
 }
 
-void ArmManager::attach(int id_1, int id_2, int id_3, double l1, double l2, double l3) throw()
+void ArmManager::init_arm(double l1, double l2, double l3, int elbow_or)
 {
-    m_id1 = id_1;
-    m_id2 = id_2;
-    m_id3 = id_3;
-
-    m_len1 = l1;
-    m_len2 = l2;
-    m_len3 = l3;
-}
-
-void ArmManager::init_arm(coords_t initial_pos, int elbow_or)
-{
-    MotorWrapper::attach(m_id1, m_id2, m_id3);
-    MotorWrapper::init();
-    MotorWrapper::init_offsets(LINK1_OFFSET, LINK2_OFFSET, LINK3_OFFSET);
-
-    Picker::init(m_len1, m_len2, m_len3, m_joints, m_origin, elbow_or);
-
-    m_tool.x    = initial_pos.x;
-    m_tool.y    = initial_pos.y;
-    m_tool.phi  = initial_pos.phi;
-
-  
-
-    m_joints = Picker::inverse_kinematics(m_tool);
-
-    cout << initial_pos.x <<endl;
-    cout << initial_pos.y <<endl;
-    cout << initial_pos.phi <<endl;
-    
-    MotorWrapper::move(CONVERT_DEG(m_joints.th1), CONVERT_DEG(m_joints.th2), CONVERT_DEG(m_joints.th3));
-    //MotorWrapper::move(0, 0, 0);
-    
+    Picker::init(l1, l2, l3, m_joints, m_origin, elbow_or);
 }
 
 path_t ArmManager::merge_trajectories(path_t traj_a, path_t traj_b) throw()

@@ -12,12 +12,10 @@
 
 #define AX12_SPEED(x) (x * ( 60.0 / (2.0 * M_PI)))
 
-#define CONVERT_DEG(x) (( x * (180.0 / M_PI)))
-
 namespace IK
 {
 
-class ArmManager : public Picker, public MotorWrapper
+class ArmManager : public Picker
 {
     public:
 
@@ -25,8 +23,7 @@ class ArmManager : public Picker, public MotorWrapper
 
         void        init_workspace(workspace_t ws_front, workspace_t ws_back) throw();
         void        set_origin(coords_t origin) throw();
-        void        attach(int id_1, int id_2, int id_3, double l1, double l2, double l3) throw();
-        void        init_arm(coords_t initial_pos, int elbow_or);
+        void        init_arm(double l1, double l2, double l3, int elbow_or);
 
         workspace_t clip_workspace_to_constraints(workspace_t workspace) throw();
         coords_t    workspace_center(workspace_t workspace) throw();
@@ -52,16 +49,6 @@ class ArmManager : public Picker, public MotorWrapper
         coords_t m_tool;
         coords_t m_origin;
         joints_t m_joints;
-
-        /* AX12 motors */
-
-        int m_id1;
-        int m_id2;
-        int m_id3;
-
-        double m_len1;
-        double m_len2;
-        double m_len3;
 
         Mutex m_mutex;
 };
