@@ -6,6 +6,7 @@
 #include "ArmManager.h"
 #include "thread_tools.h"
 #include "arm_config.h"
+#include "TaskManager.h"
 
 typedef enum{
     ARRIVED     = 0X00,
@@ -15,16 +16,13 @@ typedef enum{
 
 typedef struct
 {
-    coords_t start_coord;
-    coords_t vel;
-    coords_t end_coord;
 
 }trajectory_task_pv_t;
 
 namespace IK
 {
 
-class TrajectoryManager : public ArmManager
+class TrajectoryManager : public ArmManager, public TaskManager
 {
 
     public :
@@ -39,7 +37,11 @@ class TrajectoryManager : public ArmManager
 
         void set_status(status_t status) throw();
 
-        status_t get_status() throw();
+        status_t get_status() const throw();
+
+        bool move_directly();
+        bool move_path();
+        bool move_home();
 
     private :
 
@@ -48,11 +50,13 @@ class TrajectoryManager : public ArmManager
 
         status_t m_status;
 
-        trajectory_task_pv_t m_task_parameters;
+        coords_t m_start_coord;
+        coords_t m_start_vel;
+        coords_t m_end_vel;
+        coords_t m_end_coord;
 
         Mutex m_mutex;
 };
-
 }
 
 #endif /* __TRAJECTORYMANAGER_H */
