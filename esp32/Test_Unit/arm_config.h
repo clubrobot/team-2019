@@ -19,7 +19,7 @@ constexpr double LINK3_OFFSET = 150.0;
 /* AX12 ID configuration */
 constexpr int ID1 = 1; /* LINK 1 */
 constexpr int ID2 = 3; /* LINK 2 */
-constexpr int ID3 = 1; /* LINK 3 */
+constexpr int ID3 = 2; /* LINK 3 */
 
 /* flip elbow value */
 constexpr double FLIP_ELBOW_FRONT = 1;
@@ -29,16 +29,16 @@ constexpr double FLIP_ELBOW_BACK  = -1;
 constexpr coords_t ORIGIN       = { 0.0 , 0.0 , 0.0 };
 
 /* INITIAL ARM POS                |  x  |  y  | phi | */
-constexpr coords_t INITIAL_POS  = { 10.0, 5.0 , 0.0 };
+constexpr coords_t INITIAL_POS  = { 10 , 10, 0.0 };
 
 /* Front worksapce coordinate    | Xmin | Xmax | Ymin | Ymax | elbow             */
-constexpr workspace_t WS_FRONT = {0     , 20.5 , -5   , 20.5 , FLIP_ELBOW_BACK};
+constexpr workspace_t WS_FRONT = {0     , 30 , -5   , 30 , FLIP_ELBOW_BACK};
 
 /* Back worksapce coordinate     | Xmin | Xmax | Ymin | Ymax | elbow             */
-constexpr workspace_t WS_BACK  = {-20.5 , 0    , -5   , 20.5 , FLIP_ELBOW_FRONT};
+constexpr workspace_t WS_BACK  = {-30 , 0    , -5   , 30 , FLIP_ELBOW_FRONT};
 
 /* Delta t for path generation choose the best interval */
-constexpr double DELTA_T = 0.5; 
+constexpr double DELTA_T = 0.025; 
 
 /* non reached pos timeout */
 constexpr int TIMEOUT      = 10;
