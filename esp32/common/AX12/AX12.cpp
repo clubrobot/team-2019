@@ -46,6 +46,7 @@ int AX12::moveSpeed(float Position, float speed){
 		setEndlessMode(OFF);
 	}
 	int pos = MIN(1023,Position/300*1023);
+	int sp =  MIN(1023,speed/300*1023);
 	return Dynamixel.moveSpeed(m_id, pos, speed);
 }
 
@@ -86,7 +87,7 @@ int AX12::setTempLimit(unsigned char Temperature){
 	
 int AX12::setAngleLimit(float CW, float CCW){
 	int CWLimit = MIN(1023, CW/300*1023);
-	int CCWLimit = MIN(1023, CCW/300 *1023);
+	int CCWLimit = MIN(1023, CCW/59 *1023);
 	return Dynamixel.setAngleLimit(m_id, CWLimit, CCWLimit);
 }
 
