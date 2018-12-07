@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "arm_config.h"
+#include "thread_tools.h"
 
 class TaskManager
 {
@@ -10,8 +11,8 @@ class TaskManager
         TaskManager(): _coreID(RUNNING_CORE), _stackDepth(20000), _taskPriority(0){}
 
         bool create_task(TaskFunction_t TaskCode, void * const Parameters);
-        bool delete_task();
-        bool task_is_running(){return _task_is_runnig;}
+        void delete_task();
+        bool task_is_running();
 
     private : 
 
@@ -23,6 +24,8 @@ class TaskManager
         BaseType_t   _taskStatus;
 
         bool _task_is_runnig;
+
+        Mutex m_mutex;
 
 };
 

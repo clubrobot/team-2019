@@ -3,6 +3,10 @@
 
 bool TaskManager::create_task(TaskFunction_t TaskCode, void * const Parameters)
 {
+    bool ret;
+
+    m_mutex.acquire();
+
     if(!_task_is_runnig)
     {
         _taskStatus = xTaskCreatePinnedToCore(
@@ -17,27 +21,43 @@ bool TaskManager::create_task(TaskFunction_t TaskCode, void * const Parameters)
         /* TODO : Handle task creation status */
 
         _task_is_runnig = true;
-        return true;
+        ret = true;
     }
     else
     {
-        return false;
+        ret = false;
     }
 
-                                               
+    m_mutex.release();
+
+    return ret;                                        
 }
 
-bool TaskManager::delete_task()
+void TaskManager::delete_task()
 {
+    m_mutex.acquire();
+
     if(_taskHandler != NULL)
     {
-        vTaskDelete(_taskHandler);
         _task_is_runnig = false;
-        return true;
+        m_mutex.release();
+        vTaskDelete(_taskHandler);
     }
     else
     {
-        return false;
+        m_mutex.release();
     }
-    
+}
+
+bool TaskManager::task_is_running()
+{
+    bool ret;
+
+    m_mutex.acquire();
+
+    ret = _task_is_runnig;
+
+    m_mutex.release();
+
+    return ret;
 }
