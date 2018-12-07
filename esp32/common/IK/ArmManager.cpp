@@ -49,9 +49,17 @@ void ArmManager::init_arm(coords_t initial_pos, int elbow_or)
     m_tool.y    = initial_pos.y;
     m_tool.phi  = initial_pos.phi;
 
+  
+
     m_joints = Picker::inverse_kinematics(m_tool);
+
+    cout << initial_pos.x <<endl;
+    cout << initial_pos.y <<endl;
+    cout << initial_pos.phi <<endl;
     
     MotorWrapper::move(CONVERT_DEG(m_joints.th1), CONVERT_DEG(m_joints.th2), CONVERT_DEG(m_joints.th3));
+    //MotorWrapper::move(0, 0, 0);
+    
 }
 
 path_t ArmManager::merge_trajectories(path_t traj_a, path_t traj_b) throw()
@@ -101,10 +109,12 @@ workspace_t ArmManager::workspace_containing_position(coords_t position) throw()
     if(position_within_workspace(position, m_ws_front))
     {
         ret = m_ws_front;
+        cout << "ws front"<<endl;
     }
     else if(position_within_workspace(position, m_ws_back))
     {
         ret = m_ws_back;  
+        cout << "ws back"<<endl;
     }
     else
     {
@@ -196,6 +206,7 @@ path_t ArmManager::go_to(coords_t start_pos, coords_t start_vel, coords_t target
         m_tool = start_pos;
         Picker::inverse_kinematics(m_tool);
         traj_is_unfeasible = true;
+        cout << "error : " << err << endl;
     }
 
     if(traj_is_unfeasible)
@@ -217,9 +228,11 @@ path_t ArmManager::go_home(coords_t start_pos, coords_t start_vel)
 {
     //Define home position as target position
     joints_t start_joints_pos = Picker::inverse_kinematics(start_pos);
-    joints_t target_joints_pos = {10, 5, 0};
-
+    joints_t target_joints_pos = {0, 0, 0};
     coords_t target_pos = Picker::forward_kinematics(target_joints_pos);
+
+    cout << target_pos<< endl;
+
     coords_t target_vel;
     target_vel.x    = 0;
     target_vel.y    = 0;
@@ -257,7 +270,6 @@ path_t ArmManager::goto_workspace(coords_t start_pos, coords_t start_vel, coords
     //Else, we need to flip the elbow!
     joints_t start_joints = Picker::inverse_kinematics(start_pos);
     joints_t inter_joints = start_joints;
-    inter_joints.th1 = M_PI/2;
     inter_joints.th2 = 0.0;
         
     coords_t inter_pos = Picker::forward_kinematics(inter_joints);
