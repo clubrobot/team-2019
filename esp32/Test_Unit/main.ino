@@ -26,10 +26,11 @@ void setup()
     talks.begin(Serial);
 
     /* init TrajectoryManager */
-    traj_manager.init_workspace(WS_FRONT, WS_BACK);                         /*      init workspaces      */
-    traj_manager.set_origin(ORIGIN);                                        /*      set arm origin       */
-    traj_manager.attach(ID1, ID2, ID3, LINK1_LEN, LINK2_LEN, LINK3_LEN);    /*      attach ax12 motors   */
-    traj_manager.init_arm(INITIAL_POS,FLIP_ELBOW_BACK);                    /*      init arm at pos      */
+    traj_manager.init_workspace(WS_FRONT, WS_BACK);                             /*      init workspaces      */
+    traj_manager.set_origin(ORIGIN);                                            /*      set arm origin       */
+    traj_manager.init_arm(LINK1_LEN, LINK2_LEN, LINK3_LEN, FLIP_ELBOW_BACK);  /*      init arm at pos      */
+    traj_manager.attach(ID1, ID2, ID3);    /*      attach ax12 motors   */
+    traj_manager.begin(INITIAL_POS); 
 
     while(traj_manager.get_status() != ARRIVED);
     double t;
