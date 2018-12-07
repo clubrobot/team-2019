@@ -48,6 +48,7 @@ class ArmManager : public Picker, public MotorWrapper
         workspace_t m_workspace;
 
         double m_dt;
+        
         coords_t m_tool;
         coords_t m_origin;
         joints_t m_joints;
