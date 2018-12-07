@@ -11,7 +11,6 @@ static void task_directly(void * param)
     /* cast input parameter */
     TrajectoryManager* traj_manager = (TrajectoryManager*)param;
 
-    while(!traj_manager->move_directly());
 
     /* delete task at the end */
     traj_manager->delete_task();
@@ -22,7 +21,6 @@ static void task_path(void * param)
     /* cast input parameter */
     TrajectoryManager* traj_manager = (TrajectoryManager*)param;
 
-    while(!traj_manager->move_directly());
 
     /* delete task at the end */
     traj_manager->delete_task();
@@ -33,7 +31,6 @@ static void task_home(void * param)
     /* cast input parameter */
     TrajectoryManager* traj_manager = (TrajectoryManager*)param;
 
-    while(!traj_manager->move_path());
 
     /* delete task at the end */
     traj_manager->delete_task();
@@ -41,6 +38,20 @@ static void task_home(void * param)
 
 namespace IK
 {
+
+void TrajectoryManager::attach(int id_1, int id_2, int id_3) throw()
+{
+    MotorWrapper::attach(id_1, id_2, id_3);
+    MotorWrapper::init();
+    MotorWrapper::init_offsets(LINK1_OFFSET, LINK2_OFFSET, LINK3_OFFSET);
+}
+
+void TrajectoryManager::begin(coords_t initial_pos)
+{
+    joints_t joints = Picker::inverse_kinematics(initial_pos);
+    
+    MotorWrapper::move(convert_deg(joints.th1), convert_deg(joints.th2), convert_deg(joints.th3));
+}
 
 /* go directly to pos */
 double TrajectoryManager::goto_directly(double x, double y, double phi)

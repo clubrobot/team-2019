@@ -22,12 +22,15 @@ typedef struct
 namespace IK
 {
 
-class TrajectoryManager : public ArmManager, public TaskManager
+class TrajectoryManager : public ArmManager, public TaskManager, public MotorWrapper
 {
 
     public :
     
         TrajectoryManager(double dt = 0.2) throw() : ArmManager(dt){}
+
+        void attach(int id_1, int id_2, int id_3) throw();
+        void begin(coords_t initial_pos);
         /* go directly to pos */
         double goto_directly(double x, double y, double phi);
         /* go to pos with path */
