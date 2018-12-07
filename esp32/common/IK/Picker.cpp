@@ -44,14 +44,13 @@ joints_t Picker::inverse_kinematics(coords_t tool)
 {
     joints_t ret;
 
-    double dotx = (m_tool.x - m_origin.x) - (m_l3 * cos(m_tool.phi));
-    double doty = (m_tool.y - m_origin.y) - (m_l3 * sin(m_tool.phi));
+    double dotx = (tool.x - m_origin.x) - (m_l3 * cos(tool.phi));
+    double doty = (tool.y - m_origin.y) - (m_l3 * sin(tool.phi));
 
 	double norm = pow(dotx,2) + pow(doty,2);
-
+    
     if( norm > pow((m_l1 + m_l2 + m_l3),2) || norm < pow((m_l1 - m_l2 - m_l3),2))
     {
-         
         m_tool = get_tool();
         throw string("Target unreacheable");
     }
@@ -190,7 +189,6 @@ joints_t Picker::get_joints_vel(coords_t tool_vel)
      
     if (m_matrix.norm(tool_v) < EPSILON)
     {
-         
         return vel;
     }
     if (abs(m_matrix.det(jacobian)) < EPSILON)
