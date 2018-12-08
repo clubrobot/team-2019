@@ -16,8 +16,11 @@ obsmap = ObstacleMap.load(geo)
 alpha_static = 800
 robot_width = 300
 step = 200
+velocity = 500
 path = []
 i = 0
+
+obsmap.add_obstacle([(0, 2500), (200, 2500), (200, 2300), (0, 2300)], vel=Velocity(500, 0))
 while i < 100 and robot.distance(goal) > step:
     angle_guide = obsmap.get_angle_guide(robot, goal, distance_max=1000, alpha_static=alpha_static, min_width=robot_width)
 
@@ -26,6 +29,11 @@ while i < 100 and robot.distance(goal) > step:
     robot = Point(robot.x + math.cos(angle_guide) * step, robot.y + math.sin(angle_guide) * step)
     path += [(robot.x, robot.y)]
     i += 1
+
+    print(robot)
+    print(obsmap.obstacles[-1].polygon, "\n")
+    print(obsmap.obstacles[-1].polygon.contains(robot))
+    obsmap.run(step/velocity)
 
 pts = [Point(p) for p in path]
 nb_pts = i

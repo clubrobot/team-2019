@@ -2,6 +2,7 @@ from shapely.geometry import *
 from common.geogebra import Geogebra
 import math
 from shapely.affinity import *
+from common.obstacle import *
 
 
 class ObstacleMap:
@@ -11,11 +12,11 @@ class ObstacleMap:
 
     last_angle_guide = None
 
-    def __init__(self, polygons=list()):
-        self.obstacles = [Polygon(p) for p in polygons]
+    def __init__(self, polygons=[]):
+        self.obstacles = [Obstacle(Polygon(p), Velocity(0, 0)) for p in polygons]
 
-    def add_obstacle(self, polygon):
-        self.obstacles += [Polygon(polygon)]
+    def add_obstacle(self, polygon, vel=Velocity(0, 0)):
+        self.obstacles += [Obstacle(Polygon(polygon), vel)]
 
     def get_polar_histo(self, p, distance_max):
         histo = ([x/self.nb_phi*2*math.pi for x in range(0, self.nb_phi)],
@@ -30,7 +31,7 @@ class ObstacleMap:
             for r in range(self.nb_r):
                 p2 = translate(p2, dx, dy)
                 for obs in self.obstacles:
-                    if obs.contains(p2):
+                    if obs.polygon.contains(p2):
                         histo[1][phi_i] = p2.distance(p)
                         obstacle = True
                         break
@@ -76,7 +77,6 @@ class ObstacleMap:
         y = math.sin(a1) * w1 + math.sin(a2) * w2
         return math.atan2(y, x) % (2*math.pi)
 
-    @staticmethod
     def get_middle_of_gap_basic(self, gap):
         return ((gap[1] + gap[0])/2 % self.nb_phi) / self.nb_phi * 2*math.pi
 
@@ -85,10 +85,6 @@ class ObstacleMap:
         p1, p2 = self.get_nearest_points_of_gap(histo, gap)
         if p1 is None and p2 is None:
             return None
-        d1 = p1.distance(Point([0, 0]))
-        d2 = p2.distance(Point([0, 0]))
-        phi_1 = math.atan2(p1.y, p1.x) % (2*math.pi)
-        phi_2 = math.atan2(p2.y, p2.x) % (2*math.pi)
 
         p_middle = Point((p1.x + p2.x)/2, (p1.y + p2.y) / 2)
 
@@ -186,6 +182,9 @@ class ObstacleMap:
         self.last_angle_guide = angle_guide
         return angle_guide
 
+    def run(self, time):
+        for obs in self.obstacles:
+            obs.move(time)
 
     @staticmethod
     def load(geogebra, pattern="poly*"):

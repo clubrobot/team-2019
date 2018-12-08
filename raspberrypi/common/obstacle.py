@@ -13,4 +13,4 @@ class Obstacle:
         self.velocity = velocity
 
     def move(self, time):
-        translate(self.polygon, xoff=self.velocity.vx*time, yoff=self.velocity.vy*time)
+        self.polygon = translate(self.polygon, xoff=self.velocity.vx*time, yoff=self.velocity.vy*time)
