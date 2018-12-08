@@ -119,11 +119,6 @@ bool MotorWrapper::position_reached()
     double a1 = m_AX1.readPosition();
     double a2 = m_AX2.readPosition();
     double a3 = m_AX3.readPosition();
-
-    // std::cout << a1 << std::endl;
-    // std::cout << a2 << std::endl;
-    // std::cout << a3 << std::endl;
-    // std::cout << std::endl;
     
     if(equals(a1,m_th1) && equals(a2,m_th2) && equals(a3,m_th3))
     {
