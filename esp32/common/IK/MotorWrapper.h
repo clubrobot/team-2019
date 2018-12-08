@@ -28,7 +28,7 @@ class MotorWrapper
 
         
 
-        bool equals(double a, double b, double epsilon = 2);
+        bool equals(double a, double b, double epsilon = 0.5);
 
         double m_th1;
         double m_th2;
