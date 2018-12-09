@@ -58,6 +58,8 @@ class TrajectoryManager : public ArmManager, public TaskManager, public MotorWra
         coords_t m_end_vel;
         coords_t m_end_coord;
 
+        double m_current_traj_time;
+
         Mutex m_mutex;
 };
 }
