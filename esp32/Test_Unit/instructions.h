@@ -4,10 +4,10 @@
 #include "../common/IK/Picker.h"
 #include "../common/SerialTalks.h"
 
-#define MOVE_DIRECTLY_OPCODE      0x11
-#define MOVE_PATH_OPCODE          0x12
-#define IS_ARRIVED_OPCODE         0x13
-#define GO_HOME_OPCODE            0x14
+#define MOVE_DIRECTLY_OPCODE      0x15
+#define MOVE_PATH_OPCODE          0x16
+#define IS_ARRIVED_OPCODE         0x17
+#define GO_HOME_OPCODE            0x18
 
 void MOVE_DIRECTLY(SerialTalks& talks, Deserializer& input, Serializer& output);
 

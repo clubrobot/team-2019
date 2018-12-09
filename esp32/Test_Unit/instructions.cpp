@@ -16,7 +16,15 @@ void MOVE_DIRECTLY(SerialTalks& talks, Deserializer& input, Serializer& output)
     y   = (double)input.read<float>();
     phi = (double)input.read<float>();
 
-    trajectory_time = traj_manager.goto_directly(x, y, phi);
+    try
+    {
+        trajectory_time = traj_manager.goto_directly(x, y, phi);
+    }
+    catch(const string& err)
+    {
+        trajectory_time = -1;
+    }
+
 
     output.write<float>((float)trajectory_time);
 }
@@ -30,7 +38,15 @@ void MOVE_PATH(SerialTalks& talks, Deserializer& input, Serializer& output)
     y   = (double)input.read<float>();
     phi = (double)input.read<float>();
 
-    trajectory_time = traj_manager.goto_path(x, y, phi);
+    try
+    {
+        trajectory_time = traj_manager.goto_path(x, y, phi);
+    }
+    catch(const string& err)
+    {
+        trajectory_time = -1;
+    }
+
 
     output.write<float>((float)trajectory_time);
 }
@@ -38,7 +54,7 @@ void MOVE_PATH(SerialTalks& talks, Deserializer& input, Serializer& output)
 void IS_ARRIVED(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
     int ret = (int)traj_manager.get_status();
-    output.write<int>(ret);
+    output.write<int>(12);
 }
 
 void GO_HOME(SerialTalks& talks, Deserializer& input, Serializer& output)

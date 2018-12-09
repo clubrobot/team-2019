@@ -78,6 +78,8 @@ double TrajectoryManager::goto_directly(double x, double y, double phi)
     /* compute an estimation of trajectory time */
     time_to_arrival = estimated_time_of_arrival(m_start_coord, m_start_vel, m_end_coord, m_end_vel);
 
+    m_current_traj_time = time_to_arrival;
+
     m_mutex.release();
 
     if(create_task(task_directly, this))
@@ -113,6 +115,8 @@ double TrajectoryManager::goto_path(double x, double y, double phi)
 
     /* compute an estimation of trajectory time */
     time_to_arrival = estimated_time_of_arrival(m_start_coord, m_start_vel, m_end_coord, m_end_vel);
+
+    m_current_traj_time = time_to_arrival;
 
     m_mutex.release();
 
@@ -161,20 +165,14 @@ double TrajectoryManager::goto_home()
 
 void TrajectoryManager::set_status(status_t status) throw()
 {
-    m_mutex.acquire();
     m_status = status;
-    m_mutex.release();
 }
 
 status_t TrajectoryManager::get_status() const throw()
 {
     status_t ret;
 
-    m_mutex.acquire();
-
     ret = m_status;
-
-    m_mutex.release();
 
     return ret;
 }
@@ -191,11 +189,11 @@ bool TrajectoryManager::move_directly()
     move(convert_deg(joints.th1), convert_deg(joints.th2), convert_deg(joints.th3));
 
     /* check error or if position is reached */
-    while(!position_reached())
-    {
-        /* sleep */
-        delay(100);
-    }    
+    // while(!position_reached())
+    // {
+    //     /* sleep */
+    //     delay(100);
+    // }    
 
     set_status(ARRIVED);
 
@@ -207,6 +205,7 @@ bool TrajectoryManager::move_directly()
 bool TrajectoryManager::move_path()
 {
     m_mutex.acquire();
+
     path_t path;
     int element_number;
     double pos[3];
@@ -233,10 +232,10 @@ bool TrajectoryManager::move_path()
 
         moveSpeed(pos[0], vel[0], pos[1], vel[1], pos[2], vel[2]);
 
-        while(!position_reached())
-        {
-           delay(path.path_th1.t[i]*1000);
-        }
+    //     while(!position_reached())
+    //     {
+    //        delay(path.path_th1.t[i]*1000);
+    //     }
     }
     set_status(ARRIVED);
 
@@ -275,10 +274,10 @@ bool TrajectoryManager::move_home()
 
         moveSpeed(pos[0], vel[0], pos[1], vel[1], pos[2], vel[2]);
 
-        while(!position_reached())
-        {
-           delay(100);
-        }
+        // while(!position_reached())
+        // {
+        //    delay(100);
+        // }
     }
     set_status(ARRIVED);
 
