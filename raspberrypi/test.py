@@ -10,40 +10,40 @@ x 	= 15
 y	= 15
 phi = 0
 
-output = a.execute(0X17, FLOAT(x), FLOAT(y), FLOAT(phi))
-trajectory_time = output.read(INT)
-print(trajectory_time)
+output = a.execute(0X17)
+print(output.read(INT))
+#time.sleep(1)
+
+output = a.execute(0X17)
+print(output.read(INT))
+#time.sleep(1)
+
+output = a.execute(0X17)
+print(output.read(INT))
 time.sleep(1)
 
-output = a.execute(0X17, FLOAT(x), FLOAT(y), FLOAT(phi))
-trajectory_time = output.read(INT)
-print(trajectory_time)
+output = a.execute(0X17)
+print(output.read(INT))
 time.sleep(1)
 
-output = a.execute(0X17, FLOAT(x), FLOAT(y), FLOAT(phi))
-trajectory_time = output.read(INT)
-print(trajectory_time)
+output = a.execute(0X17)
+print(output.read(INT))
 time.sleep(1)
+
+
 
 # output = a.execute(0X15, FLOAT(x), FLOAT(y), FLOAT(phi))
-# trajectory_time = output.read(FLOAT)
-# print(trajectory_time)
+# print(output.read(FLOAT))
+# print(5)
 # print("wait")
-# time.sleep(trajectory_time)
+# time.sleep(5)
 # print("next pos")
 
 # output = a.execute(0X15, FLOAT(x), FLOAT(y), FLOAT(phi))
-# trajectory_time = output.read(FLOAT)
-# print(trajectory_time)
+# print(output.read(FLOAT))
+# print(5)
 # print("wait")
-# time.sleep(trajectory_time)
-# print("next pos")
-
-# output = a.execute(0X15, FLOAT(x), FLOAT(y), FLOAT(phi))
-# trajectory_time = output.read(FLOAT)
-# print(trajectory_time)
-# print("wait")
-# time.sleep(trajectory_time)
+# time.sleep(5)
 # print("next pos")
 
 

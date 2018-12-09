@@ -33,12 +33,90 @@ void setup()
     /* init TrajectoryManager */
     traj_manager.init_workspace(WS_FRONT, WS_BACK);                             /*      init workspaces      */
     traj_manager.set_origin(ORIGIN);                                            /*      set arm origin       */
-    traj_manager.init_arm(LINK1_LEN, LINK2_LEN, LINK3_LEN, FLIP_ELBOW_BACK);  /*      init arm at pos      */
-    traj_manager.attach(ID1, ID2, ID3);    /*      attach ax12 motors   */
+    traj_manager.init_arm(LINK1_LEN, LINK2_LEN, LINK3_LEN, FLIP_ELBOW_BACK);    /*      init arm at pos      */
+    traj_manager.attach(ID1, ID2, ID3);                                         /*      attach ax12 motors   */
     traj_manager.begin(INITIAL_POS); 
-}
 
+    double trajectory_time;
+    try
+    {
+        trajectory_time = traj_manager.goto_path(10, 10, 0);
+    }
+    catch(const string& err)
+    {
+        cout << err << endl;
+    }
+    delay(trajectory_time * 1000);
+
+    try
+    {
+        trajectory_time = traj_manager.goto_path(10, 15, 0);
+    }
+    catch(const string& err)
+    {
+        cout << err << endl;
+    }
+    delay(trajectory_time * 1000);
+
+    try
+    {
+        trajectory_time = traj_manager.goto_path(15, 15, 0);
+    }
+    catch(const string& err)
+    {
+        cout << err << endl;
+    }
+    delay(trajectory_time * 1000);
+
+    try
+    {
+        trajectory_time = traj_manager.goto_path(10, 10, 0);
+    }
+    catch(const string& err)
+    {
+        cout << err << endl;
+    }
+    delay(trajectory_time * 1000);
+
+    try
+    {
+        trajectory_time = traj_manager.goto_path(5, 15,0);
+    }
+    catch(const string& err)
+    {
+        cout << err << endl;
+    }
+    delay(trajectory_time * 1000);
+}
+double trajectory_time;
 void loop()
 {  
+
+    try
+    {
+        trajectory_time = traj_manager.goto_path(x, y,0);
+    }
+    catch(const string& err)
+    {
+        cout << err << endl;
+    }
+
+    if(x == 15)
+    {
+        x = 8;
+    }
+    else
+    {
+        x++;
+    }
+    if(y == 15)
+    {
+        y = 8;
+    }
+    else
+    {
+        y++;
+    }
+    delay(trajectory_time * 1000);
     talks.execute();
 }
