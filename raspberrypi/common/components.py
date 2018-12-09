@@ -53,15 +53,6 @@ try:
 
         def receive(self, input, timeout=0.5):
             opcode = input.read(BYTE)
-<<<<<<< HEAD
-            retcode = input.read(LONG)
-            # TODO redo with a try except on keyerror
-            if opcode == RESEND_OPCODE:
-                self.resend(input)
-                return
-
-            opcode =str(opcode) + self.uuid
-=======
             retcode = input.read(ULONG)
             try:
                 output = self.instructions[opcode](input)
@@ -71,7 +62,7 @@ try:
                 self.rawsend(prefix + content)
             except KeyError:
                 pass
->>>>>>> origin
+
             try:
                 output = self.parent.execute(MAKE_MANAGER_REPLY_OPCODE, opcode, input, timeout=0.5)
                 if output is None: return
