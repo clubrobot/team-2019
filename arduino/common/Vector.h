@@ -48,9 +48,12 @@ class Vector
 
         T operator[](int index){ return _begin[index];}
 
+<<<<<<< HEAD
         int size(void){return _size;}
 
 
+=======
+>>>>>>> origin
     private:
 
         void reserve(int new_capacity)
