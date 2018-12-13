@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-from common.roadmap import RoadMap
-from common.geogebra import Geogebra
 # Check for the Rapsberry Pi address
 # It looks for a file in the current directory, whose name is
 # a valid IP address
@@ -17,9 +14,9 @@ hostname = ""
 if hostname == "":
     print("IP adress :  ")
     hostname = input()
-    if (len(hostname) == 0):
+    if len(hostname) == 0:
         hostname = "127.0.0.1"
-    elif (len(hostname.split(".")) == 1):
+    elif len(hostname.split(".")) == 1:
         hostname = "192.168.1." + hostname
     print("Try reaching raspberry at IP " + hostname + "...")
 
@@ -31,6 +28,6 @@ MAX_ROT = 6
 manager = Manager(hostname)
 manager.connect(10)
 
-wheeledbase = WheeledBase(manager)
+wheeledbase = WheeledBase(manager, uuid="b_A_")
 
 

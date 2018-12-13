@@ -30,7 +30,7 @@ class ObstacleMap:
             for r in range(self.nb_r):
                 p2 = translate(p2, dx, dy)
                 for obs in self.obstacles:
-                    if obs.polygon.contains(p2):
+                    if obs.contains(p2):
                         histo[1][phi_i] = p2.distance(p)
                         obstacle = True
                         break
@@ -175,7 +175,7 @@ class ObstacleMap:
 
         if self.last_angle_guide is not None:
             angle_guide = self.angle_average(angle_guide, self.last_angle_guide,
-                                             w2=max(0.5, min(3.0, d_min/alpha_static)))
+                                             w2=max(0.5, min(1.5, (d_min/alpha_static)**2)))
 
         self.last_angle_guide = angle_guide
         return angle_guide
