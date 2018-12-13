@@ -54,7 +54,7 @@ void MOVE_PATH(SerialTalks& talks, Deserializer& input, Serializer& output)
 void IS_ARRIVED(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
     int ret = (int)traj_manager.get_status();
-    output.write<int>(12);
+    output.write<int>(ret);
 }
 
 void GO_HOME(SerialTalks& talks, Deserializer& input, Serializer& output)

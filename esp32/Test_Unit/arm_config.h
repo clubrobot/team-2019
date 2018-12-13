@@ -29,7 +29,7 @@ constexpr double FLIP_ELBOW_BACK  = -1;
 constexpr coords_t ORIGIN       = { 0.0 , 0.0 , 0.0 };
 
 /* INITIAL ARM POS                |  x  |  y  | phi | */
-constexpr coords_t INITIAL_POS  = { 10 , 10, 0.0 };
+constexpr coords_t INITIAL_POS  = { 5 , 10, 0.0 };
 
 /* Front worksapce coordinate    | Xmin | Xmax | Ymin | Ymax | elbow             */
 constexpr workspace_t WS_FRONT = {0     , 30 , -5   , 30 , FLIP_ELBOW_BACK};
