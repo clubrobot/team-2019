@@ -6,6 +6,12 @@
 namespace IK
 {
 
+bool equals(double a, double b, double epsilon = EPSILON)
+{ 
+    return ((std::abs(a - b) < epsilon));
+}
+
+
 void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or) throw()
 {
     m_joints 	= joints;
@@ -84,20 +90,28 @@ joints_t Picker::get_joints(void) const throw()
 {
     joints_t new_joints;
 
-    double dotx,doty,costh,sinth,k1,k2;
+    double dotx,doty,costh,sinth,k1,k2, sqr;
 
     dotx = (m_tool.x - m_origin.x) - (m_l3 * cos(m_tool.phi));
     doty = (m_tool.y - m_origin.y) - (m_l3 * sin(m_tool.phi));
 
     costh = (pow(dotx,2) + pow(doty,2) - pow(m_l1,2) - pow(m_l2, 2)) / (2 * m_l1 * m_l2);
-    sinth = m_flip_elbow * sqrt(1 - pow(costh,2));
+
+    if(equals(pow(costh,2),1))
+    {
+        sinth = m_flip_elbow * sqrt(0);
+    }
+    else
+    {
+        sinth = m_flip_elbow * sqrt(1 - pow(costh,2));
+    }
 
     k1 = m_l1 + (m_l2 * costh);
     k2 = m_l2 * sinth ;
 
     new_joints.th1 = atan2(doty, dotx) - atan2(k2 , k1);
     new_joints.th2 = atan2(sinth, costh);
-    new_joints.th3 = m_tool.phi - new_joints.th1 - new_joints.th2;
+    new_joints.th3 = m_tool.phi - (new_joints.th1 + new_joints.th2);
 
     new_joints.th1 = std::fmod((new_joints.th1 + (M_PI)) , 2*M_PI) - M_PI; // Stay between -pi and pi
     new_joints.th2 = std::fmod((new_joints.th2 + (M_PI)) , 2*M_PI) - M_PI; // Stay between -pi and pi
