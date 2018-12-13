@@ -8,7 +8,7 @@
 class TaskManager
 {
     public :
-        TaskManager(): _coreID(RUNNING_CORE), _stackDepth(20000), _taskPriority(0), _taskHandler(NULL){}
+        TaskManager(): _coreID(RUNNING_CORE), _stackDepth(8192), _taskPriority(0), _taskHandler(NULL){}
 
         bool create_task(TaskFunction_t TaskCode, void * const Parameters);
         void delete_task();
