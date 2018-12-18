@@ -28,11 +28,11 @@ void setup()
     //initialise ShiftRegister
     //shift.attach(LATCHPIN,CLOCKPIN,DATAPIN);
 
-    AX12::SerialBegin(1000000, 2);
+    AX12::SerialBegin(1000000, 5);
 
     servoax.attach(254);
 
-    //servoax.setBD(1000000);
+    servoax.setID(1);
     //servoax.setSRL(1); // Respond only to READ_DATA instructions
     // servoax.setLEDAlarm(32); // max torque only
     // servoax.setShutdownAlarm(32); // max torque only

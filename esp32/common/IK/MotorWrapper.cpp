@@ -35,7 +35,7 @@ void MotorWrapper::detach()
 
 void MotorWrapper::init()
 {
-    AX12::SerialBegin(1000000, 2);
+    AX12::SerialBegin(1000000, 5);
 
     //m_AX_Broadcast.setRDT(0x250);
     m_AX_Broadcast.setVoltageLimit(0,250);
@@ -84,8 +84,11 @@ void MotorWrapper::move(double th1, double th2, double th3)
     std::cout << std::endl;
 
     m_AX1.move(m_th1);
+    delay(1);
     m_AX2.move(m_th2);
+    delay(1);
     m_AX3.move(m_th3);
+    delay(1);
 }
 
 void MotorWrapper::moveSpeed(double th1, double th1_speed, double th2, double th2_speed, double th3, double th3_speed)
@@ -117,12 +120,19 @@ bool MotorWrapper::equals(double a, double b, double epsilon)
 bool MotorWrapper::position_reached()
 {
     double a1 = m_AX1.readPosition();
+    delay(1);
     double a2 = m_AX2.readPosition();
+    delay(1);
     double a3 = m_AX3.readPosition();
+
+    std::cout << std::endl;
+    std::cout << "th1 : " << a1 << std::endl;
+    std::cout << "th2 : " << a2 << std::endl;
+    std::cout << "th3 : " << a3 << std::endl;
+    std::cout << std::endl;
     
     if(equals(a1,m_th1) && equals(a2,m_th2) && equals(a3,m_th3))
     {
-         
         return true;
     }
      

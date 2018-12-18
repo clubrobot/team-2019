@@ -14,7 +14,35 @@
 using namespace IK;
 using namespace std;
 
-TrajectoryManager traj_manager(DELTA_T);
+typedef enum
+{
+    HOME,
+    PUCK_POS,
+    PUCK_POS_INTER,
+    TANK_POS_INTER,
+    MID_POS,
+    TANK_POS_0,
+    TANK_POS_1,
+    TANK_POS_2,
+    BALANCE_POS_INTER,
+    BALANCE_POS,
+}position_t;
+
+static coords_t arm_positions[] = 
+{
+    [HOME]              = {10.0, 15.0, 0},
+    [PUCK_POS]          = {-12.0, 15.0, M_PI},
+    [PUCK_POS_INTER]    = {-8.0, 15.0, M_PI},
+    [TANK_POS_INTER]    = {10.0, 8.0, -M_PI/2},
+    [MID_POS]           = {0.0, 20.0, 0},
+    [TANK_POS_0]        = {10.0, 0.0, -M_PI/2},
+    [TANK_POS_1]        = {10.0, 2.0, -M_PI/2},
+    [TANK_POS_2]        = {10.0, 4.0, -M_PI/2},
+    [BALANCE_POS_INTER] = {10.0, 5.0, 0},
+    [BALANCE_POS]       = {10.0, 5.0, 0},
+};
+
+TrajectoryManager traj_manager;
 
 double x = 10;
 double y = 10;
@@ -37,86 +65,100 @@ void setup()
     traj_manager.attach(ID1, ID2, ID3);                                         /*      attach ax12 motors   */
     traj_manager.begin(INITIAL_POS); 
 
-    double trajectory_time;
+    delay(2000);
     try
     {
-        trajectory_time = traj_manager.goto_path(10, 10, 0);
+        traj_manager.goto_directly(arm_positions[HOME]);
     }
     catch(const string& err)
     {
         cout << err << endl;
     }
-    delay(trajectory_time * 1000);
+    delay(2000);
 
     try
     {
-        trajectory_time = traj_manager.goto_path(10, 15, 0);
+        traj_manager.goto_directly(arm_positions[PUCK_POS_INTER]);
     }
     catch(const string& err)
     {
         cout << err << endl;
     }
-    delay(trajectory_time * 1000);
+    delay(2000);
 
     try
     {
-        trajectory_time = traj_manager.goto_path(15, 15, 0);
+        traj_manager.goto_directly(arm_positions[PUCK_POS]);
     }
     catch(const string& err)
     {
         cout << err << endl;
     }
-    delay(trajectory_time * 1000);
+    delay(2000);
 
     try
     {
-        trajectory_time = traj_manager.goto_path(10, 10, 0);
+        traj_manager.goto_directly(arm_positions[PUCK_POS_INTER]);
     }
     catch(const string& err)
     {
         cout << err << endl;
     }
-    delay(trajectory_time * 1000);
+    delay(2000);
 
     try
     {
-        trajectory_time = traj_manager.goto_path(5, 15,0);
+        traj_manager.goto_directly(arm_positions[MID_POS]);
     }
     catch(const string& err)
     {
         cout << err << endl;
     }
-    delay(trajectory_time * 1000);
+    delay(2000);
+
+    try
+    {
+        traj_manager.goto_directly(arm_positions[TANK_POS_INTER]);
+    }
+    catch(const string& err)
+    {
+        cout << err << endl;
+    }
+    delay(2000);
+
+    try
+    {
+        traj_manager.goto_directly(arm_positions[TANK_POS_2]);
+    }
+    catch(const string& err)
+    {
+        cout << err << endl;
+    }
+    delay(2000);
+
+    try
+    {
+        traj_manager.goto_directly(arm_positions[TANK_POS_1]);
+    }
+    catch(const string& err)
+    {
+        cout << err << endl;
+    }
+    delay(2000);
+
+    try
+    {
+        traj_manager.goto_directly(arm_positions[TANK_POS_0]);
+    }
+    catch(const string& err)
+    {
+        cout << err << endl;
+    }
+    delay(2000);
+
 }
-double trajectory_time;
+
 void loop()
 {  
-
-    try
-    {
-        trajectory_time = traj_manager.goto_path(x, y,0);
-    }
-    catch(const string& err)
-    {
-        cout << err << endl;
-    }
-
-    if(x == 15)
-    {
-        x = 8;
-    }
-    else
-    {
-        x++;
-    }
-    if(y == 15)
-    {
-        y = 8;
-    }
-    else
-    {
-        y++;
-    }
-    delay(trajectory_time * 1000);
     talks.execute();
 }
