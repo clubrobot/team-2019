@@ -14,10 +14,6 @@ typedef enum{
     ERROR       = 0X02,
 }status_t;
 
-typedef struct
-{
-
-}trajectory_task_pv_t;
 
 namespace IK
 {
@@ -26,25 +22,19 @@ class TrajectoryManager : public ArmManager, public TaskManager, public MotorWra
 {
 
     public :
-    
-        TrajectoryManager(double dt = 0.2) throw() : ArmManager(dt){}
+
+        TrajectoryManager() throw(){}
 
         void attach(int id_1, int id_2, int id_3) throw();
         void begin(coords_t initial_pos);
-        /* go directly to pos */
-        double goto_directly(double x, double y, double phi);
-        /* go to pos with path */
-        double goto_path(double x, double y, double phi);
 
-        double goto_home();
+        double goto_directly(coords_t pos);
 
         void set_status(status_t status) throw();
 
         status_t get_status() const throw();
 
         bool move_directly();
-        bool move_path();
-        bool move_home();
 
     private :
 
