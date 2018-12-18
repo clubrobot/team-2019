@@ -19,6 +19,12 @@ typedef struct
 	double th1;
 	double th2;
 	double th3;
+
+	bool intermediary_pos;
+
+	double th1_int;
+	double th2_int;
+	double th3_int;
 	
 }joints_t;
 
