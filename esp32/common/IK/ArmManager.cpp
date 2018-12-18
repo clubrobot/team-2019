@@ -9,10 +9,6 @@ static bool double_equals(double a, double b, double epsilon = 0.001)
 namespace IK
 {
 
-ArmManager::ArmManager(double dt) throw()
-{
-    m_dt = dt;
-}
 void ArmManager::init_workspace(workspace_t ws_front, workspace_t ws_back) throw()
 {
     m_ws_front  = ws_front;
@@ -31,46 +27,6 @@ void ArmManager::init_arm(double l1, double l2, double l3, int elbow_or)
     Picker::init(l1, l2, l3, m_joints, m_origin, elbow_or);
 }
 
-path_t ArmManager::merge_trajectories(path_t traj_a, path_t traj_b) throw()
-{
-    path_t new_path;
-
-    // path th1
-    new_path.path_th1.t.insert(new_path.path_th1.t.end(), traj_a.path_th1.t.begin(), traj_a.path_th1.t.end());
-    new_path.path_th1.pos.insert(new_path.path_th1.pos.end(), traj_a.path_th1.pos.begin(), traj_a.path_th1.pos.end());
-    new_path.path_th1.vel.insert(new_path.path_th1.vel.end(), traj_a.path_th1.vel.begin(), traj_a.path_th1.vel.end());
-    new_path.path_th1.acc.insert(new_path.path_th1.acc.end(), traj_a.path_th1.acc.begin(), traj_a.path_th1.acc.end());
-
-    new_path.path_th1.t.insert(new_path.path_th1.t.end(), traj_b.path_th1.t.begin(), traj_b.path_th1.t.end());
-    new_path.path_th1.pos.insert(new_path.path_th1.pos.end(), traj_b.path_th1.pos.begin(), traj_b.path_th1.pos.end());
-    new_path.path_th1.vel.insert(new_path.path_th1.vel.end(), traj_b.path_th1.vel.begin(), traj_b.path_th1.vel.end());
-    new_path.path_th1.acc.insert(new_path.path_th1.acc.end(), traj_b.path_th1.acc.begin(), traj_b.path_th1.acc.end());
-
-    // path th2
-    new_path.path_th2.t.insert(new_path.path_th2.t.end(), traj_a.path_th2.t.begin(), traj_a.path_th2.t.end());
-    new_path.path_th2.pos.insert(new_path.path_th2.pos.end(), traj_a.path_th2.pos.begin(), traj_a.path_th2.pos.end());
-    new_path.path_th2.vel.insert(new_path.path_th2.vel.end(), traj_a.path_th2.vel.begin(), traj_a.path_th2.vel.end());
-    new_path.path_th2.acc.insert(new_path.path_th2.acc.end(), traj_a.path_th2.acc.begin(), traj_a.path_th2.acc.end());
-
-    new_path.path_th2.t.insert(new_path.path_th2.t.end(), traj_b.path_th2.t.begin(), traj_b.path_th2.t.end());
-    new_path.path_th2.pos.insert(new_path.path_th2.pos.end(), traj_b.path_th2.pos.begin(), traj_b.path_th2.pos.end());
-    new_path.path_th2.vel.insert(new_path.path_th2.vel.end(), traj_b.path_th2.vel.begin(), traj_b.path_th2.vel.end());
-    new_path.path_th2.acc.insert(new_path.path_th2.acc.end(), traj_b.path_th2.acc.begin(), traj_b.path_th2.acc.end());
-
-    // path th3
-    new_path.path_th3.t.insert(new_path.path_th3.t.end(), traj_a.path_th3.t.begin(), traj_a.path_th3.t.end());
-    new_path.path_th3.pos.insert(new_path.path_th3.pos.end(), traj_a.path_th3.pos.begin(), traj_a.path_th3.pos.end());
-    new_path.path_th3.vel.insert(new_path.path_th3.vel.end(), traj_a.path_th3.vel.begin(), traj_a.path_th3.vel.end());
-    new_path.path_th3.acc.insert(new_path.path_th3.acc.end(), traj_a.path_th3.acc.begin(), traj_a.path_th3.acc.end());
-
-    new_path.path_th3.t.insert(new_path.path_th3.t.end(), traj_b.path_th3.t.begin(), traj_b.path_th3.t.end());
-    new_path.path_th3.pos.insert(new_path.path_th3.pos.end(), traj_b.path_th3.pos.begin(), traj_b.path_th3.pos.end());
-    new_path.path_th3.vel.insert(new_path.path_th3.vel.end(), traj_b.path_th3.vel.begin(), traj_b.path_th3.vel.end());
-    new_path.path_th3.acc.insert(new_path.path_th3.acc.end(), traj_b.path_th3.acc.begin(), traj_b.path_th3.acc.end());
-
-    return new_path;    
-}
-
 workspace_t ArmManager::workspace_containing_position(coords_t position) throw()
 {
     workspace_t ret;
@@ -78,12 +34,10 @@ workspace_t ArmManager::workspace_containing_position(coords_t position) throw()
     if(position_within_workspace(position, m_ws_front))
     {
         ret = m_ws_front;
-        cout << "ws front"<<endl;
     }
     else if(position_within_workspace(position, m_ws_back))
     {
         ret = m_ws_back;  
-        cout << "ws back"<<endl;
     }
     else
     {
@@ -158,68 +112,30 @@ coords_t ArmManager::workspace_center(workspace_t workspace) throw()
     return coord;
 }
 
-path_t ArmManager::go_to(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel)
+joints_t ArmManager::go_to(coords_t start_pos, coords_t target_pos)
 {
     workspace_t new_ws = workspace_containing_position(target_pos);
 
-    path_t  new_traj;
+    joints_t  new_joints;
 
     bool traj_is_unfeasible = false;
 
     try
     { 
-        new_traj = goto_workspace(start_pos, start_vel, target_pos, target_vel, new_ws);
+        new_joints = goto_workspace(start_pos, target_pos, new_ws);
     }
     catch(const string& err)
     {
         m_tool = start_pos;
-        Picker::inverse_kinematics(m_tool);
-        traj_is_unfeasible = true;
-        cout << "error : " << err << endl;
+        new_joints = Picker::inverse_kinematics(m_tool);
     }
 
-    if(traj_is_unfeasible)
-    {
-        new_traj = go_home(start_pos, start_vel);
-        m_tool = new_traj.pos;
-        Picker::inverse_kinematics(m_tool);
-    }
-    else
-    {
-       m_tool = target_pos;
-       Picker::inverse_kinematics(m_tool);
-    }
-    
-    return new_traj;
+    return new_joints;
 }
 
-path_t ArmManager::go_home(coords_t start_pos, coords_t start_vel)
+joints_t ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, workspace_t new_workspace)
 {
-    //Define home position as target position
-    joints_t start_joints_pos = Picker::inverse_kinematics(start_pos);
-    joints_t target_joints_pos = {0, 0, 0};
-    coords_t target_pos = Picker::forward_kinematics(target_joints_pos);
-
-    cout << target_pos<< endl;
-
-    coords_t target_vel;
-    target_vel.x    = 0;
-    target_vel.y    = 0;
-    target_vel.phi  = 0;
-
-    workspace_t new_ws = workspace_containing_position(target_pos);
-
-    path_t new_traj;
-    new_traj = goto_workspace(start_pos, start_vel, target_pos, target_vel, new_ws);
-
-    new_traj.pos = target_pos;
-
-    return new_traj;
-     
-}
-path_t ArmManager::goto_workspace(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, workspace_t new_workspace)
-{
-    path_t new_traj;
+    joints_t new_joints;
     // Check that new position is within workspace
     if (!position_within_workspace(target_pos, new_workspace))
     {
@@ -230,45 +146,36 @@ path_t ArmManager::goto_workspace(coords_t start_pos, coords_t start_vel, coords
     
     // Compute sequence to move from old workspace to the new position
     // in the new workspace defined
-    if(double_equals(new_workspace.elbow_orientation,Picker::m_flip_elbow))
+    if(double_equals(new_workspace.elbow_orientation, Picker::m_flip_elbow))
     {
-        new_traj = goto_position(start_pos, start_vel, target_pos, target_vel);
-        return new_traj;
+        new_joints = goto_position(target_pos);
+        new_joints.intermediary_pos = false;
+        return new_joints;
     }
 
-    //Else, we need to flip the elbow!
-    joints_t start_joints = Picker::inverse_kinematics(start_pos);
-    joints_t inter_joints = start_joints;
+    joints_t inter_joints = Picker::inverse_kinematics(start_pos);
     inter_joints.th2 = 0.0;
-        
-    coords_t inter_pos = Picker::forward_kinematics(inter_joints);
-    coords_t inter_vel;
-    inter_vel.x     = 0;
-    inter_vel.y     = 0;
-    inter_vel.phi   = 0;
 
-    //Go to intermediary point (singularity)
-    path_t new_traja;
-    new_traja = goto_position(start_pos, start_vel, inter_pos, inter_vel);
-   
     Picker::m_flip_elbow *= (double)-1;
-
-    //Go to target
-    path_t new_trajb;
     
-    new_trajb = goto_position(inter_pos, inter_vel, target_pos, target_vel);
+    //Go to target
+    new_joints = goto_position(target_pos);
 
-    new_traj = merge_trajectories(new_traja, new_trajb);
+    new_joints.th1_int = inter_joints.th1;
+    new_joints.th2_int = inter_joints.th2;
+    new_joints.th3_int = inter_joints.th3;
+
+    new_joints.intermediary_pos = true;
     
     //Return trajectory to execute for adjustment
-    return new_traj;
+    return new_joints;
 }
 
-path_t ArmManager::goto_position(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel)
+joints_t ArmManager::goto_position(coords_t target_pos)
 {
-    path_t ret;
+    joints_t ret;
 
-    ret = Picker::get_path(start_pos, start_vel, target_pos, target_vel, m_dt);
+    ret = Picker::inverse_kinematics(target_pos);
 
     return ret;
 }
