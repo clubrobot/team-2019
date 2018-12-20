@@ -281,6 +281,7 @@ bool SerialTalks::execute()
 			continue;
 		}
 	}
+	if (length>0){ freeBuffer();}
 	return ret;
 }
 
