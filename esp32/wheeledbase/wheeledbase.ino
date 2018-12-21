@@ -40,6 +40,9 @@ PositionController positionControl;
 PurePursuit   purePursuit;
 TurnOnTheSpot turnOnTheSpot;
 
+
+void loop_aux(void * aux);
+
 // Setup
 
 void setup()
@@ -120,10 +123,16 @@ void setup()
 	positionControl.disable();
 
 	purePursuit.load(PUREPURSUIT_ADDRESS);
-	
-	// Miscellanous
-	//TCCR2B = (TCCR2B & 0b11111000) | 1; // Set Timer2 frequency to 16MHz instead of 250kHz
-	
+
+
+    xTaskCreatePinnedToCore(
+                    loop_aux,   /* Function to implement the task */
+                    "loop_aux", /* Name of the task */
+                    10000,      /* Stack size in words */
+                    NULL,       /* Task input parameter */
+                    0,          /* Priority of the task */
+                    NULL,       /* Task handle. */
+                    1);  /* Core where the task should run */
 }
 
 // Loop
@@ -138,6 +147,10 @@ void loop()
 		positionControl.setPosInput(odometry.getPosition());
 		velocityControl.setInputs(odometry.getLinVel(), odometry.getAngVel());
 	}
+}
+
+void loop_aux(void * aux)
+{
 
 	// Compute trajectory
 	if (positionControl.update())
@@ -155,5 +168,7 @@ void loop()
 	velocityControl.update();
 #endif // ENABLE_VELOCITYCONTROLLER_LOGS //
 
-
 }
+
+
+
