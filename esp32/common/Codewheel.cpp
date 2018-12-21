@@ -4,6 +4,22 @@
 #include "Codewheel.h"
 #include "SerialTalks.h"
 
+uint8_t shiftInSlow(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder) {
+    uint8_t value = 0;
+    uint8_t i;
+
+    for(i = 0; i < 8; ++i) {
+        digitalWrite(clockPin, HIGH);
+        delayMicroseconds(1);
+        if(bitOrder == LSBFIRST)
+            value |= digitalRead(dataPin) << i;
+        else
+            value |= digitalRead(dataPin) << (7 - i);
+        digitalWrite(clockPin, LOW);
+        delayMicroseconds(1);
+    }
+    return value;
+}
 
 void Codewheel::attachCounter(int XY, int AXIS, int SEL1, int SEL2, int OE, int RST)
 {
@@ -53,11 +69,11 @@ void Codewheel::update()
 
 		// The counter value is received in big endian order
 		m_currentCounter <<= 8;
-
+        
 		// Read the value stored in the shift register
 		digitalWrite(m_REGISTER_CLOCK, HIGH);
 		digitalWrite(m_REGISTER_LATCH, HIGH);
-		m_currentCounter += shiftIn(m_REGISTER_DATA, m_REGISTER_CLOCK, MSBFIRST);
+		m_currentCounter += shiftInSlow(m_REGISTER_DATA, m_REGISTER_CLOCK, MSBFIRST);
 		digitalWrite(m_REGISTER_LATCH, LOW);
 	}
 	digitalWrite(m_COUNTER_OE, HIGH);
