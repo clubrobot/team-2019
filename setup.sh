@@ -113,6 +113,11 @@ if [ -z "$ARDMK_DIR" ]; then # ifndef ARDMK_DIR
 		
 		sudo pip3 install python-igraph
 
+		sudo apt-get install doxygen
+		
+		sudo apt-get install texlive-font-utils
+
+
 		echo export ARDMK_DIR="/usr/share/arduino" >> "$PROFILE"
 	else
 		# installing homebrew for macos
