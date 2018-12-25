@@ -1,6 +1,12 @@
 #include <Arduino.h>
 #include "ArmManager.h"
 
+#ifdef IK_LOG
+    #define LOG_ARM(arg) cout << __TIME__<<" (ARM MANAGER)("<< __func__ << " , " << __LINE__ << ")\t\t: "<< arg <<endl;
+#else
+    #define LOG_ARM(arg) 
+#endif
+
 static bool double_equals(double a, double b, double epsilon = 0.001)
 {
     return std::abs(a - b) < epsilon;
@@ -118,8 +124,6 @@ joints_t ArmManager::go_to(coords_t start_pos, coords_t target_pos)
 
     joints_t  new_joints;
 
-    bool traj_is_unfeasible = false;
-
     try
     { 
         new_joints = goto_workspace(start_pos, target_pos, new_ws);
@@ -139,6 +143,7 @@ joints_t ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, wor
     // Check that new position is within workspace
     if (!position_within_workspace(target_pos, new_workspace))
     {
+        LOG_ARM("Target position not within new workspace boundaries, target may be out of defined workspaces");
         throw string("Target position not within new workspace boundaries, target may be out of defined workspaces");
     }
      
@@ -150,11 +155,13 @@ joints_t ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, wor
     {
         new_joints = goto_position(target_pos);
         new_joints.intermediary_pos = false;
+        LOG_ARM("Classic move");
         return new_joints;
     }
 
     joints_t inter_joints = Picker::inverse_kinematics(start_pos);
     inter_joints.th2 = 0.0;
+    LOG_ARM("COMPUTE INTERMEDIARY POS");
 
     Picker::m_flip_elbow *= (double)-1;
     

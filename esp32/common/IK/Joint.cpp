@@ -1,6 +1,13 @@
 #include <Arduino.h>
 #include "Joint.h"
 #include "arm_config.h"
+
+#ifdef IK_LOG
+    #define LOG_JOINT(arg) cout << __TIME__<< " (JOINT)("<< __func__ << " , " << __LINE__ << ")\t\t\t: "<< arg << endl; 
+#else
+    #define LOG_JOINT(arg) 
+#endif
+
 namespace IK
 {
 
@@ -64,12 +71,14 @@ bool Joint::trajectory_is_feasible(double initial_pos, double initial_vel, doubl
 	// checks boundaries to determine feasibility
 	if(final_pos > (m_constraints.pos_max + EPSILON) || final_pos < (m_constraints.pos_min - EPSILON))
 	{
+        LOG_JOINT("Target position unreachable by joint");
         throw string("Target position unreachable by joint");
 		return false;
 	}
 
 	if(final_vel > (m_constraints.vel_max + EPSILON) || final_vel < (m_constraints.vel_min - EPSILON))
 	{
+        LOG_JOINT("Target velocity unreachable by joint");
         throw string("Target velocity unreachable by joint");
 		return false;
 	}
@@ -78,6 +87,7 @@ bool Joint::trajectory_is_feasible(double initial_pos, double initial_vel, doubl
 
 	if((final_pos + delta_p_dec) > (m_constraints.pos_max + EPSILON) || (final_pos + delta_p_dec) < (m_constraints.pos_min - EPSILON))
 	{
+        LOG_JOINT("Target position unreachable at specified velocity by joint");
         throw string("Target position unreachable at specified velocity by joint");
 
 		return false;
@@ -273,6 +283,7 @@ vector_t Joint::polynomial_piece_profile(polynom_t polynome, double start, doubl
 
     if (stop < start)
     { 
+        LOG_JOINT("Non causal trajectory profile requested");
         throw string("Non causal trajectory profile requested");
     }
         
@@ -296,6 +307,7 @@ trajectory_time_t Joint::time_to_destination(double initial_pos, double initial_
 
     if(!trajectory_is_feasible(initial_pos, initial_vel, final_pos, final_vel))
     {
+        LOG_JOINT("Trajectory is not feasibile");
         throw string("Trajectory is not feasibile");
     }
 
@@ -389,7 +401,7 @@ ostream& operator<< (ostream& out, const vector_t& v)
 ostream& operator<< (ostream& out, const trajectory_time_t& t)
 {
     out << "Trejectory time : " << endl;
-    out << "t1: "<< t.t1 << " t2 : "<< t.t2 << " tf: "<< t.tf << endl;
+    out << "t1: "<< t.t1 << " t2 : "<< t.t2 << " tf: "<< t.tf;
     return out;
 }
 

@@ -1,5 +1,14 @@
 #include "TaskManager.h"
 #include "FreeRTOS.h"
+#include <iostream>
+
+using namespace std;
+
+#ifdef IK_LOG
+    #define LOG_TASK(arg) cout << __TIME__<<" (TASK MANAGER)("<< __func__ << " , " << __LINE__ << ")\t\t: "<< arg <<endl;
+#else
+    #define LOG_TASK(arg) 
+#endif
 
 bool TaskManager::create_task(TaskFunction_t TaskCode, void * const Parameters)
 {
@@ -22,9 +31,11 @@ bool TaskManager::create_task(TaskFunction_t TaskCode, void * const Parameters)
 
         _task_is_runnig = true;
         ret = true;
+        LOG_TASK("TASK CREATION SUCCESS");
     }
     else
     {
+        LOG_TASK("TASK ALREADY RUNNING");
         ret = false;
     }
 
@@ -39,6 +50,7 @@ void TaskManager::delete_task()
 
     if(_taskHandler != NULL)
     {
+        LOG_TASK("TASK DELETE SUCCESS");
         _task_is_runnig = false;
         m_mutex.release();
         vTaskDelete(_taskHandler);

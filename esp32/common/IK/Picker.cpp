@@ -3,6 +3,12 @@
 #include "Picker.h"
 #include "arm_config.h"
 
+#ifdef IK_LOG
+    #define LOG_PICKER(arg) cout << __TIME__<<" (PICKER)("<< __func__ << " , " << __LINE__ << ")\t\t\t: "<< arg <<endl;
+#else
+    #define LOG_PICKER(arg) 
+#endif
+
 namespace IK
 {
 
@@ -58,6 +64,7 @@ joints_t Picker::inverse_kinematics(coords_t tool)
     if( norm > pow((m_l1 + m_l2 + m_l3),2) || norm < pow((m_l1 - m_l2 - m_l3),2))
     {
         m_tool = get_tool();
+        LOG_PICKER("Target unreacheable");
         throw string("Target unreacheable");
     }
     else
@@ -97,14 +104,13 @@ joints_t Picker::get_joints(void) const throw()
 
     costh = (pow(dotx,2) + pow(doty,2) - pow(m_l1,2) - pow(m_l2, 2)) / (2 * m_l1 * m_l2);
 
-    if(equals(pow(costh,2),1))
+    if(costh > 1)
     {
-        sinth = m_flip_elbow * sqrt(0);
+        LOG_PICKER("ERROR : NOT A NUMBER");
+        throw string("Not A number");
     }
-    else
-    {
-        sinth = m_flip_elbow * sqrt(1 - pow(costh,2));
-    }
+
+    sinth = m_flip_elbow * sqrt(1 - pow(costh,2));
 
     k1 = m_l1 + (m_l2 * costh);
     k2 = m_l2 * sinth ;
@@ -207,7 +213,7 @@ joints_t Picker::get_joints_vel(coords_t tool_vel)
     }
     if (abs(m_matrix.det(jacobian)) < EPSILON)
     {
-         
+        LOG_PICKER("Singularity");
         throw string("Singularity");
     }
 
@@ -287,13 +293,13 @@ double Picker::synchronisation_time(joints_t start_pos, joints_t start_vel, join
 ostream& operator<< (ostream& out, const coords_t& c)
 {
     out << "coords_t : ";
-    out << "[x : " << c.x << " y : " << c.y << " phi : " << c.phi << "]" << endl;
+    out << "[x : " << c.x << " y : " << c.y << " phi : " << c.phi << "]";
     return out;
 }
 ostream& operator<< (ostream& out, const joints_t& j)
 {
     out << "joints_t : ";
-    out << "[th1 : " << j.th1 << " th2 : " << j.th2 << " th3 : " << j.th3 << "]" << endl;
+    out << "[th1 : " << j.th1 << " th2 : " << j.th2 << " th3 : " << j.th3 << "]";
     return out;
 }
 ostream& operator<< (ostream& out, const detailed_pos_t& d)

@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "../common/SerialTalks.h"
-
+#include <iostream>
 #include "../common/AX12/AX12.h"
 #include "instructions.h"
 
@@ -9,11 +9,11 @@
 // #define LATCHPIN	19
 // #define CLOCKPIN	18
 // #define DATAPIN		5 
-
+using namespace std;
 AX12 servoax;
 
 //ShiftRegister shift;
-
+double pos;
 void setup()
 {
 
@@ -32,7 +32,7 @@ void setup()
 
     servoax.attach(254);
 
-    servoax.setID(1);
+    //servoax.setID(1);
     //servoax.setSRL(1); // Respond only to READ_DATA instructions
     // servoax.setLEDAlarm(32); // max torque only
     // servoax.setShutdownAlarm(32); // max torque only
@@ -42,8 +42,8 @@ void setup()
 
     servoax.move(150.0);
 }
-
 void loop()
 {
+
 	talks.execute();
 }

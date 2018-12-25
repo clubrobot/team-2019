@@ -6,6 +6,12 @@
 using namespace IK;
 using namespace std;
 
+#ifdef IK_LOG
+    #define LOG_TRAJ(arg) cout << __TIME__<<" (TRAJ MANAGER)("<< __func__ << " , " << __LINE__ << ")\t\t: "<< arg <<endl;
+#else
+    #define LOG_TRAJ(arg) 
+#endif
+
 /* task withouth path */
 static void task_directly(void * param) 
 {
@@ -26,6 +32,7 @@ void TrajectoryManager::attach(int id_1, int id_2, int id_3) throw()
     MotorWrapper::attach(id_1, id_2, id_3);
     MotorWrapper::init();
     MotorWrapper::init_offsets(LINK1_OFFSET, LINK2_OFFSET, LINK3_OFFSET);
+    LOG_TRAJ("ARM ATTACH");
 }
 
 void TrajectoryManager::begin(coords_t initial_pos)
@@ -44,25 +51,28 @@ double TrajectoryManager::goto_directly(coords_t pos)
 
     /* set_parameters */
     m_end_coord     = pos;
-  
     m_start_coord   = get_tool();
 
-    std::cout << "start : " << m_start_coord   << std::endl;
-    std::cout << "end : " << m_end_coord << std::endl;
+    LOG_TRAJ("start : " << m_start_coord);
+    LOG_TRAJ("end : " << m_end_coord );
 
     /* compute an estimation of trajectory time */
     time_to_arrival = estimated_time_of_arrival(m_start_coord, NULL_VEL, m_end_coord, NULL_VEL);
 
     m_current_traj_time = time_to_arrival;
 
+    LOG_TRAJ("Time to arrival : " << time_to_arrival);
+
     m_mutex.release();
 
     if(create_task(task_directly, this))
     {
+        LOG_TRAJ("ON THE ROAD");
         set_status(ON_THE_ROAD);
     }
     else
     {
+        LOG_TRAJ("ERROR");
         set_status(ERROR); 
         time_to_arrival = -1;
     }
@@ -96,23 +106,13 @@ bool TrajectoryManager::move_directly()
     if(joints.intermediary_pos == true)
     {
         move(convert_deg(joints.th1_int), convert_deg(joints.th2_int), convert_deg(joints.th3_int));
-        delay(500);
-        // while(!position_reached())
-        // {
-        //     /* sleep */
-        //     delay(100);
-        // }  
+        //while(!converge_to_pos());
+        delay(1000);
     }
 
     move(convert_deg(joints.th1), convert_deg(joints.th2), convert_deg(joints.th3));
-    
-
     /* check error or if position is reached */
-    // while(!position_reached())
-    // {
-    //     /* sleep */
-    //     delay(100);
-    // }    
+    //while(!converge_to_pos());
 
     set_status(ARRIVED);
 

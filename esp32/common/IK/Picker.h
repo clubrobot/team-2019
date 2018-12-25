@@ -54,7 +54,7 @@ class Picker
 		double m_l3;
 		double m_lsq;
 
-		Joint Theta1_joint = Joint(0, 		0	 ,  M_PI	 , -5, 5, -25, 25);
+		Joint Theta1_joint = Joint(0, 		-M_PI	 ,  M_PI	 , -5, 5, -25, 25);
 		Joint Theta2_joint = Joint(1, -(5*M_PI)/6, (5*M_PI)/6, -5, 5, -25, 25);
 		Joint Theta3_joint = Joint(2, -(5*M_PI)/6, (5*M_PI)/6, -5, 5, -25, 25);
 

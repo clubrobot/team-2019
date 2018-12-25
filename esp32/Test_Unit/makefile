@@ -17,6 +17,7 @@ LIBS = $(ESP_LIBS)/EEPROM \
 CPPFLAGS = -fexceptions
 CPPFLAGS += -DCONFIG_CXX_EXCEPTIONS=1
 CPPFLAGS += -DSERIALTALKS_MAX_OPCODE=0x30
+CPPFLAGS += -DIK_LOG=1
 # Congratulations! You made a pretty Makefile :)
 # Now let the grown-ups do the hard work :D
 MODULEMK_DIR = ..

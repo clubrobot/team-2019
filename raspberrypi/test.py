@@ -10,25 +10,7 @@ x 	= 15
 y	= 15
 phi = 0
 
-output = a.execute(0X17)
-print(output.read(INT))
-#time.sleep(1)
-
-output = a.execute(0X17,timeout = 10)
-print(output.read(INT))
-#time.sleep(1)
-
-output = a.execute(0X17,timeout = 10)
-print(output.read(INT))
-time.sleep(1)
-
-output = a.execute(0X17,timeout = 10)
-print(output.read(INT))
-time.sleep(1)
-
-output = a.execute(0X17,timeout = 10)
-print(output.read(INT))
-time.sleep(1)
+a.send(0X15, INT(8))
 
 
 

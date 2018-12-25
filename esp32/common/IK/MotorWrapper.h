@@ -24,11 +24,13 @@ class MotorWrapper
         bool position_reached();
         void motor_read();
 
+        bool converge_to_pos();
+
     private:
 
         
 
-        bool equals(double a, double b, double epsilon = 0.5);
+        bool equals(double a, double b, double epsilon = 1);
 
         double m_th1;
         double m_th2;
@@ -37,6 +39,14 @@ class MotorWrapper
         double m_offset1;
         double m_offset2;
         double m_offset3;
+
+        double m_cur_pos1;
+        double m_cur_pos2;
+        double m_cur_pos3;
+
+        double delta_pos1;
+        double delta_pos2;
+        double delta_pos3;
 
         AX12 m_AX1;
         AX12 m_AX2;

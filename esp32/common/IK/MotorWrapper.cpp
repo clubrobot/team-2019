@@ -1,5 +1,11 @@
 #include "MotorWrapper.h"
 #include <iostream>
+using namespace std;
+#ifdef IK_LOG
+    #define LOG_MOTOR(arg) cout << __TIME__<<" (MOTOR WRAPPER)("<< __func__ << " , " << __LINE__ << ")\t\t\t: "<< arg <<endl;
+#else
+    #define LOG_MOTOR(arg) 
+#endif
 
 namespace IK
 {
@@ -58,58 +64,46 @@ void MotorWrapper::init()
 
     m_AX_Broadcast.hold(OFF);
 
+    LOG_MOTOR("AX12 INIT");
 }
 
 void MotorWrapper::init_offsets(double offset1, double offset2, double offset3)
 {
     m_offset1 = offset1;
     m_offset2 = offset2;
-    m_offset3 = offset3;     
+    m_offset3 = offset3;
+    LOG_MOTOR("OFFSET INIT: ("<<m_offset1<<","<<m_offset2<<","<<m_offset3<<")");     
 }
 
 void MotorWrapper::move(double th1, double th2, double th3)
 {
-    
     m_th1 = th1 + m_offset1;
     m_th2 = th2 + m_offset2;
     m_th3 = th3 + m_offset3;
 
-    std::cout << "th1 : " << th1 << std::endl;
-    std::cout << "th2 : " << th2 << std::endl;
-    std::cout << "th3 : " << th3 << std::endl;
+    delta_pos1 = delta_pos2 = delta_pos3 = 0;
 
-    std::cout << "th1 : " << m_th1 << std::endl;
-    std::cout << "th2 : " << m_th2 << std::endl;
-    std::cout << "th3 : " << m_th3 << std::endl;
-    std::cout << std::endl;
+    LOG_MOTOR("th1 : "<<m_th1<<"\t|th2 : "<<m_th2<<"\t|th3 : "<<m_th3);
 
     m_AX1.move(m_th1);
-    delay(1);
     m_AX2.move(m_th2);
-    delay(1);
     m_AX3.move(m_th3);
-    delay(1);
+
+    m_cur_pos1 = m_AX1.readPosition();
+    m_cur_pos2 = m_AX2.readPosition();
+    m_cur_pos3 = m_AX3.readPosition();
+
 }
 
 void MotorWrapper::moveSpeed(double th1, double th1_speed, double th2, double th2_speed, double th3, double th3_speed)
 {
-     
-
     m_th1 = th1 + m_offset1;
     m_th2 = th2 + m_offset2;
     m_th3 = th3 + m_offset3;
-    
-    std::cout << std::endl;
-    std::cout << "th1 : " << m_th1 << std::endl;
-    std::cout << "th2 : " << m_th2 << std::endl;
-    std::cout << "th3 : " << m_th3 << std::endl;
-    std::cout << std::endl;
 
     m_AX1.moveSpeed(m_th1, th1_speed);
     m_AX2.moveSpeed(m_th2, th2_speed);
     m_AX3.moveSpeed(m_th3, th3_speed);
-
-     
 }
 
 bool MotorWrapper::equals(double a, double b, double epsilon)
@@ -119,24 +113,69 @@ bool MotorWrapper::equals(double a, double b, double epsilon)
 
 bool MotorWrapper::position_reached()
 {
-    double a1 = m_AX1.readPosition();
-    delay(1);
-    double a2 = m_AX2.readPosition();
-    delay(1);
-    double a3 = m_AX3.readPosition();
 
-    std::cout << std::endl;
-    std::cout << "th1 : " << a1 << std::endl;
-    std::cout << "th2 : " << a2 << std::endl;
-    std::cout << "th3 : " << a3 << std::endl;
-    std::cout << std::endl;
-    
-    if(equals(a1,m_th1) && equals(a2,m_th2) && equals(a3,m_th3))
+}
+bool MotorWrapper::converge_to_pos()
+{
+    bool ret1, ret2, ret3 = false;
+    static double off_th1, off_th2, off_th3;
+
+    if(!equals(m_cur_pos1,m_th1))
     {
-        return true;
+        m_cur_pos1 = m_AX1.readPosition();
+
+        delta_pos1 += (m_th1 - m_cur_pos1);
+
+        if(delta_pos1 < 5)
+        {
+            off_th1 = (0.01 * delta_pos1);
+        }
+        m_AX1.move(m_th1 + off_th1);
+
     }
-     
-    return false;
+    else
+    {
+        ret1 = true;
+    }
+    
+
+    if(!equals(m_cur_pos2,m_th2))
+    {
+        m_cur_pos2 = m_AX2.readPosition();
+
+        delta_pos2 += (m_th2 - m_cur_pos2);
+
+        if(delta_pos2 < 5)
+        {
+            off_th2 = (0.01 * delta_pos2);
+        }
+        m_AX2.move(m_th2 + off_th2);
+
+    }
+    else
+    {
+        ret2 = true;
+    }
+
+    if(!equals(m_cur_pos3,m_th3))
+    {
+        m_cur_pos3 = m_AX3.readPosition();
+
+        delta_pos3 += (m_th3 - m_cur_pos3);
+
+        if(delta_pos3 < 5)
+        {
+            off_th3 = (0.01 * delta_pos3);
+        }
+        m_AX3.move(m_th3 + off_th3);
+
+    }
+    else
+    {
+        ret3 = true;
+    }
+    delay(15);
+    return (ret1 & ret2 & ret3);
 }
 
 void MotorWrapper::motor_read()
