@@ -118,8 +118,7 @@
 
 class DynamixelClass {
 private:
-	unsigned char DTx;              //		Default Serial Port 0 -> Rx  &  1 -> Tx
-	unsigned char DRx;
+
 	unsigned char Checksum; 
 	unsigned char Direction_Pin;
 	unsigned char Time_Counter;
@@ -130,20 +129,11 @@ private:
 	unsigned char Speed_Low_Byte;
 	unsigned char Load_High_Byte;
 	unsigned char Load_Low_Byte;
-	
-	int Moving_Byte;
-	int RWS_Byte;
-	int Speed_Long_Byte;
-	int Load_Long_Byte;
-	int Position_Long_Byte;
-	int Temperature_Byte;
-	int Voltage_Byte;
-	int Error_Byte; 
 	  
-	int read_error(void);
+	int readDatafromAX(unsigned char id, int offset);
 	
 public:
-	
+
 	void begin(long baud);
 	void begin(long baud, unsigned char D_Pin);
 	void end(void);
@@ -192,4 +182,37 @@ public:
 
 extern DynamixelClass Dynamixel;
 
-#endif /* __DYNAMIXEL_H */
+typedef enum
+{
+	INPUT_VOLTAGE 	= 1,
+	ANGLE_LIMIT		= 2,
+	OVERHEATING		= 4,
+	RANGE			= 8,
+	CHECKSUM		= 16,
+	OVERLOAD		= 32,
+	INSTRUCTION		= 64,
+}ax_error_t;
+
+class AX12Timeout
+{
+	public:
+    	AX12Timeout(int id):m_id(id){}
+		int get_id() const {return m_id;}
+	private:
+		int m_id;
+};
+
+class AX12error
+{
+    public :
+        AX12error(int ID, int error_code): m_id(ID), m_error_code(error_code){}
+
+        bool resolve_AX_error();
+		int get_id() const {return m_id;}
+    
+    private :
+        
+        int m_id;
+        int m_error_code;
+};
+#endif
