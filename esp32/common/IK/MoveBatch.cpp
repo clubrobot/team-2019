@@ -12,7 +12,7 @@ MoveBatch::MoveBatch()
     }
 }
 
-void MoveBatch::addMove(uint8_t id, int32_t pos)
+void MoveBatch::addMove(uint8_t id, double pos)
 {
     isActive = true;
 

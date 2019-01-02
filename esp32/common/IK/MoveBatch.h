@@ -15,7 +15,7 @@ class MoveBatch
 {
     public:
         MoveBatch();
-        void addMove(uint8_t id, int32_t pos);
+        void addMove(uint8_t id, double pos);
         MoveCommand_t batch[MAX_JOINTS];
         bool is_active() const {return isActive;}
         double get_duration() const {return moveDuration};
