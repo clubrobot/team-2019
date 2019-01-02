@@ -8,20 +8,31 @@
 typedef struct 
 {
     bool isActive;
-    int32_t position;
+    double position;
 }MoveCommand_t;
 
 class MoveBatch
 {
     public:
         MoveBatch();
+        
         void addMove(uint8_t id, double pos);
+        void addInterMove(uint8_t id, double pos);
+        void addDuration(double time);
+
+        bool   is_active() const {return isActive;}
+        bool   is_interBatch() const {return isInterBatch;}
+        double get_duration() const {return moveDuration;}
+
+        
+
         MoveCommand_t batch[MAX_JOINTS];
-        bool is_active() const {return isActive;}
-        double get_duration() const {return moveDuration};
+        MoveCommand_t inter_batch[MAX_JOINTS];
     private:
         bool isActive;
+        bool isInterBatch;
         double moveDuration;
+        
 };
 
 #endif
