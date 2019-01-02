@@ -78,6 +78,11 @@ int DynamixelClass::readDatafromAX(unsigned char id, int offset)
             return returnValue;
         }
     }
+    else
+    {
+        return returnValue;
+    }
+    
 }
 // Public Methods //////////////////////////////////////////////////////////////
 
