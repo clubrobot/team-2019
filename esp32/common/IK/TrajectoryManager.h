@@ -7,6 +7,8 @@
 #include "thread_tools.h"
 #include "arm_config.h"
 #include "TaskManager.h"
+#include "MoveBatch.h"
+#include "Queue.h"
 
 typedef enum{
     ARRIVED     = 0X00,
@@ -14,43 +16,38 @@ typedef enum{
     ERROR       = 0X02,
 }status_t;
 
+#define MAX_NUM_OF_BATCHED_MOVES 10
 
 namespace IK
 {
 
-class TrajectoryManager : public ArmManager, public TaskManager, public MotorWrapper
+class TrajectoryManager
 {
 
     public :
 
         TrajectoryManager() throw(){}
+        void set_armManager(ArmManager& manager);
+        void set_Motors(MotorWrapper& motors);
 
-        void attach(int id_1, int id_2, int id_3) throw();
-        void begin(coords_t initial_pos);
+        void move_directly(coords_t pos);
 
-        double goto_directly(coords_t pos);
-
-        void set_status(status_t status) throw();
-
-        status_t get_status() const throw();
-
-        bool move_directly();
+        void update();
 
     private :
 
         double convert_deg(double theta);
         double convert_speed(double theta_speed);
 
-        status_t m_status;
+        void addMoveBatch(MoveBatch mb);
+        MoveBatch popMoveBatch();
+        MoveBatch peekMoveBatch();
 
-        coords_t m_start_coord;
-        coords_t m_start_vel;
-        coords_t m_end_vel;
-        coords_t m_end_coord;
+        ArmManager      *m_manager;
+        MotorWrapper    *m_motors;
+        Mutex            m_mutex;
 
-        double m_current_traj_time;
-
-        Mutex m_mutex;
+        Queue<MoveBatch> _batchQueue = Queue<MoveBatch>(MAX_NUM_OF_BATCHED_MOVES);
 };
 }
 

@@ -12,113 +12,74 @@ using namespace std;
     #define LOG_TRAJ(arg) 
 #endif
 
-/* task withouth path */
-static void task_directly(void * param) 
-{
-    /* cast input parameter */
-    TrajectoryManager* traj_manager = (TrajectoryManager*)param;
-
-    while(!traj_manager->move_directly());
-
-    /* delete task at the end */
-    traj_manager->delete_task();
-}
-
 namespace IK
 {
 
-void TrajectoryManager::attach(int id_1, int id_2, int id_3) throw()
+void TrajectoryManager::set_armManager(ArmManager& manager)
 {
-    MotorWrapper::attach(id_1, id_2, id_3);
-    MotorWrapper::init();
-    MotorWrapper::init_offsets(LINK1_OFFSET, LINK2_OFFSET, LINK3_OFFSET);
-    LOG_TRAJ("ARM ATTACH");
+    m_manager = &manager;
 }
 
-void TrajectoryManager::begin(coords_t initial_pos)
+void TrajectoryManager::set_Motors(MotorWrapper& motors)
 {
-    joints_t joints = Picker::inverse_kinematics(initial_pos);
-    
-    MotorWrapper::move(convert_deg(joints.th1), convert_deg(joints.th2), convert_deg(joints.th3));
+    m_motors = &motors;
 }
 
-/* go directly to pos */
-double TrajectoryManager::goto_directly(coords_t pos)
+void TrajectoryManager::move_directly(coords_t pos)
 {
-    double time_to_arrival;
-
-    m_mutex.acquire();
+    MoveBatch mb;
 
     /* set_parameters */
-    m_end_coord     = pos;
-    m_start_coord   = get_tool();
+    coords_t end_coord     = pos;
+    coords_t start_coord   = m_manager->get_tool();
 
-    LOG_TRAJ("start : " << m_start_coord);
-    LOG_TRAJ("end : " << m_end_coord );
+    LOG_TRAJ("start : " << start_coord);
+    LOG_TRAJ("end : " << end_coord );
 
-    /* compute an estimation of trajectory time */
-    time_to_arrival = estimated_time_of_arrival(m_start_coord, NULL_VEL, m_end_coord, NULL_VEL);
+    mb = m_manager->go_to(start_coord, end_coord);
 
-    m_current_traj_time = time_to_arrival;
-
-    LOG_TRAJ("Time to arrival : " << time_to_arrival);
-
-    m_mutex.release();
-
-    if(create_task(task_directly, this))
-    {
-        LOG_TRAJ("ON THE ROAD");
-        set_status(ON_THE_ROAD);
-    }
-    else
-    {
-        LOG_TRAJ("ERROR");
-        set_status(ERROR); 
-        time_to_arrival = -1;
-    }
-
-    return time_to_arrival;
+    addMoveBatch(mb);
 }
 
-void TrajectoryManager::set_status(status_t status) throw()
+void TrajectoryManager::addMoveBatch(MoveBatch mb)
 {
-    m_status = status;
+    LOG_TRAJ("ADD BATCH");
+    _batchQueue.push(mb);
+    _batchQueue.setResetPoint();
 }
 
-status_t TrajectoryManager::get_status() const throw()
+// NOTE: for debugging purposes.
+MoveBatch TrajectoryManager::popMoveBatch()
 {
-    status_t ret;
-
-    ret = m_status;
-
-    return ret;
+    return _batchQueue.pop();
 }
 
-bool TrajectoryManager::move_directly()
+// NOTE: for debugging purposes.
+MoveBatch TrajectoryManager::peekMoveBatch()
 {
-    joints_t joints;
-    int timeout;
+    return _batchQueue.peek();
+}
 
-    m_mutex.acquire();
-
-    joints = go_to(m_start_coord, m_end_coord);
-    /* set pos and velocity to AX12 motor */
-    if(joints.intermediary_pos == true)
+void TrajectoryManager::update()
+{
+    if (_batchQueue.peek().is_active())
     {
-        move(convert_deg(joints.th1_int), convert_deg(joints.th2_int), convert_deg(joints.th3_int));
-        //while(!converge_to_pos());
-        delay(1000);
+        MoveBatch mb = _batchQueue.pop();
+
+        if(mb.is_active())
+        {
+            cout << "batch th1 :" << convert_deg(mb.batch[0].position) <<endl;
+            cout << "batch th2 :" << convert_deg(mb.batch[1].position) <<endl;
+            cout << "batch th3 :" << convert_deg(mb.batch[2].position) <<endl;
+        }
+        if(mb.is_interBatch())
+        {
+            cout << "inter batch th1 :" << convert_deg(mb.inter_batch[0].position) <<endl;
+            cout << "inter batch th2 :" << convert_deg(mb.inter_batch[1].position) <<endl;
+            cout << "inter batch th3 :" << convert_deg(mb.inter_batch[2].position) <<endl;
+        }
+        cout << endl;
     }
-
-    move(convert_deg(joints.th1), convert_deg(joints.th2), convert_deg(joints.th3));
-    /* check error or if position is reached */
-    //while(!converge_to_pos());
-
-    set_status(ARRIVED);
-
-    m_mutex.release();
-
-    return true;
 }
 
 double TrajectoryManager::convert_deg(double theta)
@@ -137,5 +98,6 @@ double TrajectoryManager::convert_speed(double theta_speed)
 
     return speed;
 }
+
 
 } /* end of namespace */
