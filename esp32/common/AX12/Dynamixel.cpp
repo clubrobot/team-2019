@@ -29,51 +29,54 @@ int DynamixelClass::readDatafromAX(unsigned char id, int offset)
     int     Time_Counter = 0;
 	char    Error_Byte = 0;
 
-	while(availableData() < (5 + offset))
-    {  // Wait for Data
-        if(Time_Counter < TIME_OUT)
-		    Time_Counter++;
-        else
-            throw AX12Timeout(id);
-		delayus(1000);
-	}
-
-	while (availableData() > 0)
+    if(id != BROADCAST_ID)
     {
-		Incoming_Byte = readData();
-		if ( (Incoming_Byte == 255) & (peekData() == 255) )
-        {
-			readData();                 // Start Bytes
-			readData();                 // Ax-12 ID
-			length      = readData();   // Length
-			Error_Byte  = readData();   // Error
+        while(availableData() < (5 + offset))
+        {  // Wait for Data
+            if(Time_Counter < TIME_OUT)
+                Time_Counter++;
+            else
+                throw AX12Timeout(id);
+            delayus(1000);
+        }
 
-            if(offset == 1)
+        while (availableData() > 0)
+        {
+            Incoming_Byte = readData();
+            if ( (Incoming_Byte == 255) & (peekData() == 255) )
             {
-                returnValue = readData();
-            }
-            else if(offset == 2)
-            {
-                readVal[0]  = readData();
-                readVal[1]  = readData();
-                returnValue = readVal[1] << 8 ;
-                returnValue += readVal[0];
+                readData();                 // Start Bytes
+                readData();                 // Ax-12 ID
+                length      = readData();   // Length
+                Error_Byte  = readData();   // Error
+
+                if(offset == 1)
+                {
+                    returnValue = readData();
+                }
+                else if(offset == 2)
+                {
+                    readVal[0]  = readData();
+                    readVal[1]  = readData();
+                    returnValue = readVal[1] << 8 ;
+                    returnValue += readVal[0];
+                }
             }
         }
-    }
 
-    length -= 2;
-    if(Error_Byte != 0)
-    {
-        throw AX12error(id, Error_Byte);
-    }
-    else if(length == 0)
-    {
-        return 0;
-    }
-    else
-    {
-        return returnValue;
+        length -= 2;
+        if(Error_Byte != 0)
+        {
+            throw AX12error(id, Error_Byte);
+        }
+        else if(length == 0)
+        {
+            return 0;
+        }
+        else
+        {
+            return returnValue;
+        }
     }
 }
 // Public Methods //////////////////////////////////////////////////////////////
