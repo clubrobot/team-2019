@@ -118,28 +118,33 @@ coords_t ArmManager::workspace_center(workspace_t workspace) throw()
     return coord;
 }
 
-joints_t ArmManager::go_to(coords_t start_pos, coords_t target_pos)
+MoveBatch ArmManager::go_to(coords_t start_pos, coords_t target_pos)
 {
     workspace_t new_ws = workspace_containing_position(target_pos);
 
-    joints_t  new_joints;
-
+    MoveBatch  new_batch;
+    joints_t new_joints;
     try
     { 
-        new_joints = goto_workspace(start_pos, target_pos, new_ws);
+        new_batch = goto_workspace(start_pos, target_pos, new_ws);
     }
     catch(const string& err)
     {
         m_tool = start_pos;
         new_joints = Picker::inverse_kinematics(m_tool);
+        new_batch.addMove(0, new_joints.th1);
+        new_batch.addMove(1, new_joints.th2);
+        new_batch.addMove(2, new_joints.th3);
     }
 
-    return new_joints;
+    return new_batch;
 }
 
-joints_t ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, workspace_t new_workspace)
+MoveBatch ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, workspace_t new_workspace)
 {
     joints_t new_joints;
+    MoveBatch new_batch;
+
     // Check that new position is within workspace
     if (!position_within_workspace(target_pos, new_workspace))
     {
@@ -148,15 +153,19 @@ joints_t ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, wor
     }
      
     m_workspace = new_workspace;
+
+    new_batch.addDuration(estimated_time_of_arrival(start_pos, NULL_VEL, target_pos, NULL_VEL));
     
     // Compute sequence to move from old workspace to the new position
     // in the new workspace defined
     if(double_equals(new_workspace.elbow_orientation, Picker::m_flip_elbow))
     {
         new_joints = goto_position(target_pos);
-        new_joints.intermediary_pos = false;
         LOG_ARM("Classic move");
-        return new_joints;
+        new_batch.addMove(0, new_joints.th1);
+        new_batch.addMove(1, new_joints.th2);
+        new_batch.addMove(2, new_joints.th3);
+        return new_batch;
     }
 
     joints_t inter_joints = Picker::inverse_kinematics(start_pos);
@@ -164,18 +173,22 @@ joints_t ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, wor
     LOG_ARM("COMPUTE INTERMEDIARY POS");
 
     Picker::m_flip_elbow *= (double)-1;
+
+    new_batch.addInterMove(0, inter_joints.th1);
+    new_batch.addInterMove(1, inter_joints.th2);
+    new_batch.addInterMove(2, inter_joints.th3);
     
     //Go to target
     new_joints = goto_position(target_pos);
 
-    new_joints.th1_int = inter_joints.th1;
-    new_joints.th2_int = inter_joints.th2;
-    new_joints.th3_int = inter_joints.th3;
+    new_batch.addMove(0, new_joints.th1);
+    new_batch.addMove(1, new_joints.th2);
+    new_batch.addMove(2, new_joints.th3);
 
-    new_joints.intermediary_pos = true;
+    new_batch.addDuration(estimated_time_of_arrival(start_pos, NULL_VEL, target_pos, NULL_VEL)*2);
     
     //Return trajectory to execute for adjustment
-    return new_joints;
+    return new_batch;
 }
 
 joints_t ArmManager::goto_position(coords_t target_pos)
