@@ -3,17 +3,16 @@
 #include <iostream>
 #include "../common/AX12/AX12.h"
 #include "instructions.h"
+#include "MotorWrapper.h"
+#include "PID.h"
 
-#define USE_SHIFTREG 1
-
-// #define LATCHPIN	19
-// #define CLOCKPIN	18
-// #define DATAPIN		5 
 using namespace std;
-AX12 servoax;
+using namespace IK;
 
-//ShiftRegister shift;
-double pos;
+AX12 servoax;
+MotorWrapper AX1;
+PID AX1_PID;
+
 void setup()
 {
 
@@ -21,55 +20,30 @@ void setup()
 	Serial.begin(SERIALTALKS_BAUDRATE);
     talks.begin(Serial);
 
-    /*****************bind set pos FUNC*****************/
-    // talks.bind(BEGIN_OPCODE,BEGIN);
-    // talks.bind(SET_ANGLES_OPCODE,SET_ANGLES);
-    /***************************************************/
-    //initialise ShiftRegister
-    //shift.attach(LATCHPIN,CLOCKPIN,DATAPIN);
-
     AX12::SerialBegin(1000000, 5);
+    servoax.attach(2);
 
-    servoax.attach(1);
+    AX1_PID.setOutputLimits(1, 1024);
+    AX1_PID.setTunings(3, 0.01 , 0);
 
-    //servoax.setID(1);
-    servoax.setSRL(2); // Respond only to READ_DATA instructions
-    // servoax.setLEDAlarm(32); // max torque only
-    // servoax.setShutdownAlarm(32); // max torque only
-    // servoax.setMaxTorque(1023);
-    // servoax.setEndlessMode(OFF);
-    // servoax.hold(OFF);
+    AX1.setPID(AX1_PID);
+    AX1.setMOTOR(servoax);
+    AX1.setOFFSET(60);
 
-    
-    try
-    {
-        servoax.move(150.0);
-    }
-    catch(const AX12error& e)
-    {
-        cout << "id : " <<e.get_id()<< endl;
-    }
-    catch(const AX12Timeout& e)
-    {
-        cout << "id : " <<e.get_id()<< endl;
-    }
-    
+    AX1.setMaxAcc(4000);
+    AX1.setMaxDec(4000);
+    AX1.setMaxSpeed(600);
+    AX1.setTimestep(0.010);
+
+    AX1.getRealVel();
+    AX1.setGoalPos(0.0, 500);
+
+    AX1.enable();
     
 }
 void loop()
-{
-    try
-    {
-        cout << servoax.readPosition() << endl;
-    }
-    catch(const AX12error& e)
-    {
-        cout << "id : " <<e.get_id()<< endl;
-    }
-    catch(const AX12Timeout& e)
-    {
-        cout << "id : " <<e.get_id()<< endl;
-    }
-    delay(1000);
+{  
+    AX1.update();
 	talks.execute();
+
 }

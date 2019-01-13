@@ -2,59 +2,52 @@
 #define __MOTOR_WRAPPER
 
 #include <Arduino.h>
+#include <vector>
 #include "../AX12/AX12.h"
 #include "thread_tools.h"
+#include "mathutils.h"
+#include "PeriodicProcess.h"
+#include "PID.h"
+
+using namespace std;
 
 namespace IK
 {
+#define RMP_TO_DEG_S 0.16666666666667
 
-class MotorWrapper
+#define MIN(a,b) ((a)<(b)?(a):(b));
+#define MAX(a,b) ((a)>(b)?(a):(b));
+
+class MotorWrapper //: public PeriodicProcess
 {
     public:
         MotorWrapper();
-        void attach(int id1, int id2, int id3);
-        void detach();
+        
+        void setPID(PID& pid){m_PID = &pid;}
+        void setMOTOR(AX12& motor){m_motor = &motor;}
+        void setOFFSET(float offset){m_offset = offset;}
 
-        void init();
-        void init_offsets(double offset1, double offset2, double offset3);
+        void setGoalPos(float pos){m_pos = pos; m_step_counter = 0;}
+        void setVelocityProfile(vector<double> vel){m_vel_profile = vel;}
 
-        void move(double th1, double th2, double th3);
-        void moveSpeed(double th1, double th1_speed, double th2,double th2_speed, double th3, double th3_speed);
+        bool arrived() const {return m_arrived;}
 
-        bool position_reached();
-        void motor_read();
-
-        bool converge_to_pos();
+        void process(float timestep);
 
     private:
 
-        
+        float m_velInput;
+        float m_posInput;
+        float m_pos;
+        float m_offset;
+        int m_step_counter;
+        bool m_arrived;
 
-        bool equals(double a, double b, double epsilon = 1);
+        vector<double> m_vel_profile;
 
-        double m_th1;
-        double m_th2;
-        double m_th3;
-
-        double m_offset1;
-        double m_offset2;
-        double m_offset3;
-
-        double m_cur_pos1;
-        double m_cur_pos2;
-        double m_cur_pos3;
-
-        double delta_pos1;
-        double delta_pos2;
-        double delta_pos3;
-
-        AX12 m_AX1;
-        AX12 m_AX2;
-        AX12 m_AX3;
-
-        AX12 m_AX_Broadcast;
-
-        Mutex m_mutex;
+        PID* m_PID;
+        AX12* m_motor;
+	
 };
 
 }

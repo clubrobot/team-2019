@@ -30,16 +30,10 @@ void MoveBatch::addVelocityProfile(uint8_t id, vector<double> vel, vector<double
 {
     isActive = true;
 
-    vector<double> tmp_v = vel;
-    vector<double> tmp_t = time;
-
-    batch[id].vel.clear();
-    batch[id].time.clear();
-
     if (id < MAX_JOINTS)
     {
-        batch[id].vel.insert(batch[id].vel.end(), tmp_v.begin(), tmp_v.end());
-        batch[id].time.insert(batch[id].time.end(), tmp_t.begin(), tmp_t.end());
+        batch[id].vel  = vel;
+        batch[id].time = time;
     }
 }
 

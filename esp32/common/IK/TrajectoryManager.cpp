@@ -72,7 +72,9 @@ MoveBatch TrajectoryManager::peekMoveBatch()
 void TrajectoryManager::process(float timestep)
 {
     m_mutex.acquire();
+
     static double th1, th2, th3, th1_inter, th2_inter, th3_inter;
+
     if(!_isExecutingBatch)
     {
         if (_batchQueue.peek().is_active())
@@ -85,44 +87,36 @@ void TrajectoryManager::process(float timestep)
                 th2 = convert_deg(mb.batch[1].position);
                 th3 = convert_deg(mb.batch[2].position);
 
-                cout << th1 << endl;
-                cout << th2 << endl;
-                cout << th2 << endl;
+                m_motor1->setGoalPos(th1);
+                m_motor2->setGoalPos(th2);
+                m_motor3->setGoalPos(th3);
 
-                cout << mb.batch[0].vel << endl;
-                cout << mb.batch[0].time << endl;
+                m_motor1->setVelocityProfile(mb.batch[0].vel);
+                m_motor2->setVelocityProfile(mb.batch[1].vel);
+                m_motor3->setVelocityProfile(mb.batch[2].vel);
 
-                cout << mb.batch[1].vel << endl;
-                cout << mb.batch[1].time << endl;
+                // m_motor1->enable();
+                // m_motor2->enable();
+                // m_motor3->enable();
 
-                cout << mb.batch[2].vel << endl;
-                cout << mb.batch[2].time << endl;
+                // cout << mb.batch[0].vel << endl;
+                // cout << mb.batch[0].time << endl;
 
-                cout << "............" << endl;
+                // cout << mb.batch[1].vel << endl;
+                // cout << mb.batch[1].time << endl;
+
+                // cout << mb.batch[2].vel << endl;
+                // cout << mb.batch[2].time << endl;
+
+                // cout << "............" << endl;
             }
 
-            //_isExecutingBatch = true;
+            _isExecutingBatch = true;
         }
     }
     else
     {
-        // static bool var1 = false;
-        // if(!var1)
-        // {
-        //     m_motor1->setGoalPos(th1);
-        //     m_motor2->setGoalPos(th2);
-        //     m_motor3->setGoalPos(th3);
-        //     var1 = true;
-        // }
-        // m_motor1->process(timestep);
-        // m_motor2->process(timestep);
-        // m_motor3->process(timestep);
 
-        // if(m_motor1->arrived() && m_motor2->arrived() && m_motor1->arrived())
-        // {
-        //     _isExecutingBatch = false;
-        //     var1 = false;
-        // }
     }
     
     m_mutex.release();

@@ -24,8 +24,8 @@ typedef enum
 static coords_t arm_positions[] = 
 {
     [HOME]              = {10.0, 15.0, 0},
-    [PUCK_POS]          = {-12.0, 15.0, M_PI},
-    [PUCK_POS_INTER]    = {-8.0, 15.0, M_PI},
+    [PUCK_POS]          = {-15.0, 15.0, M_PI},
+    [PUCK_POS_INTER]    = {-12.0, 15.0, M_PI},
     [TANK_POS_INTER]    = {10.0, 10.0, 0},
     [MID_POS]           = {0, 23.8, M_PI/2},
     [TANK_POS_0]        = {10.0, 0.0, -M_PI/2},

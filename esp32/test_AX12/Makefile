@@ -9,6 +9,9 @@ COMMON = ../common
 #Setup all libs used !
 LIBS = $(ESP_LIBS)/EEPROM \
 	   $(COMMON)/SerialTalks.cpp \
+	   $(COMMON)/PeriodicProcess.cpp \
+	   $(COMMON)/mathutils.cpp \
+	   $(COMMON)/PID.cpp \
 	   $(COMMON)/CRC16.cpp \
 	   $(COMMON)/IK \
 	   $(COMMON)/AX12
