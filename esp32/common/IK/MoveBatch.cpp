@@ -5,16 +5,13 @@ MoveBatch::MoveBatch()
 {
     isActive = false;
     moveDuration = 1.0;
-    isInterBatch = false;
 
     for (uint8_t i = 0; i < MAX_JOINTS; i++)
     {
-        batch[i] = {false, 150};
-    }
-
-    for (uint8_t i = 0; i < MAX_JOINTS; i++)
-    {
-        inter_batch[i] = {false, 150};
+        batch[i].isActive = false;
+        batch[i].position = 150;
+        batch[i].vel.push_back(0);
+        batch[i].time.push_back(0);
     }
 }
 
@@ -24,17 +21,25 @@ void MoveBatch::addMove(uint8_t id, double pos)
 
     if (id < MAX_JOINTS)
     {
-        batch[id] = {true, pos};
+        batch[id].isActive = true;
+        batch[id].position = pos;
     }
 }
 
-void MoveBatch::addInterMove(uint8_t id, double pos)
+void MoveBatch::addVelocityProfile(uint8_t id, vector<double> vel, vector<double> time)
 {
-    isInterBatch = true;
+    isActive = true;
+
+    vector<double> tmp_v = vel;
+    vector<double> tmp_t = time;
+
+    batch[id].vel.clear();
+    batch[id].time.clear();
 
     if (id < MAX_JOINTS)
     {
-        inter_batch[id] = {true, pos};
+        batch[id].vel.insert(batch[id].vel.end(), tmp_v.begin(), tmp_v.end());
+        batch[id].time.insert(batch[id].time.end(), tmp_t.begin(), tmp_t.end());
     }
 }
 
