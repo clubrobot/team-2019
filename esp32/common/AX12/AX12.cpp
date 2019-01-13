@@ -46,7 +46,6 @@ int AX12::moveSpeed(float Position, float speed){
 		setEndlessMode(OFF);
 	}
 	int pos = MIN(1023,Position/300*1023);
-	int sp =  MIN(1023,speed/300*1023);
 	return Dynamixel.moveSpeed(m_id, pos, speed);
 }
 
@@ -161,7 +160,7 @@ float AX12::readSpeed(){
 		return Dynamixel.readSpeed(m_id);
 	}
 	else{
-		return Dynamixel.readSpeed(m_id) /1023*114 ;
+		return Dynamixel.readSpeed(m_id);// /1023*114 ;
 	}
 }
 
