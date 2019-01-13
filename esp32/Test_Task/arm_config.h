@@ -38,7 +38,7 @@ constexpr workspace_t WS_FRONT = {0     , 30 , -5   , 30 , FLIP_ELBOW_BACK};
 constexpr workspace_t WS_BACK  = {-30 , 0    , -5   , 30 , FLIP_ELBOW_FRONT};
 
 /* Delta t for path generation choose the best interval */
-constexpr double DELTA_T = 0.025; 
+constexpr double DELTA_T = 0.02; 
 
 /* non reached pos timeout */
 constexpr int TIMEOUT      = 10;
