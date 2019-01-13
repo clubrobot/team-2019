@@ -143,6 +143,7 @@ MoveBatch ArmManager::go_to(coords_t start_pos, coords_t target_pos)
 MoveBatch ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, workspace_t new_workspace)
 {
     joints_t new_joints;
+    path_t   new_path;
     MoveBatch new_batch;
 
     // Check that new position is within workspace
@@ -161,31 +162,37 @@ MoveBatch ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, wo
     if(double_equals(new_workspace.elbow_orientation, Picker::m_flip_elbow))
     {
         new_joints = goto_position(target_pos);
-        LOG_ARM("Classic move");
+        new_path   = get_path(start_pos, NULL_VEL, target_pos, NULL_VEL, DELTA_T);
+        LOG_ARM("don't FLIP elbow");
+        /* add velocity profile to MoveBatch */
+        new_batch.addVelocityProfile(0, new_path.path_th1.vel, new_path.path_th1.t);
+        new_batch.addVelocityProfile(1, new_path.path_th2.vel, new_path.path_th2.t);
+        new_batch.addVelocityProfile(2, new_path.path_th3.vel, new_path.path_th3.t);
+        /* add move position to MoveBatch */
         new_batch.addMove(0, new_joints.th1);
         new_batch.addMove(1, new_joints.th2);
         new_batch.addMove(2, new_joints.th3);
         return new_batch;
     }
-
-    joints_t inter_joints = Picker::inverse_kinematics(start_pos);
-    inter_joints.th2 = 0.0;
-    LOG_ARM("COMPUTE INTERMEDIARY POS");
+    LOG_ARM("FLIP elbow move");
 
     Picker::m_flip_elbow *= (double)-1;
-
-    new_batch.addInterMove(0, inter_joints.th1);
-    new_batch.addInterMove(1, inter_joints.th2);
-    new_batch.addInterMove(2, inter_joints.th3);
     
     //Go to target
     new_joints = goto_position(target_pos);
+    new_path   = get_path(start_pos, NULL_VEL, target_pos, NULL_VEL, DELTA_T);
 
+    /* add velocity profile to MoveBatch */
+    new_batch.addVelocityProfile(0, new_path.path_th1.vel, new_path.path_th1.t);
+    new_batch.addVelocityProfile(1, new_path.path_th2.vel, new_path.path_th2.t);
+    new_batch.addVelocityProfile(2, new_path.path_th3.vel, new_path.path_th3.t);
+
+    /* add move position to MoveBatch */
     new_batch.addMove(0, new_joints.th1);
     new_batch.addMove(1, new_joints.th2);
     new_batch.addMove(2, new_joints.th3);
 
-    new_batch.addDuration(estimated_time_of_arrival(start_pos, NULL_VEL, target_pos, NULL_VEL)*2);
+    new_batch.addDuration(estimated_time_of_arrival(start_pos, NULL_VEL, target_pos, NULL_VEL));
     
     //Return trajectory to execute for adjustment
     return new_batch;
