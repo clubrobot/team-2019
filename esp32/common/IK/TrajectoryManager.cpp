@@ -17,16 +17,24 @@ namespace IK
 
 void TrajectoryManager::set_armManager(ArmManager& manager)
 {
+    m_mutex.acquire();
     m_manager = &manager;
+    m_mutex.release();
 }
 
-void TrajectoryManager::set_Motors(MotorWrapper& motors)
+void TrajectoryManager::set_Motors(MotorWrapper& motor1, MotorWrapper& motor2, MotorWrapper& motor3)
 {
-    m_motors = &motors;
+    m_mutex.acquire();
+    m_motor1 = &motor1;
+    m_motor2 = &motor2;
+    m_motor3 = &motor3;
+    m_mutex.release();
 }
 
 void TrajectoryManager::move_directly(coords_t pos)
 {
+    m_mutex.acquire();
+
     MoveBatch mb;
 
     /* set_parameters */
@@ -39,6 +47,7 @@ void TrajectoryManager::move_directly(coords_t pos)
     mb = m_manager->go_to(start_coord, end_coord);
 
     addMoveBatch(mb);
+    m_mutex.release();
 }
 
 void TrajectoryManager::addMoveBatch(MoveBatch mb)
@@ -60,26 +69,63 @@ MoveBatch TrajectoryManager::peekMoveBatch()
     return _batchQueue.peek();
 }
 
-void TrajectoryManager::update()
+void TrajectoryManager::process(float timestep)
 {
-    if (_batchQueue.peek().is_active())
+    m_mutex.acquire();
+    static double th1, th2, th3, th1_inter, th2_inter, th3_inter;
+    if(!_isExecutingBatch)
     {
-        MoveBatch mb = _batchQueue.pop();
+        if (_batchQueue.peek().is_active())
+        {
+            MoveBatch mb = _batchQueue.pop();
 
-        if(mb.is_active())
-        {
-            cout << "batch th1 :" << convert_deg(mb.batch[0].position) <<endl;
-            cout << "batch th2 :" << convert_deg(mb.batch[1].position) <<endl;
-            cout << "batch th3 :" << convert_deg(mb.batch[2].position) <<endl;
+            if(mb.is_active())
+            {
+                th1 = convert_deg(mb.batch[0].position);
+                th2 = convert_deg(mb.batch[1].position);
+                th3 = convert_deg(mb.batch[2].position);
+
+                cout << th1 << endl;
+                cout << th2 << endl;
+                cout << th2 << endl;
+
+                cout << mb.batch[0].vel << endl;
+                cout << mb.batch[0].time << endl;
+
+                cout << mb.batch[1].vel << endl;
+                cout << mb.batch[1].time << endl;
+
+                cout << mb.batch[2].vel << endl;
+                cout << mb.batch[2].time << endl;
+
+                cout << "............" << endl;
+            }
+
+            //_isExecutingBatch = true;
         }
-        if(mb.is_interBatch())
-        {
-            cout << "inter batch th1 :" << convert_deg(mb.inter_batch[0].position) <<endl;
-            cout << "inter batch th2 :" << convert_deg(mb.inter_batch[1].position) <<endl;
-            cout << "inter batch th3 :" << convert_deg(mb.inter_batch[2].position) <<endl;
-        }
-        cout << endl;
     }
+    else
+    {
+        // static bool var1 = false;
+        // if(!var1)
+        // {
+        //     m_motor1->setGoalPos(th1);
+        //     m_motor2->setGoalPos(th2);
+        //     m_motor3->setGoalPos(th3);
+        //     var1 = true;
+        // }
+        // m_motor1->process(timestep);
+        // m_motor2->process(timestep);
+        // m_motor3->process(timestep);
+
+        // if(m_motor1->arrived() && m_motor2->arrived() && m_motor1->arrived())
+        // {
+        //     _isExecutingBatch = false;
+        //     var1 = false;
+        // }
+    }
+    
+    m_mutex.release();
 }
 
 double TrajectoryManager::convert_deg(double theta)
