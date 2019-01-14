@@ -27,7 +27,7 @@ void MotorWrapper::process(float timestep)
 {
 	static float vel = 0;
 	/* TODO : add asservissement */
-	while(m_step_counter < (m_vel_profile.size()))
+	if(m_step_counter < (m_vel_profile.size()))
 	{
 		vel = m_vel_profile[m_step_counter++];
 		vel = (vel * 180)/M_PI;
@@ -37,7 +37,12 @@ void MotorWrapper::process(float timestep)
 
 		cout << "Pos(deg) : " << m_pos << " | vel(rpm) : " << vel << endl;
 	}
-	//cout << "...." << endl;
+	else
+	{
+		m_arrived = true;
+	}
+
+	
 }
 
 }

@@ -18,7 +18,7 @@ namespace IK
 #define MIN(a,b) ((a)<(b)?(a):(b));
 #define MAX(a,b) ((a)>(b)?(a):(b));
 
-class MotorWrapper //: public PeriodicProcess
+class MotorWrapper : public PeriodicProcess
 {
     public:
         MotorWrapper();
@@ -27,12 +27,12 @@ class MotorWrapper //: public PeriodicProcess
         void setMOTOR(AX12& motor){m_motor = &motor;}
         void setOFFSET(float offset){m_offset = offset;}
 
-        void setGoalPos(float pos){m_pos = pos; m_step_counter = 0;}
+        void setGoalPos(float pos){m_pos = pos; m_step_counter = 0; m_arrived = false;}
         void setVelocityProfile(vector<double> vel){m_vel_profile = vel;}
 
         bool arrived() const {return m_arrived;}
 
-        void process(float timestep);
+        virtual void process(float timestep);
 
     private:
 
