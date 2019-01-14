@@ -53,15 +53,21 @@ try:
 
         def receive(self, input, timeout=0.5):
             opcode = input.read(BYTE)
-            retcode = input.read(LONG)
-            # TODO redo with a try except on keyerror
-            if opcode == RESEND_OPCODE:
-                self.resend(input)
-                return
-
-            opcode =str(opcode) + self.uuid
+            retcode = input.read(ULONG)
+            try:
+                output = self.instructions[opcode](input)
+                if output is None: return
+                content = ULONG(retcode) + output
+                prefix = SLAVE_BYTE + BYTE(len(content))
+                self.rawsend(prefix + content)
+            except KeyError:
+                pass
             try:
                 output = self.parent.execute(MAKE_MANAGER_REPLY_OPCODE, opcode, input, timeout=0.5)
+                if output is None: return
+                content = LONG(retcode) + output
+                prefix = SLAVE_BYTE + BYTE(len(content))
+                self.rawsend(prefix + content)
             except ConnectionError:
                 return
             except Exception:
@@ -69,10 +75,7 @@ try:
                 print("Error with an request from {} arduino".format(self.uuid))
                 print(etype, value)
                 return
-            if output is None: return
-            content = LONG(retcode) + output
-            prefix = SLAVE_BYTE + BYTE(len(content))
-            self.rawsend(prefix + content)
+
 
 
 except ImportError:
