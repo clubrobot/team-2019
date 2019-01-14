@@ -30,49 +30,12 @@ PID AX1_PID;
 PID AX2_PID;
 PID AX3_PID;
 
-typedef enum
-{
-    MOVEMENT_CONTROL,
-    UPDATE_MOTOR_1,
-    UPDATE_MOTOR_2,
-    UPDATE_MOTOR_3,
-}main_state_machine_t;
 
 static void secondary_loop(void * parameters)
 {
-    main_state_machine_t state_machine = MOVEMENT_CONTROL;
     while(1)
     {
-        switch(state_machine)
-        {
-            case MOVEMENT_CONTROL:
-                traj_manager.update();
-                //cout << "MOT1 : " << endl;
-                //traj_manager.motor1_update();
-                //cout << "MOT2 : " << endl;
-                //traj_manager.motor2_update();
-                //cout << "MOT3 : " << endl;
-                traj_manager.motor3_update();
-                 //state_machine = UPDATE_MOTOR_1;
-                break;
-
-            case UPDATE_MOTOR_1:
-
-                break;
-
-            case UPDATE_MOTOR_2:
-                
-                break;
-
-            case UPDATE_MOTOR_3:
-               
-                break;
-
-            default :
-                state_machine = MOVEMENT_CONTROL;
-                break;
-        }
-        
+        traj_manager.update();
     }
 }
 
@@ -121,9 +84,9 @@ void setup()
     traj_manager.setTimestep(DELTA_T);
 
     /* Add INITIAL_POS to queue */
-    //traj_manager.move_directly(arm_positions[HOME]);
+    traj_manager.move_directly(arm_positions[HOME]);
     traj_manager.move_directly(arm_positions[PUCK_POS_INTER]);
-    // traj_manager.move_directly(arm_positions[PUCK_POS]);
+    traj_manager.move_directly(arm_positions[PUCK_POS]);
     // traj_manager.move_directly(arm_positions[TANK_POS_INTER]);
     // traj_manager.move_directly(arm_positions[TANK_POS_0]);
     // traj_manager.move_directly(arm_positions[HOME]);
