@@ -36,6 +36,7 @@ GET_CODEWHEELS_COUNTERS_OPCODE  = 0x1C
 GET_VELOCITIES_WANTED_OPCODE    = 0x1D
 GOTO_DELTA_OPCODE               = 0x1E
 RESET_PARAMETERS_OPCODE         = 0x1F
+START_FOLLOW_ANGLE_OPCODE       = 0x20
 
 LEFTWHEEL_RADIUS_ID	            = 0x10
 LEFTWHEEL_CONSTANT_ID           = 0x11
@@ -175,6 +176,9 @@ class WheeledBase(SecureSerialTalksProxy):
 
     def turnonthespot(self, theta, direction='forward'):
         self.send(START_TURNONTHESPOT_OPCODE, FLOAT(theta), BYTE({'forward':0, 'backward':1}[direction]))
+
+    def follow_angle(self, theta, vel):
+        self.send(START_FOLLOW_ANGLE_OPCODE, FLOAT(theta), FLOAT(vel))
 
     def isarrived(self, **kwargs):
         output = self.execute(POSITION_REACHED_OPCODE, **kwargs)

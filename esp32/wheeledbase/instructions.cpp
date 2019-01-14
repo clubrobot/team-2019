@@ -11,6 +11,7 @@
 #include "../common/PositionController.h"
 #include "../common/PurePursuit.h"
 #include "../common/TurnOnTheSpot.h"
+#include "../common/FollowAngle.h"
 #include "../common/mathutils.h"
 
 // Global variables
@@ -33,6 +34,7 @@ extern PositionController positionControl;
 
 extern PurePursuit   purePursuit;
 extern TurnOnTheSpot turnOnTheSpot;
+extern FollowAngle   followAngle;
 
 // Instructions
 
@@ -345,6 +347,26 @@ void GOTO_DELTA(SerialTalks& talks, Deserializer& input, Serializer& output)
 	positionControl.setMoveStrategy(purePursuit);
 	positionControl.enable();
 
+}
+
+void START_FOLLOW_ANGLE(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+	purePursuit.reset();
+	positionControl.disable();
+
+	Position initial_pos =  odometry.getPosition();
+
+	float theta = input.read<float>();
+	float vel   = input.read<float>();
+
+	Position posSetpoint = odometry.getPosition();
+	posSetpoint.theta = theta;
+	followAngle.setVelInput(vel);
+
+    velocityControl.enable();
+    positionControl.setPosSetpoint(posSetpoint);
+    positionControl.setMoveStrategy(followAngle);
+    positionControl.enable();
 }
 
 

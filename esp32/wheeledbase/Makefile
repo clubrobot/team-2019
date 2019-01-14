@@ -21,6 +21,7 @@ LIBS =  $(ESP_LIBS)/EEPROM \
 		$(COMMON)/PositionController.cpp \
 		$(COMMON)/PurePursuit.cpp \
 		$(COMMON)/TurnOnTheSpot.cpp \
+		$(COMMON)/FollowAngle.cpp \
 		$(COMMON)/mathutils.cpp \
 		instructions.cpp 
 # Define
