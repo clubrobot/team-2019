@@ -94,28 +94,20 @@ void TrajectoryManager::process(float timestep)
                 m_motor1->setVelocityProfile(mb.batch[0].vel);
                 m_motor2->setVelocityProfile(mb.batch[1].vel);
                 m_motor3->setVelocityProfile(mb.batch[2].vel);
-
-                // m_motor1->enable();
-                // m_motor2->enable();
-                // m_motor3->enable();
-
-                // cout << mb.batch[0].vel << endl;
-                // cout << mb.batch[0].time << endl;
-
-                // cout << mb.batch[1].vel << endl;
-                // cout << mb.batch[1].time << endl;
-
-                // cout << mb.batch[2].vel << endl;
-                // cout << mb.batch[2].time << endl;
-
-                // cout << "............" << endl;
             }
-
             _isExecutingBatch = true;
         }
     }
     else
     {
+        m_motor1->process(timestep);
+        m_motor2->process(timestep);
+        m_motor3->process(timestep);
+
+        if(m_motor1->arrived() && m_motor2->arrived() && m_motor3->arrived())
+        {
+            _isExecutingBatch = false;
+        }
 
     }
     
