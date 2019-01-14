@@ -48,11 +48,11 @@ static void secondary_loop(void * parameters)
             case MOVEMENT_CONTROL:
                 traj_manager.update();
                 //cout << "MOT1 : " << endl;
-                traj_manager.motor1_update();
+                //traj_manager.motor1_update();
                 //cout << "MOT2 : " << endl;
-                traj_manager.motor2_update();
+                //traj_manager.motor2_update();
                 //cout << "MOT3 : " << endl;
-                //traj_manager.motor3_update();
+                traj_manager.motor3_update();
                  //state_machine = UPDATE_MOTOR_1;
                 break;
 
@@ -121,7 +121,7 @@ void setup()
     traj_manager.setTimestep(DELTA_T);
 
     /* Add INITIAL_POS to queue */
-    traj_manager.move_directly(arm_positions[HOME]);
+    //traj_manager.move_directly(arm_positions[HOME]);
     traj_manager.move_directly(arm_positions[PUCK_POS_INTER]);
     // traj_manager.move_directly(arm_positions[PUCK_POS]);
     // traj_manager.move_directly(arm_positions[TANK_POS_INTER]);
