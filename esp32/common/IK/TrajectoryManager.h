@@ -17,7 +17,7 @@ typedef enum{
     ERROR       = 0X02,
 }status_t;
 
-#define MAX_NUM_OF_BATCHED_MOVES 20
+#define MAX_NUM_OF_BATCHED_MOVES 50
 
 namespace IK
 {
