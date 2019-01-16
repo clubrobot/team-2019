@@ -33,10 +33,6 @@ class TrajectoryManager : public PeriodicProcess
 
         void move_directly(coords_t pos);
 
-        void motor1_update(){m_motor1->process(0);}
-        void motor2_update(){m_motor2->process(0);}
-        void motor3_update(){m_motor3->process(0);}
-
         bool motor1_arrived() const {return m_motor1->arrived();}
         bool motor2_arrived() const {return m_motor2->arrived();}
         bool motor3_arrived() const {return m_motor3->arrived();}

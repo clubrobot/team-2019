@@ -11,8 +11,6 @@
 #include "datatype.h"
 #include "MoveBatch.h"
 
-#define AX12_SPEED(x) (x * ( 60.0 / (2.0 * M_PI)))
-
 namespace IK
 {
 

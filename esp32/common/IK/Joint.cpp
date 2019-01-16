@@ -56,7 +56,6 @@ vector<double> Joint::vector_polyval(polynom_t polynome, vector<double> x) throw
     return values;
 }
 
-
 template<typename T>vector<T> Joint::arange(T start, T stop, T step) throw()
 {
     vector<T> values;

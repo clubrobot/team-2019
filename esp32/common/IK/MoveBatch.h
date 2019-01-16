@@ -4,7 +4,9 @@
 #include <Arduino.h>
 #include <vector>
 #include <iostream>
+
 #define MAX_JOINTS 3
+
 using namespace std;
 
 typedef struct 
