@@ -36,6 +36,8 @@ class AX12 {
 		void attach(unsigned char id);
 		void detach();
 
+		int reset();
+
 		int ping();
 		
 		int setID(unsigned char newID);

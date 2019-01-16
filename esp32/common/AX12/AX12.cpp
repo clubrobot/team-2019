@@ -21,6 +21,11 @@ void AX12::detach(){
 	m_id = -1;
 }
 
+int AX12::reset()
+{
+	return Dynamixel.reset(m_id);
+}
+
 int AX12::ping(){
 	return Dynamixel.ping(m_id);
 }
