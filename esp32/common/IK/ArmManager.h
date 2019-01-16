@@ -25,6 +25,7 @@ class ArmManager : public Picker
         void        init_workspace(workspace_t ws_front, workspace_t ws_back) throw();
         void        set_origin(coords_t origin) throw();
         void        init_arm(double l1, double l2, double l3, int elbow_or);
+        void        set_initial_joint_pos(joints_t joints) {m_joints = joints;}
 
         workspace_t clip_workspace_to_constraints(workspace_t workspace) throw();
         coords_t    workspace_center(workspace_t workspace) throw();
