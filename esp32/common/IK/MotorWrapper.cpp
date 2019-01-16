@@ -26,7 +26,7 @@ MotorWrapper::MotorWrapper()
 void MotorWrapper::process(float timestep)
 {
 	static float vel = 0;
-	/* TODO : add asservissement */
+	/* TODO : add asservissement and control reached position*/
 	if(m_step_counter < (m_vel_profile.size()))
 	{
 		vel = m_vel_profile[m_step_counter++];

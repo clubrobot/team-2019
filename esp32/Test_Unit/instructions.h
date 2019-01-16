@@ -19,20 +19,24 @@ typedef enum
     TANK_POS_2          = 7,
     BALANCE_POS_INTER   = 8,
     BALANCE_POS         = 9,
+    TANK_POS_INTER_2    = 10,
+    PUCK_POS_INTER_1    = 11,
 }position_t;
 
 static coords_t arm_positions[] = 
 {
-    [HOME]              = {10.0, 15.0, 0},
-    [PUCK_POS]          = {-15.0, 15.0, M_PI},
-    [PUCK_POS_INTER]    = {-12.0, 15.0, M_PI},
+    [HOME]              = {10.0, 10.0, 0},
+    [PUCK_POS]          = {-14.0, 8.2, M_PI},
+    [PUCK_POS_INTER]    = {-10.0, 8.2, M_PI},
     [TANK_POS_INTER]    = {10.0, 10.0, 0},
     [MID_POS]           = {0, 23.8, M_PI/2},
-    [TANK_POS_0]        = {10.0, 0.0, -M_PI/2},
-    [TANK_POS_1]        = {10.0, 2.0, -M_PI/2},
-    [TANK_POS_2]        = {10.0, 4.0, -M_PI/2},
-    [BALANCE_POS_INTER] = {10.0, 5.0, 0},
-    [BALANCE_POS]       = {10.0, 5.0, 0},
+    [TANK_POS_0]        = {7.0, 0.0, -M_PI/2},
+    [TANK_POS_1]        = {7.0, 2.0, -M_PI/2},
+    [TANK_POS_2]        = {7.0, 4.0, -M_PI/2},
+    [BALANCE_POS_INTER] = {7.0, 5.0, 0},
+    [BALANCE_POS]       = {7.0, 5.0, 0},
+    [TANK_POS_INTER_2]  = {7.0, 6.0, -M_PI/2},
+    [PUCK_POS_INTER_1]  = {-13.0, 8.2, M_PI},
 };
 
 void MOVE_DIRECTLY(SerialTalks& talks, Deserializer& input, Serializer& output);
