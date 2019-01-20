@@ -96,6 +96,12 @@ void TrajectoryManager::process(float timestep)
                 m_motor3->setVelocityProfile(mb.batch[2].vel);
             }
             _isExecutingBatch = true;
+            _arrived          = false;
+        }
+        else
+        {
+            _arrived          = true;
+            disable();
         }
     }
     else

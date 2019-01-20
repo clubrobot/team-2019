@@ -10,6 +10,7 @@
 #include "../common/IK/ArmManager.h"
 #include "../common/IK/TrajectoryManager.h"
 #include "arm_config.h"
+#include "arm_position.h"
 
 using namespace IK;
 using namespace std;
@@ -30,14 +31,7 @@ PID AX1_PID;
 PID AX2_PID;
 PID AX3_PID;
 
-
-static void secondary_loop(void * parameters)
-{
-    while(1)
-    {
-        traj_manager.update();
-    }
-}
+static void secondary_loop(void * parameters);
 
 void setup()
 {
@@ -47,7 +41,7 @@ void setup()
 
     joints_t joint;
 
-    /* init Motors */
+    /* init Motors communication */
     AX12::SerialBegin(1000000, 5);
 
     try
@@ -65,24 +59,29 @@ void setup()
     joint.th2 = (servoax2.readPosition() - LINK2_OFFSET)*M_PI / 180;
     joint.th3 = (servoax3.readPosition() - LINK3_OFFSET)*M_PI / 180;
 
-    cout << joint << endl;
+    /* configure PID for motor 1*/
     AX1_PID.setOutputLimits(1, 532);
     AX1_PID.setTunings(1, 0.01 , 0);
 
+    /* configure PID for motor 2*/
     AX2_PID.setOutputLimits(1, 532);
     AX2_PID.setTunings(1, 0.01 , 0);
 
+    /* configure PID for motor 3*/
     AX3_PID.setOutputLimits(1, 532);
     AX3_PID.setTunings(1, 0.01 , 0);
 
+    /* configure MotorWrapper 1*/
     AX1.setPID(AX1_PID);
     AX1.setMOTOR(servoax1);
     AX1.setOFFSET(LINK1_OFFSET);
 
+    /* configure MotorWrapper 2*/
     AX2.setPID(AX2_PID);
     AX2.setMOTOR(servoax2);
     AX2.setOFFSET(LINK2_OFFSET);
 
+    /* configure MotorWrapper 3*/
     AX3.setPID(AX3_PID);
     AX3.setMOTOR(servoax3);
     AX3.setOFFSET(LINK3_OFFSET);
@@ -100,35 +99,23 @@ void setup()
 
     /* Add INITIAL_POS to queue */
     traj_manager.move_directly(arm_positions[HOME]);
-    traj_manager.move_directly(arm_positions[PUCK_POS_INTER]);
-    traj_manager.move_directly(arm_positions[PUCK_POS]);
-    traj_manager.move_directly(arm_positions[PUCK_POS_INTER_1]);
-    traj_manager.move_directly(arm_positions[TANK_POS_INTER]);
-    traj_manager.move_directly(arm_positions[TANK_POS_INTER_2]);
-    traj_manager.move_directly(arm_positions[TANK_POS_0]);
 
-    traj_manager.move_directly(arm_positions[PUCK_POS_INTER]);
-    traj_manager.move_directly(arm_positions[PUCK_POS]);
-    traj_manager.move_directly(arm_positions[PUCK_POS_INTER_1]);
-    traj_manager.move_directly(arm_positions[TANK_POS_INTER]);
-    traj_manager.move_directly(arm_positions[TANK_POS_INTER_2]);
-    traj_manager.move_directly(arm_positions[TANK_POS_1]);
-
-    traj_manager.move_directly(arm_positions[PUCK_POS_INTER]);
-    traj_manager.move_directly(arm_positions[PUCK_POS]);
-    traj_manager.move_directly(arm_positions[PUCK_POS_INTER_1]);
-    traj_manager.move_directly(arm_positions[TANK_POS_INTER]);
-    traj_manager.move_directly(arm_positions[TANK_POS_INTER_2]);
-    traj_manager.move_directly(arm_positions[TANK_POS_2]);
-    
-    
+    /* enable traj manager to reach pos */    
     traj_manager.enable();
-    /* create secondary loop */
+
+    /* create secondary loop to manage arm deplacements*/
     task_manager.create_task(secondary_loop , NULL);
-    
 }
 
 void loop()
 {  
     talks.execute();
+}
+
+static void secondary_loop(void * parameters)
+{
+    while(1)
+    {
+        traj_manager.update();
+    }
 }
