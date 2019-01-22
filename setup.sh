@@ -93,7 +93,7 @@ else
 	#install esptool.py to correct mac os esp32 error
 	pip install esptool
 
-	sudo mv $ESP_ROOT/tools/esptool.py $ESP_ROOT/tools/esptool
+	sudo mv $ESP_ROOT/tools/esptool.py $ESP_ROOT/tools/esptool/esptool.py
 fi
 
 # Install Arduino-Makefile if it is not already installed

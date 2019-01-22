@@ -62,6 +62,7 @@ try:
                 self.rawsend(prefix + content)
             except KeyError:
                 pass
+
             try:
                 output = self.parent.execute(MAKE_MANAGER_REPLY_OPCODE, opcode, input, timeout=0.5)
                 if output is None: return

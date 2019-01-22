@@ -9,7 +9,8 @@ COMMON = ../../common
 LOCAL_INO_SRCS = actuators.ino 
 LOCAL_CPP_SRCS = \
     instructions.cpp \
-    $(COMMON)/AX12.cpp \
+    $(COMMON)/AX12/AX12.cpp \
+    $(COMMON)/AX12/Dynamixel.cpp \
     $(COMMON)/SoftwareSerial.cpp \
     $(COMMON)/PeriodicProcess.cpp \
     $(COMMON)/SerialTalks.cpp \
