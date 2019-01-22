@@ -28,6 +28,6 @@ MAX_ROT = 6
 manager = Manager(hostname)
 manager.connect(10)
 
-wheeledbase = WheeledBase(manager, uuid="b_A_")
+wheeledbase = WheeledBase(manager, uuid="wheeledbase")
 
 
