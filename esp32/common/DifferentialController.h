@@ -3,7 +3,7 @@
 
 #include "PeriodicProcess.h"
 #include "PID.h"
-
+#include "thread_tools.h"
 
 
 class AbstractMotor
@@ -22,22 +22,22 @@ public:
 
 	DifferentialController() : m_linSetpoint(0), m_angSetpoint(0), m_axleTrack(1){}
 
-	void setInputs   (float linInput,    float angInput)   {m_linInput    = linInput;    m_angInput    = angInput;}
-	void setSetpoints(float linSetpoint, float angSetpoint){m_linSetpoint = linSetpoint; m_angSetpoint = angSetpoint;}
+	void setInputs   (float linInput,    float angInput);
+	void setSetpoints(float linSetpoint, float angSetpoint);
 
-	void setAxleTrack(float axleTrack){m_axleTrack = axleTrack;}
+	void setAxleTrack(float axleTrack);
 
 	void setWheels(AbstractMotor& leftWheel, AbstractMotor& rightWheel){m_leftWheel = &leftWheel; m_rightWheel = &rightWheel;}
 	
 	void setPID(PID& linPID, PID& angPID){m_linPID = &linPID; m_angPID = &angPID;}
 
-	float getLinSetpoint() const {return m_linSetpoint;}
-	float getAngSetpoint() const {return m_angSetpoint;}
+	float getLinSetpoint() const;
+	float getAngSetpoint() const;
 
-	float getLinOutput() const {return m_linVelOutput;}
-	float getAngOutput() const {return m_angVelOutput;}
+	float getLinOutput() const;
+	float getAngOutput() const;
 
-	float getAxleTrack() const {return m_axleTrack;}
+	float getAxleTrack() const;
 
 	void load(int address);
 	void save(int address) const;
@@ -60,6 +60,8 @@ protected:
 	AbstractMotor* m_rightWheel;
 	PID* m_linPID;
 	PID* m_angPID;
+
+	Mutex m_mutex;
 };
 
 #endif // __DIFFERENTIALCONTROLLER_H__

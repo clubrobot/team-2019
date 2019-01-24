@@ -16,6 +16,8 @@
 #include "../common/TurnOnTheSpot.h"
 #include "../common/FollowAngle.h"
 #include "../common/mathutils.h"
+#include "../common/IK/TaskManager.h"
+
 
 // Load the different modules
 
@@ -42,6 +44,11 @@ PurePursuit   purePursuit;
 TurnOnTheSpot turnOnTheSpot;
 FollowAngle   followAngle;
 
+TaskManager tm;
+
+
+void loop_aux(void * aux);
+
 // Setup
 
 void setup()
@@ -67,7 +74,7 @@ void setup()
 	talks.bind(GET_VELOCITIES_WANTED_OPCODE, GET_VELOCITIES_WANTED);
 	talks.bind(GOTO_DELTA_OPCODE,GOTO_DELTA);
 	talks.bind(START_FOLLOW_ANGLE_OPCODE, START_FOLLOW_ANGLE);
-	
+
 	// DC motors wheels
 	
 	driver.attach(DRIVER_RESET, DRIVER_FAULT);
@@ -123,40 +130,43 @@ void setup()
 	positionControl.disable();
 
 	purePursuit.load(PUREPURSUIT_ADDRESS);
-	
-	// Miscellanous
-	//TCCR2B = (TCCR2B & 0b11111000) | 1; // Set Timer2 frequency to 16MHz instead of 250kHz
-	
+
+    tm.create_task(loop_aux, NULL);
 }
 
 // Loop
 
 void loop()
-{	
-	talks.execute();
-	
-	// Update odometry
-	if (odometry.update())
-	{
-		positionControl.setPosInput(odometry.getPosition());
-		velocityControl.setInputs(odometry.getLinVel(), odometry.getAngVel());
-	}
-
-	// Compute trajectory
-	if (positionControl.update())
-	{
-		float linVelSetpoint = positionControl.getLinVelSetpoint();
-		float angVelSetpoint = positionControl.getAngVelSetpoint();
-		velocityControl.setSetpoints(linVelSetpoint, angVelSetpoint);
-	}
-
-	// Integrate engineering control
-#if ENABLE_VELOCITYCONTROLLER_LOGS
-	if (velocityControl.update())
-		controllerLogs.update();
-#else
-	velocityControl.update();
-#endif // ENABLE_VELOCITYCONTROLLER_LOGS //
-
-
+{
+    talks.execute();
 }
+
+void loop_aux(void * aux)
+{
+    while(1)
+    {
+        // Update odometry
+        if (odometry.update())
+        {
+            positionControl.setPosInput(odometry.getPosition());
+            velocityControl.setInputs(odometry.getLinVel(), odometry.getAngVel());
+        }
+
+        // Compute trajectory
+        if (positionControl.update())
+        {
+            float linVelSetpoint = positionControl.getLinVelSetpoint();
+            float angVelSetpoint = positionControl.getAngVelSetpoint();
+            velocityControl.setSetpoints(linVelSetpoint, angVelSetpoint);
+        }
+
+        // Integrate engineering control
+    #if ENABLE_VELOCITYCONTROLLER_LOGS
+        if (velocityControl.update())
+            controllerLogs.update();
+    #else
+        velocityControl.update();
+    #endif // ENABLE_VELOCITYCONTROLLER_LOGS /
+   }
+}
+

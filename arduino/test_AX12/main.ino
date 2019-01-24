@@ -36,7 +36,7 @@ void setup()
 
     ShiftRegAX12::SerialBegin(9600, RX_AX12, TX_AX12, AX12_DATA_CONTROL);
 
-    servoax.attach(1);
+    servoax.attach(254);
     //servoax.setSRL(1); // Respond only to READ_DATA instructions
     servoax.setLEDAlarm(32); // max torque only
     servoax.setShutdownAlarm(32); // max torque only
