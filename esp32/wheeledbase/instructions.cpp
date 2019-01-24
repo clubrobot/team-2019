@@ -13,7 +13,7 @@
 #include "../common/TurnOnTheSpot.h"
 #include "../common/FollowAngle.h"
 #include "../common/mathutils.h"
-
+#include <Arduino.h>
 // Global variables
 
 extern DCMotorsDriver driver;
@@ -106,9 +106,10 @@ void ADD_PUREPURSUIT_WAYPOINT(SerialTalks& talks, Deserializer& input, Serialize
 void START_TURNONTHESPOT(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
 	Position posSetpoint = odometry.getPosition();
-	posSetpoint.theta = input.read<float>();
+	float theta = input.read<float>();
 	velocityControl.enable();
-	positionControl.setPosSetpoint(posSetpoint);
+    positionControl.setPosSetpoint(posSetpoint);
+    positionControl.setThetaSetpoint(theta);
 	positionControl.setMoveStrategy(turnOnTheSpot);
 	positionControl.enable();
 }
@@ -346,25 +347,18 @@ void GOTO_DELTA(SerialTalks& talks, Deserializer& input, Serializer& output)
 	velocityControl.enable();
 	positionControl.setMoveStrategy(purePursuit);
 	positionControl.enable();
-
 }
 
 void START_FOLLOW_ANGLE(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
-	purePursuit.reset();
-	positionControl.disable();
-
-	Position initial_pos =  odometry.getPosition();
-
 	float theta = input.read<float>();
 	float vel   = input.read<float>();
-
 	Position posSetpoint = odometry.getPosition();
-	posSetpoint.theta = theta;
-	followAngle.setVelInput(vel);
+	followAngle.setVelSetpoint(vel);
 
     velocityControl.enable();
     positionControl.setPosSetpoint(posSetpoint);
+    positionControl.setThetaSetpoint(theta);
     positionControl.setMoveStrategy(followAngle);
     positionControl.enable();
 }

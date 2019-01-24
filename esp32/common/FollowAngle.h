@@ -12,8 +12,8 @@ class FollowAngle : public AbstractMoveStrategy
 private:
     float vel;
 public:
-    void setVelInput(float vel);
-    float getVelInput()const;
+    void setVelSetpoint(float vel);
+    float getVelSetpoint()const;
 protected:
     virtual void computeVelSetpoints(float timestep);
     virtual bool getPositionReached();
