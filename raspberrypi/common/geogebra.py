@@ -251,9 +251,8 @@ class Geogebra():
             pass
     
     def get(self, element):
-        label = element
         if type(element) is str:
-           element = self.root.find("./construction/element[@label='{}']".format(element))
+            element = self.root.find("./construction/element[@label='{}']".format(element))
         if element is None:
             raise KeyError(label)
         if element.attrib['type'] == 'point':
@@ -276,13 +275,13 @@ class Geogebra():
             return self._parse_numeric(element)
         else:
             raise NotImplementedError("'{}' elements currently not handled".format(element.attrib['type']))
-    
+
     def getall(self, pattern):
         elements = self.root.findall('./construction/element[@label]')
         all_labels = [element.get('label') for element in elements]
         labels = [label for label in all_labels if re.match(pattern, label)]
         labels = sorted(labels)
-            
+
         parse_by_element = ["point", "line", "conic", "angle", "numeric"]
         parse_by_command = ["Segment", "Vector", "Polyline", "Polygon"]
 
@@ -291,15 +290,15 @@ class Geogebra():
             element = self.root.find("./construction/element[@label='{}']".format(label))
             if element.attrib['type'] in parse_by_element:
                 figure = self.get(element)
-                roadmap += [figure] 
+                roadmap += [figure]
 
         commands = self.root.findall('./construction/command')
         for command in commands:
-            if command.attrib["name"] in parse_by_command:               
+            if command.attrib["name"] in parse_by_command:
                 figure = self._parse_segment_from_command(command)
                 roadmap += [figure]
         return roadmap
-        
+
     def _check_label(self, label):
         try:
             self.get(label)
@@ -307,7 +306,7 @@ class Geogebra():
             pass
         else:
             raise AlreadyExistsError('Label already use !')
-    
+
     def _parse_point(self, element):
         coords = element.find('coords')
         x = float(coords.get('x'))
@@ -343,11 +342,11 @@ class Geogebra():
             return Geogebra.Circle((xc, yc, radius))
         else:
             raise NotImplementedError('ellipses currently not handled')
-    
+
     def _parse_segment(self, element):
         label = element.attrib['label']
         command = self.root.find("./construction/command[@name='Segment']/output[@a0='{}']/..".format(label))
-         
+
         if command is not None:
             return self._parse_segment_from_command(command)
         for command in self.root.findall("./construction/command[@name='Polygon']"):
@@ -359,8 +358,8 @@ class Geogebra():
             return Geogebra.Segment((polygon[i], polygon[(i + 1) % len(polygon)]))
 
         raise ValueError("inexistant 'Segment' command")
-    
-    def _parse_segment_from_command(self, command):         
+
+    def _parse_segment_from_command(self, command):
         input = command.find('input')
         a0 = self.get(input.get('a0'))
         a1 = self.get(input.get('a1'))
