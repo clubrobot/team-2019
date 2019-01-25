@@ -11,7 +11,7 @@ from common.geogebra import Geogebra
 # Import robot stuff
 
 from common.components import *
-from arduino.wheeledbase import *
+from daughter_cards.wheeledbase import *
 
 hostname = ""
 if hostname == "":

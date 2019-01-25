@@ -3,7 +3,7 @@ from common.geogebra import Geogebra
 from robots.setup_wheeledbase import *
 
 # from common.components import *
-# from arduino.wheeledbase import *
+# from daughter_cards.wheeledbase import *
 # manager = Manager("127.0.0.1")
 # manager.connect(10)
 # wheeledbase = WheeledBase(manager)
