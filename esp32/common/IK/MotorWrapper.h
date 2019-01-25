@@ -47,6 +47,8 @@ class MotorWrapper : public PeriodicProcess
 
         PID* m_PID;
         AX12* m_motor;
+
+        Mutex m_mutex;
 	
 };
 
