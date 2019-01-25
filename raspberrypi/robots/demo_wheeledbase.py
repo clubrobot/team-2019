@@ -2,10 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import pygame
-import time
 from pygame.locals import *
 from robots.setup_wheeledbase import *
-from robots.display_manager import *
 
 # l.set_motor_velocity(0)
 BLACK = (0, 0, 0)
@@ -36,12 +34,10 @@ class TextPrint:
 
 # Constants
 
-linvel = 850
-angvel = 3
+linvel = wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, INT)
+angvel = wheeledbase.get_parameter_value(POSITIONCONTROL_ANGVELMAX_ID, INT)
 linearVelocityActual = 0
 angularVelocityActual = 0
-
-launcherPower = 0
 
 # set of key currently pressed,
 # the functions which can't be call at the same time will be in the same list
@@ -155,17 +151,19 @@ controller_keys = {
     K_LEFT: {KEYDOWN: gauche, KEYUP: lambda: removeFromListAndEventuallyStop(gauche)},
     K_RIGHT: {KEYDOWN: droite, KEYUP: lambda: removeFromListAndEventuallyStop(droite)},
 }
+
+
 pygame.joystick.init()
 joystick_count = pygame.joystick.get_count()
 print("Joystick count : ", joystick_count)
-if (joystick_count > 1):
+if joystick_count > 1:
     print("Multiples Joystick")
-elif (joystick_count == 1):
+elif joystick_count == 1:
     joystick = pygame.joystick.Joystick(0)
     joystick.init()
 
 axis_tol = 0.2
-rotate_coeff = 0.5
+rotate_coeff = 0.3
 controller_joyaxis = {
     1: lambda val: avancer(-val) if val < -axis_tol else (reculer(val) if val > axis_tol else stopMove()),
     0: lambda val: droite(val*rotate_coeff) if val > axis_tol else (gauche(-val*rotate_coeff) if val < -axis_tol else stopRotate()),
@@ -180,12 +178,12 @@ controller_joybuttons = {}
 pygame.init()
 window = pygame.display.set_mode((640, 480), RESIZABLE)
 printer = TextPrint()
-text = """Demo wheeledbase"""
-window.fill(WHITE)
-printer.reset()
 
-[printer.print(window, t) for t in text.split("\n")]
-pygame.display.flip()
+def update_text(text):
+    window.fill(WHITE)
+    printer.reset()
+    [printer.print(window, t) for t in text.split("\n")]
+    pygame.display.flip()
 
 
 def controlEvent():
@@ -194,16 +192,18 @@ def controlEvent():
         if event.type == QUIT:
             break
         if event.type == KEYDOWN or event.type == KEYUP:
-            if event.key in controller_keys and event.type in controller_keys[event.key]:
+            if event.key in controller_keys.keys() and event.type in controller_keys[event.key]:
                 controller_keys[event.key][event.type]()
         if event.type == JOYAXISMOTION:
             if event.axis in controller_joyaxis.keys():
                 controller_joyaxis[event.axis](event.value)
         if event.type == JOYBUTTONDOWN or event.type == JOYBUTTONUP:
-            if event.key in controller_joybuttons and event.type in controller_joybuttons[event.key]:
-                controller_keys[event.key][event.type]()
+            if event.button in controller_joybuttons.keys() and event.type in controller_joybuttons[event.button]:
+                controller_joybuttons[event.button][event.type]()
 
 
-controlEvent()
-
-wheeledbase.stop()
+if __name__ == '__main__':
+    update_text()
+    controlEvent()
+    stop()
+    pygame.quit()
