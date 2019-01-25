@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <vector>
 #include <iostream>
+#include "thread_tools.h"
 
 #define MAX_JOINTS 3
 
@@ -33,6 +34,8 @@ class MoveBatch
     private:
         bool isActive;
         double moveDuration;
+
+        Mutex m_mutex;
         
 };
 

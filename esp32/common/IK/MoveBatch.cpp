@@ -3,6 +3,8 @@
 
 MoveBatch::MoveBatch()
 {
+    m_mutex.acquire();
+
     isActive = false;
     moveDuration = 1.0;
 
@@ -13,10 +15,13 @@ MoveBatch::MoveBatch()
         batch[i].vel.push_back(0);
         batch[i].time.push_back(0);
     }
+
+    m_mutex.release();
 }
 
 void MoveBatch::addMove(uint8_t id, double pos)
 {
+    m_mutex.acquire();
     isActive = true;
 
     if (id < MAX_JOINTS)
@@ -24,10 +29,12 @@ void MoveBatch::addMove(uint8_t id, double pos)
         batch[id].isActive = true;
         batch[id].position = pos;
     }
+    m_mutex.release();
 }
 
 void MoveBatch::addVelocityProfile(uint8_t id, vector<double> vel, vector<double> time)
 {
+    m_mutex.acquire();
     isActive = true;
 
     if (id < MAX_JOINTS)
@@ -35,9 +42,12 @@ void MoveBatch::addVelocityProfile(uint8_t id, vector<double> vel, vector<double
         batch[id].vel  = vel;
         batch[id].time = time;
     }
+    m_mutex.release();
 }
 
 void MoveBatch::addDuration(double time)
 {
+    m_mutex.acquire();
     moveDuration = time;
+    m_mutex.release();
 }
