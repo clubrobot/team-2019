@@ -7,7 +7,6 @@ import math
 from common.serialtalks import BYTE, INT, LONG, FLOAT
 from common.components import SecureSerialTalksProxy
 from common.serialutils import Deserializer
-from robots.get_robot_name import *
 
 # Instructions
 
