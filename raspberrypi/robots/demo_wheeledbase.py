@@ -34,8 +34,8 @@ class TextPrint:
 
 # Constants
 
-linvel = wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, INT)
-angvel = wheeledbase.get_parameter_value(POSITIONCONTROL_ANGVELMAX_ID, INT)
+linvel = wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)
+angvel = wheeledbase.get_parameter_value(POSITIONCONTROL_ANGVELMAX_ID, FLOAT)
 linearVelocityActual = 0
 angularVelocityActual = 0
 
@@ -165,7 +165,7 @@ elif joystick_count == 1:
 axis_tol = 0.2
 rotate_coeff = 0.3
 controller_joyaxis = {
-    1: lambda val: avancer(-val) if val < -axis_tol else (reculer(val) if val > axis_tol else stopMove()),
+    #1: lambda val: avancer(-val) if val < -axis_tol else (reculer(val) if val > axis_tol else stopMove()),
     0: lambda val: droite(val*rotate_coeff) if val > axis_tol else (gauche(-val*rotate_coeff) if val < -axis_tol else stopRotate()),
     2: lambda val: avancer((val+1)/2) if (val+1) > axis_tol else stopMove(),
     5: lambda val: reculer((val+1)/2) if (val+1) > axis_tol else stopMove()
@@ -192,18 +192,17 @@ def controlEvent():
         if event.type == QUIT:
             break
         if event.type == KEYDOWN or event.type == KEYUP:
-            if event.key in controller_keys.keys() and event.type in controller_keys[event.key]:
+            if event.key in controller_keys and event.type in controller_keys[event.key]:
                 controller_keys[event.key][event.type]()
         if event.type == JOYAXISMOTION:
-            if event.axis in controller_joyaxis.keys():
+            if event.axis in controller_joyaxis:
                 controller_joyaxis[event.axis](event.value)
         if event.type == JOYBUTTONDOWN or event.type == JOYBUTTONUP:
-            if event.button in controller_joybuttons.keys() and event.type in controller_joybuttons[event.button]:
+            if event.button in controller_joybuttons and event.type in controller_joybuttons[event.button]:
                 controller_joybuttons[event.button][event.type]()
 
-
 if __name__ == '__main__':
-    update_text()
+    update_text("Demo Wheeledbase")
     controlEvent()
     stop()
     pygame.quit()
