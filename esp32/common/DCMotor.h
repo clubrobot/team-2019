@@ -3,7 +3,7 @@
 
 #include "NonCopyable.h"
 #include "DifferentialController.h"
-
+#include "thread_tools.h"
 #include <math.h>
 
 
@@ -45,6 +45,8 @@ protected:
 	float m_constant; // (60 * reduction_ratio / velocity_constant_in_RPM) / supplied_voltage_in_V
 	float m_maxPWM; // in range ]0, 1]
 
+	Mutex m_mutex;
+
 	int	m_EN;
 	int	m_PWM;
 	int m_PWMChanel;
@@ -65,6 +67,8 @@ private:
 
 	int m_RESET;
 	int m_FAULT;
+	Mutex m_mutex;
+
 };
 
 #endif // __DCMOTOR_H__

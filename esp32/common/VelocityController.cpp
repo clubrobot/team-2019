@@ -5,6 +5,79 @@
 #include "SerialTalks.h"
 #include "mathutils.h"
 
+void VelocityController::setMaxAcc(float maxLinAcc, float maxAngAcc)
+{
+	m_mutex.acquire();
+	m_maxLinAcc = maxLinAcc;
+	m_maxAngAcc = maxAngAcc;
+	m_mutex.release();
+}
+void VelocityController::setMaxDec(float maxLinDec, float maxAngDec)
+{
+	m_mutex.acquire();
+	m_maxLinDec = maxLinDec;
+	m_maxAngDec = maxAngDec;
+	m_mutex.release();
+}
+
+void VelocityController::setSpinShutdown(bool spinShutdown)
+{
+	m_mutex.acquire();
+	m_spinShutdown = spinShutdown;
+	m_mutex.release();
+}
+
+float VelocityController::getMaxLinAcc() const
+{
+	m_mutex.acquire();
+	float result = m_maxLinAcc;
+	m_mutex.release();
+	return result;
+}
+float VelocityController::getMaxAngAcc() const
+{
+	m_mutex.acquire();
+	float result = m_maxAngAcc;
+	m_mutex.release();
+	return result;
+}
+float VelocityController::getMaxLinDec() const
+{
+	m_mutex.acquire();
+	float result = m_maxLinDec;
+	m_mutex.release();
+	return result;
+}
+float VelocityController::getMaxAngDec() const
+{
+	m_mutex.acquire();
+	float result = m_maxAngDec;
+	m_mutex.release();
+	return result;
+}
+float VelocityController::getLinSpinGoal() const
+{
+	m_mutex.acquire();
+	float result = m_linSpinGoal;
+	m_mutex.release();
+	return result;
+}
+float VelocityController::getAngSpinGoal() const
+{
+	m_mutex.acquire();
+	float result = m_angSpinGoal;
+	m_mutex.release();
+	return result;
+}
+
+bool VelocityController::getSpinShutdown() const
+{
+	m_mutex.acquire();
+	bool result = m_angSpinGoal;
+	m_mutex.release();
+	return result;
+}
+
 
 float VelocityController::genRampSetpoint(float stepSetpoint, float input, float rampSetpoint, float maxAcc, float maxDec, float timestep)
 {
@@ -28,6 +101,7 @@ float VelocityController::genRampSetpoint(float stepSetpoint, float input, float
 
 void VelocityController::process(float timestep)
 {
+	m_mutex.acquire();
 	// Save setpoints
 	const float stepLinVelSetpoint = m_linSetpoint;
 	const float stepAngVelSetpoint = m_angSetpoint;
@@ -39,8 +113,9 @@ void VelocityController::process(float timestep)
 	// Do the engineering control
 	m_linSetpoint = m_rampLinVelSetpoint;
 	m_angSetpoint = m_rampAngVelSetpoint;
-	DifferentialController::process(timestep);
 
+	DifferentialController::process(timestep);
+	
 	// Check for wheels abnormal spin and stop the controller accordingly
 	bool linVelSpin = (m_linVelOutput <= m_linPID->getMinOutput()) || (m_linVelOutput >= m_linPID->getMaxOutput());
 	bool angVelSpin = (m_angVelOutput <= m_angPID->getMinOutput()) || (m_angVelOutput >= m_angPID->getMaxOutput());
@@ -60,6 +135,7 @@ void VelocityController::process(float timestep)
 	// Restore setpoints
 	m_linSetpoint = stepLinVelSetpoint;
 	m_angSetpoint = stepAngVelSetpoint;
+	m_mutex.release();
 }
 
 void VelocityController::onProcessEnabling()
