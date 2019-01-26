@@ -3,22 +3,22 @@
 
 from argparse import ArgumentParser
 
-from arduino.buttons import ButtonCard
+from daughter_cards.buttons import ButtonCard
 from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
 from common.components import Server, Manager
-from arduino.wheeledbase import *
-from arduino.display import *
-from arduino.watersorter import *
-from arduino.sensors import *
+from daughter_cards.wheeledbase import *
+from daughter_cards.display import *
+from daughter_cards.watersorter import *
+from daughter_cards.sensors import *
 from common.geogebra import *
 from common.roadmap import *
 from common.serialtalks import *
-from arduino.waterlauncher import *
-from arduino.bee import *
+from daughter_cards.waterlauncher import *
+from daughter_cards.bee import *
 from beacons.balise_receiver import BaliseReceiver
 from robots.beacons_manager import BeaconsManagement
 from robots.get_robot_name import *
-from arduino.arm import RobotArm
+from daughter_cards.arm import RobotArm
 #if ROBOT_ID == R128_ID:
 #    from robots.color_pattern import Pattern
 

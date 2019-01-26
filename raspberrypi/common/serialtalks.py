@@ -134,8 +134,7 @@ class SerialTalks:
         startingtime = time.monotonic()
         while not self.is_connected:
             try:
-                output = self.execute(PING_OPCODE, timeout=0.1)
-                
+                self.execute(PING_OPCODE, timeout=0.1)
                 self.reset_queues()
                 self.serial_buffer.buffer_size = self.execute(GETBUFFERSIZE_OPCODE, timeout=0.5).read(INT)
                 self.is_connected = True

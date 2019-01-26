@@ -22,6 +22,7 @@ LIBS =  $(ESP_LIBS)/EEPROM \
 		$(COMMON)/PurePursuit.cpp \
 		$(COMMON)/TurnOnTheSpot.cpp \
 		$(COMMON)/mathutils.cpp \
+		$(COMMON)/IK/TaskManager.cpp\
 		instructions.cpp 
 # Define
 CPPFLAGS += -DSERIALTALKS_MAX_OPCODE=0x20
