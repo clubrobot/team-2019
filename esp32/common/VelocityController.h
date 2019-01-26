@@ -15,17 +15,17 @@ public:
 
 	VelocityController() : m_rampLinVelSetpoint(0), m_rampAngVelSetpoint(0), m_maxLinAcc(INFINITY), m_maxLinDec(INFINITY), m_maxAngAcc(INFINITY), m_maxAngDec(INFINITY),  m_linSpinGoal(0.0), m_angSpinGoal(0.0), m_spinShutdown(true){}
 
-	void setMaxAcc(float maxLinAcc, float maxAngAcc){m_maxLinAcc = maxLinAcc; m_maxAngAcc = maxAngAcc;}
-	void setMaxDec(float maxLinDec, float maxAngDec){m_maxLinDec = maxLinDec; m_maxAngDec = maxAngDec;}
-	void setSpinShutdown(bool spinShutdown){m_spinShutdown = spinShutdown;}
+	void setMaxAcc(float maxLinAcc, float maxAngAcc);
+	void setMaxDec(float maxLinDec, float maxAngDec);
+	void setSpinShutdown(bool spinShutdown);
 
-	float getMaxLinAcc() const {return m_maxLinAcc;}
-	float getMaxAngAcc() const {return m_maxAngAcc;}
-	float getMaxLinDec() const {return m_maxLinDec;}
-	float getMaxAngDec() const {return m_maxAngDec;}
-	float getLinSpinGoal() const {return m_linSpinGoal;}
-	float getAngSpinGoal() const {return m_angSpinGoal;}
-	bool getSpinShutdown() const {return m_spinShutdown;}
+	float getMaxLinAcc() const;
+	float getMaxAngAcc() const;
+	float getMaxLinDec() const;
+	float getMaxAngDec() const;
+	float getLinSpinGoal() const;
+	float getAngSpinGoal() const;
+	bool getSpinShutdown() const;
 
 	void load(int address);
 	void save(int address) const;

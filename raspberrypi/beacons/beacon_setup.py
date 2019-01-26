@@ -34,9 +34,9 @@ if hostname=="":
 # Import robot stuff
 from common.components         import *
 from common.serialtalks        import *
-from arduino.wheeledbase        import *
+from daughter_cards.wheeledbase        import *
 from beacons.anchor		import *
-from arduino.tag			import *
+from daughter_cards.tag			import *
 
 # Define temporary modules
 

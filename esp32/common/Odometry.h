@@ -2,7 +2,7 @@
 #define __ODOMETRY_H__
 
 #include "PeriodicProcess.h"
-
+#include "thread_tools.h"
 
 struct Position
 {
@@ -27,20 +27,20 @@ class Odometry : public PeriodicProcess
 {
 public:
 
-	void setPosition(float x, float y, float theta){m_pos.x = x; m_pos.y = y; m_pos.theta = theta;}
+	void setPosition(float x, float y, float theta);
 
-	void setAxleTrack(float axleTrack){m_axleTrack = axleTrack;}
-	void setSlippage (float slippage) {m_slippage  = slippage;}
+	void setAxleTrack(float axleTrack);
+	void setSlippage (float slippage);
 	
 	void setCodewheels(AbstractCodewheel& leftCodewheel, AbstractCodewheel& rightCodewheel){m_leftCodewheel = &leftCodewheel, m_rightCodewheel = &rightCodewheel;}
 
-	const Position&	getPosition() const {return m_pos;}
+	const Position	getPosition() const;
 
-	float getLinVel() const {return m_linVel;}
-	float getAngVel() const {return m_angVel;}
+	float getLinVel() const;
+	float getAngVel() const;
 
-	float getAxleTrack() const {return m_axleTrack;}
-	float getSlippage () const {return m_slippage;}
+	float getAxleTrack() const; 
+	float getSlippage () const;
 	
 	void load(int address);
 	void save(int address) const;
@@ -54,6 +54,7 @@ protected:
 	float m_angVel;
 	float m_axleTrack;
 	float m_slippage;
+	Mutex m_mutex;
 
 	AbstractCodewheel* m_leftCodewheel;
 	AbstractCodewheel* m_rightCodewheel;
