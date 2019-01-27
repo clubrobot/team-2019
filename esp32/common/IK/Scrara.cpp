@@ -1,7 +1,5 @@
 #include <Arduino.h>
 #include <math.h>
-#include <cmath>
-#include <tuple>
 #include <iostream>
 #include <string>
 #include <stdexcept>

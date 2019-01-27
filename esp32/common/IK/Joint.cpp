@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include "Joint.h"
-#include "arm_config.h"
 
 #ifdef IK_LOG
     #define LOG_JOINT(arg) cout << __TIME__<< " (JOINT)("<< __func__ << " , " << __LINE__ << ")\t\t\t: "<< arg << endl; 
