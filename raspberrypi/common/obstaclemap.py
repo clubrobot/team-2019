@@ -7,7 +7,7 @@ from common.obstacle import *
 
 class ObstacleMap:
     nb_phi = 50
-    nb_r = 20
+    nb_r = 30
     INFINITE = 100000
     last_angle_guide = None
 
@@ -183,6 +183,13 @@ class ObstacleMap:
     def run(self, time):
         for obs in self.obstacles:
             obs.move(time)
+
+    def normalize_angle(self, angle):
+        while angle < 0:
+            angle += 2*math.pi
+        while angle > 2*math.pi:
+            angle -= 2*math.pi
+        return angle
 
     @staticmethod
     def load(geogebra, pattern="poly*"):
