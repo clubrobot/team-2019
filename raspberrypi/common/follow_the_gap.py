@@ -15,7 +15,7 @@ import time
 TEST = False
 if TEST:
     from robots.setup_wheeledbase import *
-    linvel = wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/5
+    linvel = wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/2
     angvel = wheeledbase.get_parameter_value(POSITIONCONTROL_ANGVELMAX_ID, FLOAT)
 else:
     linvel = 100
