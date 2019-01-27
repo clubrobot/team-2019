@@ -1,6 +1,6 @@
 from math import exp, log
-import matplotlib.pyplot as plt
-import numpy as np
+#import matplotlib.pyplot as plt
+#import numpy as np
 
 
 
