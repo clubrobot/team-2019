@@ -12,7 +12,7 @@ from statistics import *
 import time
 
 
-TEST = False
+TEST = True
 if TEST:
     from robots.setup_wheeledbase import *
     linvel = wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/2
