@@ -1,14 +1,11 @@
 #include <Arduino.h>
-#include <tuple>
-#include <iostream>
-#include <string>
-#include <stdexcept>
 #include "../common/SerialTalks.h"
 #include "instructions.h"
 #include "../common/IK/Joint.h"
 #include "../common/IK/Picker.h"
 #include "../common/IK/ArmManager.h"
 #include "../common/IK/TrajectoryManager.h"
+#include "../common/TaskManager.h"
 #include "../common/VacumPump.h"
 #include "arm_config.h"
 #include "arm_position.h"
