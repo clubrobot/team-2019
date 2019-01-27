@@ -47,8 +47,6 @@ void ArmManager::init_arm(double l1, double l2, double l3, int elbow_or)
 
 workspace_t ArmManager::workspace_containing_position(coords_t position) throw()
 {
-    m_mutex.acquire();
-
     workspace_t ret;
 
     if(position_within_workspace(position, m_ws_front))
@@ -69,9 +67,6 @@ workspace_t ArmManager::workspace_containing_position(coords_t position) throw()
         Picker::forward_kinematics(joints);
         ret = m_ws_front;  
     }    
-
-    m_mutex.release();
-
     return ret;
 }
 
@@ -157,6 +152,7 @@ MoveBatch ArmManager::go_to(coords_t start_pos, coords_t target_pos)
         new_batch.addMove(1, new_joints.th2);
         new_batch.addMove(2, new_joints.th3);
     }
+
     m_mutex.release();
     return new_batch;
 }
@@ -230,7 +226,6 @@ joints_t ArmManager::goto_position(coords_t target_pos)
 
 double ArmManager::estimated_time_of_arrival(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel)
 {
-    m_mutex.acquire();
     double ret;
 
     joints_t start_joints_pos = Picker::inverse_kinematics(start_pos);
@@ -240,7 +235,6 @@ double ArmManager::estimated_time_of_arrival(coords_t start_pos, coords_t start_
     joints_t target_joints_vel = Picker::get_joints_vel(target_vel);
 
     ret = Picker::synchronisation_time(start_joints_pos, start_joints_vel, target_joints_pos, target_joints_vel);
-    m_mutex.release();
     return ret;
 }
 
