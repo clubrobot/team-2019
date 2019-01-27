@@ -15,7 +15,7 @@
 #include "../common/PurePursuit.h"
 #include "../common/TurnOnTheSpot.h"
 #include "../common/mathutils.h"
-#include "../common/IK/TaskManager.h"
+#include "../common/TaskManager.h"
 
 
 // Load the different modules
