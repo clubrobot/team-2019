@@ -6,6 +6,7 @@
 #include <iostream>
 #include "thread_tools.h"
 #include "datatype.h"
+#include "arm_config.h"
 
 using namespace std;
 
