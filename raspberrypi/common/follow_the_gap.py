@@ -15,6 +15,10 @@ import time
 TEST = False
 if TEST:
     from robots.setup_wheeledbase import *
+    linvel = wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/5
+    angvel = wheeledbase.get_parameter_value(POSITIONCONTROL_ANGVELMAX_ID, FLOAT)
+else:
+    linvel = 100
 
 #all
 geo = Geogebra("test_obstacle2.ggb")
@@ -46,12 +50,15 @@ if TEST:
 with open("list_point", "w") as file:
     file.write("Execute[{\"path = Polyline(")
     while i < 10000 and robot.distance(goal) > step:
-        #follow the gap
+        # follow the gap
         begin = time.time()
-        angle_guide_ftg = obsmap.get_angle_guide(robot, goal, distance_max=1000, alpha_static=alpha_static, min_width=robot_width)
+        angle_guide_ftg, v_ftg= obsmap.get_angle_guide(robot, goal, distance_max=1000, alpha_static=alpha_static, min_width=robot_width)
         if angle_guide_ftg is None:
             break
-        print(angle_guide_ftg)
+        v_ftg = min(1.0, v_ftg)
+        print("angle ftg : ", angle_guide_ftg)
+        print("v ftg : ", v_ftg)
+
         # potential field
         vx = 0
         vy = 0
@@ -60,23 +67,38 @@ with open("list_point", "w") as file:
             vx += v[0]
             vy += v[1]
         angle_guide_pf = obsmap.normalize_angle(atan2(vy, vx))
-        print(angle_guide_pf)
-        #all
-        angle_guide = angle_guide_pf#(angle_guide_ftg + angle_guide_pf) / 2
-        print(angle_guide)
+        v_pf = math.sqrt((vx*vx + vy*vy)) / 10
+        v_pf = min(1.0, v_pf)
+        print("angle pf : ", angle_guide_pf)
+        print("v pf : ", v_pf)
+
+        # all
+        if obsmap.angle_difference(angle_guide_ftg, angle_guide_pf) < math.pi/2:
+            angle_guide = obsmap.angle_average(angle_guide_pf, angle_guide_ftg)
+        else:
+            angle_guide = angle_guide_ftg
+        v = (v_pf + v_ftg) / 2 * linvel
+        v = min(v, linvel)
+
+        print("angle : ", angle_guide)
+        print("v : ", v)
         print("time : ", time.time() - begin, "\n")
 
-
-        dx = math.cos(angle_guide) * step
-        dy = math.sin(angle_guide) * step
+        dx = math.cos(angle_guide) * v
+        dy = math.sin(angle_guide) * v
         path += [(robot.x, robot.y)]
         file.write("(" + str(round(robot.x)) + ", " +
                    str(round(robot.y)) + "),")
         i += 1
         if TEST:
-            wheeledbase.follow_angle(angle_guide, 100)
-            while not wheeledbase.isarrived():
-                time.sleep(0.1)
+            try:
+                wheeledbase.follow_angle(angle_guide, v)
+                while not wheeledbase.isarrived():
+                    time.sleep(0.1)
+
+            except:
+                print("spin")
+                break
 
         if TEST:
             robot = shapely.geometry.Point(wheeledbase.get_position()[0], wheeledbase.get_position()[1])

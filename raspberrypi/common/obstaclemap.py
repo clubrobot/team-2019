@@ -178,7 +178,8 @@ class ObstacleMap:
                                              w2=max(0.5, min(1.5, (d_min/alpha_static)**2)))
 
         self.last_angle_guide = angle_guide
-        return angle_guide
+        print("d_min = ", d_min)
+        return angle_guide, d_min/alpha_static
 
     def run(self, time):
         for obs in self.obstacles:
