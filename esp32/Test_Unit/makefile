@@ -4,7 +4,7 @@ CHIP = esp32
 #Arduino file
 SKETCH = main.ino
 
-BOARD_UUID = esp32
+BOARD_UUID = Arm
 COMMON = ../common
 #Setup all libs used !
 LIBS = $(ESP_LIBS)/EEPROM \
@@ -17,7 +17,6 @@ LIBS = $(ESP_LIBS)/EEPROM \
 	   $(COMMON)/AX12
 
 
-CPPFLAGS = -fexceptions
 CPPFLAGS += -DCONFIG_CXX_EXCEPTIONS=1
 CPPFLAGS += -DSERIALTALKS_MAX_OPCODE=0x30
 #CPPFLAGS += -DIK_LOG=1

@@ -4,29 +4,34 @@ from math import pi
 import time
 
 a = SerialTalks("/dev/tty.SLAB_USBtoUART")
-a.connect(timeout = 10)
+a.connect()
 
-x 	= 15
-y	= 15
-phi = 0
+output = a.execute(0X14)
 
-a.send(0X15, INT(8))
+print(output.read(FLOAT,FLOAT,FLOAT))
+
+a.send(0X10, FLOAT(10.0), FLOAT(10.0), FLOAT(0))
+
+a.send(0X10, FLOAT(11.0), FLOAT(10.0), FLOAT(0))
+
+a.send(0X10, FLOAT(7.0), FLOAT(0.0), FLOAT(-(pi/2)))
+
+
+output = a.execute(0X14)
+
+print(output.read(FLOAT,FLOAT,FLOAT))
+
+output = a.execute(0X14)
+
+print(output.read(FLOAT,FLOAT,FLOAT))
+
+output = a.execute(0X14)
+
+print(output.read(FLOAT,FLOAT,FLOAT))
 
 
 
-# output = a.execute(0X15, FLOAT(x), FLOAT(y), FLOAT(phi))
-# print(output.read(FLOAT))
-# print(5)
-# print("wait")
-# time.sleep(5)
-# print("next pos")
 
-# output = a.execute(0X15, FLOAT(x), FLOAT(y), FLOAT(phi))
-# print(output.read(FLOAT))
-# print(5)
-# print("wait")
-# time.sleep(5)
-# print("next pos")
 
 
 

@@ -39,25 +39,31 @@ void setup()
     Serial.begin(SERIALTALKS_BAUDRATE);
     talks.begin(Serial);
 
+    talks.bind(ADD_MOVE_OPCODE,   ADD_MOVE);
+    talks.bind(RUN_BATCH_OPCODE,  RUN_BATCH);
+    talks.bind(STOP_BATCH_OPCODE, STOP_BATCH);
+    talks.bind(IS_ARRIVED_OPCODE, IS_ARRIVED);
+
     joints_t joint;
 
     /* init Motors communication */
     AX12::SerialBegin(1000000, 5);
 
+    servoax1.attach(ID1);
+    servoax2.attach(ID2);
+    servoax3.attach(ID3);
+
+    /* get current motor pos to correctly init arm */
     try
     {
-        servoax1.attach(ID1);
-        servoax2.attach(ID2);
-        servoax3.attach(ID3);
+        joint.th1 = (servoax1.readPosition() - LINK1_OFFSET)*M_PI / 180;
+        joint.th2 = (servoax2.readPosition() - LINK2_OFFSET)*M_PI / 180;
+        joint.th3 = (servoax3.readPosition() - LINK3_OFFSET)*M_PI / 180;
     }
     catch(...)
     {
-        cout << "err" <<endl;
+        joint = arm_positions[HOME];
     }
-
-    joint.th1 = (servoax1.readPosition() - LINK1_OFFSET)*M_PI / 180;
-    joint.th2 = (servoax2.readPosition() - LINK2_OFFSET)*M_PI / 180;
-    joint.th3 = (servoax3.readPosition() - LINK3_OFFSET)*M_PI / 180;
 
     /* configure PID for motor 1*/
     AX1_PID.setOutputLimits(1, 532);
@@ -89,7 +95,7 @@ void setup()
     /* init Arm Manager */
     arm_manager.init_workspace(WS_FRONT, WS_BACK);                              /*      init workspaces      */
     arm_manager.set_origin(ORIGIN);                                             /*      set arm origin       */
-    arm_manager.set_initial_joint_pos(joint);                                   
+    arm_manager.set_initial_joint_pos(joint);                                   /*      initial joints pos   */
     arm_manager.init_arm(LINK1_LEN, LINK2_LEN, LINK3_LEN, FLIP_ELBOW_BACK);     /*      init arm at pos      */
 
     /* init traj Manager */
@@ -101,7 +107,7 @@ void setup()
     traj_manager.move_directly(arm_positions[HOME]);
 
     /* enable traj manager to reach pos */    
-    traj_manager.enable();
+    //traj_manager.enable();
 
     /* create secondary loop to manage arm deplacements*/
     task_manager.create_task(secondary_loop , NULL);
