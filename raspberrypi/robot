@@ -8,17 +8,13 @@ from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
 from common.components import Server, Manager
 from daughter_cards.wheeledbase import *
 from daughter_cards.display import *
-from daughter_cards.watersorter import *
 from daughter_cards.sensors import *
 from common.geogebra import *
 from common.roadmap import *
 from common.serialtalks import *
-from daughter_cards.waterlauncher import *
-from daughter_cards.bee import *
 from beacons.balise_receiver import BaliseReceiver
 from robots.beacons_manager import BeaconsManagement
 from robots.get_robot_name import *
-from daughter_cards.arm import RobotArm
 #if ROBOT_ID == R128_ID:
 #    from robots.color_pattern import Pattern
 
@@ -36,9 +32,6 @@ def start(args):
         button_card = ButtonCard(m)
         ssd = SevenSegments(m)
         b= WheeledBase(m)
-        d = WaterSorter(m)
-        l = WaterLauncher(m)
-        a = BeeActuator(m)
         s_lat   = Sensors(m, "sensorsLat")
         s_front = Sensors(m, "sensorsAv")
         s_back  = Sensors(m, "sensorsAr")
@@ -73,7 +66,6 @@ def start(args):
         s_back  = Sensors(m, "sensorsAr")
         led1 = LEDMatrix(m, 1)
         led2 = LEDMatrix(m, 2)
-        arm = RobotArm(m)
         geo = Geogebra('{}/robots/128.ggb'.format(sys.path[0]))
         patern = None#Pattern()
         rm = RoadMap.load(geo)
@@ -84,8 +76,8 @@ def start(args):
             print("Balise Receiver not connected ! ")
 
         bm = BeaconsManagement(br, "{}/robots/area.ggb".format(sys.path[0]))
-        automate = R128(0, rm, geo, b, ssd, led1, led2, a, arm, s_front, s_lat, s_back,  br, bm, patern)
-        button_gesture = ButtonGestureMatch(button_card, arm, ssd, b, m, automate.set_side)
+        automate = R128(0, rm, geo, b, ssd, led1, led2, a, s_front, s_lat, s_back,  br, bm, patern)
+        button_gesture = ButtonGestureMatch(button_card, ssd, b, m, automate.set_side)
         button_gesture.run()
         m.start_match()
         button_card.disconnect()
@@ -136,14 +128,11 @@ def start_approval(args):
         ssd = SevenSegments(m)
         ssd.set_message("LAUNCH")
         b= WheeledBase(m)
-        d = WaterSorter(m)
-        a = BeeActuator(m)
         s_lat   = Sensors(m, "sensorsLat")
         s_front = Sensors(m, "sensorsAv")
         s_back  = Sensors(m, "sensorsAr")
         led1 = LEDMatrix(m, 1)
         led2 = LEDMatrix(m, 2)
-        arm = RobotArm(m)
         geo = Geogebra('{}/robots/128.ggb'.format(sys.path[0]))
         patern = None#Pattern()
         rm = RoadMap.load(geo)
@@ -154,8 +143,8 @@ def start_approval(args):
             print("Balise Receiver not connected ! ")
 
         bm = BeaconsManagement(br, "{}/robots/area.ggb".format(sys.path[0]))
-        automate = R128Approval(0, rm, geo, b, ssd, led1, led2, a, arm, s_front, s_lat, s_back,  br, bm, patern)
-        button_gesture = ButtonGestureMatch(button_card, arm, ssd, b, m, automate.set_side)
+        automate = R128Approval(0, rm, geo, b, ssd, led1, led2, a, s_front, s_lat, s_back,  br, bm, patern)
+        button_gesture = ButtonGestureMatch(button_card, ssd, b, m, automate.set_side)
         button_gesture.run()
         m.start_match()
         button_card.disconnect()
