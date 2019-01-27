@@ -9,11 +9,14 @@
 #include "../common/IK/Picker.h"
 #include "../common/IK/ArmManager.h"
 #include "../common/IK/TrajectoryManager.h"
+#include "../common/VacumPump.h"
 #include "arm_config.h"
 #include "arm_position.h"
 
 using namespace IK;
 using namespace std;
+
+VacumPump pump(27, 14);
 
 ArmManager        arm_manager;
 TrajectoryManager traj_manager;
@@ -44,6 +47,11 @@ void setup()
     talks.bind(STOP_BATCH_OPCODE, STOP_BATCH);
     talks.bind(IS_ARRIVED_OPCODE, IS_ARRIVED);
 
+    talks.bind(START_PUMP_OPCODE,  START_PUMP);
+    talks.bind(STOP_PUMP_OPCODE,   STOP_PUMP);
+    talks.bind(START_SLUICE_OPCODE,START_SLUICE);
+    talks.bind(STOP_SLUICE_OPCODE, STOP_SLUICE);
+
     joints_t joint;
 
     /* init Motors communication */
@@ -62,7 +70,7 @@ void setup()
     }
     catch(...)
     {
-        joint = arm_positions[HOME];
+        joint = {10,10,0};
     }
 
     /* configure PID for motor 1*/

@@ -14,7 +14,8 @@ LIBS = $(ESP_LIBS)/EEPROM \
 	   $(COMMON)/PID.cpp \
 	   $(COMMON)/CRC16.cpp \
 	   $(COMMON)/IK \
-	   $(COMMON)/AX12
+	   $(COMMON)/AX12 \
+	   $(COMMON)/VacumPump.cpp
 
 
 CPPFLAGS += -DCONFIG_CXX_EXCEPTIONS=1

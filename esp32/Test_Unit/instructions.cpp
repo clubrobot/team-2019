@@ -7,6 +7,7 @@
 using namespace IK;
 
 extern TrajectoryManager traj_manager;
+extern VacumPump pump;
 
 void ADD_MOVE(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
@@ -31,4 +32,24 @@ void STOP_BATCH(SerialTalks& talks, Deserializer& input, Serializer& output)
 void IS_ARRIVED(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
     traj_manager.is_arrived();
+}
+
+void START_PUMP(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+    pump.startPump();
+}
+
+void STOP_PUMP(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+    pump.stopPump();
+}
+
+void START_SLUICE(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+    pump.startSluice();
+}
+
+void STOP_SLUICE(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+    pump.stopSluice();
 }
