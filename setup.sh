@@ -1,4 +1,12 @@
 #!/bin/bash
+
+#if [ -n "$1" ]; then
+#    if [$1 = 'clean'] ; then
+#        rm -rf $ARDMK_DIR $ARDUINO_DIR $ESP_ROOT
+#    fi
+#    exit 0
+#fi
+
 if [ "$(uname -s)" = 'Linux' ]; then
 	REPOSITORY=$(dirname $(readlink -f "$BASH_SOURCE"))
 else
@@ -66,34 +74,36 @@ if [ -z "$ARDUINO_DIR" ]; then # ifndef ARDUINO_DIR
 fi # ifndef ARDUINO_DIR
 
 # Install ESP-32 driver for Arduino IDE
-if [ "$(uname -s)" = 'Linux' ]; then
-	mkdir "/opt/$ARDUINO_SRC/hardware/espressif"
-	cd  "/opt/$ARDUINO_SRC/hardware/espressif"
-	git clone https://github.com/espressif/arduino-esp32.git esp32
-	cd esp32
-	git submodule update --init --recursive && \
-	cd tools
-	python get.py
+if  [ -z "$ESP_ROOT" ] ; then
+    if [ "$(uname -s)" = 'Linux' ] ; then
+        mkdir "/opt/$ARDUINO_SRC/hardware/espressif"
+        cd  "/opt/$ARDUINO_SRC/hardware/espressif"
+        git clone https://github.com/espressif/arduino-esp32.git esp32
+        cd esp32
+        git submodule update --init --recursive && \
+        cd tools
+        python get.py
 
-	echo export ESP_ROOT="/opt/$ARDUINO_SRC/hardware/espressif/esp32" >> "$PROFILE"
-	echo export PYTHONPATH="$REPOSITORY/raspberrypi/:\$PYTHONPATH" >> "$BASHRC"
+        echo export ESP_ROOT="/opt/$ARDUINO_SRC/hardware/espressif/esp32" >> "$PROFILE"
+        echo export PYTHONPATH="$REPOSITORY/raspberrypi/:\$PYTHONPATH" >> "$BASHRC"
 
-else
-	mkdir -p ~/Documents/Arduino/hardware/espressif && \
-	cd ~/Documents/Arduino/hardware/espressif && \
-	git clone https://github.com/espressif/arduino-esp32.git esp32 && \
-	cd esp32 && \
-	git submodule update --init --recursive && \
-	cd tools && \
-	python get.py
+    else
+        mkdir -p ~/Documents/Arduino/hardware/espressif && \
+        cd ~/Documents/Arduino/hardware/espressif && \
+        git clone https://github.com/espressif/arduino-esp32.git esp32 && \
+        cd esp32 && \
+        git submodule update --init --recursive && \
+        cd tools && \
+        python get.py
 
-	echo export ESP_ROOT="~/Documents/Arduino/hardware/espressif/esp32" >> "$PROFILE"
-	echo export PYTHONPATH="$REPOSITORY/raspberrypi/:\$PYTHONPATH" >> "$BASHRC"
+        echo export ESP_ROOT="~/Documents/Arduino/hardware/espressif/esp32" >> "$PROFILE"
+        echo export PYTHONPATH="$REPOSITORY/raspberrypi/:\$PYTHONPATH" >> "$BASHRC"
 
-	#install esptool.py to correct mac os esp32 error
-	pip install esptool
+        #install esptool.py to correct mac os esp32 error
+        pip install esptool
 
-	sudo mv $ESP_ROOT/tools/esptool.py $ESP_ROOT/tools/esptool/esptool.py
+        sudo mv $ESP_ROOT/tools/esptool.py $ESP_ROOT/tools/esptool
+    fi
 fi
 
 # Install Arduino-Makefile if it is not already installed
@@ -108,10 +118,13 @@ if [ -z "$ARDMK_DIR" ]; then # ifndef ARDMK_DIR
 		sudo apt-get install libigraph0-dev
 		
 		sudo apt-get install python3-pip
-		
-		pip3 install python-igraph
-		
+
 		sudo pip3 install python-igraph
+
+		sudo apt-get install doxygen
+		
+		sudo apt-get install texlive-font-utils
+
 
 		echo export ARDMK_DIR="/usr/share/arduino" >> "$PROFILE"
 	else
@@ -139,7 +152,6 @@ fi
 
 if [ "$(uname -s)" = 'Linux' ]; then
 	# Add the current user to the dialout group
-	sudo usermod -a -G dialout $USER
 
 	# Install udev rules
 
@@ -148,8 +160,11 @@ if [ "$(uname -s)" = 'Linux' ]; then
 	UDEVRULES_DIRECTORY=/etc/udev/rules.d
 	UDEVRULE='KERNEL=="ttyUSB*", PROGRAM="/usr/bin/env PATH='"$PATH"' PYTHONPATH='"$PYTHONPATH:$REPOSITORY/raspberrypi/"' '"$REPOSITORY/raspberrypi/robot getuuid"' /dev/%k", SYMLINK+="arduino/%c" \nKERNEL=="ttyACM*" , PROGRAM="/usr/bin/env PATH='"$PATH"' PYTHONPATH='"$PYTHONPATH:$REPOSITORY/raspberrypi/"' '"$REPOSITORY/raspberrypi/robot getuuid"' /dev/%k", SYMLINK+="arduino/%c" '
 
-	echo -e $UDEVRULE | sudo tee "$UDEVRULES_DIRECTORY/serialtalks.rules" > /dev/null
-	sudo udevadm control --reload-rules
+    if [ ! -e "$UDEVRULES_DIRECTORY/serialtalks.rules" ] ; then
+        sudo usermod -a -G dialout $USER
+        echo -e $UDEVRULE | sudo tee "$UDEVRULES_DIRECTORY/serialtalks.rules" > /dev/null
+        sudo udevadm control --reload-rules
+    fi
 else
 	git clone https://github.com/clubrobot/SerialRenamerDaemon.git
 	cd SerialRenamerDaemon

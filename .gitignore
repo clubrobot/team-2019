@@ -55,7 +55,10 @@ bld/
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 
-
-
 # Arduino app files
 arduino-1.6.12/
+
+# API
+API/arduino
+API/python
+API/esp32
