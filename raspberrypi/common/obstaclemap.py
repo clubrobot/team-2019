@@ -6,8 +6,8 @@ from common.obstacle import *
 
 
 class ObstacleMap:
-    nb_phi = 50
-    nb_r = 30
+    nb_phi = 20
+    nb_r = 20
     INFINITE = 100000
     last_angle_guide = None
 
