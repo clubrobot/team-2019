@@ -20,7 +20,8 @@ LOCAL_CPP_SRCS = \
 	$(COMMON)/PositionController.cpp \
 	$(COMMON)/PurePursuit.cpp \
 	$(COMMON)/TurnOnTheSpot.cpp \
-	$(COMMON)/mathutils.cpp
+	$(COMMON)/mathutils.cpp\
+    $(COMMON)/FollowAngle.cpp \
 
 # Define
 CPPFLAGS += -DPUREPURSUIT_MAX_WAYPOINTS=32

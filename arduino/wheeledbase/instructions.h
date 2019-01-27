@@ -30,6 +30,7 @@
 #define GOTO_DELTA_OPCODE               0x1E
 
 #define RESET_PARAMETERS_OPCODE         0x1F
+#define START_FOLLOW_ANGLE_OPCODE       0x20
 // Parameters identifiers
 
 #define LEFTWHEEL_RADIUS_ID             0x10
@@ -77,6 +78,8 @@
 void DISABLE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void GOTO_DELTA(SerialTalks& talks, Deserializer& input, Serializer& output);
+
+void START_FOLLOW_ANGLE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void SET_OPENLOOP_VELOCITIES(SerialTalks& talks, Deserializer& input, Serializer& output);
 

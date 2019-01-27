@@ -11,6 +11,7 @@
 #include "../common/PositionController.h"
 #include "../common/PurePursuit.h"
 #include "../common/TurnOnTheSpot.h"
+#include "../common/FollowAngle.h"
 #include "../common/mathutils.h"
 #include <math.h>
 
@@ -34,6 +35,7 @@ extern PositionController positionControl;
 
 extern PurePursuit   purePursuit;
 extern TurnOnTheSpot turnOnTheSpot;
+extern FollowAngle   followAngle;
 
 // Instructions
 
@@ -171,6 +173,21 @@ void START_TURNONTHESPOT(SerialTalks& talks, Deserializer& input, Serializer& ou
 	positionControl.setMoveStrategy(turnOnTheSpot);
 	positionControl.enable();
 }
+
+void START_FOLLOW_ANGLE(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+	float theta = input.read<float>();
+	float vel   = input.read<float>();
+	Position posSetpoint = odometry.getPosition();
+	followAngle.setVelSetpoint(vel);
+
+	velocityControl.enable();
+	positionControl.setPosSetpoint(posSetpoint);
+	positionControl.setThetaSetpoint(theta);
+	positionControl.setMoveStrategy(followAngle);
+	positionControl.enable();
+}
+
 
 void POSITION_REACHED(SerialTalks& talks, Deserializer& input, Serializer& output)
 {

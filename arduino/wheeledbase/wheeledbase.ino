@@ -14,6 +14,7 @@
 #include "../common/PositionController.h"
 #include "../common/PurePursuit.h"
 #include "../common/TurnOnTheSpot.h"
+#include "../common/FollowAngle.h"
 #include "../common/mathutils.h"
 
 // Load the different modules
@@ -39,7 +40,7 @@ PositionController positionControl;
 
 PurePursuit   purePursuit;
 TurnOnTheSpot turnOnTheSpot;
-
+FollowAngle   followAngle;
 // Setup
 
 void setup()
@@ -64,6 +65,7 @@ void setup()
 	talks.bind(GOTO_DELTA_OPCODE,GOTO_DELTA);
 	talks.bind(SERIALTALKS_DISCONNECT_OPCODE, DISABLE);
 	talks.bind(RESET_PARAMETERS_OPCODE, RESET_PARAMETERS);
+	talks.bind(START_FOLLOW_ANGLE_OPCODE, START_FOLLOW_ANGLE);
 
 	// DC motors wheels
 	driver.attach(DRIVER_RESET, DRIVER_FAULT);
