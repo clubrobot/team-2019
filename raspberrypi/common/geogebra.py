@@ -251,6 +251,7 @@ class Geogebra():
             pass
     
     def get(self, element):
+        label = element
         if type(element) is str:
             element = self.root.find("./construction/element[@label='{}']".format(element))
         if element is None:
@@ -276,6 +277,18 @@ class Geogebra():
         else:
             raise NotImplementedError("'{}' elements currently not handled".format(element.attrib['type']))
 
+    def get_from_command(self, command):
+        if command.attrib['name'] == 'Segment':
+            return self._parse_segment_from_command(command)
+        elif command.attrib['name'] == 'Vector':
+            return self._parse_vector_from_command(command)
+        elif command.attrib['name'] == 'Polyline':
+            return self._parse_polyline_from_command(command)
+        elif command.attrib['name'] == 'Polygon':
+            return self._parse_polygon_from_command(command)
+        else:
+            raise NotImplementedError("'{}' commands currently not handled".format(command.attrib['name']))
+
     def getall(self, pattern):
         elements = self.root.findall('./construction/element[@label]')
         all_labels = [element.get('label') for element in elements]
@@ -295,7 +308,7 @@ class Geogebra():
         commands = self.root.findall('./construction/command')
         for command in commands:
             if command.attrib["name"] in parse_by_command:
-                figure = self._parse_segment_from_command(command)
+                figure = self.get_from_command(command)
                 roadmap += [figure]
         return roadmap
 
