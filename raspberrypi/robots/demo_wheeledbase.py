@@ -162,7 +162,7 @@ elif joystick_count == 1:
     joystick = pygame.joystick.Joystick(0)
     joystick.init()
 
-axis_tol = 0.2
+axis_tol = 0.01
 rotate_coeff = 0.3
 controller_joyaxis = {
     #1: lambda val: avancer(-val) if val < -axis_tol else (reculer(val) if val > axis_tol else stopMove()),
