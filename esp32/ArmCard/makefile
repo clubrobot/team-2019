@@ -4,18 +4,25 @@ CHIP = esp32
 #Arduino file
 SKETCH = main.ino
 
-BOARD_UUID = esp32
+BOARD_UUID = Arm
 COMMON = ../common
 #Setup all libs used !
 LIBS = $(ESP_LIBS)/EEPROM \
 	   $(COMMON)/SerialTalks.cpp \
+	   $(COMMON)/PeriodicProcess.cpp \
+	   $(COMMON)/mathutils.cpp \
+	   $(COMMON)/PID.cpp \
 	   $(COMMON)/CRC16.cpp \
 	   $(COMMON)/IK \
-	   $(COMMON)/AX12
+	   $(COMMON)/AX12 \
+	   $(COMMON)/VacumPump.cpp \
+	   $(COMMON)/TaskManager.cpp
 
 
-CPPFLAGS = -fexceptions
+
 CPPFLAGS += -DCONFIG_CXX_EXCEPTIONS=1
+CPPFLAGS += -DSERIALTALKS_MAX_OPCODE=0x30
+#CPPFLAGS += -DIK_LOG=1
 # Congratulations! You made a pretty Makefile :)
 # Now let the grown-ups do the hard work :D
 MODULEMK_DIR = ..
