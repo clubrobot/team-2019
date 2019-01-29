@@ -167,8 +167,8 @@ rotate_coeff = 0.3
 controller_joyaxis = {
     #1: lambda val: avancer(-val) if val < -axis_tol else (reculer(val) if val > axis_tol else stopMove()),
     0: lambda val: droite(val*rotate_coeff) if val > axis_tol else (gauche(-val*rotate_coeff) if val < -axis_tol else stopRotate()),
-    2: lambda val: avancer((val+1)/2) if (val+1) > axis_tol else stopMove(),
-    5: lambda val: reculer((val+1)/2) if (val+1) > axis_tol else stopMove()
+    5: lambda val: avancer((val+1)/2) if (val+1) > axis_tol else stopMove(),
+    2: lambda val: reculer((val+1)/2) if (val+1) > axis_tol else stopMove()
 }
 
 controller_joybuttons = {}
