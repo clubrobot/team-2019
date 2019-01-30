@@ -41,7 +41,6 @@ void MotorWrapper::process(float timestep)
 
 		vel = saturate(vel,1,1024);
 
-		cout << "Pos(deg) : " << m_pos << " | vel(rpm) : " << vel << endl;
 		try
 		{
 			m_motor->move(m_pos + m_offset);
