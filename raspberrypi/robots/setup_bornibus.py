@@ -3,6 +3,7 @@
 
 from robots.setup_serialtalks import *
 from daughter_cards.bornibus_actuators import *
+from robots.setup_wheeledbase import *
 
 gripper = Gripper(manager)
 gripper.open()
