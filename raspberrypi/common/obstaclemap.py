@@ -1,13 +1,13 @@
-from shapely.geometry import *
 from common.geogebra import Geogebra
 import math
-from shapely.affinity import *
 from common.obstacle import *
+
+BRUTE = False
 
 
 class ObstacleMap:
-    nb_phi = 20
-    nb_r = 20
+    nb_phi = 60
+    nb_r = 100
     INFINITE = 100000
     last_angle_guide = None
 
@@ -18,88 +18,114 @@ class ObstacleMap:
         self.obstacles += [Obstacle(Polygon(polygon), vel)]
 
     def get_polar_histo(self, p, distance_max):
-        histo = ([x/self.nb_phi*2*math.pi for x in range(0, self.nb_phi)],
-                 [None for i in range(0, self.nb_phi)])
-        
-        for phi_i in range(self.nb_phi):
-            #p2 = Point(p)
-            #phi = phi_i / self.nb_phi * 2 * math.pi
-            #obstacle = False
-            #dx = math.cos(phi)*distance_max/self.nb_r
-            #dy = math.sin(phi)*distance_max/self.nb_r
-            #for r in range(self.nb_r):
-            #    p2 = translate(p2, dx, dy)
-            #    for obs in self.obstacles:
-            #        if obs.contains(p2):
-            #            histo[1][phi_i] = p2.distance(p)
-            #            obstacle = True
-            #            break
-            #    if obstacle:
-            #        break
+        histo = ([x / self.nb_phi * 2 * math.pi for x in range(0, self.nb_phi)],
+                 [None for _ in range(0, self.nb_phi)])
 
-            phi = phi_i / self.nb_phi * 2 * math.pi
-            dx = math.cos(phi)*distance_max
-            dy = math.sin(phi)*distance_max
-            line = LineString([(p.x + dx, p.y + dy)])
-            for obs in self.obstacles:
-                inter = line.intersection(obs)
-                if type(inter)
+        for phi_i in range(self.nb_phi):
+            if BRUTE:
+                p2 = Point(p)
+                phi = phi_i / self.nb_phi * 2 * math.pi
+                obstacle = False
+                dx = math.cos(phi) * distance_max / self.nb_r
+                dy = math.sin(phi) * distance_max / self.nb_r
+                for r in range(self.nb_r):
+                    p2 = translate(p2, dx, dy)
+                    for obs in self.obstacles:
+                        if obs.contains(p2):
+                            histo[1][phi_i] = p2.distance(p)
+                            obstacle = True
+                            break
+                    if obstacle:
+                        break
+            else:
+                phi = phi_i / self.nb_phi * 2 * math.pi
+                dx = math.cos(phi) * distance_max
+                dy = math.sin(phi) * distance_max
+                line = LineString([(p.x, p.y), (p.x + dx, p.y + dy)])
+
+                for obs in self.obstacles:
+                    inter = line.intersection(obs)
+
+                    if not inter.is_empty:
+                        d = inter.distance(p)
+                        if histo[1][phi_i] is None:
+                            histo[1][phi_i] = d
+                        histo[1][phi_i] = min(histo[1][phi_i], d)
         return histo
 
     def get_gaps(self, histo):
         gaps = []
-        START = 0
-        END = 1
-        state = START
+        start_st = 0
+        end_st = 1
+        state = start_st
         start = None
         for phi_i in range(len(histo[0])):
-            if state is START:
+            if state is start_st:
                 if histo[1][phi_i] is None:
                     start = phi_i
-                    state = END
-            elif state is END:
+                    state = end_st
+            elif state is end_st:
                 if histo[1][phi_i] is not None:
-                    end = phi_i -1
-                    gaps += [(start, end)]
-                    state = START
+                    end_st = phi_i - 1
+                    gaps += [(start, end_st)]
+                    state = start_st
 
-        if state is END:
+        if state is end_st:
             if len(gaps) >= 1:
-                gaps[0] = (start, gaps[0][1]+self.nb_phi)
+                gaps[0] = (start, gaps[0][1] + self.nb_phi)
             else:
                 gaps += [(start, self.nb_phi)]
         return gaps
 
-    @staticmethod
-    def angle_difference(a1, a2):
-        abs_diff = abs(a1 - a2)
-        if abs_diff > math.pi:
-            return 2*math.pi - abs_diff
-        else:
-            return abs_diff
+    def get_nearest_points_of_gap(self, histo, gap):
+        min_distance = self.INFINITE
+        i = gap[0] - 1
+        p1_nearest = None
+        p2_nearest = None
+        while histo[1][i] is not None and \
+                self.angle_difference(self.get_middle_of_gap_basic(gap), histo[0][i]) < math.pi / 2:
+            j = (gap[1] + 1) % self.nb_phi
+            while histo[1][j] is not None and \
+                    self.angle_difference(self.get_middle_of_gap_basic(gap), histo[0][j]) < math.pi / 2:
+                p1 = Point(math.cos(histo[0][i]) * histo[1][i],
+                           math.sin(histo[0][i]) * histo[1][i])
+                p2 = Point(math.cos(histo[0][j]) * histo[1][j],
+                           math.sin(histo[0][j]) * histo[1][j])
 
-    @staticmethod
-    def angle_average(a1, a2, w1=1.0, w2=1.0):
-        x = math.cos(a1) * w1 + math.cos(a2) * w2
-        y = math.sin(a1) * w1 + math.sin(a2) * w2
-        return math.atan2(y, x) % (2*math.pi)
+                distance = p1.distance(p2)
+                if distance < min_distance:
+                    p1_nearest = p1
+                    p2_nearest = p2
+                    min_distance = distance
+                j = (j + 1) % self.nb_phi
+            i = (i - 1) % self.nb_phi
 
-    def get_middle_of_gap_basic(self, gap):
-        return ((gap[1] + gap[0])/2 % self.nb_phi) / self.nb_phi * 2*math.pi
+        return p1_nearest, p2_nearest
 
     def get_middle_of_gap(self, histo, gap):
         p1, p2 = self.get_nearest_points_of_gap(histo, gap)
         if p1 is None and p2 is None:
             return None
 
-        p_middle = Point((p1.x + p2.x)/2, (p1.y + p2.y) / 2)
+        p_middle = Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2)
 
-        angle = math.atan2(p_middle.y, p_middle.x) % (2*math.pi)
+        angle = math.atan2(p_middle.y, p_middle.x) % (2 * math.pi)
         return angle
 
-    def get_admissible_gaps(self, histo, min_width):
-        return [gap for gap in self.get_gaps(histo)
-                if self.get_gap_width(histo, gap) >= min_width]
+    def get_middle_of_gap_basic(self, gap):
+        return ((gap[1] + gap[0]) / 2 % self.nb_phi) / self.nb_phi * 2 * math.pi
+
+    def get_gap_width(self, histo, gap):
+        if abs(gap[0] - gap[1]) >= self.nb_phi / 2:
+            return self.INFINITE
+
+        p1, p2 = self.get_nearest_points_of_gap(histo, gap)
+
+        if not p1 and not p2:
+            return self.INFINITE
+
+        distance = p1.distance(p2)
+        return distance
 
     def get_nearest_gap(self, gaps, angle_to_goal):
         if not gaps:
@@ -118,41 +144,9 @@ class ObstacleMap:
                 best_value = value
         return nearest
 
-    def get_nearest_points_of_gap(self, histo, gap):
-        min_distance = self.INFINITE
-        i = gap[0] - 1
-        p1_nearest = None
-        p2_nearest = None
-        while histo[1][i] is not None and self.angle_difference(self.get_middle_of_gap_basic(gap), histo[0][i]) < math.pi / 2:
-            j = (gap[1] + 1) % self.nb_phi
-            while histo[1][j] is not None and \
-                    self.angle_difference(self.get_middle_of_gap_basic(gap), histo[0][j]) < math.pi / 2:
-                p1 = Point(math.cos(histo[0][i % self.nb_phi]) * histo[1][i % self.nb_phi],
-                           math.sin(histo[0][i % self.nb_phi]) * histo[1][i % self.nb_phi])
-                p2 = Point(math.cos(histo[0][j % self.nb_phi]) * histo[1][j % self.nb_phi],
-                           math.sin(histo[0][j % self.nb_phi]) * histo[1][j % self.nb_phi])
-
-                distance = p1.distance(p2)
-                if distance < min_distance:
-                    p1_nearest = p1
-                    p2_nearest = p2
-                    min_distance = distance
-                j = (j + 1) % self.nb_phi
-            i = (i - 1) % self.nb_phi
-
-        return p1_nearest, p2_nearest
-
-    def get_gap_width(self, histo, gap):
-        if abs(gap[0] - gap[1]) >= self.nb_phi/2:
-            return self.INFINITE
-
-        p1, p2 = self.get_nearest_points_of_gap(histo, gap)
-
-        if not p1 and not p2:
-            return self.INFINITE
-
-        distance = p1.distance(p2)
-        return distance
+    def get_admissible_gaps(self, histo, min_width):
+        return [gap for gap in self.get_gaps(histo)
+                if self.get_gap_width(histo, gap) >= min_width]
 
     def get_angle_guide(self, robot, goal, min_width=300, distance_max=500, alpha_static=200.0):
         distance_max = min(robot.distance(goal), distance_max)
@@ -162,6 +156,7 @@ class ObstacleMap:
         admissible_gaps = self.get_admissible_gaps(histo, min_width)
 
         if not admissible_gaps:
+            print("no gap")
             return None
 
         histo_not_none = [x for x in histo[1] if x is not None]
@@ -170,35 +165,27 @@ class ObstacleMap:
         else:
             d_min = min(histo_not_none)
 
-        angle_to_goal = math.atan2(goal.y - robot.y, goal.x - robot.x) % (2*math.pi)
+        angle_to_goal = math.atan2(goal.y - robot.y, goal.x - robot.x) % (2 * math.pi)
 
         gap = self.get_nearest_gap(admissible_gaps, angle_to_goal)
 
         angle_to_gap = self.get_middle_of_gap(histo, gap)
 
         if angle_to_gap is not None:
-            angle_guide = self.angle_average(angle_to_goal, angle_to_gap, w1=1.0, w2=(alpha_static/d_min)**2)
+            angle_guide = self.angle_average(angle_to_goal, angle_to_gap, w1=1.0, w2=(alpha_static / d_min) ** 2)
         else:
             angle_guide = angle_to_goal
 
         if self.last_angle_guide is not None:
             angle_guide = self.angle_average(angle_guide, self.last_angle_guide,
-                                             w2=max(0.5, min(1.5, (d_min/alpha_static)**2)))
+                                             w2=max(0.5, min(1.5, (d_min / alpha_static) ** 2)))
 
         self.last_angle_guide = angle_guide
-        print("d_min = ", d_min)
-        return angle_guide, d_min/alpha_static
+        return angle_guide, d_min / alpha_static
 
-    def run(self, time):
-        for obs in self.obstacles:
-            obs.move(time)
-
-    def normalize_angle(self, angle):
-        while angle < 0:
-            angle += 2*math.pi
-        while angle > 2*math.pi:
-            angle -= 2*math.pi
-        return angle
+    # def run(self, time):
+    #    for obs in self.obstacles:
+    #        obs.move(time)
 
     @staticmethod
     def load(geogebra, pattern="poly*"):
@@ -210,5 +197,24 @@ class ObstacleMap:
 
         return ObstacleMap(polygons)
 
+    @staticmethod
+    def angle_difference(a1, a2):
+        abs_diff = abs(a1 - a2)
+        if abs_diff > math.pi:
+            return 2 * math.pi - abs_diff
+        else:
+            return abs_diff
 
+    @staticmethod
+    def normalize_angle(angle):
+        while angle < 0:
+            angle += 2 * math.pi
+        while angle > 2 * math.pi:
+            angle -= 2 * math.pi
+        return angle
 
+    @staticmethod
+    def angle_average(a1, a2, w1=1.0, w2=1.0):
+        x = math.cos(a1) * w1 + math.cos(a2) * w2
+        y = math.sin(a1) * w1 + math.sin(a2) * w2
+        return ObstacleMap.normalize_angle(math.atan2(y, x))

@@ -12,23 +12,25 @@ from statistics import *
 import time
 
 
-TEST = True
+TEST = False
 if TEST:
     from robots.setup_wheeledbase import *
     linvel = wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/2
     angvel = wheeledbase.get_parameter_value(POSITIONCONTROL_ANGVELMAX_ID, FLOAT)
 else:
-    linvel = 100
+    linvel = 400
 
 #all
 geo = Geogebra("test_obstacle2.ggb")
 robot = shapely.geometry.Point(geo.get("origin"))
 goal = shapely.geometry.Point(geo.get("goal"))
+period = 0.1
 
 #ftg
 obsmap = ObstacleMap.load(geo, pattern="obs_*")
 alpha_static = 600
 robot_width = 300
+distance_max = 800
 
 #pf
 objs = list()
@@ -39,7 +41,7 @@ polys = geo.getall("obs_*")
 [objs.append(Polygon(poly, funct_list["exp"](alpha=0.01, beta=100))) for poly in polys]
 
 
-step = 100
+step = linvel
 path = []
 i = 0
 
@@ -47,16 +49,17 @@ if TEST:
     wheeledbase.set_position(robot.x, robot.y, -math.pi/2)
 
 # obsmap.add_obstacle([(0, 2500), (200, 2500), (200, 2300), (0, 2300)], vel=Velocity(500, 0))
+last_angle_guide = -pi/2
 with open("list_point", "w") as file:
     file.write("Execute[{\"path = Polyline(")
-    while i < 10000 and robot.distance(goal) > step:
+    while i < 300 and robot.distance(goal) > step/2:
         # follow the gap
         begin = time.time()
-        angle_guide_ftg, v_ftg= obsmap.get_angle_guide(robot, goal, distance_max=1000, alpha_static=alpha_static, min_width=robot_width)
+        angle_guide_ftg, n_distance = obsmap.get_angle_guide(robot, goal, distance_max=distance_max, alpha_static=alpha_static, min_width=robot_width)
         if angle_guide_ftg is None:
             break
-        v_ftg = min(1.0, v_ftg)
-        print("angle ftg : ", angle_guide_ftg)
+        v_ftg = min(1.0, n_distance)
+        print("angle ftg : ", angle_guide_ftg*180/pi)
         print("v ftg : ", v_ftg)
 
         # potential field
@@ -69,33 +72,30 @@ with open("list_point", "w") as file:
         angle_guide_pf = obsmap.normalize_angle(atan2(vy, vx))
         v_pf = math.sqrt((vx*vx + vy*vy)) / 10
         v_pf = min(1.0, v_pf)
-        print("angle pf : ", angle_guide_pf)
+        print("angle pf : ", angle_guide_pf*180/pi)
         print("v pf : ", v_pf)
 
         # all
         if obsmap.angle_difference(angle_guide_ftg, angle_guide_pf) < math.pi/2:
-            angle_guide = obsmap.angle_average(angle_guide_pf, angle_guide_ftg)
+            angle_guide = obsmap.angle_average(angle_guide_pf, angle_guide_ftg, w1=0.5/n_distance)
         else:
             angle_guide = angle_guide_ftg
+
+        angle_guide = obsmap.angle_average(angle_guide, last_angle_guide,
+                                         w2=max(0.5, min(1.5, n_distance)))
+        last_angle_guide = angle_guide
         v = (v_pf + v_ftg) / 2 * linvel
         v = min(v, linvel)
 
-        print("angle : ", angle_guide)
+        print("angle : ", angle_guide*180/pi)
         print("v : ", v)
-        print("time : ", time.time() - begin, "\n")
+        print("time : ", time.time() - begin)
 
-        dx = math.cos(angle_guide) * v
-        dy = math.sin(angle_guide) * v
-        path += [(robot.x, robot.y)]
-        file.write("(" + str(round(robot.x)) + ", " +
-                   str(round(robot.y)) + "),")
-        i += 1
         if TEST:
             try:
                 wheeledbase.follow_angle(angle_guide, v)
                 while not wheeledbase.isarrived():
                     time.sleep(0.1)
-
             except:
                 print("spin")
                 break
@@ -103,7 +103,15 @@ with open("list_point", "w") as file:
         if TEST:
             robot = shapely.geometry.Point(wheeledbase.get_position()[0], wheeledbase.get_position()[1])
         else:
+            dx = math.cos(angle_guide) * v * period
+            dy = math.sin(angle_guide) * v * period
             robot = shapely.geometry.Point(robot.x + dx, robot.y + dy)
+            print("ROBOT : " + "(" + str(round(robot.x)) + ", " + str(round(robot.y)) + ")")
+
+        path += [(robot.x, robot.y)]
+        file.write("(" + str(round(robot.x)) + ", " + str(round(robot.y)) + "),")
+        print()
+        i += 1
 
 
     if TEST:
