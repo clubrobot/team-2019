@@ -5,6 +5,8 @@ from argparse import ArgumentParser
 
 from common.serialtalks import *
 from common.components import Server, Manager
+manager = Manager()
+manager.connect()
 from common.geogebra import *
 from common.roadmap import *
 #from robots.beacons_manager import BeaconsManagement
