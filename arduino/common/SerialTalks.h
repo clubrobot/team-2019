@@ -238,7 +238,7 @@ protected: // Protected methods
 		SERIALTALKS_WAITING_STATE,///<En attente de l'arrivé d'un octet.
 		SERIALTALKS_INSTRUCTION_STARTING_STATE,///< En attente du prochain octet de la requête correspondant à la taille de celle-ci.
 		SERIALTALKS_CRC_RECIEVING_STATE, ///< En attente du hash d'intégrité.
-		SERIALTALKS_INSTRUCTION_RECEIVING_STATE,, ///< Réception des derniers octet de la requête.
+		SERIALTALKS_INSTRUCTION_RECEIVING_STATE, ///< Réception des derniers octet de la requête.
 	}           m_state;/// Différents états de réception.
 
 	enum// m_order
