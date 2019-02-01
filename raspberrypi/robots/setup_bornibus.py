@@ -8,8 +8,11 @@ from daughter_cards.display import *
 from robots.display_manager import *
 
 gripper = Gripper(manager)
+gripper.open()
 pushers = Pushers(manager)
+pushers.up()
 arm =     Arm(manager)
+arm.up()
 
 ss = SevenSegments(manager)
 left_eye = LEDMatrix(manager, 1)

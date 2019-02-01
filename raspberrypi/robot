@@ -3,20 +3,20 @@
 
 from argparse import ArgumentParser
 
-from daughter_cards.buttons import ButtonCard
-from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
+from common.serialtalks import *
 from common.components import Server, Manager
-from daughter_cards.wheeledbase import *
-from daughter_cards.display import *
-from daughter_cards.sensors import *
 from common.geogebra import *
 from common.roadmap import *
-from common.serialtalks import *
-from beacons.balise_receiver import BaliseReceiver
-from robots.beacons_manager import BeaconsManagement
+#from robots.beacons_manager import BeaconsManagement
+#from daughter_cards.buttons import ButtonCard
+#from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
+
 from robots.get_robot_name import *
 #if ROBOT_ID == R128_ID:
 #    from robots.color_pattern import Pattern
+
+if ROBOT_ID == BORNIBUS_ID:
+    from robots.setup_bornibus import *
 
 DEV_MODE = True
 MATCH_MODE = False
@@ -183,17 +183,13 @@ def getuuid(args):
 
 def showip(args):
     try:
-        ssg = SerialTalks(os.path.join('/dev/arduino', 'display'))
-        ssg.connect()
         import subprocess
         ip = ''
         while not ip:
             proc = subprocess.run(['hostname', '-I'], stdout=subprocess.PIPE)
             ips = proc.stdout.strip().decode('utf8').split(" ")
             ip = ips[-1]
-        ssg.send(0x0E, STRING(ip))
-
-        ssg.disconnect()
+        ss.send(0x0E, STRING(ip))
     except:
         pass
 
