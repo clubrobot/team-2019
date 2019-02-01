@@ -16,9 +16,9 @@ from robots.get_robot_name import *
 #    from robots.color_pattern import Pattern
 
 try:
+    global manager
     manager = Manager()
     manager.connect()
-    global manager
 except:
     print("No server")
 
