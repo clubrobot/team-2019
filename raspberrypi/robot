@@ -18,6 +18,7 @@ from robots.get_robot_name import *
 try:
     manager = Manager()
     manager.connect()
+    global manager
 except:
     print("No server")
 
