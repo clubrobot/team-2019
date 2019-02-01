@@ -47,7 +47,7 @@ void MotorWrapper::process(float timestep)
 		}
 		catch(...)
 		{
-			cout<<"err"<<endl;
+			cout<<"AX_12 not connected"<<endl;
 		}
 	}
 	else
