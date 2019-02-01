@@ -5,8 +5,6 @@ from argparse import ArgumentParser
 
 from common.serialtalks import *
 from common.components import Server, Manager
-manager = Manager()
-manager.connect()
 from common.geogebra import *
 from common.roadmap import *
 #from robots.beacons_manager import BeaconsManagement
@@ -16,9 +14,6 @@ from common.roadmap import *
 from robots.get_robot_name import *
 #if ROBOT_ID == R128_ID:
 #    from robots.color_pattern import Pattern
-
-if ROBOT_ID == BORNIBUS_ID:
-    from robots.setup_bornibus import *
 
 DEV_MODE = True
 MATCH_MODE = False
@@ -184,6 +179,8 @@ def getuuid(args):
 
 
 def showip(args):
+    if ROBOT_ID == BORNIBUS_ID:
+        from robots.setup_bornibus import *
     try:
         import subprocess
         ip = ''
