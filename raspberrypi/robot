@@ -258,7 +258,7 @@ def update(args):
 from robots.get_robot_name import *
 import sys
 
-if sys.argv[1] != "server":
+if sys.argv[1] != "server" and sys.argv[1] != "getuuid":
     manager = Manager("127.0.0.1")
     manager.connect()
     if ROBOT_ID == BORNIBUS_ID:
