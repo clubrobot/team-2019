@@ -12,6 +12,6 @@ pushers = Pushers(manager)
 arm =     Arm(manager)
 
 ss = SevenSegments(manager)
-right_eye = LEDMatrix(manager, 1)
-left_eye = LEDMatrix(manager, 2)
+left_eye = LEDMatrix(manager, 1)
+right_eye = LEDMatrix(manager, 2)
 disp_man = DisplayPoints(ss, right_eye, left_eye)
