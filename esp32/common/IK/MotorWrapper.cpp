@@ -45,10 +45,14 @@ void MotorWrapper::process(float timestep)
 		{
 			m_motor->move(m_pos + m_offset);
 		}
-		catch(...)
-		{
-			cout<<"err"<<endl;
-		}
+        catch(const AX12Timeout& e)
+        {
+            cout<<"AX_12 Timeout"<<endl;
+        }
+        catch(const AX12error e)
+        {
+            cout<<"AX_12 error"<<endl;
+        }
 	}
 	else
 	{

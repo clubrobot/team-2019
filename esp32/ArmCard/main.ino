@@ -115,20 +115,27 @@ void setup()
     traj_manager.enable();
 
     /* create secondary loop to manage arm deplacements*/
-    //task_manager.create_task(secondary_loop , NULL);
+    task_manager.create_task(secondary_loop , NULL);
 
 }
 
 void loop()
-{  
-    talks.execute();
+{
     traj_manager.update();
+
 }
 
 static void secondary_loop(void * parameters)
 {
     while(1)
     {
-        
+        try{
+            talks.execute();
+        }
+
+        catch (...)
+        {
+            cout << "catch" << endl;
+        }
     }
 }
