@@ -15,6 +15,17 @@ from robots.get_robot_name import *
 #if ROBOT_ID == R128_ID:
 #    from robots.color_pattern import Pattern
 
+try:
+    from robots.setup_serialtalks import *
+except:
+    print("No server")
+
+if ROBOT_ID == BORNIBUS_ID:
+    from robots.setup_bornibus import *
+
+
+
+
 DEV_MODE = True
 MATCH_MODE = False
 
@@ -179,8 +190,6 @@ def getuuid(args):
 
 
 def showip(args):
-    if ROBOT_ID == BORNIBUS_ID:
-        from robots.setup_bornibus import *
     try:
         import subprocess
         ip = ''
