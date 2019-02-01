@@ -189,7 +189,8 @@ def showip(args):
         ip = ''
         while not ip:
             proc = subprocess.run(['hostname', '-I'], stdout=subprocess.PIPE)
-            ip = proc.stdout.strip().decode('utf8')
+            ips = proc.stdout.strip().decode('utf8').split(" ")
+            ip = ips[-1]
         ssg.send(0x0E, STRING(ip))
 
         ssg.disconnect()
