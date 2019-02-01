@@ -1,6 +1,6 @@
 from common.components import *
 
-if "manager" not in globals():
+if not Manager.MANAGER_CREATED:
     hostname = ""
     if hostname == "":
         print("IP adress :  ")

@@ -238,7 +238,7 @@ class Server(TCPTalksServer):
 
 
 class Manager(TCPTalks):
-
+    MANAGER_CREATED = False
     def __init__(self, ip='localhost', port=COMPONENTS_SERVER_DEFAULT_PORT, password=None):
         TCPTalks.__init__(self, ip, port=port, password=password)
         # PiCamera components
@@ -251,6 +251,7 @@ class Manager(TCPTalks):
         # SerialTalks
         self.bind(MAKE_MANAGER_REPLY_OPCODE, self.MAKE_MANAGER_REPLY)
         self.serial_instructions = {}
+        Manager.MANAGER_CREATED = True
 
     def start_match(self):
         self.send(MAKE_MATCH_TIMER_OPCODE)

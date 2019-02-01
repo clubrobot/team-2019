@@ -11,22 +11,6 @@ from common.roadmap import *
 #from daughter_cards.buttons import ButtonCard
 #from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
 
-from robots.get_robot_name import *
-#if ROBOT_ID == R128_ID:
-#    from robots.color_pattern import Pattern
-
-try:
-    global manager
-    manager = Manager()
-    manager.connect()
-except:
-    print("No server")
-
-if ROBOT_ID == BORNIBUS_ID:
-    from robots.setup_bornibus import *
-
-
-
 
 DEV_MODE = True
 MATCH_MODE = False
@@ -270,6 +254,13 @@ def update(args):
         print("updating " + arduino)
         subprocess.run(['/usr/bin/make', 'upload_safe', '-C', arduino_path])
 
+
+from robots.get_robot_name import *
+import sys
+
+if sys.argv[1] != "server":
+    if ROBOT_ID == BORNIBUS_ID:
+        from robots.setup_bornibus import *
 
 parser = ArgumentParser()
 subparsers = parser.add_subparsers()
