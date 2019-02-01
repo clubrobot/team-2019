@@ -16,7 +16,14 @@ void ADD_MOVE(SerialTalks& talks, Deserializer& input, Serializer& output)
     pos.y   = input.read<float>();
     pos.phi = input.read<float>();
 
-    traj_manager.move_directly(pos);
+    try
+    {
+        traj_manager.move_directly(pos);
+    }
+    catch(...)
+    {
+
+    }
 }
 
 void RUN_BATCH(SerialTalks& talks, Deserializer& input, Serializer& output)
