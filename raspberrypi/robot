@@ -3,20 +3,14 @@
 
 from argparse import ArgumentParser
 
-from daughter_cards.buttons import ButtonCard
-from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
+from common.serialtalks import *
 from common.components import Server, Manager
-from daughter_cards.wheeledbase import *
-from daughter_cards.display import *
-from daughter_cards.sensors import *
 from common.geogebra import *
 from common.roadmap import *
-from common.serialtalks import *
-from beacons.balise_receiver import BaliseReceiver
-from robots.beacons_manager import BeaconsManagement
-from robots.get_robot_name import *
-#if ROBOT_ID == R128_ID:
-#    from robots.color_pattern import Pattern
+#from robots.beacons_manager import BeaconsManagement
+#from daughter_cards.buttons import ButtonCard
+#from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
+
 
 DEV_MODE = True
 MATCH_MODE = False
@@ -183,16 +177,13 @@ def getuuid(args):
 
 def showip(args):
     try:
-        ssg = SerialTalks(os.path.join('/dev/arduino', 'display'))
-        ssg.connect()
         import subprocess
         ip = ''
         while not ip:
             proc = subprocess.run(['hostname', '-I'], stdout=subprocess.PIPE)
-            ip = proc.stdout.strip().decode('utf8')
-        ssg.send(0x0E, STRING(ip))
-
-        ssg.disconnect()
+            ips = proc.stdout.strip().decode('utf8').split(" ")
+            ip = ips[-1]
+        ss.send(0x0E, STRING(ip))
     except:
         pass
 
@@ -263,6 +254,15 @@ def update(args):
         print("updating " + arduino)
         subprocess.run(['/usr/bin/make', 'upload_safe', '-C', arduino_path])
 
+
+from robots.get_robot_name import *
+import sys
+
+if sys.argv[1] != "server" and sys.argv[1] != "getuuid":
+    manager = Manager("127.0.0.1")
+    manager.connect()
+    if ROBOT_ID == BORNIBUS_ID:
+        from robots.setup_bornibus import *
 
 parser = ArgumentParser()
 subparsers = parser.add_subparsers()

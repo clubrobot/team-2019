@@ -62,25 +62,7 @@ void setup()
     try
     {
         joint.th1 = (servoax1.readPosition() - LINK1_OFFSET)*M_PI / 180;
-    }
-    catch(...)
-    {
-        joint = {10,10,0};
-    }
-
-    /* get current motor pos to correctly init arm */
-    try
-    {
         joint.th2 = (servoax2.readPosition() - LINK2_OFFSET)*M_PI / 180;
-    }
-    catch(...)
-    {
-        joint = {10,10,0};
-    }
-
-    /* get current motor pos to correctly init arm */
-    try
-    {
         joint.th3 = (servoax3.readPosition() - LINK3_OFFSET)*M_PI / 180;
     }
     catch(...)
@@ -88,7 +70,6 @@ void setup()
         joint = {10,10,0};
     }
 
-        joint = {10,10,0};
     /* configure PID for motor 1*/
     AX1_PID.setOutputLimits(1, 532);
     AX1_PID.setTunings(1, 0.01 , 0);
@@ -135,20 +116,26 @@ void setup()
 
     /* create secondary loop to manage arm deplacements*/
     task_manager.create_task(secondary_loop , NULL);
+
 }
 
 void loop()
-{  
-    talks.execute();
-   // traj_manager.update();
-   
+{
+    traj_manager.update();
+
 }
 
 static void secondary_loop(void * parameters)
 {
     while(1)
     {
-        traj_manager.update();
-        vTaskDelay(1);
+        try{
+            talks.execute();
+        }
+
+        catch (...)
+        {
+            cout << "catch" << endl;
+        }
     }
 }
