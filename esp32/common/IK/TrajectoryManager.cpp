@@ -44,9 +44,15 @@ void TrajectoryManager::move_directly(coords_t pos)
     LOG_TRAJ("start : " << start_coord);
     LOG_TRAJ("end : " << end_coord );
 
-    mb = m_manager->go_to(start_coord, end_coord);
-
-    addMoveBatch(mb);
+    try
+    {
+        mb = m_manager->go_to(start_coord, end_coord);
+        addMoveBatch(mb);
+    }
+    catch(const string& e)
+    {
+        cout << e << endl;
+    }
     m_mutex.release();
 }
 
