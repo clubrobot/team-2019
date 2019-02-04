@@ -30,10 +30,6 @@ void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t ori
     m_l3        = l3;
 	m_lsq   	= pow(l1,2)+pow(l2,2);
 
-    x_axis   = {-(m_l1 + m_l2 + m_l3), (m_l1 + m_l2 + m_l3), -1, 1, -1, 1};
-	y_axis   = {-(m_l1 + m_l2 + m_l3), (m_l1 + m_l2 + m_l3), -1, 1, -1, 1};
-	phi_axis = {-(5*M_PI)/6, (5*M_PI)/6 , -1, 1, -1, 1};
-
     m_flip_elbow = elbow_or;
 }
 
@@ -56,12 +52,14 @@ joints_t Picker::inverse_kinematics(coords_t tool)
 {
     joints_t ret;
 
-    double dotx = (tool.x - m_origin.x) - (m_l3 * cos(tool.phi));
-    double doty = (tool.y - m_origin.y) - (m_l3 * sin(tool.phi));
+    double dotx,doty,costh;
 
-	double norm = pow(dotx,2) + pow(doty,2);
-    
-    if( norm > pow((m_l1 + m_l2 + m_l3),2) || norm < pow((m_l1 - m_l2 - m_l3),2))
+    dotx = (m_tool.x - m_origin.x) - (m_l3 * cos(m_tool.phi));
+    doty = (m_tool.y - m_origin.y) - (m_l3 * sin(m_tool.phi));
+
+    costh = (pow(dotx,2) + pow(doty,2) - pow(m_l1,2) - pow(m_l2, 2)) / (2 * m_l1 * m_l2);
+
+    if(costh < -1 || costh > 1)
     {
         m_tool = get_tool();
         LOG_PICKER("Target unreacheable");
@@ -97,27 +95,21 @@ joints_t Picker::get_joints(void) const throw()
 {
     joints_t new_joints;
 
-    double dotx,doty,costh,sinth,k1,k2, sqr;
+    double dotx,doty,costh,k1,k2,c2,s2;
 
     dotx = (m_tool.x - m_origin.x) - (m_l3 * cos(m_tool.phi));
     doty = (m_tool.y - m_origin.y) - (m_l3 * sin(m_tool.phi));
 
     costh = (pow(dotx,2) + pow(doty,2) - pow(m_l1,2) - pow(m_l2, 2)) / (2 * m_l1 * m_l2);
 
-    if(costh > 1)
-    {
-        LOG_PICKER("ERROR : NOT A NUMBER");
-        throw string("Not A number");
-    }
+    new_joints.th2 = m_flip_elbow * acos(costh);
 
-    sinth = m_flip_elbow * sqrt(1 - pow(costh,2));
+    k2 = m_l2 * sin(new_joints.th2);
+    k1 = m_l1 + (m_l2 * cos(new_joints.th2));
 
-    k1 = m_l1 + (m_l2 * costh);
-    k2 = m_l2 * sinth ;
+    new_joints.th1 = atan2(doty, dotx) - atan2(k2, k1);
+    new_joints.th3 = m_tool.phi - new_joints.th1 - new_joints.th2;
 
-    new_joints.th1 = atan2(doty, dotx) - atan2(k2 , k1);
-    new_joints.th2 = atan2(sinth, costh);
-    new_joints.th3 = m_tool.phi - (new_joints.th1 + new_joints.th2);
 
     new_joints.th1 = std::fmod((new_joints.th1 + (M_PI)) , 2*M_PI) - M_PI; // Stay between -pi and pi
     new_joints.th2 = std::fmod((new_joints.th2 + (M_PI)) , 2*M_PI) - M_PI; // Stay between -pi and pi
