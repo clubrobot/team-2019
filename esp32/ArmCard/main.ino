@@ -110,6 +110,7 @@ void setup()
 
     /* Add INITIAL_POS to queue */
     traj_manager.move_directly(arm_positions[HOME]);
+    
 
     /* enable traj manager to reach pos */    
     traj_manager.enable();
@@ -121,21 +122,15 @@ void setup()
 
 void loop()
 {
-    traj_manager.update();
-
+    talks.execute();
+    vTaskDelay(1);
 }
 
 static void secondary_loop(void * parameters)
 {
     while(1)
-    {
-        try{
-            talks.execute();
-        }
-
-        catch (...)
-        {
-            cout << "catch" << endl;
-        }
+    {            
+        traj_manager.update();
+        vTaskDelay(1);
     }
 }
