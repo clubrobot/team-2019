@@ -58,7 +58,7 @@ class Picker
 
 		Joint Theta1_joint = Joint(0, -M_PI, M_PI, -AX_12_MAX_SPEED_RAD, AX_12_MAX_SPEED_RAD, -25, 25);
 		Joint Theta2_joint = Joint(1, -(5*M_PI)/6, (5*M_PI)/6, -AX_12_MAX_SPEED_RAD, AX_12_MAX_SPEED_RAD, -25, 25);
-		Joint Theta3_joint = Joint(2, -(5*M_PI)/6, (5*M_PI)/6, -AX_12_MAX_SPEED_RAD, AX_12_MAX_SPEED_RAD, -25, 25);
+		Joint Theta3_joint = Joint(2, -M_PI, M_PI, -AX_12_MAX_SPEED_RAD, AX_12_MAX_SPEED_RAD, -25, 25);
 
 		Matrix3 m_matrix;
 
