@@ -2,7 +2,7 @@ BOARD = esp32
 CHIP = esp32
 
 #Arduino file
-SKETCH = panel.ino
+SKETCH = experience.ino
 
 BOARD_UUID = esp32
 COMMON = ../common
