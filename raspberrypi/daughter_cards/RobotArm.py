@@ -26,6 +26,10 @@ class RobotArm(SecureSerialTalksProxy):
 
 	def move(self, pos):
 		self.send(_ADD_MOVE_OPCODE, FLOAT(pos['x']), FLOAT(pos['y']), FLOAT(deg_to_rad(pos['phi'])))
+
+	def move2(self, x, y, phi):
+		self.send(_ADD_MOVE_OPCODE, FLOAT(x), FLOAT(y), FLOAT(deg_to_rad(phi)))
+		self.send(_RUN_BATCH_OPCODE)
 	
 	def run_batch(self):
 		self.send(_RUN_BATCH_OPCODE)
