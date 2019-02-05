@@ -4,7 +4,7 @@
 import time
 from math import pi
 
-from common.serialtalks import BYTE, INT, LONG, FLOAT, SerialTalks
+from common.serialtalks import BYTE, INT, LONG, FLOAT
 from common.components import SecureSerialTalksProxy
 
 def deg_to_rad(val):
@@ -20,12 +20,16 @@ _STOP_PUMP_OPCODE    = 0X15
 _START_SLUICE_OPCODE = 0X16 
 _STOP_SLUICE_OPCODE  = 0x17
 
-class RobotArm(SerialTalks):
-	def __init__(self, uuid='tty.SLAB_USBtoUART'):
-		SerialTalks.__init__(self, "/dev/tty.SLAB_USBtoUART")
+class RobotArm(SecureSerialTalksProxy):
+	def __init__(self, manager, uuid='/dev/arduino/arm'):
+		SecureSerialTalksProxy.__init__(self, manager, uuid, dict())
 
 	def move(self, pos):
 		self.send(_ADD_MOVE_OPCODE, FLOAT(pos['x']), FLOAT(pos['y']), FLOAT(deg_to_rad(pos['phi'])))
+
+	def move2(self, x, y, phi):
+		self.send(_ADD_MOVE_OPCODE, FLOAT(x), FLOAT(y), FLOAT(deg_to_rad(phi)))
+		self.send(_RUN_BATCH_OPCODE)
 	
 	def run_batch(self):
 		self.send(_RUN_BATCH_OPCODE)
