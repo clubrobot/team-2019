@@ -128,7 +128,7 @@ static void secondary_loop(void * parameters)
 {
     while(1)
     {
-        //traj_manager.update();
+        traj_manager.update();
         vTaskDelay(1);
     }
 }
