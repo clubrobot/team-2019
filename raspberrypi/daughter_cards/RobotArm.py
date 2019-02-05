@@ -4,8 +4,6 @@
 import time
 from math import pi
 
-from jupyterlab.semver import _R
-
 from common.serialtalks import BYTE, INT, LONG, FLOAT
 from common.components import SecureSerialTalksProxy
 
