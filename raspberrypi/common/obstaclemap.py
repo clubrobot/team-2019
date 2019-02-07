@@ -6,7 +6,7 @@ BRUTE = False
 
 
 class ObstacleMap:
-    nb_phi = 60
+    nb_phi = 100
     nb_r = 100
     INFINITE = 100000
     last_angle_guide = None
@@ -51,6 +51,7 @@ class ObstacleMap:
                         if histo[1][phi_i] is None:
                             histo[1][phi_i] = d
                         histo[1][phi_i] = min(histo[1][phi_i], d)
+        # print(histo)
         return histo
 
     def get_gaps(self, histo):
@@ -66,8 +67,8 @@ class ObstacleMap:
                     state = end_st
             elif state is end_st:
                 if histo[1][phi_i] is not None:
-                    end_st = phi_i - 1
-                    gaps += [(start, end_st)]
+                    end = phi_i - 1
+                    gaps += [(start, end)]
                     state = start_st
 
         if state is end_st:
@@ -75,6 +76,7 @@ class ObstacleMap:
                 gaps[0] = (start, gaps[0][1] + self.nb_phi)
             else:
                 gaps += [(start, self.nb_phi)]
+        print(gaps)
         return gaps
 
     def get_nearest_points_of_gap(self, histo, gap):
@@ -125,6 +127,7 @@ class ObstacleMap:
             return self.INFINITE
 
         distance = p1.distance(p2)
+        print(gap[0]*360/self.nb_phi, gap[1]*360/self.nb_phi, " : ", distance)
         return distance
 
     def get_nearest_gap(self, gaps, angle_to_goal):

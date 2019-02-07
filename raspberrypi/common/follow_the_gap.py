@@ -8,14 +8,13 @@ from common.ObstacleField.PointObstacle.Point import *
 from common.ObstacleField.funct import *
 
 import math
-from statistics import *
 import time
 
 
-TEST = False
+TEST = True
 if TEST:
     from robots.setup_wheeledbase import *
-    linvel = wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/2
+    linvel = 200 #wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/4
     angvel = wheeledbase.get_parameter_value(POSITIONCONTROL_ANGVELMAX_ID, FLOAT)
 else:
     linvel = 400
@@ -25,6 +24,7 @@ geo = Geogebra("test_obstacle2.ggb")
 robot = shapely.geometry.Point(geo.get("origin"))
 goal = shapely.geometry.Point(geo.get("goal"))
 period = 0.1
+PF_FTG_CST = 0.5
 
 #ftg
 obsmap = ObstacleMap.load(geo, pattern="obs_*")
@@ -55,9 +55,12 @@ with open("list_point", "w") as file:
     while i < 300 and robot.distance(goal) > step/2:
         # follow the gap
         begin = time.time()
-        angle_guide_ftg, n_distance = obsmap.get_angle_guide(robot, goal, distance_max=distance_max, alpha_static=alpha_static, min_width=robot_width)
-        if angle_guide_ftg is None:
+        ret = obsmap.get_angle_guide(robot, goal, distance_max=distance_max, alpha_static=alpha_static, min_width=robot_width)
+        if ret is None:
             break
+        else:
+            angle_guide_ftg, n_distance = ret
+
         v_ftg = min(1.0, n_distance)
         print("angle ftg : ", angle_guide_ftg*180/pi)
         print("v ftg : ", v_ftg)
@@ -77,12 +80,12 @@ with open("list_point", "w") as file:
 
         # all
         if obsmap.angle_difference(angle_guide_ftg, angle_guide_pf) < math.pi/2:
-            angle_guide = obsmap.angle_average(angle_guide_pf, angle_guide_ftg, w1=0.5/n_distance)
+            angle_guide = obsmap.angle_average(angle_guide_pf, angle_guide_ftg, w1=PF_FTG_CST/n_distance)
+            #angle_guide = obsmap.angle_average(angle_guide, last_angle_guide,
+             #                                  w2=max(0.5, min(1.5, n_distance)))
         else:
             angle_guide = angle_guide_ftg
 
-        angle_guide = obsmap.angle_average(angle_guide, last_angle_guide,
-                                         w2=max(0.5, min(1.5, n_distance)))
         last_angle_guide = angle_guide
         v = (v_pf + v_ftg) / 2 * linvel
         v = min(v, linvel)
@@ -95,8 +98,8 @@ with open("list_point", "w") as file:
             try:
                 wheeledbase.follow_angle(angle_guide, v)
                 while not wheeledbase.isarrived():
-                    time.sleep(0.1)
-            except:
+                    time.sleep(0.05)
+            except RuntimeError:
                 print("spin")
                 break
 
@@ -123,37 +126,37 @@ with open("list_point", "w") as file:
     file.write(")\", \"SetColor(path, 255, 255, 255)\"}]")
 
 print("fin")
-pts = [shapely.geometry.Point(p) for p in path]
-nb_pts = i
-done = [False for _ in range(nb_pts)]
-j = 0
-pts_f = []
-while j < nb_pts:
-    while j < nb_pts and done[j]:
-        j += 1
-    if j >= nb_pts:
-        break
-    p = pts[j]
-    done[j] = True
-    pts_win = [p]
-    window = shapely.geometry.Polygon(
-        [(p.x - robot_width, p.y - robot_width), (p.x + robot_width, p.y - robot_width),
-         (p.x + robot_width, p.y + robot_width), (p.x - robot_width, p.y + robot_width)])
-    for k in range(nb_pts):
-        if not done[k] and window.contains(pts[k]):
-            done[k] = True
-            pts_win += [pts[k]]
-    pts_f += [(mean([p.x for p in pts_win]), mean([p.y for p in pts_win]))]
+#pts = [shapely.geometry.Point(p) for p in path]
+#nb_pts = i
+#done = [False for _ in range(nb_pts)]
+#j = 0
+#pts_f = []
+#while j < nb_pts:
+#    while j < nb_pts and done[j]:
+#        j += 1
+#    if j >= nb_pts:
+#        break
+#    p = pts[j]
+#    done[j] = True
+#    pts_win = [p]
+#    window = shapely.geometry.Polygon(
+#        [(p.x - robot_width, p.y - robot_width), (p.x + robot_width, p.y - robot_width),
+#         (p.x + robot_width, p.y + robot_width), (p.x - robot_width, p.y + robot_width)])
+#    for k in range(nb_pts):
+#        if not done[k] and window.contains(pts[k]):
+#            done[k] = True
+#            pts_win += [pts[k]]
+#    pts_f += [(mean([p.x for p in pts_win]), mean([p.y for p in pts_win]))]
+#
+#
+#file = open("list_point_filtered", "w")
+#file.write("Execute[{")
+#for (x, y) in pts_f:
+#    file.write("\"(" + str(round(x)) + ", " + str(round(y)) + ")\",")
+#file.seek(0, os.SEEK_END)
+#file.seek(file.tell() - 1, os.SEEK_SET)
+#file.write("}]")
 
-
-file = open("list_point_filtered", "w")
-file.write("Execute[{")
-for (x, y) in pts_f:
-    file.write("\"(" + str(round(x)) + ", " + str(round(y)) + ")\",")
-file.seek(0, os.SEEK_END)
-file.seek(file.tell() - 1, os.SEEK_SET)
-file.write("}]")
-
-file.close()
+#file.close()
 
 
