@@ -1,8 +1,8 @@
 #include "instructions.h"
-#include "../common/PannelEffects.h"
+#include "../common/ExperienceEffects.h"
 
 
-extern PannelEffects Animation;
+extern ExperienceEffects Animation;
 extern TCPTalks talk;
 
 void PING(TCPTalks &inst, UnPickler& input, Pickler& output)
@@ -11,38 +11,17 @@ void PING(TCPTalks &inst, UnPickler& input, Pickler& output)
 }
 
 
-void SET_BAR(TCPTalks &inst, UnPickler& input, Pickler& output)
+void SET_START(TCPTalks &inst, UnPickler& input, Pickler& output)
 {
-	Animation.set_bar_animation((int)input.load<long>());
+	Animation.start();
 	output.dump<char*>("CHANGED");
 }
 
-void GET_BAR(TCPTalks &inst, UnPickler& input, Pickler& output)
+void GET_START(TCPTalks &inst, UnPickler& input, Pickler& output)
 {
-	output.dump<long>(Animation.get_bar_animation());
+	output.dump<long>(Animation.getStart());
 }
 
-void SET_LOGO(TCPTalks &inst, UnPickler& input, Pickler& output)
-{
-	Animation.set_logo_animation(input.load<long>());
-	output.dump<char*>("CHANGED");
-}
-
-void GET_LOGO(TCPTalks &inst, UnPickler& input, Pickler& output)
-{
-	output.dump<long>(Animation.get_logo_animation());
-}
-
-void SET_ENGR(TCPTalks &inst, UnPickler& input, Pickler& output)
-{
-	Animation.set_engr_animation(input.load<long>());
-	output.dump<char*>("CHANGED");
-}
-
-void GET_ENGR(TCPTalks &inst, UnPickler& input, Pickler& output)
-{
-	output.dump<long>(Animation.get_engr_animation());
-}
 
 void IS_CONNECTED(TCPTalks &inst, UnPickler& input, Pickler& output)
 {

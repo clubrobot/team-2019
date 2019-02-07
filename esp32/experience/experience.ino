@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "../common/Pickle.h"
 #include "../common/tcptalks.h"
-#include "../common/PannelEffects.h"
+#include "../common/ExperienceEffects.h"
 #include "instructions.h"
 #include <BLEDevice.h>
 #include <BLEClient.h>
@@ -28,7 +28,7 @@ class ClientCallbacks : public BLEClientCallbacks
 
 TCPTalks talk("CLUB_ROBOT", "zigouigoui", "192.168.1.17", 26656);
 
-PannelEffects Animation;
+ExperienceEffects Animation;
 
 long current_time = 0;
 long last_time = 0;
@@ -81,19 +81,11 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks
 void setup()
 {
     Serial.begin(115200);
-    /*
+
     talk.connect(500);
     talk.bind(PING_OPCODE, PING);
-    talk.bind(SET_BAR_OPCODE, SET_BAR);
-    talk.bind(GET_BAR_OPCODE, GET_BAR);
-
-    talk.bind(SET_LOGO_OPCODE, SET_LOGO);
-    talk.bind(GET_LOGO_OPCODE, GET_LOGO);
-
-    talk.bind(SET_ENGR_OPCODE, SET_ENGR);
-    talk.bind(GET_ENGR_OPCODE, GET_ENGR);
-
-    talk.bind(IS_CONNECTED_OPCODE, IS_CONNECTED);*/
+    talk.bind(SET_START_OPCODE, SET_START);
+    talk.bind(GET_START_OPCODE, GET_START);
 
     BLEDevice::init("");
     Serial.println("init BLE");
@@ -108,8 +100,8 @@ void setup()
 
 void loop()
 {
-    // talk.execute();
-    Animation.execute();
+    talk.execute();
+    //Animation.execute();
 
     /* Auto re-connect step */
     /*current_time = millis();

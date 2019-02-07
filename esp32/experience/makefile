@@ -32,6 +32,7 @@ LIBS = $(ESP_LIBS)/EEPROM \
 	   $(COMMON)/PannelEffects.cpp \
 	   $(COMMON)/Pickle.cpp \
 	   $(COMMON)/tcptalks.cpp \
+	   $(COMMON)/NeoPixel/Adafruit_NeoPixel.cpp\
 	   instructions.cpp
 
 
