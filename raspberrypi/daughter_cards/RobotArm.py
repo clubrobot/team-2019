@@ -21,11 +21,20 @@ _STOP_PUMP_OPCODE    = 0X15
 _START_SLUICE_OPCODE = 0X16 
 _STOP_SLUICE_OPCODE  = 0x17
 
+
+
 class RobotArm(SecureSerialTalksProxy):
 	def __init__(self, manager, uuid='/dev/arduino/arm'):
 		SecureSerialTalksProxy.__init__(self, manager, uuid, dict())
 		with open('ArmPosition.json') as f:
 			self.armPosition= json.load(f)
+		
+		self.TankPosList 	= ["TANK_POS_1", "TANK_POS_2", "TANK_POS_3"]
+		self.CurrentTankPos = 0
+		self.tankSize		= 2	# size 3 by default [0, 1, 2]
+
+	def setup_tank_size(self, size):
+		self.tankSize = size - 1
 
 	def move(self, posID):
 		self.send(_ADD_MOVE_OPCODE, FLOAT(self.armPosition[posID]['x']),\
@@ -39,6 +48,50 @@ class RobotArm(SecureSerialTalksProxy):
 	def go_home(self):
 		self.move("HOME")
 		self.run_batch()
+
+	def put_in_tank(self):
+		self.move("TANK_POS_INTER")
+		self.run_batch()
+		while not self.is_arrived():
+			time.sleep(0.1)
+		self.move(self.TankPosList[self.CurrentTankPos])
+
+		if self.CurrentTankPos < self.tankSize:
+			self.CurrentTankPos += 1
+		else:
+			return "Tank is Full"
+
+		self.run_batch()
+		while not self.is_arrived():
+			time.sleep(0.1)
+
+		self.stop_pump()
+		self.start_sluice()
+		time.sleep(0.5)
+		return "put in tank at pos " + str(self.CurrentTankPos)
+
+	def take_in_tank(self):
+		self.stop_sluice()
+
+		self.move("TANK_POS_INTER")
+		self.run_batch()
+		
+		while not self.is_arrived():
+			time.sleep(0.1)
+		self.move(self.TankPosList[self.CurrentTankPos])
+
+		if self.CurrentTankPos > 0:
+			self.CurrentTankPos -= 1
+		else:
+			return "Tank is Empty"
+
+		self.run_batch()
+		while not self.is_arrived():
+			time.sleep(0.1)
+
+		self.start_pump()
+		time.sleep(0.5)
+		return "put in tank at pos " + str(self.CurrentTankPos)
 	
 	def run_batch(self):
 		self.send(_RUN_BATCH_OPCODE)
