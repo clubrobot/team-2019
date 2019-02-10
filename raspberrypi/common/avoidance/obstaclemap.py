@@ -7,7 +7,6 @@ BRUTE = False
 
 class ObstacleMap:
     nb_phi = 100
-    nb_r = 100
     INFINITE = 100000
     last_angle_guide = None
 
@@ -151,7 +150,7 @@ class ObstacleMap:
         return [gap for gap in self.get_gaps(histo)
                 if self.get_gap_width(histo, gap) >= min_width]
 
-    def get_angle_guide(self, robot, goal, min_width=300, distance_max=500, alpha_static=200.0):
+    def get_ftg_angle_guide(self, robot, goal, min_width=300, distance_max=500, alpha_static=200.0):
         distance_max = min(robot.distance(goal), distance_max)
 
         histo = self.get_polar_histo(robot, distance_max)

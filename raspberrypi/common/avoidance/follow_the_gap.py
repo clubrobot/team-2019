@@ -1,11 +1,11 @@
 from common.geogebra import *
-from common.obstaclemap import *
+from common.avoidance.obstaclemap import *
 import shapely.geometry
 
-from common.ObstacleField.PolyObstacle.Polygon import *
-from common.ObstacleField.MapObstacle.Map import *
-from common.ObstacleField.PointObstacle.Point import *
-from common.ObstacleField.funct import *
+from common.avoidance.ObstacleField.PolyObstacle.Polygon import *
+from common.avoidance.ObstacleField.MapObstacle.Map import *
+from common.avoidance.ObstacleField.PointObstacle.Point import *
+from common.avoidance.ObstacleField.funct import *
 
 import math
 import time
@@ -55,7 +55,7 @@ with open("list_point", "w") as file:
     while i < 300 and robot.distance(goal) > step/2:
         # follow the gap
         begin = time.time()
-        ret = obsmap.get_angle_guide(robot, goal, distance_max=distance_max, alpha_static=alpha_static, min_width=robot_width)
+        ret = obsmap.get_ftg_angle_guide(robot, goal, distance_max=distance_max, alpha_static=alpha_static, min_width=robot_width)
         if ret is None:
             break
         else:
