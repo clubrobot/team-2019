@@ -6,6 +6,7 @@ from math import pi
 
 from common.serialtalks import BYTE, INT, LONG, FLOAT
 from common.components import SecureSerialTalksProxy
+import json
 
 def deg_to_rad(val):
 	return (val * pi)/180
@@ -23,14 +24,21 @@ _STOP_SLUICE_OPCODE  = 0x17
 class RobotArm(SecureSerialTalksProxy):
 	def __init__(self, manager, uuid='/dev/arduino/arm'):
 		SecureSerialTalksProxy.__init__(self, manager, uuid, dict())
+		with open('ArmPosition.json') as f:
+			self.armPosition= json.load(f)
 
-	def move(self, pos):
-		self.send(_ADD_MOVE_OPCODE, FLOAT(pos['x']), FLOAT(pos['y']), FLOAT(deg_to_rad(pos['phi'])))
-		self.send(_RUN_BATCH_OPCODE)
+	def move(self, posID):
+		self.send(_ADD_MOVE_OPCODE, FLOAT(self.armPosition[posID]['x']),\
+									FLOAT(self.armPosition[posID]['y']), \
+									FLOAT(deg_to_rad(self.armPosition[posID]['phi'])))
 
-	def move2(self, x, y, phi):
+	def move_pos(self, x, y, phi):
 		self.send(_ADD_MOVE_OPCODE, FLOAT(x), FLOAT(y), FLOAT(deg_to_rad(phi)))
 		self.send(_RUN_BATCH_OPCODE)
+
+	def go_home(self):
+		self.move("HOME")
+		self.run_batch()
 	
 	def run_batch(self):
 		self.send(_RUN_BATCH_OPCODE)
