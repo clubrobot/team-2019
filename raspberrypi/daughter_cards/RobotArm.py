@@ -24,6 +24,7 @@ _STOP_SLUICE_OPCODE  = 0x17
 class TankFull(Exception): pass
 class TankEmpty(Exception): pass
 
+class TakePuckError(Exception): pass
 
 class RobotArm(SecureSerialTalksProxy):
 	def __init__(self, manager, uuid='/dev/arduino/arm'):
@@ -44,24 +45,51 @@ class RobotArm(SecureSerialTalksProxy):
 		self.send(_ADD_MOVE_OPCODE, FLOAT(self.armPosition[posID]['x']),\
 									FLOAT(self.armPosition[posID]['y']), \
 									FLOAT(deg_to_rad(self.armPosition[posID]['phi'])))
+		self.send(_RUN_BATCH_OPCODE)
 
 	def move_pos(self, x, y, phi):
 		self.send(_ADD_MOVE_OPCODE, FLOAT(x), FLOAT(y), FLOAT(deg_to_rad(phi)))
 		self.send(_RUN_BATCH_OPCODE)
 
 	def go_home(self):
+		self.move("GLOBAL_POS_INTER")
+		while not self.is_arrived():
+			time.sleep(0.1)
 		self.move("HOME")
-		self.run_batch()
+		while not self.is_arrived():
+			time.sleep(0.1)
+
+	def take_puck_in_distributor(self):
+		self.start_pump()
+		self.move("TAKE_PUCK_INTER")
+		while not self.is_arrived():
+			time.sleep(0.1)
+
+		self.move("TAKE_PUCK")
+		while not self.is_arrived():
+			time.sleep(0.1)
+		time.sleep(0.5)
+		self.move("TAKE_PUCK_INTER")
+
+		while not self.is_arrived():
+			time.sleep(0.1)
+
+	def put_in_balance(self):
+		self.move("balance")
+		while not self.is_arrived():
+			time.sleep(0.1)
+		self.stop_pump()
+		self.start_sluice()
+		time.sleep(0.5)
+		
 
 	def put_in_tank(self):
 		if not self.Tankfull:
 			self.move("TANK_POS_INTER")
-			self.run_batch()
 			while not self.is_arrived():
 				time.sleep(0.1)
 			
 			self.move(self.TankPosList[self.CurrentTankPos])
-			self.run_batch()
 
 			while not self.is_arrived():
 				time.sleep(0.1)
@@ -70,7 +98,6 @@ class RobotArm(SecureSerialTalksProxy):
 			self.start_sluice()
 			time.sleep(0.5)
 			self.move("TANK_POS_INTER")
-			self.run_batch()
 
 			self.CurrentTankPos += 1
 			if(self.CurrentTankPos > self.tankSize):
@@ -83,22 +110,22 @@ class RobotArm(SecureSerialTalksProxy):
 
 	def take_in_tank(self):
 		if not self.Tankempty:
+
 			self.stop_sluice()
+			self.start_pump()
+
 			self.move("TANK_POS_INTER")
-			self.run_batch()
+
 			while not self.is_arrived():
 				time.sleep(0.1)
 
 			self.move(self.TankPosList[self.CurrentTankPos])
-			self.run_batch()
 
 			while not self.is_arrived():
 				time.sleep(0.1)
 
-			self.start_pump()
 			time.sleep(0.5)
 			self.move("TANK_POS_INTER")
-			self.run_batch()
 
 			self.CurrentTankPos -= 1
 			if(self.CurrentTankPos < 0):
