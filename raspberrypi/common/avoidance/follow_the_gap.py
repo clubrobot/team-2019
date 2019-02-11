@@ -11,19 +11,19 @@ import math
 import time
 
 
-TEST = True
+TEST = False
 if TEST:
     from robots.setup_wheeledbase import *
     linvel = 200 #wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/4
     angvel = wheeledbase.get_parameter_value(POSITIONCONTROL_ANGVELMAX_ID, FLOAT)
 else:
-    linvel = 400
+    linvel = 200
 
 #all
 geo = Geogebra("test_obstacle2.ggb")
 robot = shapely.geometry.Point(geo.get("origin"))
 goal = shapely.geometry.Point(geo.get("goal"))
-period = 0.1
+period = 1
 PF_FTG_CST = 0.5
 
 #ftg
@@ -43,7 +43,7 @@ polys = geo.getall("obs_*")
 
 step = linvel
 path = []
-i = 0
+nb_pts = 0
 
 if TEST:
     wheeledbase.set_position(robot.x, robot.y, -math.pi/2)
@@ -51,8 +51,9 @@ if TEST:
 # obsmap.add_obstacle([(0, 2500), (200, 2500), (200, 2300), (0, 2300)], vel=Velocity(500, 0))
 last_angle_guide = -pi/2
 with open("list_point", "w") as file:
-    file.write("Execute[{\"path = Polyline(")
-    while i < 300 and robot.distance(goal) > step/2:
+    file.write("Execute[{")
+
+    while nb_pts < 300 and robot.distance(goal) > step/2:
         # follow the gap
         begin = time.time()
         ret = obsmap.get_ftg_angle_guide(robot, goal, distance_max=distance_max, alpha_static=alpha_static, min_width=robot_width)
@@ -82,7 +83,7 @@ with open("list_point", "w") as file:
         if obsmap.angle_difference(angle_guide_ftg, angle_guide_pf) < math.pi/2:
             angle_guide = obsmap.angle_average(angle_guide_pf, angle_guide_ftg, w1=PF_FTG_CST/n_distance)
             #angle_guide = obsmap.angle_average(angle_guide, last_angle_guide,
-             #                                  w2=max(0.5, min(1.5, n_distance)))
+            #                                  w2=max(0.5, min(1.5, n_distance)))
         else:
             angle_guide = angle_guide_ftg
 
@@ -94,6 +95,36 @@ with open("list_point", "w") as file:
         print("v : ", v)
         print("time : ", time.time() - begin)
 
+        path += [(robot.x, robot.y)]
+
+        # write geogebra debug information in file
+
+        # global path
+        c_path = "path_{" + str(nb_pts) + "}"
+        file.write("\"" + c_path + " = Point({" + str(round(robot.x)) + ", " + str(round(robot.y)) + "})\", \n")
+        file.write("\"SetVisibleInView(" + c_path + ", 1, False)\", \n\n")
+
+        # PF vectors
+        display_pf_ratio = 100
+        dx_pf = round(display_pf_ratio*v_pf * cos(angle_guide_pf))
+        dy_pf = round(display_pf_ratio*v_pf * sin(angle_guide_pf))
+
+        file.write("\"pf_{" + str(nb_pts) + "} = Point(" + c_path + ", Vector((" + str(dx_pf) + ", " + str(dy_pf) + ")))\", \n")
+        file.write("\"SetVisibleInView(" + "pf_{" + str(nb_pts) + "}, 1, False)\", \n")
+        file.write("\"pfv_{" + str(nb_pts) + "} = Vector(" + c_path + ", pf_{" + str(nb_pts) + "})\", \n")
+        file.write("\"SetColor(" + "pfv_{" + str(nb_pts) + "}, 255, 0, 0)\", \n")
+        file.write("\"ShowLabel(" + "pfv_{" + str(nb_pts) + "}, False)\", \n\n")
+
+        #FTG vectors
+        display_ftg_ratio = 100
+        dx_ftg = round(display_ftg_ratio*v_ftg * cos(angle_guide_ftg))
+        dy_ftg = round(display_ftg_ratio*v_ftg * sin(angle_guide_ftg))
+
+        file.write("\"ftg_{" + str(nb_pts) + "} = Point(" + c_path + ", Vector((" + str(dx_ftg) + ", " + str(dy_ftg) + ")))\", \n")
+        file.write("\"SetVisibleInView(" + "ftg_{" + str(nb_pts) + "}, 1, False)\", \n")
+        file.write("\"ftgv_{" + str(nb_pts) + "} = Vector(" + c_path + ", ftg_{" + str(nb_pts) + "})\", \n")
+        file.write("\"SetColor(" + "ftgv_{" + str(nb_pts) + "}, 0, 255, 0)\", \n")
+        file.write("\"ShowLabel(" + "ftgv_{" + str(nb_pts) + "}, False)\", \n\n")
         if TEST:
             try:
                 wheeledbase.follow_angle(angle_guide, v)
@@ -111,21 +142,26 @@ with open("list_point", "w") as file:
             robot = shapely.geometry.Point(robot.x + dx, robot.y + dy)
             print("ROBOT : " + "(" + str(round(robot.x)) + ", " + str(round(robot.y)) + ")")
 
-        path += [(robot.x, robot.y)]
-        file.write("(" + str(round(robot.x)) + ", " + str(round(robot.y)) + "),")
-        print()
-        i += 1
 
+
+        print()
+        nb_pts += 1
 
     if TEST:
         wheeledbase.stop()
 
+    # Write Polyline
+    file.write("\"polypath = Polyline(")
+    for i in range(nb_pts):
+        file.write("path_{"+str(i) + "},")
 
     file.seek(0, os.SEEK_END)
     file.seek(file.tell() - 1, os.SEEK_SET)
-    file.write(")\", \"SetColor(path, 255, 255, 255)\"}]")
+    file.write(")\", \"SetColor(polypath, 255, 255, 255)\"}]\n")
 
 print("fin")
+
+
 #pts = [shapely.geometry.Point(p) for p in path]
 #nb_pts = i
 #done = [False for _ in range(nb_pts)]

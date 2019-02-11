@@ -11,6 +11,7 @@ class ObstacleMap:
     last_angle_guide = None
 
     def __init__(self, polygons=[]):
+        print(polygons)
         self.obstacles = [Polygon(p) for p in polygons]
 
     def add_obstacle(self, polygon, vel=Velocity(0, 0)):
