@@ -177,12 +177,25 @@ def getuuid(args):
 
 def showip(args):
     try:
+        ss.clear_messages()
         import subprocess
         ips = []
-        while not ips:
+        wlan_up = False
+        attempts = 0
+        while not wlan_up and attempts < 10:
+            proc = subprocess.run(['cat', '/sys/class/net/wlan0/operstate'], stdout=subprocess.PIPE)
+            if proc.stdout.strip().decode('utf8') == "up":
+                wlan_up = True
+            else:
+                attempts += 1
+                time.sleep(1)
+                continue
             proc = subprocess.run(['hostname', '-I'], stdout=subprocess.PIPE)
             ips = proc.stdout.strip().decode('utf8').split(" ")
-        [ss.set_message(ip) for ip in ips]
+        if wlan_up:
+            [ss.set_message(ip) for ip in ips]
+        else:
+            ss.set_message("No Ip found ")
     except:
         pass
 
