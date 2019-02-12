@@ -11,7 +11,7 @@ import math
 import time
 
 
-TEST = False
+TEST = True
 if TEST:
     from robots.setup_wheeledbase import *
     linvel = 200 #wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/4
@@ -46,7 +46,7 @@ path = []
 nb_pts = 0
 
 if TEST:
-    wheeledbase.set_position(robot.x, robot.y, -math.pi/2)
+    wheeledbase.set_position(robot.x, robot.y, math.pi/2)
 
 # obsmap.add_obstacle([(0, 2500), (200, 2500), (200, 2300), (0, 2300)], vel=Velocity(500, 0))
 last_angle_guide = -pi/2
@@ -151,9 +151,10 @@ with open("list_point", "w") as file:
         wheeledbase.stop()
 
     # Write Polyline
-    file.write("\"polypath = Polyline(")
-    for i in range(nb_pts):
-        file.write("path_{"+str(i) + "},")
+    if nb_pts > 1:
+        file.write("\"polypath = Polyline(")
+        for i in range(nb_pts):
+            file.write("path_{"+str(i) + "},")
 
     file.seek(0, os.SEEK_END)
     file.seek(file.tell() - 1, os.SEEK_SET)
