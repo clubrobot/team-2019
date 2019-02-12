@@ -178,12 +178,11 @@ def getuuid(args):
 def showip(args):
     try:
         import subprocess
-        ip = ''
-        while not ip:
+        ips = []
+        while not ips:
             proc = subprocess.run(['hostname', '-I'], stdout=subprocess.PIPE)
             ips = proc.stdout.strip().decode('utf8').split(" ")
-            ip = ips[-1]
-        ss.send(0x0E, STRING(ip))
+        [ss.set_message(ip) for ip in ips]
     except:
         pass
 
