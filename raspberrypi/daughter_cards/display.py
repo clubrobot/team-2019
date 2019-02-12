@@ -94,8 +94,8 @@ class SevenSegments(SecureSerialTalksProxy):
 		SecureSerialTalksProxy.__init__(self, parent, uuid, dict())
 
 	def set_message(self, message):
-		if len(message) > 15:
-			raise ValueError('message length must 15 characters or less')
+		if len(message.replace('.', '')) > 12:
+			raise ValueError('message length must 12 characters or less')
 		self.send(SET_IPDISPLAY_MESSAGE_OPCODE, STRING(message))
 
 	def upload_char_pattern(self, char, pattern):
