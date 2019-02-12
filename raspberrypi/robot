@@ -183,8 +183,9 @@ def showip(args):
         wlan_up = False
         attempts = 0
         while not wlan_up and attempts < 10:
-            proc = subprocess.run(['cat', '/sys/class/net/wlan0/operstate'], stdout=subprocess.PIPE)
-            if proc.stdout.strip().decode('utf8') == "up":
+            proc = subprocess.run(['iwconfig', 'wlan0'], stdout=subprocess.PIPE)
+            wifi_config = proc.stdout.strip().decode('utf8')
+            if wifi_config.find("ESSID:\"") > -1:
                 wlan_up = True
             else:
                 attempts += 1
