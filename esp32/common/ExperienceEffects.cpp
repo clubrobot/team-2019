@@ -18,7 +18,7 @@ void ExperienceEffects::start()
 	hasStarted = 1;
 }
 
-bool ExperienceEffects::getStart(){
+long ExperienceEffects::getStart(){
 	return hasStarted;
 }
 

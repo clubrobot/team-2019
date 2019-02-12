@@ -10,12 +10,12 @@ class ExperienceEffects
 		ExperienceEffects();
 
 		void start();
-		bool getStart();
+		long getStart();
 		void execute();
 
 	private:
 
 		Adafruit_NeoPixel logo;
-		bool hasStarted;
+		long hasStarted;
 
 };

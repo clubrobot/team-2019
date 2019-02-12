@@ -4,7 +4,7 @@ CHIP = esp32
 #Arduino file
 SKETCH = experience.ino
 
-BOARD_UUID = esp32
+BOARD_UUID = electron
 COMMON = ../common
 #Setup all libs used !
 LIBS = $(ESP_LIBS)/EEPROM \

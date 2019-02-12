@@ -1,29 +1,30 @@
 #include "instructions.h"
 #include "../common/ExperienceEffects.h"
 
+#include "../common/SerialTalks.h"
+
 
 extern ExperienceEffects Animation;
-extern TCPTalks talk;
 
-void PING(TCPTalks &inst, UnPickler& input, Pickler& output)
+void PING(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
-	output.dump<bool>(1);
+	output.write<bool>(1);
 }
 
 
-void SET_START(TCPTalks &inst, UnPickler& input, Pickler& output)
+void SET_START(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
 	Animation.start();
-	output.dump<char*>("CHANGED");
+	output.write<long>(Animation.getStart());
 }
 
-void GET_START(TCPTalks &inst, UnPickler& input, Pickler& output)
+void GET_START(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
-	output.dump<long>(Animation.getStart());
+	output.write<long>(Animation.getStart());
 }
 
 
-void IS_CONNECTED(TCPTalks &inst, UnPickler& input, Pickler& output)
+void IS_CONNECTED(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
-	output.dump<bool>(talk.is_connected());
+	output.write<bool>(1);
 }

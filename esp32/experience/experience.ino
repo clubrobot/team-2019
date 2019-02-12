@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "../common/Pickle.h"
-#include "../common/tcptalks.h"
+#include "../common/SerialTalks.h"
 #include "../common/ExperienceEffects.h"
 #include "instructions.h"
 #include <BLEDevice.h>
@@ -26,7 +26,7 @@ class ClientCallbacks : public BLEClientCallbacks
     void onConnect(BLEClient *pClient) {}
 };
 
-TCPTalks talk("CLUB_ROBOT", "zigouigoui", "192.168.1.17", 26656);
+//TCPTalks talk("CLUB_ROBOT", "zigouigoui", "192.168.1.17", 26656);
 
 ExperienceEffects Animation;
 
@@ -82,25 +82,16 @@ void setup()
 {
     Serial.begin(115200);
 
-    talk.connect(500);
-    talk.bind(PING_OPCODE, PING);
-    talk.bind(SET_START_OPCODE, SET_START);
-    talk.bind(GET_START_OPCODE, GET_START);
+    talks.begin(Serial);
+    talks.bind(PING_OPCODE, PING);
+    talks.bind(SET_START_OPCODE, SET_START);
+    talks.bind(GET_START_OPCODE, GET_START);
 
-    BLEDevice::init("");
-    Serial.println("init BLE");
-    // Retrieve a Scanner and set the callback we want to use to be informed when we
-    // have detected a new device.  Specify that we want active scanning and start the
-    // scan to run for 30 seconds.
-    BLEScan *pBLEScan = BLEDevice::getScan();
-    pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
-    pBLEScan->setActiveScan(true);
-    pBLEScan->start(15);
 }
 
 void loop()
 {
-    talk.execute();
+    talks.execute();
     //Animation.execute();
 
     /* Auto re-connect step */
@@ -110,10 +101,4 @@ void loop()
         talk.connect(500);
         last_time = millis();
     }*/
-    // BLE client
-    if (doConnect == true)
-    {
-        connectToServer(*pServerAddress);
-        doConnect = false;
-    }
 }
