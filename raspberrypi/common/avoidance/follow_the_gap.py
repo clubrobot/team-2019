@@ -18,6 +18,11 @@ if TEST:
     angvel = wheeledbase.get_parameter_value(POSITIONCONTROL_ANGVELMAX_ID, FLOAT)
 else:
     linvel = 200
+    angvel = -1
+
+
+print("linvel : ", linvel)
+print("angvel : ", angvel)
 
 #all
 geo = Geogebra("test_obstacle2.ggb")
@@ -39,7 +44,6 @@ objs.append(Map(*maps, funct_list["exp"](alpha=0.001, beta=1)))
 objs.append(Point(goal.x, goal.y, funct_list["exp"](alpha=0.0001,beta=-15)))
 polys = geo.getall("obs_*")
 [objs.append(Polygon(poly, funct_list["exp"](alpha=0.01, beta=100))) for poly in polys]
-
 
 step = linvel
 path = []
@@ -80,12 +84,12 @@ with open("list_point", "w") as file:
         print("v pf : ", v_pf)
 
         # all
-        if obsmap.angle_difference(angle_guide_ftg, angle_guide_pf) < math.pi/2:
-            angle_guide = obsmap.angle_average(angle_guide_pf, angle_guide_ftg, w1=PF_FTG_CST/n_distance)
-            #angle_guide = obsmap.angle_average(angle_guide, last_angle_guide,
-            #                                  w2=max(0.5, min(1.5, n_distance)))
-        else:
-            angle_guide = angle_guide_ftg
+        # if obsmap.angle_difference(angle_guide_ftg, angle_guide_pf) < math.pi/2:
+        #     angle_guide = obsmap.angle_average(angle_guide_pf, angle_guide_ftg, w1=v_pf, w2=v_ftg)
+        # else:
+        #     angle_guide = angle_guide_ftg
+
+        angle_guide = obsmap.angle_average(angle_guide_pf, angle_guide_ftg, w1=v_pf, w2=v_ftg)
 
         last_angle_guide = angle_guide
         v = (v_pf + v_ftg) / 2 * linvel
