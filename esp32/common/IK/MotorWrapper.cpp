@@ -15,16 +15,22 @@ namespace IK
 
 MotorWrapper::MotorWrapper()
 {
+	m_mutex.acquire();
+
     m_pos			= 0;
     m_velInput		= 0;
 	m_posInput		= 0;
 	m_offset 	    = 0;
 
 	m_arrived = false;
+
+	m_mutex.release();
 }
 
 void MotorWrapper::process(float timestep)
 {
+	m_mutex.acquire();
+
 	static float vel = 0;
 	/* TODO : add asservissement and control reached position*/
 	if(m_step_counter < (m_vel_profile.size()))
@@ -35,22 +41,25 @@ void MotorWrapper::process(float timestep)
 
 		vel = saturate(vel,1,1024);
 
-		cout << "Pos(deg) : " << m_pos << " | vel(rpm) : " << vel << endl;
 		try
 		{
 			m_motor->move(m_pos + m_offset);
 		}
-		catch(...)
-		{
-			cout<<"err"<<endl;
-		}
+        catch(const AX12Timeout& e)
+        {
+            cout<<"AX_12 Timeout"<<endl;
+        }
+        catch(const AX12error e)
+        {
+            cout<<"AX_12 error"<<endl;
+        }
 	}
 	else
 	{
 		m_arrived = true;
 	}
 
-	
+	m_mutex.release();
 }
 
 }

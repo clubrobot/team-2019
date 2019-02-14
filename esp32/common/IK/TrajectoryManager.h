@@ -6,16 +6,9 @@
 #include "ArmManager.h"
 #include "thread_tools.h"
 #include "arm_config.h"
-#include "TaskManager.h"
 #include "MoveBatch.h"
 #include "Queue.h"
 #include "PeriodicProcess.h"
-
-typedef enum{
-    ARRIVED     = 0X00,
-    ON_THE_ROAD = 0X01,
-    ERROR       = 0X02,
-}status_t;
 
 #define MAX_NUM_OF_BATCHED_MOVES 50
 

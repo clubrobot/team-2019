@@ -16,7 +16,7 @@
 #include "../common/TurnOnTheSpot.h"
 #include "../common/FollowAngle.h"
 #include "../common/mathutils.h"
-#include "../common/IK/TaskManager.h"
+#include "../common/TaskManager.h"
 
 
 // Load the different modules

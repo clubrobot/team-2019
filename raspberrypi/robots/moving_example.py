@@ -8,12 +8,31 @@ from robots.setup_wheeledbase import *
 # manager.connect(10)
 # wheeledbase = WheeledBase(manager)
 
-wheeledbase.set_velocities(0, 0)
+test_map = Geogebra("roadmap.ggb")
+print("Map chargée")
+
+wheeledbase.set_position(415, 2610, -pi/2)
+path = test_map.getall("Path_*")
+print(path)
+wheeledbase.max_linvel.set(500)
+wheeledbase.max_angvel.set(7)
+wheeledbase.purepursuit(path)
+
+while not wheeledbase.isarrived():
+    time.sleep(0.1)
+
+wheeledbase.goto(415, 2610, theta=-pi/2)
+print("robot arrivé")
 
 input()
 
-test_map = Geogebra("test_map.ggb")
-print("Map chargée")
+try:
+    wheeledbase.set_velocities(300, 0)
+    while True:
+        time.sleep(0.1)
+
+except Exception as e:
+    print("Patinage : ", e)
 
 point = test_map.get("A")
 print(point)
@@ -62,7 +81,6 @@ while not wheeledbase.isarrived():
 print("robot arrivé")
 
 input()
-
 path = test_map.getall("Path_*")
 wheeledbase.max_linvel.set(700)
 wheeledbase.max_angvel.set(7)
@@ -81,6 +99,8 @@ try:
 
 except Exception as e:
     print("Patinage : ", e)
+
+
 
 
 

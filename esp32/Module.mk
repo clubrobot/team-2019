@@ -14,41 +14,33 @@
 #====================================================================================
 # Project specific values
 #====================================================================================
-
 # Include possible project makefile. This can be used to override the defaults below
 -include $(firstword $(PROJ_CONF) $(dir $(SKETCH))config.mk)
 
-#=== Default values not available in the Arduino configuration files
-
-#Set the baudrate upload
-UPLOAD_SPEED = 921600
-
-# Add preprocesseur rules for SerialTalks. 
-BUILD_EXTRA_FLAGS = -D BOARD_UUID=\"$(BOARD_UUID)\" $(CPPFLAGS)
-
 #detect os type
 UNAME_S := $(shell uname -s)
-
-# Serial flashing parameters
-ifeq ($(UNAME_S),Linux)
-	UPLOAD_PORT ?= $(shell ls -1tr /dev/arduino/$(BOARD_UUID) 2>/dev/null | tail -1)
-	UPLOAD_PORT := $(if $(UPLOAD_PORT),$(UPLOAD_PORT),$(shell find /dev/ttyUSB* | head -n 1))
-endif
-
+#=== Default values not available in the Arduino configuration files
 ifeq ($(UNAME_S),Darwin)
-	UPLOAD_PORT ?= $(shell ls -1tr /tmp/arduino/$(BOARD_UUID) 2>/dev/null | tail -1)
-	UPLOAD_PORT := $(if $(UPLOAD_PORT),$(UPLOAD_PORT),/dev/tty.SLAB_USBtoUART)
+  CHIP ?= esp8266
+else
+  #Set the baudrate upload
+  UPLOAD_SPEED = 921600
+  # Add preprocesseur rules for SerialTalks. 
+  BUILD_EXTRA_FLAGS = -D BOARD_UUID=\"$(BOARD_UUID)\" $(CPPFLAGS)
+  CHIP ?= esp32
 endif
-
-
-CHIP ?= esp32
-
 # Set chip specific default board unless specified
 BOARD ?= $(if $(filter $(CHIP), esp32),esp32,generic)
 
-# Serial flashing parameters
-UPLOAD_PORT ?= $(shell ls -1tr /dev/tty*USB* 2>/dev/null | tail -1)
-UPLOAD_PORT := $(if $(UPLOAD_PORT),$(UPLOAD_PORT),/dev/ttyS0)
+ifeq ($(UNAME_S),Darwin)
+  # Serial flashing parameters
+  UPLOAD_PORT ?= $(shell ls -1tr /dev/tty*USB* 2>/dev/null | tail -1)
+  UPLOAD_PORT := $(if $(UPLOAD_PORT),$(UPLOAD_PORT),/dev/tty.SLAB_USBtoUART)
+else
+  UPLOAD_PORT ?= $(shell ls -1tr /dev/arduino/$(BOARD_UUID) 2>/dev/null | tail -1)
+	UPLOAD_PORT := $(if $(UPLOAD_PORT),$(UPLOAD_PORT),$(shell find /dev/ttyUSB* | head -n 1))
+endif
+
 UPLOAD_VERB ?= -v
 
 # OTA parameters
@@ -188,8 +180,13 @@ SKETCH_DIR = $(dir $(SKETCH))
 # User defined compilation units and directories
 ifeq ($(LIBS),)
   # Automatically find directories with header files used by the sketch
-  LIBS := $(shell perl -e 'use File::Find;@d = split(" ", shift);while (<>) {$$f{"$$1"} = 1 if /^\s*\#include\s+[<"]([^>"]+)/;}find(sub {if ($$f{$$_}){print $$File::Find::dir," ";$$f{$$_}=0;}}, @d);' \
+  ifeq ($(UNAME_S),Darwin)
+    LIBS := $(shell perl -e 'use File::Find;@d = split(" ", shift);while (<>) {$$f{"$$1"} = 1 if /^\s*\#include\s+[<"]([^>"]+)/;}find(sub {if ($$f{$$_}){print $$File::Find::dir," ";$$f{$$_}=0;}}, @d);' \
+                           "$(CUSTOM_LIBS) $(ESP_LIBS) $(ARDUINO_LIBS)" $(call find_files,S|c|cpp,$(SKETCH_DIR)))
+  else
+    LIBS := $(shell perl -e 'use File::Find;@d = split(" ", shift);while (<>) {$$f{"$$1"} = 1 if /^\s*\#include\s+[<"]([^>"]+)/;}find(sub {if ($$f{$$_}){print $$File::Find::dir," ";$$f{$$_}=0;}}, @d);' \
                           "$(CUSTOM_LIBS) $(ESP_LIBS) $(ARDUINO_LIBS)" $(SKETCH) $(call find_files,S|c|cpp,$(SKETCH_DIR)))
+  endif
   ifneq ($(findstring /examples/,$(realpath $(SKETCH))),)
     # Assume library example sketch, add the library directory unless it is an Arduino basic example
     EX_LIB := $(shell perl -e 'print $$ARGV[0] if $$ARGV[0] =~ s/\/examples\/(?!\d\d\.).+//' $(realpath $(SKETCH)))
@@ -216,6 +213,11 @@ USER_DIRS := $(sort $(dir $(USER_SRC)))
 USER_INC_DIRS := $(sort $(dir $(USER_INC)))
 USER_LIBS := $(filter-out $(IGNORE_PATTERN),$(call find_files,a,$(SKETCH_DIR) $(LIBS)))
 
+ifeq ($(UNAME_S),Darwin)
+  EXT_SRC := $(filter-out $(IGNORE_PATTERN),$(call find_files,S|c|cpp,$(LIBS)))
+  EXT_OBJ := $(patsubst %,$(BUILD_DIR)/%$(OBJ_EXT),$(notdir $(EXT_SRC)))
+  EXT_DIRS := $(sort $(dir $(EXT_SRC)))
+endif
 # Use first flash definition for the board as default
 FLASH_DEF_MATCH = $(if $(filter $(CHIP), esp32),build\.flash_size=(\S+),menu\.(?:FlashSize|eesz)\.([^\.]+)=(.+))
 FLASH_DEF ?= $(shell cat $(ESP_ROOT)/boards.txt | perl -e 'while (<>) {if (/^$(BOARD)\.$(FLASH_DEF_MATCH)/){ print "$$1"; exit;}}')
@@ -251,7 +253,11 @@ $(ARDUINO_MK): $(ARDUINO_DESC) $(MAKEFILE_LIST) | $(BUILD_DIR)
 # Compilation directories and path
 INCLUDE_DIRS += $(CORE_DIR) $(ESP_ROOT)/variants/$(INCLUDE_VARIANT) $(BUILD_DIR)
 C_INCLUDES := $(foreach dir,$(INCLUDE_DIRS) $(USER_INC_DIRS),-I$(dir))
-VPATH += $(shell find $(CORE_DIR) -type d) $(USER_DIRS)
+ifeq ($(UNAME_S),Darwin)
+  VPATH += $(shell find $(CORE_DIR) -type d) $(EXT_DIRS) $(USER_DIRS)
+else
+  VPATH += $(shell find $(CORE_DIR) -type d) $(USER_DIRS)
+endif
 
 # Automatically generated build information data
 # Makes the build date and git descriptions at the actual build event available as string constants in the program
@@ -282,11 +288,17 @@ $(BUILD_DIR)/%.c$(OBJ_EXT): %.c $(ARDUINO_MK)
 $(BUILD_DIR)/%.S$(OBJ_EXT): %.S $(ARDUINO_MK)
 	echo  $(<F)
 	$(S_COM) $(S_EXTRA) $< -o $@
-
-$(CORE_LIB): $(CORE_OBJ)
+ifeq ($(UNAME_S),Darwin)
+  $(CORE_LIB): $(CORE_OBJ) $(EXT_OBJ)
+	  echo  Creating core archive
+	  rm -f $@
+	  $(CORE_LIB_COM) $^
+else
+  $(CORE_LIB): $(CORE_OBJ)
 	echo  Creating core archive
 	rm -f $@
 	$(CORE_LIB_COM) $^
+endif
 
 BUILD_DATE = $(call time_string,"%Y-%m-%d")
 BUILD_TIME = $(call time_string,"%H:%M:%S")

@@ -28,6 +28,23 @@ void Ipdisplay::attach(byte dataPin, byte clockPin, byte latchPin)
 
 void Ipdisplay::process(float timestep)
 {
+	m_acc_time += timestep;
+	if(m_acc_time > IP_CHANGE_TIME)
+	{
+		if (m_nb_ips == 0)
+		{
+			this->clearDisplay();
+		}
+		else
+		{
+			m_acc_time = 0;
+			m_current_ip++;
+			m_current_ip %= m_nb_ips;
+			this->computeBuffer(m_ips[m_current_ip], m_nb_digits[m_current_ip]);
+		}
+		
+	}
+
 	digitalWrite(DISP_PIN[m_disp_number], LOW); // Turn the off the previous 7 seg display
 	m_disp_number++;
 	if (m_disp_number >= 3)
@@ -40,6 +57,21 @@ void Ipdisplay::process(float timestep)
 	shiftOut(DATA_IPDISPLAY, CLOCK_IPDISPLAY, MSBFIRST, m_toSend[1][m_disp_number]);
 	digitalWrite(LATCH_IPDISPLAY, HIGH);
 	digitalWrite(DISP_PIN[m_disp_number], HIGH); // Turn on the next 7 seg display
+}
+
+void Ipdisplay::clearIPs()
+{
+	m_nb_ips = 0;
+}
+
+void Ipdisplay::addIP(char* buffer, byte nbDigits)
+{
+	if (m_nb_ips < IP_MAX_NB && strlen(buffer) <= IP_MAX_SIZE) 
+	{
+		m_current_ip = 0;
+		strcpy(m_ips[m_nb_ips], buffer);
+		m_nb_digits[m_nb_ips++] = nbDigits;
+	}
 }
 
 void Ipdisplay::clearDisplay()

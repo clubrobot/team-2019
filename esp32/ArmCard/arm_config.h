@@ -8,8 +8,8 @@
 
 /* arm link size configuration */
 constexpr double LINK1_LEN = 10.0;
-constexpr double LINK2_LEN = 10.0;
-constexpr double LINK3_LEN = 3.8;
+constexpr double LINK2_LEN = 7.0;
+constexpr double LINK3_LEN = 7.0;
 
 /* links offsets config */
 constexpr double LINK1_OFFSET = 60.0;
