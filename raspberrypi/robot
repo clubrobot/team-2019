@@ -187,7 +187,7 @@ def showip(args):
             wifi_config = proc.stdout.strip().decode('utf8')
             if wifi_config.find("ESSID:\"") > -1:
                 wlan_up = True
-                time.sleep(1)
+                time.sleep(5)
                 proc = subprocess.run(['hostname', '-I'], stdout=subprocess.PIPE)
                 ips = proc.stdout.strip().decode('utf8').split(" ")
             else:
