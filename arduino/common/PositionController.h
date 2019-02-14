@@ -22,7 +22,7 @@ public:
 	 * @brief Constructeur de PositionController
 	 * Initialise les variables de PositionController à des valeurs neutre.
 	 */
-	PositionController() : m_linVelKp(1), m_angVelKp(1), m_linVelMax(1000), m_angVelMax(2 * M_PI){}
+	PositionController() : m_linVelKp(1), m_angVelKp(1), m_linVelMax(1000), m_angVelMax(2 * M_PI), m_valuesModified(false){}
 	/**
 	 * @brief Charge les nouvelles positions du robot.
 	 * Charge les nouvelles positions du robot pour les donner à une potentiel AbstractMoveStrategy chargée.
@@ -72,7 +72,7 @@ public:
 	 * @param linVelKp Coefficient proportionnel de vitesse linéaire.
 	 * @param angVelKp Coefficient proportionnel de vitesse angulaire.
 	 */
-	void setVelTunings(float linVelKp, float angVelKp) {m_linVelKp  = linVelKp;  m_angVelKp  = angVelKp;}
+	void setVelTunings(float linVelKp, float angVelKp);
 	/**
 	 * @brief Paramètre les vitesses max.
 	 * 
@@ -81,7 +81,7 @@ public:
 	 * @param linVelMax Vitesse linéaire max.
 	 * @param angVelMax Vitesse angulaire max.
 	 */
-	void setVelLimits(float linVelMax, float angVelMax){m_linVelMax = linVelMax; m_angVelMax = angVelMax;}
+	void setVelLimits(float linVelMax, float angVelMax);
 	/**
 	 * @brief Paramètre les précisions en position.
 	 * 
@@ -90,7 +90,7 @@ public:
 	 * @param linPosThreshold Précision en coordonnés cartésiens (en mm).
 	 * @param angPosThreshold Précision d'angle (en rad).
 	 */
-	void setPosThresholds(float linPosThreshold, float angPosThreshold){m_linPosThreshold = linPosThreshold; m_angPosThreshold = angPosThreshold;}
+	void setPosThresholds(float linPosThreshold, float angPosThreshold);
 	/**
 	 * @brief Charge une stratégie de mouvement.
 	 * 
@@ -154,7 +154,7 @@ public:
 	 * @brief Sauvegarde la configuration actuel.
 	 * @param address Adresse à utiliser.
 	 */
-	void save(int address) const;
+	void save(int address);
 
 private:
 	/**
@@ -172,7 +172,7 @@ private:
 	Position m_posSetpoint;/*!< Position à atteindre.*/
 
 	float m_linVelSetpoint;/*!< Vitesse linéaire à atteindre*/
-	float m_angVelSetpoint;:/*!< Vitesse angulaire à atteindre*/
+	float m_angVelSetpoint;/*!< Vitesse angulaire à atteindre*/
 
 	// Engineering control tunings
 	float m_linVelKp; /*!< Coefficient proportionnel de vitesse linéaire. */
@@ -181,6 +181,7 @@ private:
 	float m_angVelMax;/*!< Vitesse angulaire max.*/
 	float m_linPosThreshold;/*!< Précision cartésienne. */
 	float m_angPosThreshold;/*!< Précision angulaire.*/
+	bool  m_valuesModified;
 
 	// Strategy Design Pattern
 	AbstractMoveStrategy* m_moveStrategy;/*!< Pointeur de stratégie utilisé.*/

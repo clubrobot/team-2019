@@ -16,7 +16,7 @@ public:
 	 * @brief Constructeur de PID
 	 * Constructeur de PID qui initialise toutes les valeurs à des valeurs neutres (Kp=1,Ki=0,Kd=0).
 	 */
-	PID() : m_Kp(1), m_Ki(0), m_Kd(0), m_minOutput(-INFINITY), m_maxOutput(INFINITY){}
+	PID() : m_Kp(1), m_Ki(0), m_Kd(0), m_minOutput(-INFINITY), m_maxOutput(INFINITY), m_valuesModified(false){}
 	/**
 	 * @brief Calcul l'asservissement.
 	 * 
@@ -41,7 +41,7 @@ public:
 	 * @param Ki Coefficient intégrateur.
 	 * @param Kd Coefficient dérivateur.
 	 */
-	void setTunings(float Kp, float Ki, float Kd){m_Kp = Kp, m_Ki = Ki, m_Kd = Kd;}
+	void setTunings(float Kp, float Ki, float Kd);
 	/**
 	 * @brief Charge les limites de sorties.
 	 *
@@ -49,7 +49,7 @@ public:
 	 * @param minOutput Minimun de sortie (peux être négatif).
 	 * @param maxOutput Maximum de sortie (peux être).
 	 */
-	void setOutputLimits(float minOutput, float maxOutput){m_minOutput = minOutput; m_maxOutput = maxOutput;}
+	void setOutputLimits(float minOutput, float maxOutput);
 	/**
 	 * @brief Retourne le coefficient proportionnel. 
 	 * @return Coefficient proportionnel.
@@ -84,7 +84,7 @@ public:
 	 * @brief Sauvegarde les paramètres dans la mémoire.
 	 * @param address Adresse à utiliser.
 	 */
-	void save(int address) const;
+	void save(int address);
 
 private:
 
@@ -96,6 +96,7 @@ private:
 	float m_Kd;/*!< Coefficient dérivateur.*/
 	float m_minOutput; /*!< Sortie minimal.*/
 	float m_maxOutput;/*!< Sortie maximal.*/
+	bool  m_valuesModified;
 };
 
 #endif // __PID_H__

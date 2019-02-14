@@ -35,6 +35,7 @@ GET_CODEWHEELS_COUNTERS_OPCODE  = 0x1C
 GET_VELOCITIES_WANTED_OPCODE    = 0x1D
 GOTO_DELTA_OPCODE               = 0x1E
 RESET_PARAMETERS_OPCODE         = 0x1F
+SAVE_PARAMETERS_OPCODE          = 0x20
 
 LEFTWHEEL_RADIUS_ID	            = 0x10
 LEFTWHEEL_CONSTANT_ID           = 0x11
@@ -182,7 +183,6 @@ class WheeledBase(SecureSerialTalksProxy):
             raise RuntimeError('spin urgency')
         return bool(isarrived)
 
-
     def get_velocities_wanted(self,real_output=False):
         output = self.execute(GET_VELOCITIES_WANTED_OPCODE,BYTE(int(real_output)))
         return output.read(FLOAT, FLOAT)
@@ -195,7 +195,6 @@ class WheeledBase(SecureSerialTalksProxy):
                 print("RESCUE wheeledbase !")
                 command()
                 time.sleep(timestep)
-
 
     def goto_delta(self, x, y):
         self.send(GOTO_DELTA_OPCODE, FLOAT(x) + FLOAT(y))
@@ -252,4 +251,9 @@ class WheeledBase(SecureSerialTalksProxy):
         return value
 
     def reset_parameters(self):
-        self.send(RESET_PARAMETERS_OPCODE, BYTE(ROBOT_ID))
+        self.send(RESET_PARAMETERS_OPCODE)
+
+    def save_parameters(self):
+        self.send(SAVE_PARAMETERS_OPCODE)
+        #output = self.execute(SAVE_PARAMETERS_OPCODE)
+        #print(output.read(LONG))

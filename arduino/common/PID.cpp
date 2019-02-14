@@ -37,13 +37,36 @@ void PID::load(int address)
 	EEPROM.get(address, m_Kd); address += sizeof(m_Kd);
 	EEPROM.get(address, m_minOutput); address += sizeof(m_minOutput);
 	EEPROM.get(address, m_maxOutput); address += sizeof(m_maxOutput);
+	m_valuesModified = false;
 }
 
-void PID::save(int address) const
+void PID::save(int address)
 {
-	EEPROM.put(address, m_Kp); address += sizeof(m_Kp);
-	EEPROM.put(address, m_Ki); address += sizeof(m_Ki);
-	EEPROM.put(address, m_Kd); address += sizeof(m_Kd);
-	EEPROM.put(address, m_minOutput); address += sizeof(m_minOutput);
-	EEPROM.put(address, m_maxOutput); address += sizeof(m_maxOutput);
+	if(m_valuesModified)
+	{
+		EEPROM.put(address, m_Kp); address += sizeof(m_Kp);
+		EEPROM.put(address, m_Ki); address += sizeof(m_Ki);
+		EEPROM.put(address, m_Kd); address += sizeof(m_Kd);
+		EEPROM.put(address, m_minOutput); address += sizeof(m_minOutput);
+		EEPROM.put(address, m_maxOutput); address += sizeof(m_maxOutput);
+		m_valuesModified = false;
+	}
+}
+
+void PID::setTunings(float Kp, float Ki, float Kd){
+	if (!(m_Kp = Kp && m_Ki == Ki && m_Kd == Kd)) {
+		m_Kp = Kp;
+		m_Ki = Ki;
+		m_Kd = Kd;
+		m_valuesModified = true;
+	}
+}
+
+void PID::setOutputLimits(float minOutput, float maxOutput)
+{
+	if(!(minOutput == m_minOutput && m_maxOutput == maxOutput)) {
+		m_minOutput = minOutput;
+		m_maxOutput = maxOutput;
+		m_valuesModified = true;
+	}
 }

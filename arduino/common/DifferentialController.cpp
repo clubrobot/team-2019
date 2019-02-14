@@ -25,9 +25,22 @@ void DifferentialController::onProcessEnabling()
 void DifferentialController::load(int address)
 {
 	EEPROM.get(address, m_axleTrack); address += sizeof(m_axleTrack);
+	m_valuesModified = false;
 }
 
-void DifferentialController::save(int address) const
+void DifferentialController::save(int address)
 {
-	EEPROM.put(address, m_axleTrack); address += sizeof(m_axleTrack);
+	if(m_valuesModified)
+	{
+		EEPROM.put(address, m_axleTrack); address += sizeof(m_axleTrack);
+		m_valuesModified = false;
+	}
+}
+
+void DifferentialController::setAxleTrack   (float axleTrack)   {
+	if(m_axleTrack != axleTrack) {
+		m_axleTrack = axleTrack;
+		m_valuesModified = true;
+		update();
+	}
 }

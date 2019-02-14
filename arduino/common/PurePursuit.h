@@ -38,7 +38,7 @@ public:
 	, BACKWARD=-1 ///< Le robot avance en marche arrière.
 	};
 
-	PurePursuit() : m_numWaypoints(0), m_direction(FORWARD){}
+	PurePursuit() : m_numWaypoints(0), m_direction(FORWARD), m_valuesModified(false){}
 	/**
 	 * @brief Setter du sens de marche du robot.
 	 * @param direction Sens à utiliser pour le déplacement du robot. 
@@ -69,7 +69,7 @@ public:
 	 * 
 	 * @param lookAhead Distance en mm.
 	 */
-	void setLookAhead   (float lookAhead)   {m_lookAhead    = lookAhead;}
+	void setLookAhead   (float lookAhead) ;
 	/**
 	 * @brief Setter du lookAheadBis.
 	 * 
@@ -77,7 +77,7 @@ public:
 	 * 
 	 * @param lookAheadBis Distance en mm.
 	 */
-	void setLookAheadBis(float lookAheadBis){m_lookAheadBis = lookAheadBis;}
+	void setLookAheadBis(float lookAheadBis);
 	/**
 	 * @brief Getter de la direction courant.
 	 * 
@@ -131,7 +131,7 @@ public:
 	 * 
 	 * @param address Adresse à utiliser.
 	 */
-	void save(int address) const;
+	void save(int address);
 
 protected:
 
@@ -180,6 +180,7 @@ protected:
 	// Path following tunings
 	float m_lookAhead;/*!< Distance entre le point intermediaire et le robot.*/
 	float m_lookAheadBis;/*!< Distance entre le point intermediaire et le robot en fin de trajectoire.*/
+	bool  m_valuesModified;
 };
 
 #endif // __PUREPURSUIT_H__

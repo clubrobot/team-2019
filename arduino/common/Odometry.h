@@ -70,6 +70,7 @@ public:
 class Odometry : public PeriodicProcess
 {
 public:
+	Odometry() : PeriodicProcess(), m_valuesModified(false){}
 	/**
 	 * @brief Attribut une nouvelle position.
 	 * 
@@ -87,15 +88,15 @@ public:
 	 * 
 	 * @param axleTrack Nouvelle entraxe en mm.
 	 */
-	void setAxleTrack(float axleTrack){m_axleTrack = axleTrack;}
+	void setAxleTrack(float axleTrack);
 	/**
 	 * @brief Defini la nouvelle dérive orthogonal.
 	 * 
 	 * Change la dérive orthogonal par celle indiquée en paramètre.
-	 * 
+	 *
 	 * @param slippage Nouvelle dérive orthogonal sans unité et signé.
 	 */
-	void setSlippage (float slippage) {m_slippage  = slippage;}
+	void setSlippage (float slippage);
 	/**
 	 * @brief Defini les roues codeuses de Odometry.
 	 * 
@@ -154,7 +155,7 @@ public:
 	 * 
 	 * @param address Adresse à utilisé pour la sauvegarde.
 	 */
-	void save(int address) const;
+	void save(int address);
 
 protected:
 	/**
@@ -169,6 +170,7 @@ protected:
 	float m_angVel; /*!< Vitesse angulaire en rad/s.*/
 	float m_axleTrack;/*!< Entraxe entre les deux roues codeuses. */
 	float m_slippage;/*!< Constante de dérivation othogonal. */
+	bool  m_valuesModified;
 
 	AbstractCodewheel* m_leftCodewheel;/*!< Pointeur de l'AbstractCodewheel gauche. */
 	AbstractCodewheel* m_rightCodewheel;/*!< Pointeur de l'AbstractCodewheel droite.  */
