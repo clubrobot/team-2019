@@ -29,10 +29,9 @@ geo = Geogebra("test_obstacle2.ggb")
 robot = shapely.geometry.Point(geo.get("origin"))
 goal = shapely.geometry.Point(geo.get("goal"))
 period = 1
-PF_FTG_CST = 0.5
 
 #ftg
-obsmap = ObstacleMap.load(geo, pattern="obs_*")
+obsmap = ObstacleMap.load(geo, pattern="obs*")
 alpha_static = 600
 robot_width = 300
 distance_max = 800
@@ -40,10 +39,12 @@ distance_max = 800
 #pf
 objs = list()
 maps = geo.get("MAP")
-objs.append(Map(*maps, funct_list["exp"](alpha=0.001, beta=1)))
-objs.append(Point(goal.x, goal.y, funct_list["exp"](alpha=0.0001,beta=-15)))
-polys = geo.getall("obs_*")
-[objs.append(Polygon(poly, funct_list["exp"](alpha=0.01, beta=100))) for poly in polys]
+objs.append(Map(*maps, funct_list["exp"](alpha=0.01, beta=10)))
+objs.append(Point(goal.x, goal.y, funct_list["exp"](alpha=0.001,beta=-20)))
+polys = geo.getall("obsin*")
+[objs.append(Polygon(poly, funct_list["lin"](alpha=0.03, beta=10))) for poly in polys]
+
+max_v_pf = 10
 
 step = linvel
 path = []
@@ -73,13 +74,14 @@ with open("list_point", "w") as file:
         # potential field
         vx = 0
         vy = 0
+        v_pf = 0
         for obj in objs:
+            v_pf += obj.get_scalaire([robot.x, robot.y])
             v = obj.get_force([robot.x, robot.y])
             vx += v[0]
             vy += v[1]
         angle_guide_pf = obsmap.normalize_angle(atan2(vy, vx))
-        v_pf = math.sqrt((vx*vx + vy*vy)) / 10
-        v_pf = min(1.0, v_pf)
+        v_pf /= max_v_pf / len(objs)
         print("angle pf : ", angle_guide_pf*180/pi)
         print("v pf : ", v_pf)
 

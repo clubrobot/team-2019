@@ -2,8 +2,6 @@ from common.geogebra import Geogebra
 import math
 from common.obstacle import *
 
-BRUTE = False
-
 
 class ObstacleMap:
     nb_phi = 100
@@ -21,35 +19,19 @@ class ObstacleMap:
                  [None for _ in range(0, self.nb_phi)])
 
         for phi_i in range(self.nb_phi):
-            if BRUTE:
-                p2 = Point(p)
-                phi = phi_i / self.nb_phi * 2 * math.pi
-                obstacle = False
-                dx = math.cos(phi) * distance_max / self.nb_r
-                dy = math.sin(phi) * distance_max / self.nb_r
-                for r in range(self.nb_r):
-                    p2 = translate(p2, dx, dy)
-                    for obs in self.obstacles:
-                        if obs.contains(p2):
-                            histo[1][phi_i] = p2.distance(p)
-                            obstacle = True
-                            break
-                    if obstacle:
-                        break
-            else:
-                phi = phi_i / self.nb_phi * 2 * math.pi
-                dx = math.cos(phi) * distance_max
-                dy = math.sin(phi) * distance_max
-                line = LineString([(p.x, p.y), (p.x + dx, p.y + dy)])
+            phi = phi_i / self.nb_phi * 2 * math.pi
+            dx = math.cos(phi) * distance_max
+            dy = math.sin(phi) * distance_max
+            line = LineString([(p.x, p.y), (p.x + dx, p.y + dy)])
 
-                for obs in self.obstacles:
-                    inter = line.intersection(obs)
+            for obs in self.obstacles:
+                inter = line.intersection(obs)
 
-                    if not inter.is_empty:
-                        d = inter.distance(p)
-                        if histo[1][phi_i] is None:
-                            histo[1][phi_i] = d
-                        histo[1][phi_i] = min(histo[1][phi_i], d)
+                if not inter.is_empty:
+                    d = inter.distance(p)
+                    if histo[1][phi_i] is None:
+                        histo[1][phi_i] = d
+                    histo[1][phi_i] = min(histo[1][phi_i], d)
         # print(histo)
         return histo
 
