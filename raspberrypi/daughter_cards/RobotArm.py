@@ -29,7 +29,7 @@ class TakePuckError(Exception): pass
 class RobotArm(SecureSerialTalksProxy):
 	def __init__(self, manager, uuid='/dev/arduino/arm'):
 		SecureSerialTalksProxy.__init__(self, manager, uuid, dict())
-		with open('ArmPosition.json') as f:
+		with open('../daughter_cards/ArmPosition.json') as f:
 			self.armPosition = json.load(f)
 		
 		self.TankPosList 	= ["TANK_POS_1", "TANK_POS_2", "TANK_POS_3"]

@@ -38,7 +38,8 @@ void STOP_BATCH(SerialTalks& talks, Deserializer& input, Serializer& output)
 
 void IS_ARRIVED(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
-    traj_manager.is_arrived();
+    int ret = traj_manager.is_arrived();
+    output.write<int>(ret);
 }
 
 void START_PUMP(SerialTalks& talks, Deserializer& input, Serializer& output)
