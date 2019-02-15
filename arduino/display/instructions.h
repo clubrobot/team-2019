@@ -12,6 +12,7 @@
 #define SET_EEPROM_CHAR_IPDISPLAY_OPCODE	 0x0C
 #define SET_MATRIX_MESSAGE_OPCODE			 0x0D
 #define SET_IPDISPLAY_MESSAGE_OPCODE		 0x0E
+#define CLEAR_IPDISPLAY_MESSAGE_OPCODE 		 0x0F
 
 //***********
 // Examples *
@@ -123,6 +124,7 @@ void SET_EEPROM_CHAR_IPDISPLAY(SerialTalks &talks, Deserializer &input, Serializ
 void SET_EEPROM_CHAR_LEDMATRIX(SerialTalks &talks, Deserializer &input, Serializer &output);
 void SET_SPEED_MATRIX(SerialTalks &talks, Deserializer &input, Serializer &output);
 void SET_EEPROM_DEFAULT_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &output);
+void CLEAR_IPDISPLAY_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &output);
 
 
 #endif
