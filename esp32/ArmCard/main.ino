@@ -117,7 +117,6 @@ void setup()
 
     /* create secondary loop to manage arm deplacements*/
     task_manager.create_task(secondary_loop , NULL);
-
 }
 
 void loop()

@@ -16,12 +16,13 @@ void ADD_MOVE(SerialTalks& talks, Deserializer& input, Serializer& output)
     pos.y   = input.read<float>();
     pos.phi = input.read<float>();
 
-    try {
+    try
+    {
         traj_manager.move_directly(pos);
     }
     catch(...)
     {
-        cout << "Exception in move_directly" << endl;
+
     }
 }
 

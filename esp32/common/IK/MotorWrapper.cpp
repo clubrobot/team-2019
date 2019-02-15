@@ -49,7 +49,7 @@ void MotorWrapper::process(float timestep)
         {
             cout<<"AX_12 Timeout"<<endl;
         }
-        catch(const AX12error e)
+        catch(const AX12error& e)
         {
             cout<<"AX_12 error"<<endl;
         }
