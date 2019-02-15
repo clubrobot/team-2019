@@ -172,7 +172,7 @@ private:
 	Position m_posSetpoint;/*!< Position à atteindre.*/
 
 	float m_linVelSetpoint;/*!< Vitesse linéaire à atteindre*/
-	float m_angVelSetpoint;:/*!< Vitesse angulaire à atteindre*/
+	float m_angVelSetpoint;/*!< Vitesse angulaire à atteindre*/
 
 	// Engineering control tunings
 	float m_linVelKp; /*!< Coefficient proportionnel de vitesse linéaire. */
