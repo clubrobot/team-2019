@@ -161,7 +161,7 @@ save = input('Souhaitez-vous sauvegarder ces valeurs ?(o/N)\n')
 
 if(save == "o" or save == "oui" or save == "yes"):
     print('Vous pouvez copier ces valeurs dans le fichier des constantes :\n')
-    print('LEFTCODEWHEEL_RADIUS_VALUE	     = {}'.format(radius_l))
+    print('LEFTCODEWHEEL_RADIUS_VALUE	       = {}'.format(radius_l))
     print('RIGHTCODEWHEEL_RADIUS_VALUE         = {}'.format(radius_r))
     print('ODOMETRY_AXLETRACK_VALUE            = {}'.format(axletrack))
 else :
