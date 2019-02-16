@@ -35,7 +35,7 @@ def change_PID_parameters(PID):
 	newPID = list(PID)
 	end = False
 	while(not end):
-		coeff_type = input('-> Modifier le coefficient ? (P - I - D ou ok) : ')
+		coeff_type = input('-> Modifier un coefficient ? (P - I - D ou ok) : ')
 		if(coeff_type.lower() == "kp" or coeff_type.lower() == "p" ):
 			newPID[0] = float(input('-> Kp = ? '))
 		elif(coeff_type.lower() == "ki" or coeff_type.lower() == "i" ):
@@ -44,7 +44,8 @@ def change_PID_parameters(PID):
 			newPID[2] = float(input('-> Kd = ? '))
 		else:
 			end = True
-		print("\n Kp = " +  str(newPID[0]) + " | Ki = " +  str(newPID[1]) + " | Kd = " +  str(newPID[2])+ " |\n")
+		if(not end):
+			print("\n Kp = " +  str(newPID[0]) + " | Ki = " +  str(newPID[1]) + " | Kd = " +  str(newPID[2])+ " |\n")
 	return tuple(newPID) 
 
 asser_type = input("Type d'asservissement : \n 1 - Position      2 - Vitesse \n-> ")
@@ -61,10 +62,9 @@ if(asser_type.lower() == "p" or asser_type.lower() == "position" or asser_type.l
 			0)
 
 	while(run_again):    
-		if(not first_it):
-			PID = change_PID_parameters(PID)
-			wheeledbase.set_parameter_value(POSITIONCONTROL_LINVELKP_ID, PID[0] ,FLOAT)
-			wheeledbase.set_parameter_value(POSITIONCONTROL_ANGVELKP_ID, PID[1] ,FLOAT)
+		PID = change_PID_parameters(PID)
+		wheeledbase.set_parameter_value(POSITIONCONTROL_LINVELKP_ID, PID[0] ,FLOAT)
+		wheeledbase.set_parameter_value(POSITIONCONTROL_ANGVELKP_ID, PID[1] ,FLOAT)
 		
 		input("Appuyez sur entrée pour lancer le test :")
 		wheeledbase.reset() 
@@ -159,7 +159,7 @@ if(asser_type.lower() == "p" or asser_type.lower() == "position" or asser_type.l
 		angvel_in_array_old = angvel_in_array
 		angvel_out_array_old = angvel_out_array
 		PID_old = PID		
-		restart = input("Souhaitez-vous essayer d'autres valeurs : (O/n) ")
+		restart = input("Faire un autre test : (O/n) ")
 		if(restart.lower() == "n" or restart.lower() == "non" or restart.lower() == "no"):
 			run_again = False
 			to_save_value = "POSITIONCONTROL_LINVELKP_VALUE      = " + str(PID[0]) +"\nPOSITIONCONTROL_ANGVELKP_VALUE      = " + str(PID[1])	
@@ -181,13 +181,11 @@ elif(asser_type.lower() == "v" or asser_type.lower() == "vitesse" or asser_type.
 		PID = ( wheeledbase.get_parameter_value(LINVELPID_KP_ID, FLOAT),
 				wheeledbase.get_parameter_value(LINVELPID_KI_ID, FLOAT),
 				wheeledbase.get_parameter_value(LINVELPID_KD_ID, FLOAT))
-		print("Les coefficients actuels sont : Kp = " + str(PID[0]) + " | Ki = " +  str(PID[1]) + " | Kd = " +  str(PID[2])+ " |")
 		while(run_again):
-			if(not first_it):
-				PID = change_PID_parameters(PID)
-				wheeledbase.set_parameter_value(LINVELPID_KP_ID, PID[0] ,FLOAT)
-				wheeledbase.set_parameter_value(LINVELPID_KI_ID, PID[1] ,FLOAT)
-				wheeledbase.set_parameter_value(LINVELPID_KD_ID, PID[2] ,FLOAT)
+			PID = change_PID_parameters(PID)
+			wheeledbase.set_parameter_value(LINVELPID_KP_ID, PID[0] ,FLOAT)
+			wheeledbase.set_parameter_value(LINVELPID_KI_ID, PID[1] ,FLOAT)
+			wheeledbase.set_parameter_value(LINVELPID_KD_ID, PID[2] ,FLOAT)
 
 			input("Appuyez sur entrée pour lancer le test :")
 			# Data arrays
@@ -283,7 +281,7 @@ elif(asser_type.lower() == "v" or asser_type.lower() == "vitesse" or asser_type.
 			angvel_out_array_old = angvel_out_array
 			PID_old = PID
 
-			restart = input("Souhaitez-vous essayer d'autres valeurs : (O/n) ")
+			restart = input("Faire un autre test : (O/n) ")
 			if(restart.lower() == "n" or restart.lower() == "non" or restart.lower() == "no" ):
 				run_again = False
 				to_save_value = "LINVELPID_KP_VALUE      = " + str(PID[0]) +"\nLINVELPID_KI_VALUE      = " + str(PID[1]) +"\nLINVELPID_KD_VALUE      = " + str(PID[2])
@@ -299,11 +297,10 @@ elif(asser_type.lower() == "v" or asser_type.lower() == "vitesse" or asser_type.
 				wheeledbase.get_parameter_value(ANGVELPID_KI_ID ,FLOAT),
 				wheeledbase.get_parameter_value(ANGVELPID_KD_ID ,FLOAT))
 		while(run_again):    
-			if(not first_it):
-				PID = change_PID_parameters(PID)
-				wheeledbase.set_parameter_value(ANGVELPID_KP_ID, PID[0] ,FLOAT)
-				wheeledbase.set_parameter_value(ANGVELPID_KI_ID, PID[1] ,FLOAT)
-				wheeledbase.set_parameter_value(ANGVELPID_KD_ID, PID[2] ,FLOAT) 
+			PID = change_PID_parameters(PID)
+			wheeledbase.set_parameter_value(ANGVELPID_KP_ID, PID[0] ,FLOAT)
+			wheeledbase.set_parameter_value(ANGVELPID_KI_ID, PID[1] ,FLOAT)
+			wheeledbase.set_parameter_value(ANGVELPID_KD_ID, PID[2] ,FLOAT) 
 			
 			input("Appuyez sur entrée pour lancer le test :") 
 		# Data arrays
@@ -401,7 +398,7 @@ elif(asser_type.lower() == "v" or asser_type.lower() == "vitesse" or asser_type.
 				
 			
 			
-			restart = input("Souhaitez-vous essayer d'autres valeurs : (O/n) ")
+			restart = input("Faire un autre test : (O/n) ")
 			if(restart.lower() == "n" or restart.lower() == "non" or restart.lower() == "no"):
 				run_again = False
 				to_save_value = "ANGVELPID_KP_VALUE      = " + str(PID[0]) +"\nANGVELPID_KI_VALUE      = " + str(PID[1]) +"\nANGVELPID_KD_VALUE      = " + str(PID[2])
@@ -420,5 +417,5 @@ if(save == "o" or save == "oui" or save == "yes"):
 	print(to_save_value)
 else :
 	print("Rechargement des constantes par défaut : ")
-	#write_cst()
+	write_cst()
 	print('fait')
