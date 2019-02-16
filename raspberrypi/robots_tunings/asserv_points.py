@@ -53,6 +53,6 @@ round_trip = [# x  | y | theta
 
 
 
-linvel_cmd = fast_speed
+linvel_cmd = normal_speed
 angvel_cmd = fast_rotation
-objpoints_cmd = round_trip
+objpoints_cmd = round_trip_no_turn
