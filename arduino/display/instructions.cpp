@@ -39,7 +39,6 @@ void SET_MATRIX_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &out
 
 void SET_IPDISPLAY_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &output)
 {
-	
     char buffer[IP_DISPLAY_BUFFER_SIZE] = "";
 	for (int i = 0; i< IP_DISPLAY_BUFFER_SIZE; i++){
 		buffer[i] = input.read<char>();
@@ -61,7 +60,8 @@ void SET_IPDISPLAY_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &
 			}
         }
     }
-	ipdisplay.computeBuffer(buffer, nbDigits);
+
+	ipdisplay.addIP(buffer, nbDigits);
 }
 
 
@@ -146,3 +146,7 @@ void SET_EEPROM_DEFAULT_MESSAGE(SerialTalks &talks, Deserializer &input, Seriali
 	}
 }
 
+void CLEAR_IPDISPLAY_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &output)
+{
+	ipdisplay.clearIPs();
+}

@@ -292,11 +292,11 @@ class Geogebra():
                 figure = self.get(element)
                 roadmap += [figure]
 
-        commands = self.root.findall('./construction/command')
-        for command in commands:
-            if command.attrib["name"] in parse_by_command:
-                figure = self._parse_segment_from_command(command)
-                roadmap += [figure]
+        #commands = self.root.findall('./construction/command')
+        #for command in commands:
+        #    if command.attrib["name"] in parse_by_command:
+        #        figure = self._parse_segment_from_command(command)
+        #        roadmap += [figure]
         return roadmap
 
     def _check_label(self, label):
