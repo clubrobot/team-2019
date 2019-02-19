@@ -20,12 +20,17 @@ class TrajectoryManager : public PeriodicProcess
 
     public :
 
-        TrajectoryManager() throw():_isExecutingBatch(false),_arrived(false){}
+        TrajectoryManager() throw():_isExecutingBatch(false),_arrived(false),_error(false){}
         void set_armManager(ArmManager& manager);
         void set_Motors(MotorWrapper& motor1, MotorWrapper& motor2, MotorWrapper& motor3);
 
         void move_directly(coords_t pos);
         bool is_arrived() const {return _arrived;}
+        bool get_error() const {return _error;}
+
+        Motor_state_t get_motor1_state() const {return m_motor1->get_state();}
+        Motor_state_t get_motor2_state() const {return m_motor2->get_state();}
+        Motor_state_t get_motor3_state() const {return m_motor3->get_state();}
 
     private :
         virtual void process(float timestep);
@@ -49,6 +54,7 @@ class TrajectoryManager : public PeriodicProcess
         bool _isExecutingBatch;
 
         bool _arrived;
+        bool _error;
 
         Mutex m_mutex;
 };

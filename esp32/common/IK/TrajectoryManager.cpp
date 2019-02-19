@@ -116,12 +116,16 @@ void TrajectoryManager::process(float timestep)
         m_motor2->process(timestep);
         m_motor3->process(timestep);
 
+        if(m_motor1->error() || m_motor2->error() || m_motor3->error())
+        {
+            _error = true;
+        }
+
         if(m_motor1->arrived() && m_motor2->arrived() && m_motor3->arrived())
         {
             _arrived          = true;
             _isExecutingBatch = false;
         }
-
     }
     
     m_mutex.release();
