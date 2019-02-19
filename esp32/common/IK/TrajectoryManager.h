@@ -32,6 +32,10 @@ class TrajectoryManager : public PeriodicProcess
         Motor_state_t get_motor2_state() const {return m_motor2->get_state();}
         Motor_state_t get_motor3_state() const {return m_motor3->get_state();}
 
+        void clear_motor1_error(){m_motor1->clear_error();}
+        void clear_motor2_error(){m_motor2->clear_error();}
+        void clear_motor3_error(){m_motor3->clear_error();}
+
     private :
         virtual void process(float timestep);
 

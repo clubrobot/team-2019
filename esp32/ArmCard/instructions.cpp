@@ -82,3 +82,21 @@ void STOP_SLUICE(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
     pump.stopSluice();
 }
+
+void CLEAR_MOTOR_ERR(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+    int id = input.read<int>();
+    if(id == 1)
+    {
+        traj_manager.clear_motor1_error();
+    }
+    if(id == 2)
+    {
+        traj_manager.clear_motor2_error();
+    }
+    if(id == 3)
+    {
+        traj_manager.clear_motor3_error();
+    }
+
+}

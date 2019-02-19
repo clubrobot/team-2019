@@ -16,6 +16,7 @@
 #define STOP_PUMP_OPCODE            0X16 
 #define START_SLUICE_OPCODE         0X17 
 #define STOP_SLUICE_OPCODE          0x18
+#define CLEAR_MOTOR_ERR_OPCODE      0x19
 
 void ADD_MOVE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
@@ -34,6 +35,8 @@ void STOP_PUMP(SerialTalks& talks, Deserializer& input, Serializer& output);
 void START_SLUICE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void STOP_SLUICE(SerialTalks& talks, Deserializer& input, Serializer& output);
+
+void CLEAR_MOTOR_ERR(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 #endif //__INSTRUCTIONS_H__
 

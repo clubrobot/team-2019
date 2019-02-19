@@ -42,6 +42,7 @@ class MotorWrapper : public PeriodicProcess
         bool error() const {return m_error_occur;}
         Motor_state_t get_state() const {return m_state;}
 
+        void clear_error(){m_error_occur = false; m_step_counter = 0;}
         virtual void process(float timestep);
 
     private:

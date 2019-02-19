@@ -50,6 +50,8 @@ void setup()
     talks.bind(START_SLUICE_OPCODE,START_SLUICE);
     talks.bind(STOP_SLUICE_OPCODE, STOP_SLUICE);
 
+    talks.bind(CLEAR_MOTOR_ERR_OPCODE, CLEAR_MOTOR_ERR);
+
     joints_t joint = {10.0, 10.0, 0};
 
     /* init Motors communication */

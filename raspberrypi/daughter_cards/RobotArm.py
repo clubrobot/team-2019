@@ -47,6 +47,9 @@ class RobotArm(SecureSerialTalksProxy):
 		ret = out.read(BYTE, BYTE, BYTE, BYTE, BYTE, BYTE, BYTE, BYTE, BYTE)
 		return ret
 
+	def clear_motor_error(self, id):
+		self.send(_RUN_BATCH_OPCODE, INT(id))
+
 	def is_arrived(self):
 		out = self.execute(_IS_ARRIVED_OPCODE)
 		ret, err = out.read(BYTE, BYTE)
