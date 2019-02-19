@@ -11,15 +11,16 @@ import json
 def deg_to_rad(val):
 	return (val * pi)/180
 
-_ADD_MOVE_OPCODE 	 = 0X10
-_RUN_BATCH_OPCODE	 = 0X11
-_STOP_BATCH_OPCODE	 = 0X12
-_IS_ARRIVED_OPCODE 	 = 0X13
+_ADD_MOVE_OPCODE 	        = 0X10
+_RUN_BATCH_OPCODE	        = 0X11
+_STOP_BATCH_OPCODE	        = 0X12
+_IS_ARRIVED_OPCODE 	        = 0X13
+_GET_MOTORS_STATE_OPCODE 	= 0X14
 
-_START_PUMP_OPCODE   = 0x14
-_STOP_PUMP_OPCODE    = 0X15 
-_START_SLUICE_OPCODE = 0X16 
-_STOP_SLUICE_OPCODE  = 0x17
+_START_PUMP_OPCODE          = 0x15
+_STOP_PUMP_OPCODE           = 0X16 
+_START_SLUICE_OPCODE        = 0X17 
+_STOP_SLUICE_OPCODE         = 0x18
 
 class TankFull(Exception): pass
 class TankEmpty(Exception): pass
@@ -40,6 +41,40 @@ class RobotArm(SecureSerialTalksProxy):
 
 	def setup_tank_size(self, size):
 		self.tankSize = size - 1
+	
+	def get_motors_state(self):
+		out = self.execute(_GET_MOTORS_STATE_OPCODE)
+		ret = out.read(BYTE, BYTE, BYTE, BYTE, BYTE, BYTE, BYTE, BYTE, BYTE)
+		return ret
+
+	def is_arrived(self):
+		out = self.execute(_IS_ARRIVED_OPCODE)
+		ret, err = out.read(BYTE, BYTE)
+		if bool(err):
+			err = self.get_motors_state()
+			if bool(err[1]) or bool(err[4]) or bool(err[7]):
+				raise RuntimeError('Timeout error on AX12')
+			else:
+				raise RuntimeError('Error on AX12 motors')
+		return bool(ret)
+
+	def run_batch(self):
+		self.send(_RUN_BATCH_OPCODE)
+
+	def stop_batch(self):
+		self.send(_STOP_BATCH_OPCODE)
+
+	def start_pump(self):
+		self.send(_START_PUMP_OPCODE)
+
+	def stop_pump(self):
+		self.send(_STOP_PUMP_OPCODE)
+
+	def start_sluice(self):
+		self.send(_START_SLUICE_OPCODE)
+
+	def stop_sluice(self):
+		self.send(_STOP_SLUICE_OPCODE)
 
 	def move(self, posID):
 		self.send(_ADD_MOVE_OPCODE, FLOAT(self.armPosition[posID]['x']),\
@@ -135,26 +170,3 @@ class RobotArm(SecureSerialTalksProxy):
 			self.Tankfull = False
 		else:
 			raise TankEmpty()
-	
-	def run_batch(self):
-		self.send(_RUN_BATCH_OPCODE)
-
-	def stop_batch(self):
-		self.send(_STOP_BATCH_OPCODE)
-
-	def start_pump(self):
-		self.send(_START_PUMP_OPCODE)
-
-	def stop_pump(self):
-		self.send(_STOP_PUMP_OPCODE)
-
-	def start_sluice(self):
-		self.send(_START_SLUICE_OPCODE)
-
-	def stop_sluice(self):
-		self.send(_STOP_SLUICE_OPCODE)
-
-	def is_arrived(self):
-		out = self.execute(_IS_ARRIVED_OPCODE)
-		ret = out.read(INT)
-		return ret

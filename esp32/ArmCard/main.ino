@@ -43,13 +43,14 @@ void setup()
     talks.bind(RUN_BATCH_OPCODE,  RUN_BATCH);
     talks.bind(STOP_BATCH_OPCODE, STOP_BATCH);
     talks.bind(IS_ARRIVED_OPCODE, IS_ARRIVED);
+    talks.bind(GET_MOTORS_STATE_OPCODE, GET_MOTORS_STATE);
 
     talks.bind(START_PUMP_OPCODE,  START_PUMP);
     talks.bind(STOP_PUMP_OPCODE,   STOP_PUMP);
     talks.bind(START_SLUICE_OPCODE,START_SLUICE);
     talks.bind(STOP_SLUICE_OPCODE, STOP_SLUICE);
 
-    joints_t joint;
+    joints_t joint = {10.0, 10.0, 0};
 
     /* init Motors communication */
     AX12::SerialBegin(1000000, 5);
@@ -57,18 +58,6 @@ void setup()
     servoax1.attach(ID1);
     servoax2.attach(ID2);
     servoax3.attach(ID3);
-
-    /* get current motor pos to correctly init arm */
-    try
-    {
-        joint.th1 = (servoax1.readPosition() - LINK1_OFFSET)*M_PI / 180;
-        joint.th2 = (servoax2.readPosition() - LINK2_OFFSET)*M_PI / 180;
-        joint.th3 = (servoax3.readPosition() - LINK3_OFFSET)*M_PI / 180;
-    }
-    catch(...)
-    {
-        joint = {10,10,0};
-    }
 
     /* configure PID for motor 1*/
     AX1_PID.setOutputLimits(1, 532);
@@ -111,7 +100,6 @@ void setup()
     /* Add INITIAL_POS to queue */
     traj_manager.move_directly(arm_positions[HOME]);
     
-
     /* enable traj manager to reach pos */    
     traj_manager.enable();
 

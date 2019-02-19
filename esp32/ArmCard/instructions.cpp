@@ -38,8 +38,29 @@ void STOP_BATCH(SerialTalks& talks, Deserializer& input, Serializer& output)
 
 void IS_ARRIVED(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
-    int ret = traj_manager.is_arrived();
-    output.write<int>(ret);
+    byte ret = traj_manager.is_arrived();
+    byte err = traj_manager.error();
+    output.write<byte>(ret);
+    output.write<byte>(err);
+}
+
+void GET_MOTORS_STATE(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+    Motor_state_t m1 = traj_manager.get_motor1_state();
+    Motor_state_t m2 = traj_manager.get_motor2_state();
+    Motor_state_t m3 = traj_manager.get_motor3_state();
+
+    output.write<byte>(m1.id);
+    output.write<byte>(m1.timeout);
+    output.write<byte>(m1.err_code);
+
+    output.write<byte>(m2.id);
+    output.write<byte>(m2.timeout);
+    output.write<byte>(m2.err_code);
+
+    output.write<byte>(m3.id);
+    output.write<byte>(m3.timeout);
+    output.write<byte>(m3.err_code);
 }
 
 void START_PUMP(SerialTalks& talks, Deserializer& input, Serializer& output)
