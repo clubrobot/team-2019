@@ -11,6 +11,14 @@
 
 using namespace std;
 
+typedef struct
+{
+    uint8_t id;
+    uint8_t timeout;
+    uint8_t err_code;
+}Motor_state_t;
+
+
 namespace IK
 {
 #define RMP_TO_DEG_S 0.16666666666667
@@ -31,6 +39,8 @@ class MotorWrapper : public PeriodicProcess
         void setVelocityProfile(vector<double> vel){m_vel_profile = vel;}
 
         bool arrived() const {return m_arrived;}
+        bool error() const {return m_error_occur;}
+        Motor_state_t get_state() const {return m_state;}
 
         virtual void process(float timestep);
 
@@ -42,6 +52,10 @@ class MotorWrapper : public PeriodicProcess
         float m_offset;
         int m_step_counter;
         bool m_arrived;
+
+        bool m_error_occur;
+
+        Motor_state_t m_state;
 
         vector<double> m_vel_profile;
 

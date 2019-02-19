@@ -23,6 +23,7 @@ MotorWrapper::MotorWrapper()
 	m_offset 	    = 0;
 
 	m_arrived = false;
+	m_error_occur = false;
 
 	m_mutex.release();
 }
@@ -33,28 +34,32 @@ void MotorWrapper::process(float timestep)
 
 	static float vel = 0;
 	/* TODO : add asservissement and control reached position*/
-	if(m_step_counter < (m_vel_profile.size()))
+	if(m_step_counter < (m_vel_profile.size()) && !m_error_occur)
 	{
 		vel = m_vel_profile[m_step_counter++];
 		vel = (vel * 180)/M_PI;
 		vel = vel * RMP_TO_DEG_S;
 
-		vel = saturate(vel,1,1024);
+		vel = saturate(vel,250,600);
 
 		try
 		{
-			m_motor->move(m_pos + m_offset);
+			m_motor->moveSpeed(m_pos + m_offset, vel);
 		}
         catch(const AX12Timeout& e)
         {
-            cout<<"AX_12 Timeout"<<endl;
+            m_state.id      = e.get_id();
+			m_state.timeout = 1;
+			m_error_occur   = true;
         }
         catch(const AX12error& e)
         {
-            cout<<"AX_12 error"<<endl;
+			m_state.id       = e.get_id();
+			m_state.err_code = e.get_error_code();
+			m_error_occur   = true;
         }
 	}
-	else
+	else if(!m_error_occur)
 	{
 		m_arrived = true;
 	}
