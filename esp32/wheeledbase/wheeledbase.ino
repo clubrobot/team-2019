@@ -165,7 +165,7 @@ void loop_aux(void * aux)
     #else
         velocityControl.update();
     #endif // ENABLE_VELOCITYCONTROLLER_LOGS /
-   }
+	}
 }   
 
 
