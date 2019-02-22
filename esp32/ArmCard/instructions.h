@@ -3,7 +3,6 @@
 
 #include "../common/IK/Picker.h"
 #include "../common/SerialTalks.h"
-#include "arm_position.h"
 #include "../common/VacumPump.h"
 
 #define ADD_MOVE_OPCODE             0x10

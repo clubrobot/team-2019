@@ -8,7 +8,6 @@
 #include "../common/TaskManager.h"
 #include "../common/VacumPump.h"
 #include "arm_config.h"
-#include "arm_position.h"
 
 using namespace IK;
 using namespace std;
@@ -98,12 +97,6 @@ void setup()
     traj_manager.set_armManager(arm_manager);
     traj_manager.set_Motors(AX1, AX2, AX3);
     traj_manager.setTimestep(DELTA_T);
-
-    /* Add INITIAL_POS to queue */
-    traj_manager.move_directly(arm_positions[HOME]);
-    
-    /* enable traj manager to reach pos */    
-    traj_manager.enable();
 
     /* create secondary loop to manage arm deplacements*/
     task_manager.create_task(secondary_loop , NULL);
