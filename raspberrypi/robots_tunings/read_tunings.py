@@ -39,7 +39,7 @@ print("ANGVELPID_KI_VALUE                    = " + str(wheeledbase.get_parameter
 print("ANGVELPID_KD_VALUE                    = " + str(wheeledbase.get_parameter_value(ANGVELPID_KD_ID, FLOAT)))
 
 print("ANGVELPID_MINOUTPUT_VALUE             = " + str(wheeledbase.get_parameter_value(ANGVELPID_MINOUTPUT_ID, FLOAT)))
-print("ANGVELPID_MAXOUTPUT_VALUE	         = " + str(wheeledbase.get_parameter_value(ANGVELPID_MAXOUTPUT_ID, FLOAT)))
+print("ANGVELPID_MAXOUTPUT_VALUE             = " + str(wheeledbase.get_parameter_value(ANGVELPID_MAXOUTPUT_ID, FLOAT)))
 
 print("POSITIONCONTROL_LINVELKP_VALUE        = " + str(wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELKP_ID, FLOAT)))
 print("POSITIONCONTROL_ANGVELKP_VALUE        = " + str(wheeledbase.get_parameter_value(POSITIONCONTROL_ANGVELKP_ID, FLOAT)))
