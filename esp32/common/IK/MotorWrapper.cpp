@@ -40,7 +40,7 @@ void MotorWrapper::process(float timestep)
 		vel = (vel * 180)/M_PI;
 		vel = vel * RMP_TO_DEG_S;
 
-		vel = saturate(vel,250,600);
+		vel = saturate(vel,350,600);
 
 		try
 		{
@@ -50,13 +50,13 @@ void MotorWrapper::process(float timestep)
         {
             m_state.id      = e.get_id();
 			m_state.timeout = 1;
-			m_error_occur   = true;
+			//m_error_occur   = true;
         }
         catch(const AX12error& e)
         {
 			m_state.id       = e.get_id();
 			m_state.err_code = e.get_error_code();
-			m_error_occur   = true;
+			//m_error_occur   = true;
         }
 	}
 	else if(!m_error_occur)
