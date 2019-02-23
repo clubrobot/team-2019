@@ -11,6 +11,12 @@
             "y":    1.5,
             "phi":  10
         },
+    "TAKE_PUCK_INTER2":
+        {
+            "x":    2,
+            "y":    10,
+            "phi":  0
+        },
     "TAKE_PUCK_INTER_SOL":
         {
             "x":    8,
@@ -19,7 +25,7 @@
         },
     "TAKE_PUCK":
         {
-            "x":    13.5,
+            "x":    13,
             "y":    2,
             "phi":  0
         },

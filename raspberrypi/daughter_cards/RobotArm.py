@@ -53,12 +53,12 @@ class RobotArm(SecureSerialTalksProxy):
 	def is_arrived(self):
 		out = self.execute(_IS_ARRIVED_OPCODE)
 		ret, err = out.read(BYTE, BYTE)
-		if bool(err):
-			err = self.get_motors_state()
-			if bool(err[1]) or bool(err[4]) or bool(err[7]):
-				raise RuntimeError('Timeout error on AX12')
-			else:
-				raise RuntimeError('Error on AX12 motors')
+		# if bool(err):
+		# 	err = self.get_motors_state()
+		# 	if bool(err[1]) or bool(err[4]) or bool(err[7]):
+		# 		raise RuntimeError('Timeout error on AX12')
+		# 	else:
+		# 		raise RuntimeError('Error on AX12 motors')
 		return bool(ret)
 
 	def run_batch(self):
@@ -106,14 +106,14 @@ class RobotArm(SecureSerialTalksProxy):
 		self.move("TAKE_PUCK")
 		while not self.is_arrived():
 			time.sleep(0.1)
-		time.sleep(0.5)
-		self.move("TAKE_PUCK_INTER")
+		time.sleep(1)
+		self.move("TAKE_PUCK_INTER2")
 
 		while not self.is_arrived():
 			time.sleep(0.1)
 
 	def put_in_balance(self):
-		self.move("balance")
+		self.move("BALANCE")
 		while not self.is_arrived():
 			time.sleep(0.1)
 		self.stop_pump()

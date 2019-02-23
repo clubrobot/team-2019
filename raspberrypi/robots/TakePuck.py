@@ -20,12 +20,12 @@ print(puck2)
 print(puck3)
 print(balance)
 
-wheeledbase.set_position(755, 2681, 0)
+wheeledbase.set_position(755, 2681, -pi)
 print("robot placé : ", wheeledbase.get_position())
 
 input()
 
-wheeledbase.goto(*puck1, theta=-pi/2)
+wheeledbase.goto(*puck1, theta=pi/2)
 while not wheeledbase.isarrived():
     print(wheeledbase.get_position())
     time.sleep(0.1)
@@ -39,7 +39,7 @@ arm.put_in_tank()
 arm.go_home()
 input()
 
-wheeledbase.goto(*puck2, theta=-pi/2)
+wheeledbase.goto(*puck2, theta=pi/2)
 while not wheeledbase.isarrived():
     print(wheeledbase.get_position())
     time.sleep(0.1)
@@ -53,7 +53,7 @@ arm.put_in_tank()
 arm.go_home()
 input()
 
-wheeledbase.goto(*puck3, theta=-pi/2)
+wheeledbase.goto(*puck3, theta=pi/2)
 while not wheeledbase.isarrived():
     print(wheeledbase.get_position())
     time.sleep(0.1)
@@ -67,7 +67,7 @@ arm.put_in_tank()
 arm.go_home()
 input()
 
-wheeledbase.goto(*balance, theta=-pi/2)
+wheeledbase.goto(*balance, theta=pi/2)
 while not wheeledbase.isarrived():
     print(wheeledbase.get_position())
     time.sleep(0.1)
