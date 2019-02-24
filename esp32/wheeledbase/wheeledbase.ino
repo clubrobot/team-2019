@@ -108,14 +108,9 @@ void setup()
 	velocityControl.setPID(linVelPID, angVelPID);
 	velocityControl.disable();
 
-	// const float maxLinVel = min(leftWheel.getMaxVelocity(), rightWheel.getMaxVelocity());
-	// const float maxAngVel = min(leftWheel.getMaxVelocity(), rightWheel.getMaxVelocity()) * 2 / WHEELS_AXLE_TRACK;
-
 	linVelPID.load(LINVELPID_ADDRESS);
 	angVelPID.load(ANGVELPID_ADDRESS);
-	// linVelPID.setOutputLimits(-maxLinVel, maxLinVel);
-	// angVelPID.setOutputLimits(-maxAngVel, maxAngVel);
-
+	
 #if ENABLE_VELOCITYCONTROLLER_LOGS
 	controllerLogs.setController(velocityControl);
 	controllerLogs.setTimestep(VELOCITYCONTROLLER_LOGS_TIMESTEP);
@@ -137,6 +132,7 @@ void setup()
 void loop()
 {
     talks.execute();
+	vTaskDelay(5 / portTICK_PERIOD_MS); /* vTaskDelay for correct ordonenceur management */
 }
 
 void loop_aux(void * aux)
@@ -165,6 +161,8 @@ void loop_aux(void * aux)
     #else
         velocityControl.update();
     #endif // ENABLE_VELOCITYCONTROLLER_LOGS /
+
+	vTaskDelay(5 / portTICK_PERIOD_MS); /* vTaskDelay for correct ordonenceur management */
 	}
 }   
 
