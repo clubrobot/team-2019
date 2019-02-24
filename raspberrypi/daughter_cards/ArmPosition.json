@@ -5,17 +5,23 @@
             "y":    9.0,
             "phi":  0
         },
-    "TAKE_PUCK_INTER":
+    "TAKE_PUCK_INTER_BEFORE":
         {
             "x":    12,
             "y":    1.5,
             "phi":  10
         },
-    "TAKE_PUCK_INTER2":
+    "TAKE_PUCK_INTER_AFTER_1":
         {
-            "x":    2,
-            "y":    10,
+            "x":    8,
+            "y":    3,
             "phi":  0
+        },
+    "TAKE_PUCK_INTER_AFTER_2":
+        {
+            "x":    8,
+            "y":    10,
+            "phi":  45
         },
     "TAKE_PUCK_INTER_SOL":
         {

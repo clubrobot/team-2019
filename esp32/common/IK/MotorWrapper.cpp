@@ -40,7 +40,7 @@ void MotorWrapper::process(float timestep)
 		vel = (vel * 180)/M_PI;
 		vel = vel * RMP_TO_DEG_S;
 
-		vel = saturate(vel,350,600);
+		vel = saturate(vel,400,600);
 
 		try
 		{

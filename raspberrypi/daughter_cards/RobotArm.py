@@ -53,12 +53,12 @@ class RobotArm(SecureSerialTalksProxy):
 	def is_arrived(self):
 		out = self.execute(_IS_ARRIVED_OPCODE)
 		ret, err = out.read(BYTE, BYTE)
-		# if bool(err):
-		# 	err = self.get_motors_state()
-		# 	if bool(err[1]) or bool(err[4]) or bool(err[7]):
-		# 		raise RuntimeError('Timeout error on AX12')
-		# 	else:
-		# 		raise RuntimeError('Error on AX12 motors')
+		if bool(err):
+			err = self.get_motors_state()
+			if bool(err[1]) or bool(err[4]) or bool(err[7]):
+				raise RuntimeError('Timeout error on AX12')
+			else:
+				raise RuntimeError('Error on AX12 motors')
 		return bool(ret)
 
 	def run_batch(self):
@@ -80,13 +80,19 @@ class RobotArm(SecureSerialTalksProxy):
 		self.send(_STOP_SLUICE_OPCODE)
 
 	def move(self, posID):
-		self.send(_ADD_MOVE_OPCODE, FLOAT(self.armPosition[posID]['x']),\
+		out = self.execute(_ADD_MOVE_OPCODE, FLOAT(self.armPosition[posID]['x']),\
 									FLOAT(self.armPosition[posID]['y']), \
 									FLOAT(deg_to_rad(self.armPosition[posID]['phi'])))
+		ret = out.read(BYTE)
+		if bool(ret):
+			raise RuntimeError('Error on move command : Position unreachable')
 		self.send(_RUN_BATCH_OPCODE)
 
 	def move_pos(self, x, y, phi):
-		self.send(_ADD_MOVE_OPCODE, FLOAT(x), FLOAT(y), FLOAT(deg_to_rad(phi)))
+		out = self.execute(_ADD_MOVE_OPCODE, FLOAT(x), FLOAT(y), FLOAT(deg_to_rad(phi)))
+		ret = out.read(BYTE)
+		if bool(ret):
+			raise RuntimeError('Error on move command : Position unreachable')
 		self.send(_RUN_BATCH_OPCODE)
 
 	def go_home(self):
@@ -99,7 +105,7 @@ class RobotArm(SecureSerialTalksProxy):
 
 	def take_puck_in_distributor(self):
 		self.start_pump()
-		self.move("TAKE_PUCK_INTER")
+		self.move("TAKE_PUCK_INTER_BEFORE")
 		while not self.is_arrived():
 			time.sleep(0.1)
 
@@ -107,8 +113,12 @@ class RobotArm(SecureSerialTalksProxy):
 		while not self.is_arrived():
 			time.sleep(0.1)
 		time.sleep(1)
-		self.move("TAKE_PUCK_INTER2")
 
+		self.move("TAKE_PUCK_INTER_AFTER_1")
+		while not self.is_arrived():
+			time.sleep(0.1)
+
+		self.move("TAKE_PUCK_INTER_AFTER_2")
 		while not self.is_arrived():
 			time.sleep(0.1)
 

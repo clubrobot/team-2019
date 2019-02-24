@@ -22,8 +22,9 @@ void ADD_MOVE(SerialTalks& talks, Deserializer& input, Serializer& output)
     }
     catch(...)
     {
-
+        output.write<byte>(1);
     }
+    output.write<byte>(0);
 }
 
 void RUN_BATCH(SerialTalks& talks, Deserializer& input, Serializer& output)
