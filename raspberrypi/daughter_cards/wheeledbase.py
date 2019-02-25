@@ -245,6 +245,7 @@ class WheeledBase(SecureSerialTalksProxy):
 
     def set_parameter_value(self, id, value, valuetype):
         self.send(SET_PARAMETER_VALUE_OPCODE, BYTE(id), valuetype(value))
+        time.sleep(0.1)
 
     def get_parameter_value(self, id, valuetype):
         output = self.execute(GET_PARAMETER_VALUE_OPCODE, BYTE(id))
