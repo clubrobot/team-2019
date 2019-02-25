@@ -34,6 +34,8 @@ class RobotArm(SecureSerialTalksProxy):
 			self.armPosition = json.load(f)
 		
 		self.TankPosList 	= ["TANK_POS_1", "TANK_POS_2", "TANK_POS_3"]
+		self.TankPosListTake 	= ["TANK_POS_INTER_TAKE_PUCK1", "TANK_POS_INTER_TAKE_PUCK2", "TANK_POS_INTER_TAKE_PUCK3"]
+		self.TankPosListTakeBis = ["TANK_POS_INTER_TAKE_PUCK1_BIS", "TANK_POS_INTER_TAKE_PUCK2_BIS", "TANK_POS_INTER_TAKE_PUCK3_BIS"]
 		self.CurrentTankPos = 0
 		self.tankSize		= 2	# size 3 by default [0, 1, 2]
 		self.Tankfull		= False
@@ -133,7 +135,7 @@ class RobotArm(SecureSerialTalksProxy):
 
 	def put_in_tank(self):
 		if not self.Tankfull:
-			self.move("TANK_POS_INTER")
+			self.move("TANK_POS_INTER_PUT")
 			while not self.is_arrived():
 				time.sleep(0.1)
 			
@@ -162,12 +164,17 @@ class RobotArm(SecureSerialTalksProxy):
 			self.stop_sluice()
 			self.start_pump()
 
-			self.move("TANK_POS_INTER")
+			self.move(self.TankPosListTake[self.CurrentTankPos])
 
 			while not self.is_arrived():
 				time.sleep(0.1)
 
 			self.move(self.TankPosList[self.CurrentTankPos])
+
+			while not self.is_arrived():
+				time.sleep(0.1)
+
+			self.move(self.TankPosListTakeBis[self.CurrentTankPos])
 
 			while not self.is_arrived():
 				time.sleep(0.1)

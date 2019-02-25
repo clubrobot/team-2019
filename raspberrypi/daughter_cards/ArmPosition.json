@@ -13,13 +13,13 @@
         },
     "TAKE_PUCK_INTER_AFTER_1":
         {
-            "x":    8,
+            "x":    9,
             "y":    3,
             "phi":  0
         },
     "TAKE_PUCK_INTER_AFTER_2":
         {
-            "x":    8,
+            "x":    9,
             "y":    10,
             "phi":  45
         },
@@ -35,29 +35,71 @@
             "y":    2,
             "phi":  0
         },
-    "TANK_POS_INTER":
+    "TANK_POS_INTER_PUT":
         {
             "x":    -5.0,
-            "y":    8.0,
-            "phi":  180
+            "y":    10.0,
+            "phi":  160
+        },
+     "TANK_POS_INTER":
+        {
+            "x":    -3.0,
+            "y":    10.0,
+            "phi":  130
+        },
+    "TANK_POS_INTER_TAKE_PUCK3":
+        {
+            "x":    -5.0,
+            "y":    4.0,
+            "phi":  210
+        },
+    "TANK_POS_INTER_TAKE_PUCK2":
+        {
+            "x":    -7.0,
+            "y":    4.0,
+            "phi":  210
+        },
+    "TANK_POS_INTER_TAKE_PUCK1":
+        {
+            "x":    -9.0,
+            "y":    2.0,
+            "phi":  210
+        },
+    "TANK_POS_INTER_TAKE_PUCK3_BIS":
+        {
+            "x":    -5.0,
+            "y":    6.0,
+            "phi":  130
+        },
+    "TANK_POS_INTER_TAKE_PUCK2_BIS":
+        {
+            "x":    -7.0,
+            "y":    6.0,
+            "phi":  130
+        },
+    "TANK_POS_INTER_TAKE_PUCK1_BIS":
+        {
+            "x":    -9.0,
+            "y":    6.0,
+            "phi":  130
         },
     "TANK_POS_3":
         {
-            "x":    -8.0,
-            "y":    5.0,
-            "phi":  200
+            "x":    -7.0,
+            "y":    3.0,
+            "phi":  205
         },
     "TANK_POS_2":
         {
-            "x":    -10.8,
-            "y":    5.0,
-            "phi":  200
+            "x":    -9.5,
+            "y":    3.0,
+            "phi":  205
         },
     "TANK_POS_1":
         {
-            "x":    -13.0,
-            "y":    5.0,
-            "phi":  190
+            "x":    -12.0,
+            "y":    3.0,
+            "phi":  205
         },
     "BALANCE":
         {
