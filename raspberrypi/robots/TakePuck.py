@@ -20,7 +20,7 @@ print(puck2)
 print(puck3)
 print(balance)
 
-wheeledbase.set_position(755, 2681, -pi)
+wheeledbase.set_position(755, 2678, -pi)
 print("robot placé : ", wheeledbase.get_position())
 
 input()
@@ -31,6 +31,7 @@ while not wheeledbase.isarrived():
     time.sleep(0.1)
 
 print("robot arrivé sur puck1")
+print("robot placé : ", wheeledbase.get_position())
 
 input()
 
@@ -45,6 +46,7 @@ while not wheeledbase.isarrived():
     time.sleep(0.1)
 
 print("robot arrivé sur puck2")
+print("robot placé : ", wheeledbase.get_position())
 
 input()
 
@@ -59,6 +61,7 @@ while not wheeledbase.isarrived():
     time.sleep(0.1)
 
 print("robot arrivé sur puck3")
+print("robot placé : ", wheeledbase.get_position())
 
 input()
 
@@ -73,19 +76,19 @@ while not wheeledbase.isarrived():
     time.sleep(0.1)
 
 print("robot arrivé sur Balance")
+print("robot placé : ", wheeledbase.get_position())
 
 input()
 
 arm.take_in_tank()
 arm.put_in_balance()
 
-input()
+
 arm.take_in_tank()
 arm.put_in_balance()
 
-input()
 arm.take_in_tank()
 arm.put_in_balance()
+arm.go_home()
 
-input()
 print("end")
