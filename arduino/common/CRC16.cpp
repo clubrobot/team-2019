@@ -21,10 +21,10 @@ uint16_t CRC16::CRCprocessByte(uint8_t data)
  	return crc;
 }
 
-uint16_t CRC16::CRCprocessBuffer(const uint8_t *data_p, uint16_t length)
+uint16_t CRC16::CRCprocessBuffer(const uint8_t *data_p, int length)
 {
 	crc = 0;
-	for(int i = 0 ; i<length; i++)
+	for(int i = 0 ; i <length; i++)
 	{
    		CRCprocessByte(data_p[i]);
  	}

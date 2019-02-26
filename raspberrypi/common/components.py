@@ -62,6 +62,7 @@ try:
                 self.rawsend(prefix + content)
             except KeyError:
                 pass
+
             try:
                 output = self.parent.execute(MAKE_MANAGER_REPLY_OPCODE, opcode, input, timeout=0.5)
                 if output is None: return
@@ -237,7 +238,7 @@ class Server(TCPTalksServer):
 
 
 class Manager(TCPTalks):
-
+    MANAGER_CREATED = None
     def __init__(self, ip='localhost', port=COMPONENTS_SERVER_DEFAULT_PORT, password=None):
         TCPTalks.__init__(self, ip, port=port, password=password)
         # PiCamera components
@@ -250,6 +251,7 @@ class Manager(TCPTalks):
         # SerialTalks
         self.bind(MAKE_MANAGER_REPLY_OPCODE, self.MAKE_MANAGER_REPLY)
         self.serial_instructions = {}
+        Manager.MANAGER_CREATED = self
 
     def start_match(self):
         self.send(MAKE_MATCH_TIMER_OPCODE)

@@ -3,6 +3,7 @@
 
 #include "PeriodicProcess.h"
 #include "Odometry.h"
+#include "thread_tools.h"
 
 
 class AbstractMoveStrategy;
@@ -13,28 +14,28 @@ public:
 
 	PositionController() : m_linVelKp(1), m_angVelKp(1), m_linVelMax(1000), m_angVelMax(2 * M_PI){}
 
-	void setPosInput   (const Position& posInput)   {m_posInput    = posInput;}
-	void setPosSetpoint(const Position& posSetpoint){m_posSetpoint = posSetpoint;}
+	void setPosInput   (const Position& posInput);
+	void setPosSetpoint(const Position& posSetpoint);
 
-	void setThetaSetpoint(float theta){m_posSetpoint.theta = theta;}
+	void setThetaSetpoint(float theta);
 
-	float getLinVelSetpoint() const {return m_linVelSetpoint;}
-	float getAngVelSetpoint() const {return m_angVelSetpoint;}
+	float getLinVelSetpoint() const;
+	float getAngVelSetpoint() const;
 
-	void setVelTunings(float linVelKp, float angVelKp) {m_linVelKp  = linVelKp;  m_angVelKp  = angVelKp;}
-	void setVelLimits(float linVelMax, float angVelMax){m_linVelMax = linVelMax; m_angVelMax = angVelMax;}
-	void setPosThresholds(float linPosThreshold, float angPosThreshold){m_linPosThreshold = linPosThreshold; m_angPosThreshold = angPosThreshold;}
+	void setVelTunings(float linVelKp, float angVelKp);
+	void setVelLimits(float linVelMax, float angVelMax);
+	void setPosThresholds(float linPosThreshold, float angPosThreshold);
 
 	void setMoveStrategy(AbstractMoveStrategy& moveStrategy);
 
 	bool getPositionReached();
 
-	float getLinVelKp() const {return m_linVelKp;}
-	float getAngVelKp() const {return m_angVelKp;}
-	float getLinVelMax() const {return m_linVelMax;}
-	float getAngVelMax() const {return m_angVelMax;}
-	float getLinPosThreshold() const {return m_linPosThreshold;}
-	float getAngPosThreshold() const {return m_angPosThreshold;}
+	float getLinVelKp() const; 
+	float getAngVelKp() const;
+	float getLinVelMax() const;
+	float getAngVelMax() const;
+	float getLinPosThreshold() const;
+	float getAngPosThreshold() const;
 
 	void load(int address);
 	void save(int address) const;
@@ -47,6 +48,8 @@ private:
 	// IO
 	Position m_posInput;
 	Position m_posSetpoint;
+
+	Mutex m_mutex;
 
 	float m_linVelSetpoint;
 	float m_angVelSetpoint;

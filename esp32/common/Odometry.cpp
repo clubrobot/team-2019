@@ -9,6 +9,7 @@
 
 void Odometry::process(float timestep)
 {
+	m_mutex.acquire();
 	const float dL = m_leftCodewheel ->restart();
 	const float dR = m_rightCodewheel->restart();
 
@@ -23,6 +24,7 @@ void Odometry::process(float timestep)
 
 	m_linVel = deltaLinPos / timestep;
 	m_angVel = deltaAngPos / timestep;
+	m_mutex.release();
 }
 
 void Odometry::load(int address)
@@ -36,4 +38,66 @@ void Odometry::save(int address) const
 	EEPROM.put(address, m_axleTrack); address += sizeof(m_axleTrack);
 	EEPROM.put(address, m_slippage);  address += sizeof(m_slippage);
 	EEPROM.commit();
+}
+
+
+void Odometry::setPosition(float x, float y, float theta)
+{
+	m_mutex.acquire();
+	m_pos.x = x;
+	m_pos.y = y;
+	m_pos.theta = theta;
+	m_mutex.release();
+}
+
+void Odometry::setAxleTrack(float axleTrack)
+{
+	m_mutex.acquire();
+	m_axleTrack = axleTrack;
+	m_mutex.release();
+}
+void Odometry::setSlippage (float slippage)
+{
+	m_mutex.acquire();
+	m_slippage  = slippage;
+	m_mutex.release();
+}
+
+const Position Odometry::getPosition() const
+{
+	m_mutex.acquire();
+	Position result = m_pos;
+	m_mutex.release();
+	return result;
+}
+
+float Odometry::getLinVel() const
+{
+	m_mutex.acquire();
+	float result = m_linVel;
+	m_mutex.release();
+	return result;
+}
+
+float Odometry::getAngVel() const
+{
+	m_mutex.acquire();
+	float result = m_angVel;
+	m_mutex.release();
+	return result;
+}
+
+float Odometry::getAxleTrack() const
+{
+	m_mutex.acquire();
+	float result = m_axleTrack;
+	m_mutex.release();
+	return result;
+} 
+float Odometry::getSlippage () const
+{
+	m_mutex.acquire();
+	float result = m_slippage;
+	m_mutex.release();
+	return result;
 }

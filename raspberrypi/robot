@@ -3,24 +3,14 @@
 
 from argparse import ArgumentParser
 
-from arduino.buttons import ButtonCard
-from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
+from common.serialtalks import *
 from common.components import Server, Manager
-from arduino.wheeledbase import *
-from arduino.display import *
-from arduino.watersorter import *
-from arduino.sensors import *
 from common.geogebra import *
 from common.roadmap import *
-from common.serialtalks import *
-from arduino.waterlauncher import *
-from arduino.bee import *
-from beacons.balise_receiver import BaliseReceiver
-from robots.beacons_manager import BeaconsManagement
-from robots.get_robot_name import *
-from arduino.arm import RobotArm
-#if ROBOT_ID == R128_ID:
-#    from robots.color_pattern import Pattern
+#from robots.beacons_manager import BeaconsManagement
+#from daughter_cards.buttons import ButtonCard
+#from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
+
 
 DEV_MODE = True
 MATCH_MODE = False
@@ -36,9 +26,6 @@ def start(args):
         button_card = ButtonCard(m)
         ssd = SevenSegments(m)
         b= WheeledBase(m)
-        d = WaterSorter(m)
-        l = WaterLauncher(m)
-        a = BeeActuator(m)
         s_lat   = Sensors(m, "sensorsLat")
         s_front = Sensors(m, "sensorsAv")
         s_back  = Sensors(m, "sensorsAr")
@@ -73,7 +60,6 @@ def start(args):
         s_back  = Sensors(m, "sensorsAr")
         led1 = LEDMatrix(m, 1)
         led2 = LEDMatrix(m, 2)
-        arm = RobotArm(m)
         geo = Geogebra('{}/robots/128.ggb'.format(sys.path[0]))
         patern = None#Pattern()
         rm = RoadMap.load(geo)
@@ -84,8 +70,8 @@ def start(args):
             print("Balise Receiver not connected ! ")
 
         bm = BeaconsManagement(br, "{}/robots/area.ggb".format(sys.path[0]))
-        automate = R128(0, rm, geo, b, ssd, led1, led2, a, arm, s_front, s_lat, s_back,  br, bm, patern)
-        button_gesture = ButtonGestureMatch(button_card, arm, ssd, b, m, automate.set_side)
+        automate = R128(0, rm, geo, b, ssd, led1, led2, a, s_front, s_lat, s_back,  br, bm, patern)
+        button_gesture = ButtonGestureMatch(button_card, ssd, b, m, automate.set_side)
         button_gesture.run()
         m.start_match()
         button_card.disconnect()
@@ -136,14 +122,11 @@ def start_approval(args):
         ssd = SevenSegments(m)
         ssd.set_message("LAUNCH")
         b= WheeledBase(m)
-        d = WaterSorter(m)
-        a = BeeActuator(m)
         s_lat   = Sensors(m, "sensorsLat")
         s_front = Sensors(m, "sensorsAv")
         s_back  = Sensors(m, "sensorsAr")
         led1 = LEDMatrix(m, 1)
         led2 = LEDMatrix(m, 2)
-        arm = RobotArm(m)
         geo = Geogebra('{}/robots/128.ggb'.format(sys.path[0]))
         patern = None#Pattern()
         rm = RoadMap.load(geo)
@@ -154,8 +137,8 @@ def start_approval(args):
             print("Balise Receiver not connected ! ")
 
         bm = BeaconsManagement(br, "{}/robots/area.ggb".format(sys.path[0]))
-        automate = R128Approval(0, rm, geo, b, ssd, led1, led2, a, arm, s_front, s_lat, s_back,  br, bm, patern)
-        button_gesture = ButtonGestureMatch(button_card, arm, ssd, b, m, automate.set_side)
+        automate = R128Approval(0, rm, geo, b, ssd, led1, led2, a, s_front, s_lat, s_back,  br, bm, patern)
+        button_gesture = ButtonGestureMatch(button_card, ssd, b, m, automate.set_side)
         button_gesture.run()
         m.start_match()
         button_card.disconnect()
@@ -194,16 +177,27 @@ def getuuid(args):
 
 def showip(args):
     try:
-        ssg = SerialTalks(os.path.join('/dev/arduino', 'display'))
-        ssg.connect()
+        ss.clear_messages()
         import subprocess
-        ip = ''
-        while not ip:
-            proc = subprocess.run(['hostname', '-I'], stdout=subprocess.PIPE)
-            ip = proc.stdout.strip().decode('utf8')
-        ssg.send(0x0E, STRING(ip))
-
-        ssg.disconnect()
+        ips = []
+        wlan_up = False
+        attempts = 0
+        while not wlan_up and attempts < 10:
+            proc = subprocess.run(['iwconfig', 'wlan0'], stdout=subprocess.PIPE)
+            wifi_config = proc.stdout.strip().decode('utf8')
+            if wifi_config.find("ESSID:\"") > -1:
+                wlan_up = True
+                time.sleep(5)
+                proc = subprocess.run(['hostname', '-I'], stdout=subprocess.PIPE)
+                ips = proc.stdout.strip().decode('utf8').split(" ")
+            else:
+                attempts += 1
+                time.sleep(1)
+                continue
+        if wlan_up:
+            [ss.set_message(ip) for ip in ips]
+        else:
+            ss.set_message("No Ip found ")
     except:
         pass
 
@@ -274,6 +268,15 @@ def update(args):
         print("updating " + arduino)
         subprocess.run(['/usr/bin/make', 'upload_safe', '-C', arduino_path])
 
+
+from robots.get_robot_name import *
+import sys
+
+if sys.argv[1] != "server" and sys.argv[1] != "getuuid":
+    manager = Manager("127.0.0.1")
+    manager.connect()
+    if ROBOT_ID == BORNIBUS_ID:
+        from robots.setup_bornibus import *
 
 parser = ArgumentParser()
 subparsers = parser.add_subparsers()

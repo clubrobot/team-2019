@@ -6,7 +6,10 @@
 
 #include <math.h>
 
-
+/** Class TurOnTheSpot
+ *  
+ *  \brief Rotation du robot sans translations.
+ */
 class TurnOnTheSpot : public AbstractMoveStrategy
 {
 public:
