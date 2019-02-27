@@ -22,8 +22,9 @@ class ArmManager : public Picker
 
         void        init_workspace(workspace_t ws_front, workspace_t ws_back) throw();
         void        set_origin(coords_t origin) throw();
-        void        init_arm(double l1, double l2, double l3, int elbow_or);
-        void        set_initial_joint_pos(joints_t joints) {m_joints = joints;}
+        void        set_arm_link(double l1, double l2, double l3, int elbow_or);
+        void        init_arm();
+        void        set_initial_joint_pos(joints_t joints) {_joints = joints;}
 
         workspace_t clip_workspace_to_constraints(workspace_t workspace) throw();
         coords_t    workspace_center(workspace_t workspace) throw();
@@ -39,15 +40,20 @@ class ArmManager : public Picker
         MoveBatch   goto_workspace(coords_t start_pos, coords_t target_pos, workspace_t new_workspace);
         joints_t    goto_position(coords_t target_pos);
 
-        workspace_t m_ws_front;
-        workspace_t m_ws_back;
-        workspace_t m_workspace;
+        workspace_t _ws_front;
+        workspace_t _ws_back;
+        workspace_t _workspace;
 
-        coords_t m_tool;
-        coords_t m_origin;
-        joints_t m_joints;
+        coords_t _tool;
+        coords_t _origin;
+        joints_t _joints;
 
-        Mutex m_mutex;
+        float _l1;
+        float _l2;
+        float _l3;
+        float _elbow;
+
+        Mutex _mutex;
 };
 
 }

@@ -17,45 +17,56 @@ namespace IK
 
 void ArmManager::init_workspace(workspace_t ws_front, workspace_t ws_back) throw()
 {
-    m_mutex.acquire();
+    _mutex.acquire();
 
-    m_ws_front  = ws_front;
-    m_ws_back   = ws_back;
+    _ws_front  = ws_front;
+    _ws_back   = ws_back;
 
-    m_mutex.release();
+    _mutex.release();
 }
 
 void ArmManager::set_origin(coords_t origin) throw()
 {
-    m_mutex.acquire();
+    _mutex.acquire();
 
-    m_origin.x   = origin.x;
-    m_origin.y   = origin.y;
-    m_origin.phi = origin.phi; 
+    _origin.x   = origin.x;
+    _origin.y   = origin.y;
+    _origin.phi = origin.phi; 
     
-    m_mutex.release(); 
+    _mutex.release(); 
+}
+void ArmManager::set_arm_link(double l1, double l2, double l3, int elbow_or)
+{
+    _mutex.acquire();
+
+    _l1    = l1;
+    _l2    = l2;
+    _l3    = l3;
+    _elbow = elbow_or;
+
+    _mutex.release();
 }
 
-void ArmManager::init_arm(double l1, double l2, double l3, int elbow_or)
+void ArmManager::init_arm()
 {
-    m_mutex.acquire();
+    _mutex.acquire();
 
-    Picker::init(l1, l2, l3, m_joints, m_origin, elbow_or);
+    Picker::init(_l1, _l2, _l3, _joints, _origin, _elbow);
 
-    m_mutex.release();
+    _mutex.release();
 }
 
 workspace_t ArmManager::workspace_containing_position(coords_t position) throw()
 {
     workspace_t ret;
 
-    if(position_within_workspace(position, m_ws_front))
+    if(position_within_workspace(position, _ws_front))
     {
-        ret = m_ws_front;
+        ret = _ws_front;
     }
-    else if(position_within_workspace(position, m_ws_back))
+    else if(position_within_workspace(position, _ws_back))
     {
-        ret = m_ws_back;  
+        ret = _ws_back;  
     }
     else
     {
@@ -65,14 +76,14 @@ workspace_t ArmManager::workspace_containing_position(coords_t position) throw()
         joints.th2 = 0;
         joints.th3 = 0;
         Picker::forward_kinematics(joints);
-        ret = m_ws_front;  
+        ret = _ws_front;  
     }    
     return ret;
 }
 
 bool ArmManager::workspace_within_constraints(workspace_t workspace) throw()
 {
-    m_mutex.acquire();
+    _mutex.acquire();
 
     bool ret;
     if ((workspace.x_min < Picker::x_axis.pos_min) \
@@ -86,13 +97,13 @@ bool ArmManager::workspace_within_constraints(workspace_t workspace) throw()
     {
         ret = true;
     }     
-    m_mutex.release();
+    _mutex.release();
     return ret;
 }
 
 workspace_t ArmManager::clip_workspace_to_constraints(workspace_t workspace) throw()
 {
-    m_mutex.acquire();
+    _mutex.acquire();
     workspace_t new_ws;
     new_ws.x_min = max(workspace.x_min, Picker::x_axis.pos_min);
     new_ws.x_max = min(workspace.x_max, Picker::x_axis.pos_max);
@@ -101,7 +112,7 @@ workspace_t ArmManager::clip_workspace_to_constraints(workspace_t workspace) thr
     new_ws.y_max = min(workspace.y_max, Picker::y_axis.pos_max);
 
     new_ws.elbow_orientation = workspace.elbow_orientation;
-    m_mutex.release();
+    _mutex.release();
     return new_ws;
 }
 
@@ -124,18 +135,18 @@ bool ArmManager::position_within_workspace(coords_t position, workspace_t worksp
 
 coords_t ArmManager::workspace_center(workspace_t workspace) throw()
 {
-    m_mutex.acquire();
+    _mutex.acquire();
     coords_t coord;
     coord.x = (workspace.x_min + workspace.x_max) / 2;
     coord.y = (workspace.y_min + workspace.y_max) / 2;
     coord.phi = 0;
-    m_mutex.release();
+    _mutex.release();
     return coord;
 }
 
 MoveBatch ArmManager::go_to(coords_t start_pos, coords_t target_pos)
 {
-    m_mutex.acquire();
+    _mutex.acquire();
     workspace_t new_ws = workspace_containing_position(target_pos);
 
     MoveBatch  new_batch;
@@ -146,14 +157,14 @@ MoveBatch ArmManager::go_to(coords_t start_pos, coords_t target_pos)
     }
     catch(const string& err)
     {
-        m_tool = start_pos;
-        new_joints = Picker::inverse_kinematics(m_tool);
+        _tool = start_pos;
+        new_joints = Picker::inverse_kinematics(_tool);
         new_batch.addMove(0, new_joints.th1);
         new_batch.addMove(1, new_joints.th2);
         new_batch.addMove(2, new_joints.th3);
     }
 
-    m_mutex.release();
+    _mutex.release();
     return new_batch;
 }
 
@@ -170,13 +181,13 @@ MoveBatch ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, wo
         throw string("Target position not within new workspace boundaries, target may be out of defined workspaces");
     }
      
-    m_workspace = new_workspace;
+    _workspace = new_workspace;
 
     new_batch.addDuration(estimated_time_of_arrival(start_pos, NULL_VEL, target_pos, NULL_VEL));
     
     // Compute sequence to move from old workspace to the new position
     // in the new workspace defined
-    if(double_equals(new_workspace.elbow_orientation, Picker::m_flip_elbow))
+    if(double_equals(new_workspace.elbow_orientation, Picker::_flip_elbow))
     {
         new_joints = goto_position(target_pos);
         new_path   = get_path(start_pos, NULL_VEL, target_pos, NULL_VEL, DELTA_T);
@@ -193,7 +204,7 @@ MoveBatch ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, wo
     }
     LOG_ARM("FLIP elbow move");
 
-    Picker::m_flip_elbow *= (double)-1;
+    Picker::_flip_elbow *= (double)-1;
     
     //Go to target
     new_joints = goto_position(target_pos);
