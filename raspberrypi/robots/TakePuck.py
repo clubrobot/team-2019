@@ -35,9 +35,9 @@ print("robot placé : ", wheeledbase.get_position())
 
 input()
 
-arm.take_puck_in_distributor()
-arm.put_in_tank()
-arm.go_home()
+armController.take_puck_in_distributor()
+armController.put_in_tank()
+armController.go_home()
 input()
 
 wheeledbase.goto(*puck2, theta=pi/2)
@@ -50,9 +50,9 @@ print("robot placé : ", wheeledbase.get_position())
 
 input()
 
-arm.take_puck_in_distributor()
-arm.put_in_tank()
-arm.go_home()
+armController.take_puck_in_distributor()
+armController.put_in_tank()
+armController.go_home()
 input()
 
 wheeledbase.goto(*puck3, theta=pi/2)
@@ -65,9 +65,9 @@ print("robot placé : ", wheeledbase.get_position())
 
 input()
 
-arm.take_puck_in_distributor()
-arm.put_in_tank()
-arm.go_home()
+armController.take_puck_in_distributor()
+armController.put_in_tank()
+armController.go_home()
 input()
 
 wheeledbase.goto(*balance, theta=pi/2)
@@ -80,15 +80,15 @@ print("robot placé : ", wheeledbase.get_position())
 
 input()
 
-arm.take_in_tank()
-arm.put_in_balance()
+armController.take_in_tank()
+armController.put_in_balance()
 
 
-arm.take_in_tank()
-arm.put_in_balance()
+armController.take_in_tank()
+armController.put_in_balance()
 
-arm.take_in_tank()
-arm.put_in_balance()
-arm.go_home()
+armController.take_in_tank()
+armController.put_in_balance()
+armController.go_home()
 
 print("end")

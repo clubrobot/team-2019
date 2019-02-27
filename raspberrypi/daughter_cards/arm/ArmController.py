@@ -8,7 +8,7 @@ from ArmPosition import *
 import json
 import math
 
-class ArmMover():
+class ArmController():
     def __init__(self, arm):
         self.TankPosList 		= [TANK_POS_1, TANK_POS_2, TANK_POS_3]
         self.TankPosListTake 	= [TANK_POS_INTER_TAKE_PUCK1, TANK_POS_INTER_TAKE_PUCK2, TANK_POS_INTER_TAKE_PUCK3]

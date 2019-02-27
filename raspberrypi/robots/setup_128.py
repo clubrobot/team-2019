@@ -1,7 +1,7 @@
 from robots.setup_wheeledbase import *
-from daughter_cards.RobotArm import *
-from daughter_cards.ArmMover import *
-from daughter_cards.arm_constants import *
+from daughter_cards.arm.RobotArm import *
+from daughter_cards.arm.ArmController import *
+from daughter_cards.arm.arm_constants import *
 
 # Configure wheeledbase
 wheeledbase.set_velocities(0, 0)
@@ -17,9 +17,9 @@ robArm.set_origin(ORIGIN)
 robArm.begin()
 
 # Configure arm Mover
-armMover = ArmMover(robArm)
-armMover.setup_tank_size(3)
+armController = ArmController(robArm)
+armController.setup_tank_size(3)
 
 # Start arm
-armMover.arm.stop_pump()
-armMover.go_home()
+armController.arm.stop_pump()
+armController.go_home()
