@@ -6,7 +6,6 @@ from math import pi
 from collections import namedtuple
 from common.serialtalks import BYTE, INT, LONG, FLOAT
 from common.components import SecureSerialTalksProxy
-import json
 import math
 
 ELBOW_BACK = -1
@@ -36,8 +35,6 @@ RobotSpacePoint = namedtuple('RobotSpacePoint', ['x', 'y', 'phi'])
 class RobotArm(SecureSerialTalksProxy):
 	def __init__(self, manager, uuid='/dev/arduino/arm'):
 		SecureSerialTalksProxy.__init__(self, manager, uuid, dict())
-		with open('../daughter_cards/ArmPosition.json') as f:
-			self.armPosition = json.load(f)
 
 	def begin(self):
 		self.send(_ARM_BEGIN_OPCODE)

@@ -5,7 +5,6 @@ import time
 from math import pi
 from daughter_cards.arm.RobotArm import *
 from daughter_cards.arm.ArmPosition import *
-import json
 import math
 
 class ArmController():
