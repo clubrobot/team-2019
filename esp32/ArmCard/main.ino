@@ -18,17 +18,9 @@ ArmManager        arm_manager;
 TrajectoryManager traj_manager;
 TaskManager       task_manager;
 
-AX12 servoax1;
-AX12 servoax2;
-AX12 servoax3;
-
 MotorWrapper AX1;
 MotorWrapper AX2;
 MotorWrapper AX3;
-
-PID AX1_PID;
-PID AX2_PID;
-PID AX3_PID;
 
 static void secondary_loop(void * parameters);
 
@@ -38,60 +30,43 @@ void setup()
     Serial.begin(SERIALTALKS_BAUDRATE);
     talks.begin(Serial);
 
-    talks.bind(ADD_MOVE_OPCODE,   ADD_MOVE);
-    talks.bind(RUN_BATCH_OPCODE,  RUN_BATCH);
-    talks.bind(STOP_BATCH_OPCODE, STOP_BATCH);
-    talks.bind(IS_ARRIVED_OPCODE, IS_ARRIVED);
-    talks.bind(GET_MOTORS_STATE_OPCODE, GET_MOTORS_STATE);
+    talks.bind(ADD_MOVE_OPCODE          , ADD_MOVE);
+    talks.bind(ARM_BEGIN_OPCODE         , ARM_BEGIN);
+    talks.bind(ADD_MOVE_OPCODE          , ADD_MOVE);
+    talks.bind(RUN_BATCH_OPCODE         , RUN_BATCH);
+    talks.bind(STOP_BATCH_OPCODE        , STOP_BATCH);
+    talks.bind(IS_ARRIVED_OPCODE        , IS_ARRIVED);
 
-    talks.bind(START_PUMP_OPCODE,  START_PUMP);
-    talks.bind(STOP_PUMP_OPCODE,   STOP_PUMP);
-    talks.bind(START_SLUICE_OPCODE,START_SLUICE);
-    talks.bind(STOP_SLUICE_OPCODE, STOP_SLUICE);
+    talks.bind(START_PUMP_OPCODE        , START_PUMP);
+    talks.bind(STOP_PUMP_OPCODE         , STOP_PUMP);
+    talks.bind(START_SLUICE_OPCODE      , START_SLUICE);
+    talks.bind(STOP_SLUICE_OPCODE       , STOP_SLUICE);
 
-    talks.bind(CLEAR_MOTOR_ERR_OPCODE, CLEAR_MOTOR_ERR);
-
-    joints_t joint = {10.0, 10.0, 0};
+    talks.bind(SET_MOTORS_ID_OPCODE     , SET_MOTORS_ID);
+    talks.bind(SET_MOTORS_OFFSET_OPCODE , SET_MOTORS_OFFSET);
+    talks.bind(SET_WORKSPACE_OPCODE     , SET_WORKSPACE);
+    talks.bind(SET_ORIGIN_OPCODE        , SET_ORIGIN);
+    talks.bind(SET_LINK_LEN_OPCODE      , SET_LINK_LEN);
 
     /* init Motors communication */
     AX12::SerialBegin(1000000, 5);
 
-    servoax1.attach(ID1);
-    servoax2.attach(ID2);
-    servoax3.attach(ID3);
-
-    /* configure PID for motor 1*/
-    AX1_PID.setOutputLimits(1, 532);
-    AX1_PID.setTunings(1, 0.01 , 0);
-
-    /* configure PID for motor 2*/
-    AX2_PID.setOutputLimits(1, 532);
-    AX2_PID.setTunings(1, 0.01 , 0);
-
-    /* configure PID for motor 3*/
-    AX3_PID.setOutputLimits(1, 532);
-    AX3_PID.setTunings(1, 0.01 , 0);
-
     /* configure MotorWrapper 1*/
-    AX1.setPID(AX1_PID);
-    AX1.setMOTOR(servoax1);
-    AX1.setOFFSET(LINK1_OFFSET);
-
+    AX1.attach(ID1_DEFAULT);
+    AX1.setOFFSET(LINK1_OFFSET_DEFAULT);
     /* configure MotorWrapper 2*/
-    AX2.setPID(AX2_PID);
-    AX2.setMOTOR(servoax2);
-    AX2.setOFFSET(LINK2_OFFSET);
+    AX2.attach(ID2_DEFAULT);
+    AX2.setOFFSET(LINK2_OFFSET_DEFAULT);
 
     /* configure MotorWrapper 3*/
-    AX3.setPID(AX3_PID);
-    AX3.setMOTOR(servoax3);
-    AX3.setOFFSET(LINK3_OFFSET);
+    AX3.attach(ID3_DEFAULT);
+    AX3.setOFFSET(LINK3_OFFSET_DEFAULT);
 
     /* init Arm Manager */
-    arm_manager.init_workspace(WS_FRONT, WS_BACK);                              /*      init workspaces      */
-    arm_manager.set_origin(ORIGIN);                                             /*      set arm origin       */
-    arm_manager.set_initial_joint_pos(joint);                                   /*      initial joints pos   */
-    arm_manager.init_arm(LINK1_LEN, LINK2_LEN, LINK3_LEN, FLIP_ELBOW_BACK);     /*      init arm at pos      */
+    arm_manager.init_workspace(WS_FRONT_DEFAULT, WS_BACK_DEFAULT);                                      /*      init workspaces      */
+    arm_manager.set_origin(ORIGIN_DEFAULT);                                                             /*      set arm origin       */
+    arm_manager.set_initial_joint_pos(INITIAL_JOINTS_DEFAULT);                                          /*      initial joints pos   */
+    arm_manager.set_arm_link(LINK1_LEN_DEFAULT, LINK2_LEN_DEFAULT, LINK3_LEN_DEFAULT, FLIP_ELBOW_BACK);
 
     /* init traj Manager */
     traj_manager.set_armManager(arm_manager);
