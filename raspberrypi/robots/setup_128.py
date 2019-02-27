@@ -1,7 +1,7 @@
 from robots.setup_wheeledbase import *
 from daughter_cards.arm.RobotArm import *
 from daughter_cards.arm.ArmController import *
-from daughter_cards.arm.arm_constants import *
+from daughter_cards.arm.ArmConstants import *
 
 # Configure wheeledbase
 wheeledbase.set_velocities(0, 0)
