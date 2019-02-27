@@ -35,7 +35,7 @@ class MoveBatch
         bool isActive;
         double moveDuration;
 
-        Mutex m_mutex;
+        Mutex _mutex;
         
 };
 
