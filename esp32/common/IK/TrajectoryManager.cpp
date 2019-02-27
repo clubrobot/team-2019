@@ -15,45 +15,52 @@ using namespace std;
 namespace IK
 {
 
+void TrajectoryManager::begin()
+{
+    _mutex.acquire();
+    _manager->init_arm();
+    _mutex.release();
+}
+
 void TrajectoryManager::set_armManager(ArmManager& manager)
 {
-    m_mutex.acquire();
-    m_manager = &manager;
-    m_mutex.release();
+    _mutex.acquire();
+    _manager = &manager;
+    _mutex.release();
 }
 
 void TrajectoryManager::set_Motors(MotorWrapper& motor1, MotorWrapper& motor2, MotorWrapper& motor3)
 {
-    m_mutex.acquire();
-    m_motor1 = &motor1;
-    m_motor2 = &motor2;
-    m_motor3 = &motor3;
-    m_mutex.release();
+    _mutex.acquire();
+    _motor1 = &motor1;
+    _motor2 = &motor2;
+    _motor3 = &motor3;
+    _mutex.release();
 }
 
 void TrajectoryManager::move_directly(coords_t pos)
 {
-    m_mutex.acquire();
+    _mutex.acquire();
 
     MoveBatch mb;
 
     /* set_parameters */
     coords_t end_coord     = pos;
-    coords_t start_coord   = m_manager->get_tool();
+    coords_t start_coord   = _manager->get_tool();
 
     LOG_TRAJ("start : " << start_coord);
     LOG_TRAJ("end : " << end_coord );
 
     try
     {
-        mb = m_manager->go_to(start_coord, end_coord);
+        mb = _manager->go_to(start_coord, end_coord);
         addMoveBatch(mb);
     }
     catch(const string& e)
     {
         cout << e << endl;
     }
-    m_mutex.release();
+    _mutex.release();
 }
 
 void TrajectoryManager::addMoveBatch(MoveBatch mb)
@@ -77,7 +84,7 @@ MoveBatch TrajectoryManager::peekMoveBatch()
 
 void TrajectoryManager::process(float timestep)
 {
-    m_mutex.acquire();
+    _mutex.acquire();
 
     static double th1, th2, th3, th1_inter, th2_inter, th3_inter;
 
@@ -93,13 +100,13 @@ void TrajectoryManager::process(float timestep)
                 th2 = convert_deg(mb.batch[1].position);
                 th3 = convert_deg(mb.batch[2].position);
 
-                m_motor1->setGoalPos(th1);
-                m_motor2->setGoalPos(th2);
-                m_motor3->setGoalPos(th3);
+                _motor1->setGoalPos(th1);
+                _motor2->setGoalPos(th2);
+                _motor3->setGoalPos(th3);
 
-                m_motor1->setVelocityProfile(mb.batch[0].vel);
-                m_motor2->setVelocityProfile(mb.batch[1].vel);
-                m_motor3->setVelocityProfile(mb.batch[2].vel);
+                _motor1->setVelocityProfile(mb.batch[0].vel);
+                _motor2->setVelocityProfile(mb.batch[1].vel);
+                _motor3->setVelocityProfile(mb.batch[2].vel);
             }
             _isExecutingBatch = true;
             _arrived          = false;
@@ -112,23 +119,18 @@ void TrajectoryManager::process(float timestep)
     }
     else
     {
-        m_motor1->process(timestep);
-        m_motor2->process(timestep);
-        m_motor3->process(timestep);
+        _motor1->process(timestep);
+        _motor2->process(timestep);
+        _motor3->process(timestep);
 
-        if(m_motor1->error() || m_motor2->error() || m_motor3->error())
-        {
-            _error = true;
-        }
-
-        if(m_motor1->arrived() && m_motor2->arrived() && m_motor3->arrived())
+        if(_motor1->arrived() && _motor2->arrived() && _motor3->arrived())
         {
             _arrived          = true;
             _isExecutingBatch = false;
         }
     }
     
-    m_mutex.release();
+    _mutex.release();
 }
 
 double TrajectoryManager::convert_deg(double theta)
