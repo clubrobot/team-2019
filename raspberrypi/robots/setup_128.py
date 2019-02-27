@@ -21,5 +21,5 @@ armController = ArmController(robArm)
 armController.setup_tank_size(3)
 
 # Start arm
-armController.arm.stop_pump()
+armController.stop_pump()
 armController.go_home()
