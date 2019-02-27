@@ -4,17 +4,15 @@
 import time
 from math import pi
 from RobotArm import *
+from ArmPosition import *
 import json
 import math
 
 class ArmMover():
     def __init__(self, arm):
-        with open('../daughter_cards/ArmPosition.json') as f:
-            self.armPosition = json.load(f)
-
-        self.TankPosList 		= ["TANK_POS_1", "TANK_POS_2", "TANK_POS_3"]
-        self.TankPosListTake 	= ["TANK_POS_INTER_TAKE_PUCK1", "TANK_POS_INTER_TAKE_PUCK2", "TANK_POS_INTER_TAKE_PUCK3"]
-        self.TankPosListTakeBis = ["TANK_POS_INTER_TAKE_PUCK1_BIS", "TANK_POS_INTER_TAKE_PUCK2_BIS", "TANK_POS_INTER_TAKE_PUCK3_BIS"]
+        self.TankPosList 		= [TANK_POS_1, TANK_POS_2, TANK_POS_3]
+        self.TankPosListTake 	= [TANK_POS_INTER_TAKE_PUCK1, TANK_POS_INTER_TAKE_PUCK2, TANK_POS_INTER_TAKE_PUCK3]
+        self.TankPosListTakeBis = [TANK_POS_INTER_TAKE_PUCK1_BIS, TANK_POS_INTER_TAKE_PUCK2_BIS, TANK_POS_INTER_TAKE_PUCK3_BIS]
 
         self.arm = arm
         self.CurrentTankPos = 0
@@ -24,7 +22,7 @@ class ArmMover():
 
     # private func
     def move(self, PosID):
-        self.arm.move(self.armPosition[PosID]['x'], self.armPosition[PosID]['y'], self.armPosition[PosID]['phi'])
+        self.arm.move(PosID.x, PosID.y, PosID.phi)
 
     def arrived(self):
         return self.arrived()
@@ -45,34 +43,34 @@ class ArmMover():
         self.tankSize = size - 1
 
     def go_home(self):
-        self.move("GLOBAL_POS_INTER")
+        self.move(GLOBAL_POS_INTER)
         while not self.arrived():
             time.sleep(0.1)
-        self.move("HOME")
+        self.move(HOME)
         while not self.arrived():
             time.sleep(0.1)
 
     def take_puck_in_distributor(self):
         self.start_pump()
-        self.move("TAKE_PUCK_INTER_BEFORE")
+        self.move(TAKE_PUCK_INTER_BEFORE)
         while not self.arrived():
             time.sleep(0.1)
 
-        self.move("TAKE_PUCK")
+        self.move(TAKE_PUCK)
         while not self.arrived():
             time.sleep(0.1)
         time.sleep(1)
 
-        self.move("TAKE_PUCK_INTER_AFTER_1")
+        self.move(TAKE_PUCK_INTER_AFTER_1)
         while not self.arrived():
             time.sleep(0.1)
 
-        self.move("TAKE_PUCK_INTER_AFTER_2")
+        self.move(TAKE_PUCK_INTER_AFTER_2)
         while not self.arrived():
             time.sleep(0.1)
 
     def put_in_balance(self):
-        self.move("BALANCE")
+        self.move(BALANCE)
         while not self.arrived():
             time.sleep(0.1)
         self.stop_pump()
@@ -81,7 +79,7 @@ class ArmMover():
 
     def put_in_tank(self):
         if not self.Tankfull:
-            self.move("TANK_POS_INTER_PUT")
+            self.move(TANK_POS_INTER_PUT)
             while not self.arrived():
                 time.sleep(0.1)
 			
@@ -93,7 +91,7 @@ class ArmMover():
             self.stop_pump()
             self.start_sluice()
             time.sleep(0.5)
-            self.move("TANK_POS_INTER")
+            self.move(TANK_POS_INTER)
 
             self.CurrentTankPos += 1
             if(self.CurrentTankPos > self.tankSize):
@@ -116,7 +114,7 @@ class ArmMover():
 
             self.move(self.TankPosList[self.CurrentTankPos])
 
-            while not self.is_arrived():
+            while not self.arrived():
                 time.sleep(0.1)
 
             self.move(self.TankPosListTakeBis[self.CurrentTankPos])
@@ -125,7 +123,7 @@ class ArmMover():
             time.sleep(0.1)
 
             time.sleep(0.5)
-            self.move("TANK_POS_INTER")
+            self.move(TANK_POS_INTER)
 
             self.CurrentTankPos -= 1
             if(self.CurrentTankPos < 0):
