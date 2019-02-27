@@ -20,28 +20,28 @@ bool equals(double a, double b, double epsilon = EPSILON)
 
 void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or) throw()
 {
-    m_joints 	= joints;
-	m_origin	= origin;
+    _joints 	= joints;
+	_origin	= origin;
      
-	m_tool	 	= get_tool();
+	_tool	 	= get_tool();
 
-	m_l1		= l1;
-	m_l2		= l2;
-    m_l3        = l3;
-	m_lsq   	= pow(l1,2)+pow(l2,2);
+	_l1		= l1;
+	_l2		= l2;
+    _l3        = l3;
+	_lsq   	= pow(l1,2)+pow(l2,2);
 
-    m_flip_elbow = elbow_or;
+    _flip_elbow = elbow_or;
 }
 
 void Picker::flip_elbow(int elbow) throw()
 {
-    m_flip_elbow = elbow;
+    _flip_elbow = elbow;
 }
 
 coords_t Picker::forward_kinematics(joints_t joints) throw()
 {
     coords_t ret;
-	m_joints = joints;
+	_joints = joints;
 
 	ret = get_tool();
 
@@ -54,24 +54,24 @@ joints_t Picker::inverse_kinematics(coords_t tool)
 
     double dotx,doty,costh;
 
-    dotx = (m_tool.x - m_origin.x) - (m_l3 * cos(m_tool.phi));
-    doty = (m_tool.y - m_origin.y) - (m_l3 * sin(m_tool.phi));
+    dotx = (_tool.x - _origin.x) - (_l3 * cos(_tool.phi));
+    doty = (_tool.y - _origin.y) - (_l3 * sin(_tool.phi));
 
-    costh = (pow(dotx,2) + pow(doty,2) - pow(m_l1,2) - pow(m_l2, 2)) / (2 * m_l1 * m_l2);
+    costh = (pow(dotx,2) + pow(doty,2) - pow(_l1,2) - pow(_l2, 2)) / (2 * _l1 * _l2);
 
     if(costh < -1 || costh > 1)
     {
-        m_tool = get_tool();
+        _tool = get_tool();
         LOG_PICKER("Target unreacheable");
         throw string("Target unreacheable");
     }
     else
     {
-        m_tool = tool;
+        _tool = tool;
          
-        m_joints = get_joints();
+        _joints = get_joints();
          
-        ret = m_joints;
+        ret = _joints;
     }      
     return ret;
 }
@@ -80,13 +80,13 @@ coords_t Picker::get_tool(void) const throw()
 {
     coords_t new_cords;
 
-    new_cords.x     = m_l1 * cos(m_joints.th1) + m_l2 * cos(m_joints.th1 + m_joints.th2) + m_l3 * cos(m_joints.th1 + m_joints.th2 + m_joints.th3);
-    new_cords.y     = m_l1 * sin(m_joints.th1) + m_l2 * sin(m_joints.th1 + m_joints.th2) + m_l3 * sin(m_joints.th1 + m_joints.th2 + m_joints.th3);
-    new_cords.phi   = m_joints.th1 + m_joints.th2 + m_joints.th3;
+    new_cords.x     = _l1 * cos(_joints.th1) + _l2 * cos(_joints.th1 + _joints.th2) + _l3 * cos(_joints.th1 + _joints.th2 + _joints.th3);
+    new_cords.y     = _l1 * sin(_joints.th1) + _l2 * sin(_joints.th1 + _joints.th2) + _l3 * sin(_joints.th1 + _joints.th2 + _joints.th3);
+    new_cords.phi   = _joints.th1 + _joints.th2 + _joints.th3;
 
-    new_cords.x     += m_origin.x;
-    new_cords.y     += m_origin.y;
-    new_cords.phi   += m_origin.phi;
+    new_cords.x     += _origin.x;
+    new_cords.y     += _origin.y;
+    new_cords.phi   += _origin.phi;
      
     return new_cords;
 }
@@ -97,18 +97,18 @@ joints_t Picker::get_joints(void) const throw()
 
     double dotx,doty,costh,k1,k2,c2,s2;
 
-    dotx = (m_tool.x - m_origin.x) - (m_l3 * cos(m_tool.phi));
-    doty = (m_tool.y - m_origin.y) - (m_l3 * sin(m_tool.phi));
+    dotx = (_tool.x - _origin.x) - (_l3 * cos(_tool.phi));
+    doty = (_tool.y - _origin.y) - (_l3 * sin(_tool.phi));
 
-    costh = (pow(dotx,2) + pow(doty,2) - pow(m_l1,2) - pow(m_l2, 2)) / (2 * m_l1 * m_l2);
+    costh = (pow(dotx,2) + pow(doty,2) - pow(_l1,2) - pow(_l2, 2)) / (2 * _l1 * _l2);
 
-    new_joints.th2 = m_flip_elbow * acos(costh);
+    new_joints.th2 = _flip_elbow * acos(costh);
 
-    k2 = m_l2 * sin(new_joints.th2);
-    k1 = m_l1 + (m_l2 * cos(new_joints.th2));
+    k2 = _l2 * sin(new_joints.th2);
+    k1 = _l1 + (_l2 * cos(new_joints.th2));
 
     new_joints.th1 = atan2(doty, dotx) - atan2(k2, k1);
-    new_joints.th3 = m_tool.phi - new_joints.th1 - new_joints.th2;
+    new_joints.th3 = _tool.phi - new_joints.th1 - new_joints.th2;
 
 
     new_joints.th1 = std::fmod((new_joints.th1 + (M_PI)) , 2*M_PI) - M_PI; // Stay between -pi and pi
@@ -125,14 +125,14 @@ detailed_pos_t Picker::get_detailed_pos(void) const throw()
     */ 
     detailed_pos_t new_pos;
 
-    new_pos.link1.x = m_l1 * cos(m_joints.th1) + m_origin.x;
-    new_pos.link1.y = m_l1 * sin(m_joints.th1) + m_origin.y;
+    new_pos.link1.x = _l1 * cos(_joints.th1) + _origin.x;
+    new_pos.link1.y = _l1 * sin(_joints.th1) + _origin.y;
     
-    new_pos.link2.x = new_pos.link1.x + m_l2 * cos(m_joints.th1 + m_joints.th2);
-    new_pos.link2.y = new_pos.link1.x + m_l2 * cos(m_joints.th1 + m_joints.th2);
+    new_pos.link2.x = new_pos.link1.x + _l2 * cos(_joints.th1 + _joints.th2);
+    new_pos.link2.y = new_pos.link1.x + _l2 * cos(_joints.th1 + _joints.th2);
 
-    new_pos.origin  = m_origin;
-    new_pos.tool    = m_tool;
+    new_pos.origin  = _origin;
+    new_pos.tool    = _tool;
      
     return new_pos;
 }
@@ -144,19 +144,19 @@ matrix_t Picker::compute_jacobian(void) throw()
     */
     matrix_t ret;
 
-    double dx_dth1 = - m_l1 * sin(m_joints.th1) - m_l2 * sin(m_joints.th1 + m_joints.th2) - m_l3 * sin(m_joints.th1 + m_joints.th2 + m_joints.th3);
+    double dx_dth1 = - _l1 * sin(_joints.th1) - _l2 * sin(_joints.th1 + _joints.th2) - _l3 * sin(_joints.th1 + _joints.th2 + _joints.th3);
 
-    double dx_dth2 = - m_l2 * sin(m_joints.th1 + m_joints.th2) - m_l3 * sin(m_joints.th1 + m_joints.th2 + m_joints.th3);
+    double dx_dth2 = - _l2 * sin(_joints.th1 + _joints.th2) - _l3 * sin(_joints.th1 + _joints.th2 + _joints.th3);
 
-    double dx_dth3 = - m_l3 * sin(m_joints.th1 + m_joints.th2 + m_joints.th3);;
+    double dx_dth3 = - _l3 * sin(_joints.th1 + _joints.th2 + _joints.th3);;
 
-    double dy_dth1 = m_l1 * cos(m_joints.th1) + m_l2 * cos(m_joints.th1 + m_joints.th2) + m_l3 * cos(m_joints.th1 + m_joints.th2 + m_joints.th3);
+    double dy_dth1 = _l1 * cos(_joints.th1) + _l2 * cos(_joints.th1 + _joints.th2) + _l3 * cos(_joints.th1 + _joints.th2 + _joints.th3);
 
-    double dy_dth2 = m_l2 * cos(m_joints.th1 + m_joints.th2) + m_l3 * cos(m_joints.th1 + m_joints.th2 + m_joints.th3);
+    double dy_dth2 = _l2 * cos(_joints.th1 + _joints.th2) + _l3 * cos(_joints.th1 + _joints.th2 + _joints.th3);
 
-    double dy_dth3 = m_l3 * cos(m_joints.th1 + m_joints.th2 + m_joints.th3);
+    double dy_dth3 = _l3 * cos(_joints.th1 + _joints.th2 + _joints.th3);
 
-    ret = m_matrix.createMatrix33(dx_dth1, dx_dth2, dx_dth3, dy_dth1, dy_dth2, dy_dth3, 1.0, 1.0, 1.0);
+    ret = _matrix.createMatrix33(dx_dth1, dx_dth2, dx_dth3, dy_dth1, dy_dth2, dy_dth3, 1.0, 1.0, 1.0);
      
     return ret;
 }
@@ -168,19 +168,19 @@ coords_t Picker::get_tool_vel(joints_t joints_vel) throw()
     */
     coords_t new_vel;
 
-    matrix_t jt_vel = m_matrix.createMatrix31(joints_vel.th1, joints_vel.th2, joints_vel.th3);
+    matrix_t jt_vel = _matrix.createMatrix31(joints_vel.th1, joints_vel.th2, joints_vel.th3);
 
     matrix_t jacobian = compute_jacobian();
      
-    matrix_t tl_vel = m_matrix.multMatrix33x13(jacobian , jt_vel);
+    matrix_t tl_vel = _matrix.multMatrix33x13(jacobian , jt_vel);
 
     new_vel.x   = tl_vel[0][0];
     new_vel.y   = tl_vel[1][0];
     new_vel.phi = tl_vel[2][0];
 
-    m_matrix.free(jt_vel);
-    m_matrix.free(jacobian);
-    m_matrix.free(tl_vel);
+    _matrix.free(jt_vel);
+    _matrix.free(jacobian);
+    _matrix.free(tl_vel);
      
     return new_vel;
 }
@@ -195,29 +195,29 @@ joints_t Picker::get_joints_vel(coords_t tool_vel)
     vel.th2 = 0;
     vel.th3 = 0;
 
-    matrix_t tool_v = m_matrix.createMatrix31(tool_vel.x, tool_vel.y, tool_vel.phi);
+    matrix_t tool_v = _matrix.createMatrix31(tool_vel.x, tool_vel.y, tool_vel.phi);
      
     matrix_t jacobian = compute_jacobian();
      
-    if (m_matrix.norm(tool_v) < EPSILON)
+    if (_matrix.norm(tool_v) < EPSILON)
     {
         return vel;
     }
-    if (abs(m_matrix.det(jacobian)) < EPSILON)
+    if (abs(_matrix.det(jacobian)) < EPSILON)
     {
         LOG_PICKER("Singularity");
         throw string("Singularity");
     }
 
-    matrix_t joints_vel = m_matrix.solve(jacobian, tool_v);
+    matrix_t joints_vel = _matrix.solve(jacobian, tool_v);
 
     vel.th1 = joints_vel[0][0];
     vel.th2 = joints_vel[1][0];
     vel.th3 = joints_vel[2][0];
 
-    m_matrix.free(tool_v);
-    m_matrix.free(jacobian);
-    m_matrix.free(joints_vel);
+    _matrix.free(tool_v);
+    _matrix.free(jacobian);
+    _matrix.free(joints_vel);
      
     return vel;
 }

@@ -40,29 +40,29 @@ class Picker
 
 		double synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel);
 
-		double m_flip_elbow;
+		double _flip_elbow;
 		constraints_t x_axis;
 		constraints_t y_axis;
 		constraints_t phi_axis;
 
 	private:
 
-		coords_t m_origin;
-		coords_t m_tool;
-		joints_t m_joints;
+		coords_t _origin;
+		coords_t _tool;
+		joints_t _joints;
 
-		double m_l1;
-		double m_l2;
-		double m_l3;
-		double m_lsq;
+		double _l1;
+		double _l2;
+		double _l3;
+		double _lsq;
 
 		Joint Theta1_joint = Joint(0, -M_PI, M_PI, -AX_12_MAX_SPEED_RAD, AX_12_MAX_SPEED_RAD, -25, 25);
 		Joint Theta2_joint = Joint(1, -(5*M_PI)/6, (5*M_PI)/6, -AX_12_MAX_SPEED_RAD, AX_12_MAX_SPEED_RAD, -25, 25);
 		Joint Theta3_joint = Joint(2, -M_PI, M_PI, -AX_12_MAX_SPEED_RAD, AX_12_MAX_SPEED_RAD, -25, 25);
 
-		Matrix3 m_matrix;
+		Matrix3 _matrix;
 
-		Mutex m_mutex;
+		Mutex _mutex;
 
 };
 
