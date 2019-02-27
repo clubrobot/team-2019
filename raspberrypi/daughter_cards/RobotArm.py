@@ -3,54 +3,68 @@
 
 import time
 from math import pi
-
+from collections import namedtuple
 from common.serialtalks import BYTE, INT, LONG, FLOAT
 from common.components import SecureSerialTalksProxy
 import json
+import math
 
-def deg_to_rad(val):
-	return (val * pi)/180
+ELBOW_BACK = -1
+ELBOW_FRONT = 1
 
-_ADD_MOVE_OPCODE 	        = 0X10
-_RUN_BATCH_OPCODE	        = 0X11
-_STOP_BATCH_OPCODE	        = 0X12
-_IS_ARRIVED_OPCODE 	        = 0X13
-_GET_MOTORS_STATE_OPCODE 	= 0X14
+_ARM_BEGIN_OPCODE		     = 0X10
+_ADD_MOVE_OPCODE             = 0x11
+_RUN_BATCH_OPCODE            = 0X12 
+_STOP_BATCH_OPCODE           = 0X13 
+_IS_ARRIVED_OPCODE           = 0x14
 
-_START_PUMP_OPCODE          = 0x15
-_STOP_PUMP_OPCODE           = 0X16 
-_START_SLUICE_OPCODE        = 0X17 
-_STOP_SLUICE_OPCODE         = 0x18
+_START_PUMP_OPCODE           = 0x15
+_STOP_PUMP_OPCODE            = 0X16 
+_START_SLUICE_OPCODE         = 0X17 
+_STOP_SLUICE_OPCODE          = 0x18
 
-class TankFull(Exception): pass
-class TankEmpty(Exception): pass
+_SET_MOTORS_ID_OPCODE        = 0X19
+_SET_MOTORS_OFFSET_OPCODE    = 0X1A
+_SET_WORKSPACE_OPCODE        = 0X1B
+_SET_ORIGIN_OPCODE           = 0X1C
+_SET_LINK_LEN_OPCODE         = 0X1D
 
-class TakePuckError(Exception): pass
+Workspace = namedtuple('Workspace', ['x_min', 'x_max',
+                                     'y_min', 'y_max',
+                                     'elbow_or'])
+
+RobotSpacePoint = namedtuple('RobotSpacePoint', ['x', 'y', 'phi'])
 
 class RobotArm(SecureSerialTalksProxy):
 	def __init__(self, manager, uuid='/dev/arduino/arm'):
 		SecureSerialTalksProxy.__init__(self, manager, uuid, dict())
 		with open('../daughter_cards/ArmPosition.json') as f:
 			self.armPosition = json.load(f)
-		
-		self.TankPosList 	= ["TANK_POS_1", "TANK_POS_2", "TANK_POS_3"]
-		self.TankPosListTake 	= ["TANK_POS_INTER_TAKE_PUCK1", "TANK_POS_INTER_TAKE_PUCK2", "TANK_POS_INTER_TAKE_PUCK3"]
-		self.TankPosListTakeBis = ["TANK_POS_INTER_TAKE_PUCK1_BIS", "TANK_POS_INTER_TAKE_PUCK2_BIS", "TANK_POS_INTER_TAKE_PUCK3_BIS"]
-		self.CurrentTankPos = 0
-		self.tankSize		= 2	# size 3 by default [0, 1, 2]
-		self.Tankfull		= False
-		self.Tankempty		= True
 
-	def setup_tank_size(self, size):
-		self.tankSize = size - 1
-	
-	def get_motors_state(self):
-		out = self.execute(_GET_MOTORS_STATE_OPCODE)
-		ret = out.read(BYTE, BYTE, BYTE, BYTE, BYTE, BYTE, BYTE, BYTE, BYTE)
-		return ret
+	def begin(self):
+		self.send(_ARM_BEGIN_OPCODE)
 
-	def clear_motor_error(self, id):
-		self.send(_RUN_BATCH_OPCODE, INT(id))
+	def move(self, posID):
+		out = self.execute(_ADD_MOVE_OPCODE, FLOAT(self.armPosition[posID]['x']),\
+									FLOAT(self.armPosition[posID]['y']), \
+									FLOAT(math.radians(self.armPosition[posID]['phi'])))
+		ret = out.read(BYTE)
+		if bool(ret):
+			raise RuntimeError('Error on move command : Position unreachable')
+		self.send(_RUN_BATCH_OPCODE)
+
+	def move_pos(self, x, y, phi):
+		out = self.execute(_ADD_MOVE_OPCODE, FLOAT(x), FLOAT(y), FLOAT(math.radians(phi)))
+		ret = out.read(BYTE)
+		if bool(ret):
+			raise RuntimeError('Error on move command : Position unreachable')
+		self.send(_RUN_BATCH_OPCODE)
+
+	def run_batch(self):
+		self.send(_RUN_BATCH_OPCODE)
+
+	def stop_batch(self):
+		self.send(_STOP_BATCH_OPCODE)
 
 	def is_arrived(self):
 		out = self.execute(_IS_ARRIVED_OPCODE)
@@ -62,12 +76,6 @@ class RobotArm(SecureSerialTalksProxy):
 			else:
 				raise RuntimeError('Error on AX12 motors')
 		return bool(ret)
-
-	def run_batch(self):
-		self.send(_RUN_BATCH_OPCODE)
-
-	def stop_batch(self):
-		self.send(_STOP_BATCH_OPCODE)
 
 	def start_pump(self):
 		self.send(_START_PUMP_OPCODE)
@@ -81,112 +89,22 @@ class RobotArm(SecureSerialTalksProxy):
 	def stop_sluice(self):
 		self.send(_STOP_SLUICE_OPCODE)
 
-	def move(self, posID):
-		out = self.execute(_ADD_MOVE_OPCODE, FLOAT(self.armPosition[posID]['x']),\
-									FLOAT(self.armPosition[posID]['y']), \
-									FLOAT(deg_to_rad(self.armPosition[posID]['phi'])))
-		ret = out.read(BYTE)
-		if bool(ret):
-			raise RuntimeError('Error on move command : Position unreachable')
-		self.send(_RUN_BATCH_OPCODE)
+	def set_motors_id(self, id1, id2, id3):
+		self.send(_SET_MOTORS_ID_OPCODE, INT(id1), INT(id2), INT(id3))
 
-	def move_pos(self, x, y, phi):
-		out = self.execute(_ADD_MOVE_OPCODE, FLOAT(x), FLOAT(y), FLOAT(deg_to_rad(phi)))
-		ret = out.read(BYTE)
-		if bool(ret):
-			raise RuntimeError('Error on move command : Position unreachable')
-		self.send(_RUN_BATCH_OPCODE)
+	def set_motors_offsets(self, off1, off2, off3):
+		self.send(_SET_OFFSETS_OPCODE, FLOAT(off1), FLOAT(off2), FLOAT(off3))
+	
+	def set_workspaces(self, ws_front, ws_back):
+		self.send(_SET_WORKSPACE_OPCODE, FLOAT(ws_front.x_min), FLOAT(ws_front.x_max),\
+										 FLOAT(ws_front.y_min), FLOAT(ws_front.y_max),\
+										 INT(ws_front.elbow_or), \
+										 FLOAT(ws_back.x_min), FLOAT(ws_back.x_max),\
+									     FLOAT(ws_back.y_min), FLOAT(ws_back.y_max),\
+										 INT(ws_back.elbow_or))
 
-	def go_home(self):
-		self.move("GLOBAL_POS_INTER")
-		while not self.is_arrived():
-			time.sleep(0.1)
-		self.move("HOME")
-		while not self.is_arrived():
-			time.sleep(0.1)
-
-	def take_puck_in_distributor(self):
-		self.start_pump()
-		self.move("TAKE_PUCK_INTER_BEFORE")
-		while not self.is_arrived():
-			time.sleep(0.1)
-
-		self.move("TAKE_PUCK")
-		while not self.is_arrived():
-			time.sleep(0.1)
-		time.sleep(1)
-
-		self.move("TAKE_PUCK_INTER_AFTER_1")
-		while not self.is_arrived():
-			time.sleep(0.1)
-
-		self.move("TAKE_PUCK_INTER_AFTER_2")
-		while not self.is_arrived():
-			time.sleep(0.1)
-
-	def put_in_balance(self):
-		self.move("BALANCE")
-		while not self.is_arrived():
-			time.sleep(0.1)
-		self.stop_pump()
-		self.start_sluice()
-		time.sleep(0.5)
-		
-
-	def put_in_tank(self):
-		if not self.Tankfull:
-			self.move("TANK_POS_INTER_PUT")
-			while not self.is_arrived():
-				time.sleep(0.1)
-			
-			self.move(self.TankPosList[self.CurrentTankPos])
-
-			while not self.is_arrived():
-				time.sleep(0.1)
-
-			self.stop_pump()
-			self.start_sluice()
-			time.sleep(0.5)
-			self.move("TANK_POS_INTER")
-
-			self.CurrentTankPos += 1
-			if(self.CurrentTankPos > self.tankSize):
-				self.CurrentTankPos = self.tankSize
-				self.Tankfull		= True
-
-			self.Tankempty		= False
-		else:
-			raise TankFull()
-
-	def take_in_tank(self):
-		if not self.Tankempty:
-
-			self.stop_sluice()
-			self.start_pump()
-
-			self.move(self.TankPosListTake[self.CurrentTankPos])
-
-			while not self.is_arrived():
-				time.sleep(0.1)
-
-			self.move(self.TankPosList[self.CurrentTankPos])
-
-			while not self.is_arrived():
-				time.sleep(0.1)
-
-			self.move(self.TankPosListTakeBis[self.CurrentTankPos])
-
-			while not self.is_arrived():
-				time.sleep(0.1)
-
-			time.sleep(0.5)
-			self.move("TANK_POS_INTER")
-
-			self.CurrentTankPos -= 1
-			if(self.CurrentTankPos < 0):
-				self.CurrentTankPos = 0
-				self.Tankempty		= True
-			
-			self.Tankfull = False
-		else:
-			raise TankEmpty()
+	def set_origin(self, origin):
+		self.send(_SET_ORIGIN_OPCODE, FLOAT(origin.x), FLOAT(origin.y), FLOAT(origin.phi))
+	
+	def set_links_len(self, link1, link2, link3):
+		self.send(_SET_LINK_LEN_OPCODE, FLOAT(link1), FLOAT(link2), FLOAT(link3))
