@@ -93,7 +93,7 @@ class RobotArm(SecureSerialTalksProxy):
 		self.send(_SET_MOTORS_ID_OPCODE, INT(id1), INT(id2), INT(id3))
 
 	def set_motors_offsets(self, off1, off2, off3):
-		self.send(_SET_OFFSETS_OPCODE, FLOAT(off1), FLOAT(off2), FLOAT(off3))
+		self.send(_SET_MOTORS_OFFSET_OPCODE, FLOAT(off1), FLOAT(off2), FLOAT(off3))
 	
 	def set_workspaces(self, ws_front, ws_back):
 		self.send(_SET_WORKSPACE_OPCODE, FLOAT(ws_front.x_min), FLOAT(ws_front.x_max),\
