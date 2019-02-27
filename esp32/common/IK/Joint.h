@@ -41,12 +41,12 @@ class Joint
 		vector_t 	polynomial_piece_profile(polynom_t polynome, double start, double stop, double delta);
 		
 		/* private variables */
-		int m_id;
+		int _id;
 
 		/* constraints */
-		constraints_t m_constraints;
+		constraints_t _constraints;
 
-		Mutex m_mutex;
+		Mutex _mutex;
 };
 /***** Debug *****/
 template<typename T>

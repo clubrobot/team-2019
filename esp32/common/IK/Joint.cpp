@@ -12,17 +12,17 @@ namespace IK
 
 Joint::Joint(int id, double pos_min, double pos_max, double velociy_min, double velociy_max, double acc_min, double acc_max) throw()
 {
-	m_id = id;
+	_id = id;
 
 	// constraints 
-	m_constraints.pos_min = pos_min;
-	m_constraints.pos_max = pos_max;
+	_constraints.pos_min = pos_min;
+	_constraints.pos_max = pos_max;
 
-	m_constraints.vel_min = velociy_min;
-	m_constraints.vel_max = velociy_max;
+	_constraints.vel_min = velociy_min;
+	_constraints.vel_max = velociy_max;
 
-	m_constraints.acc_min = acc_min;
-	m_constraints.acc_max = acc_max;
+	_constraints.acc_min = acc_min;
+	_constraints.acc_max = acc_max;
 }
 
 double Joint::polyval(polynom_t polynome, double x) throw()
@@ -67,23 +67,23 @@ template<typename T>vector<T> Joint::arange(T start, T stop, T step) throw()
 bool Joint::trajectory_is_feasible(double initial_pos, double initial_vel, double final_pos, double final_vel)
 {
 	// checks boundaries to determine feasibility
-	if(final_pos > (m_constraints.pos_max + EPSILON) || final_pos < (m_constraints.pos_min - EPSILON))
+	if(final_pos > (_constraints.pos_max + EPSILON) || final_pos < (_constraints.pos_min - EPSILON))
 	{
         LOG_JOINT("Target position unreachable by joint");
         throw string("Target position unreachable by joint");
 		return false;
 	}
 
-	if(final_vel > (m_constraints.vel_max + EPSILON) || final_vel < (m_constraints.vel_min - EPSILON))
+	if(final_vel > (_constraints.vel_max + EPSILON) || final_vel < (_constraints.vel_min - EPSILON))
 	{
         LOG_JOINT("Target velocity unreachable by joint");
         throw string("Target velocity unreachable by joint");
 		return false;
 	}
 
-	double delta_p_dec = 0.5 * final_vel * abs(final_vel) / m_constraints.acc_max;
+	double delta_p_dec = 0.5 * final_vel * abs(final_vel) / _constraints.acc_max;
 
-	if((final_pos + delta_p_dec) > (m_constraints.pos_max + EPSILON) || (final_pos + delta_p_dec) < (m_constraints.pos_min - EPSILON))
+	if((final_pos + delta_p_dec) > (_constraints.pos_max + EPSILON) || (final_pos + delta_p_dec) < (_constraints.pos_min - EPSILON))
 	{
         LOG_JOINT("Target position unreachable at specified velocity by joint");
         throw string("Target position unreachable at specified velocity by joint");
@@ -128,8 +128,8 @@ vector_t Joint::get_path(double initial_pos, double initial_vel , double final_p
     }
 
     double tf_lim = (delta_p / vel_c) \
-                    + (0.5 * sign_traj * (vel_c - final_vel) / m_constraints.acc_max)\
-                    + (0.5 * sign_traj * (initial_vel - vel_c) / m_constraints.acc_max);
+                    + (0.5 * sign_traj * (vel_c - final_vel) / _constraints.acc_max)\
+                    + (0.5 * sign_traj * (initial_vel - vel_c) / _constraints.acc_max);
 
     //Determine shape of trajectory
     if( (tf_sync < tf_lim) || (initial_vel == 0 && final_vel == 0))
@@ -163,10 +163,10 @@ vector_t Joint::trapezoidal_profile(double initial_pos, double initial_vel , dou
         sign_traj = 1;
     }
 
-    double b = (m_constraints.acc_max * tf_sync) + (sign_traj * initial_vel);
+    double b = (_constraints.acc_max * tf_sync) + (sign_traj * initial_vel);
 
     double vel_c = 0.5 * ( b - sqrt( pow(b,2) \
-                    - 4 * sign_traj * m_constraints.acc_max * delta_p \
+                    - 4 * sign_traj * _constraints.acc_max * delta_p \
                     - 2 * pow((initial_vel - final_vel),2) ) );
 
     ret = generic_profile(initial_pos, initial_vel, final_pos, final_vel, tf_sync, tf_lim, delta_t, sign_traj, 1, vel_c);
@@ -192,7 +192,7 @@ vector_t Joint::doubleramp_profile(double initial_pos, double initial_vel , doub
     	sign_traj = 1;
     }   
 
-   	double vel_c = (sign_traj * delta_p - 0.5 * (pow((initial_vel - final_vel),2) / m_constraints.acc_max)) / (tf_sync - ((initial_vel  - final_vel) / (sign_traj * m_constraints.acc_max)));
+   	double vel_c = (sign_traj * delta_p - 0.5 * (pow((initial_vel - final_vel),2) / _constraints.acc_max)) / (tf_sync - ((initial_vel  - final_vel) / (sign_traj * _constraints.acc_max)));
 
     ret = generic_profile(initial_pos, initial_vel, final_pos, final_vel, tf_sync, tf_lim, delta_t, sign_traj, 1, vel_c);
 
@@ -206,15 +206,15 @@ vector_t Joint::generic_profile(double initial_pos, double initial_vel, double f
         Generate a generic profile (valid for trapezoidal and double ramp)
     */
 
-    double t1 = (sign_traj * (vel_c - initial_vel)) / (sign_traj * m_constraints.acc_max);
-    double t2 = tf_sync - abs(vel_c - final_vel) / m_constraints.acc_max;
+    double t1 = (sign_traj * (vel_c - initial_vel)) / (sign_traj * _constraints.acc_max);
+    double t2 = tf_sync - abs(vel_c - final_vel) / _constraints.acc_max;
 
     polynom_t poly;
 
     // First piece
     poly.a0 = initial_pos;
     poly.a1 = initial_vel;
-    poly.a2 = 0.5 * sign_traj * sign_sync * m_constraints.acc_max;
+    poly.a2 = 0.5 * sign_traj * sign_sync * _constraints.acc_max;
 
     vector_t traj1 = polynomial_piece_profile(poly, 0, t1, delta_t);
 
@@ -228,7 +228,7 @@ vector_t Joint::generic_profile(double initial_pos, double initial_vel, double f
     //Third piece
     poly.a0 = polyval(poly, t2 - t1);
     poly.a1 = sign_traj * vel_c;
-    poly.a2 = - 0.5 * sign_traj * m_constraints.acc_max;
+    poly.a2 = - 0.5 * sign_traj * _constraints.acc_max;
 
     vector_t traj3 = polynomial_piece_profile(poly, t2, tf_sync, delta_t);
 
@@ -322,11 +322,11 @@ trajectory_time_t Joint::time_to_destination(double initial_pos, double initial_
 
     int sign_traj = trajectory_sign(initial_pos, initial_vel, final_pos, final_vel);
 
-    time_traj.t1 = (sign_traj * m_constraints.vel_max - initial_vel) / (sign_traj * m_constraints.acc_max);
+    time_traj.t1 = (sign_traj * _constraints.vel_max - initial_vel) / (sign_traj * _constraints.acc_max);
 
-    time_traj.t2 = (1 / m_constraints.vel_max) * ((pow(final_vel,2) + pow(initial_vel,2) - 2 * sign_traj * initial_vel) / (2 * m_constraints.acc_max) + (sign_traj * delta_p));
+    time_traj.t2 = (1 / _constraints.vel_max) * ((pow(final_vel,2) + pow(initial_vel,2) - 2 * sign_traj * initial_vel) / (2 * _constraints.acc_max) + (sign_traj * delta_p));
 
-    time_traj.tf = time_traj.t2 - (final_vel - sign_traj * m_constraints.vel_max) / (sign_traj * m_constraints.acc_max);
+    time_traj.tf = time_traj.t2 - (final_vel - sign_traj * _constraints.vel_max) / (sign_traj * _constraints.acc_max);
 
     return time_traj;
 }
@@ -354,7 +354,7 @@ int Joint::trajectory_sign(double initial_pos, double initial_vel, double final_
     	sign = 1;
     }
 
-    double delta_p_crit = 0.5 * sign * (pow(final_vel,2) - pow(initial_vel,2))/ m_constraints.acc_max;
+    double delta_p_crit = 0.5 * sign * (pow(final_vel,2) - pow(initial_vel,2))/ _constraints.acc_max;
 
     if(delta_p - delta_p_crit == 0)
     {
