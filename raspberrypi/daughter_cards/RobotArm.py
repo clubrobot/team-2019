@@ -29,9 +29,7 @@ _SET_WORKSPACE_OPCODE        = 0X1B
 _SET_ORIGIN_OPCODE           = 0X1C
 _SET_LINK_LEN_OPCODE         = 0X1D
 
-Workspace = namedtuple('Workspace', ['x_min', 'x_max',
-                                     'y_min', 'y_max',
-                                     'elbow_or'])
+Workspace = namedtuple('Workspace', ['x_min', 'x_max', 'y_min', 'y_max', 'elbow_or'])
 
 RobotSpacePoint = namedtuple('RobotSpacePoint', ['x', 'y', 'phi'])
 
