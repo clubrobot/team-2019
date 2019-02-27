@@ -8,11 +8,12 @@
 #include "../common/TaskManager.h"
 #include "../common/VacumPump.h"
 #include "arm_config.h"
+#include "PIN.h"
 
 using namespace IK;
 using namespace std;
 
-VacumPump pump(27, 14);
+VacumPump pump(VACCUM_PIN, SLUICE_PIN);
 
 ArmManager        arm_manager;
 TrajectoryManager traj_manager;
@@ -49,7 +50,7 @@ void setup()
     talks.bind(SET_LINK_LEN_OPCODE      , SET_LINK_LEN);
 
     /* init Motors communication */
-    AX12::SerialBegin(1000000, 5);
+    AX12::SerialBegin(AX12_SPEED, AX12_PIN);
 
     /* configure MotorWrapper 1*/
     AX1.attach(ID1_DEFAULT);

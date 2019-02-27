@@ -21,6 +21,9 @@ constexpr int ID1_DEFAULT = 1; /* LINK 1 */
 constexpr int ID2_DEFAULT = 3; /* LINK 2 */
 constexpr int ID3_DEFAULT = 2; /* LINK 3 */
 
+/* AX12 SPEED configuration */
+constexpr long AX12_SPEED  = 1000000; /* LINK 1 */
+
 /* flip elbow value */
 constexpr double FLIP_ELBOW_FRONT = 1;
 constexpr double FLIP_ELBOW_BACK  = -1;
