@@ -16,18 +16,18 @@ class Scara
 {
 	private:
 
-		coords_t m_origin;
-		coords_t m_tool;
-		joints_t m_joints;
+		coords_t _origin;
+		coords_t _tool;
+		joints_t _joints;
 
-		double m_l1;
-		double m_l2;
-		double m_lsq;
+		double _l1;
+		double _l2;
+		double _lsq;
 
 		Joint Theta1_joint = Joint(0,-M_PI,M_PI,-1,1,-1,1);
 		Joint Theta2_joint = Joint(1,-M_PI,M_PI,-1,1,-1,1);
 
-		Matrix2 m_matrix;
+		Matrix2 _matrix;
 
 	public:
 		Scara(double l1, double l2, joints_t joints, coords_t origin);
