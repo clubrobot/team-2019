@@ -42,16 +42,7 @@ class RobotArm(SecureSerialTalksProxy):
 	def begin(self):
 		self.send(_ARM_BEGIN_OPCODE)
 
-	def move(self, posID):
-		out = self.execute(_ADD_MOVE_OPCODE, FLOAT(self.armPosition[posID]['x']),\
-									FLOAT(self.armPosition[posID]['y']), \
-									FLOAT(math.radians(self.armPosition[posID]['phi'])))
-		ret = out.read(BYTE)
-		if bool(ret):
-			raise RuntimeError('Error on move command : Position unreachable')
-		self.send(_RUN_BATCH_OPCODE)
-
-	def move_pos(self, x, y, phi):
+	def move(self, x, y, phi):
 		out = self.execute(_ADD_MOVE_OPCODE, FLOAT(x), FLOAT(y), FLOAT(math.radians(phi)))
 		ret = out.read(BYTE)
 		if bool(ret):
