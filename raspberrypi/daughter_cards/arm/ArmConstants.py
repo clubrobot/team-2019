@@ -1,4 +1,4 @@
-from daughter_cards.RobotArm import *
+from daughter_cards.arm.RobotArm import *
 
 AX12_1_ID   = 1
 AX12_2_ID   = 3
@@ -16,3 +16,5 @@ WS_FRONT    = Workspace(0.0, 30.0, -10.0, 30.0, ELBOW_BACK)
 WS_BACK     = Workspace(-30.0, 0.0, -10.0, 30.0, ELBOW_FRONT)
 
 ORIGIN      = RobotSpacePoint(0.0, 0.0, 0.0)
+
+TANK_SIZE   = 3

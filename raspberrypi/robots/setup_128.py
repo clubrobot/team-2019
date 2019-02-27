@@ -16,9 +16,9 @@ robArm.set_links_len(LINK1_LEN, LINK2_LEN, LINK3_LEN)
 robArm.set_origin(ORIGIN)
 robArm.begin()
 
-# Configure arm Mover
+# Configure arm controller
 armController = ArmController(robArm)
-armController.setup_tank_size(3)
+armController.setup_tank_size(TANK_SIZE)
 
 # Start arm
 armController.stop_pump()
