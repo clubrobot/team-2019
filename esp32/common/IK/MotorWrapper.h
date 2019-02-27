@@ -31,39 +31,34 @@ class MotorWrapper : public PeriodicProcess
     public:
         MotorWrapper();
         
-        void setPID(PID& pid){m_PID = &pid;}
-        void setMOTOR(AX12& motor){m_motor = &motor;}
-        void setOFFSET(float offset){m_offset = offset;}
+        void attach(int id);
+        void setOFFSET(float offset);
 
-        void setGoalPos(float pos){m_pos = pos; m_step_counter = 0; m_arrived = false;}
-        void setVelocityProfile(vector<double> vel){m_vel_profile = vel;}
+        void setGoalPos(float pos);
+        void setVelocityProfile(vector<double> vel);
 
-        bool arrived() const {return m_arrived;}
-        bool error() const {return m_error_occur;}
-        Motor_state_t get_state() const {return m_state;}
+        bool arrived() const {return _arrived;}
 
-        void clear_error(){m_error_occur = false; m_step_counter = 0;}
         virtual void process(float timestep);
 
     private:
 
-        float m_velInput;
-        float m_posInput;
-        float m_pos;
-        float m_offset;
-        int m_step_counter;
-        bool m_arrived;
+        float _velInput;
+        float _posInput;
+        float _pos;
+        float _offset;
+        int _step_counter;
+        bool _arrived;
 
-        bool m_error_occur;
+        bool _error_occur;
 
-        Motor_state_t m_state;
+        Motor_state_t _state;
 
-        vector<double> m_vel_profile;
+        vector<double> _vel_profile;
 
-        PID* m_PID;
-        AX12* m_motor;
+        AX12 _motor;
 
-        Mutex m_mutex;
+        Mutex _mutex;
 	
 };
 
