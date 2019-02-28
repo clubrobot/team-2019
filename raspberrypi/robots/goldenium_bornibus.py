@@ -8,20 +8,21 @@ from common.geogebra import Geogebra
 # manager.connect(10)
 # wheeledbase = WheeledBase(manager)
 
+MAX_TIME_FOR_GOLDENIUM = 2
+
 wheeledbase.set_velocities(0, 0)
 
 test_map = Geogebra("roadmap_bornibus.ggb")
 print("Map chargée")
 
-iniM = test_map.get("IniM")
-iniO = test_map.get("IniO")
-gold1 = test_map.get("Gold1")
-gold2 = test_map.get("Gold2O")
-gold3 = test_map.get("Gold3O")
-gold4 = test_map.get("Gold4O")
-path = test_map.get("Path")
+IniO = test_map.get("IniO")
+Gold1 = test_map.get("Gold1")
+Gold2 = test_map.get("Gold2O")
+Gold3 = test_map.get("Gold3O")
+Gold4 = test_map.get("Gold4O")
+Path = test_map.get("Path")
 
-wheeledbase.set_position(*iniO , pi/2)
+wheeledbase.set_position(*IniO , pi/2)
 print("robot placé : ", wheeledbase.get_position())
 
 wheeledbase.max_linvel.set(300)
@@ -32,21 +33,21 @@ while not wheeledbase.isarrived():
     print(wheeledbase.get_position())
     time.sleep(0.1)
 
-wheeledbase.goto(*iniO, theta=pi/2)
+wheeledbase.goto(*IniO, theta=pi/2)
 while not wheeledbase.isarrived():
     print(wheeledbase.get_position())
     time.sleep(0.1)
 
 input()
 
-wheeledbase.goto(*gold1, theta=-pi/2)
+wheeledbase.goto(*Gold1, theta=-pi/2)
 while not wheeledbase.isarrived():
     print(wheeledbase.get_position())
     time.sleep(0.1)
 
 arm.deploy()
 
-wheeledbase.goto(*gold2, theta=-pi/2)
+wheeledbase.goto(*Gold2, theta=-pi/2)
 while not wheeledbase.isarrived():
     print(wheeledbase.get_position())
     time.sleep(0.1)
@@ -54,20 +55,41 @@ while not wheeledbase.isarrived():
 arm.up()
 gripper.open()
 
-wheeledbase.goto(*gold3, theta=pi)
+wheeledbase.goto(*Gold3, theta=pi)
 while not wheeledbase.isarrived():
     print(wheeledbase.get_position())
     time.sleep(0.1)
 
-wheeledbase.goto(*gold4, theta=pi)
-while not wheeledbase.isarrived():
-    print(wheeledbase.get_position())
-    time.sleep(0.1)
+goldenium = 0
+attempt = 0
+
+while goldenium!=1 & attempt <=4 :
+    try :
+        wheeledbase.goto(*Gold4, theta=pi)
+        counter_start_time = time.monotonic()
+        while not wheeledbase.isarrived():
+            if time.monotonic() - counter_star_time < MAX_TIME_FOR_GOLDENIUM :
+                print(wheeledbase.get_position())
+                time.sleep(0.1)
+            else :
+                
+
+
+    except :
+    time.sleep(0.5)
+    error_theta = wheeledbase.get_position()[2]
+    wheeledbase.goto(*Gold3, theta=pi)
+    while not wheeledbase.isarrived():
+        print(wheeledbase.get_position())
+        time.sleep(0.1)
+
+
+
 
 gripper.close()
-time.sleep(0.5)
+time.sleep(1)
 
-wheeledbase.goto(*gold3, theta=pi)
+wheeledbase.goto(*Gold3, theta=pi)
 while not wheeledbase.isarrived():
     print(wheeledbase.get_position())
     time.sleep(0.1)
