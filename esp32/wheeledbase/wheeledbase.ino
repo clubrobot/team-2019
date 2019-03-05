@@ -132,7 +132,6 @@ void setup()
 void loop()
 {
     talks.execute();
-	vTaskDelay(5 / portTICK_PERIOD_MS); /* vTaskDelay for correct ordonenceur management */
 }
 
 void loop_aux(void * aux)
@@ -162,7 +161,6 @@ void loop_aux(void * aux)
         velocityControl.update();
     #endif // ENABLE_VELOCITYCONTROLLER_LOGS /
 
-	vTaskDelay(5 / portTICK_PERIOD_MS); /* vTaskDelay for correct ordonenceur management */
 	}
 }   
 
