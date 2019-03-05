@@ -24,7 +24,7 @@ class ArmController():
         self.arm.move(PosID.x, PosID.y, PosID.phi)
 
     def arrived(self):
-        return self.arrived()
+        return self.arm.is_arrived()
 
     def start_pump(self):
         self.arm.start_pump()
@@ -60,10 +60,6 @@ class ArmController():
             time.sleep(0.1)
         time.sleep(1)
 
-        self.move(TAKE_PUCK_INTER_AFTER_1)
-        while not self.arrived():
-            time.sleep(0.1)
-
         self.move(TAKE_PUCK_INTER_AFTER_2)
         while not self.arrived():
             time.sleep(0.1)
@@ -72,9 +68,9 @@ class ArmController():
         self.move(BALANCE)
         while not self.arrived():
             time.sleep(0.1)
+        time.sleep(0.5)
         self.stop_pump()
         self.start_sluice()
-        time.sleep(0.5)
 
     def put_in_tank(self):
         if not self.Tankfull:
@@ -89,7 +85,7 @@ class ArmController():
 
             self.stop_pump()
             self.start_sluice()
-            time.sleep(0.5)
+            time.sleep(1)
             self.move(TANK_POS_INTER)
 
             self.CurrentTankPos += 1
@@ -118,8 +114,8 @@ class ArmController():
 
             self.move(self.TankPosListTakeBis[self.CurrentTankPos])
 
-        while not self.arrived():
-            time.sleep(0.1)
+            while not self.arrived():
+                time.sleep(0.1)
 
             time.sleep(0.5)
             self.move(TANK_POS_INTER)

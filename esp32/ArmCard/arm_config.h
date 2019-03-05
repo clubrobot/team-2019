@@ -7,9 +7,9 @@
 /* THIS FILE IS USED FOR ARM CONFIGURATION, PLEASE ONLY CONFIGURE VALUE ON THIS FILE */
 
 /* arm link size configuration */
-constexpr double LINK1_LEN_DEFAULT = 10.0;
-constexpr double LINK2_LEN_DEFAULT = 10.0;
-constexpr double LINK3_LEN_DEFAULT = 5.0;
+constexpr double LINK1_LEN_DEFAULT = 7.0;
+constexpr double LINK2_LEN_DEFAULT = 7.0;
+constexpr double LINK3_LEN_DEFAULT = 3.8;
 
 /* links offsets config */
 constexpr double LINK1_OFFSET_DEFAULT = 60.0;
