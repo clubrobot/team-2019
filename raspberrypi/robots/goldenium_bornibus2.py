@@ -52,29 +52,10 @@ while not wheeledbase.isarrived():
     print(wheeledbase.get_position())
     time.sleep(0.1)
 
-goldenium = 0
-attempt = 0
-
-while goldenium!=1 & attempt <=4 :
-    try :
-        wheeledbase.goto(*points[Gold4], theta=pi)
-        counter_start_time = time.monotonic()
-        while not wheeledbase.isarrived():
-            if time.monotonic() - counter_star_time < MAX_TIME_FOR_GOLDENIUM :
-                print(wheeledbase.get_position())
-                time.sleep(0.1)
-            else :
-                
-
-
-    except :
-    time.sleep(0.5)
-    error_theta = wheeledbase.get_position()[2]
-    wheeledbase.goto(*points[Gold3], theta=pi)
-    while not wheeledbase.isarrived():
-        print(wheeledbase.get_position())
-        time.sleep(0.1)
-
+wheeledbase.goto(*points[Gold4], theta=pi)
+while not wheeledbase.isarrived():
+    print(wheeledbase.get_position())
+    time.sleep(0.1)
 
 
 
