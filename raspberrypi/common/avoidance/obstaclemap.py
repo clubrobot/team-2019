@@ -12,6 +12,12 @@ class ObstacleMap:
     def __init__(self):
         self.obstacles_ftg = []
         self.obstacles_pf = []
+        self.cos_phi = []
+        self.sin_phi = []
+        for phi_i in range(self.nb_phi):
+            phi = phi_i / self.nb_phi * 2 * math.pi
+            self.cos_phi += [math.cos(phi)]
+            self.sin_phi += [math.sin(phi)]
 
     def add_obstacle(self, geom, vel=Velocity(0, 0)):
         self.obstacles_ftg += [Obstacle(geom, vel)]
@@ -29,30 +35,43 @@ class ObstacleMap:
 
         for phi_i in range(self.nb_phi):
             phi = phi_i / self.nb_phi * 2 * math.pi
-            dx = math.cos(phi) * distance_max
-            dy = math.sin(phi) * distance_max
+            dx = self.cos_phi[phi_i] * distance_max
+            dy = self.sin_phi[phi_i] * distance_max
             seg = geometry.Segment(geometry.Point(p.x, p.y), geometry.Point(p.x + dx, p.y + dy))
-            print()
-            print(phi*180/math.pi)
+            # print()
+            # print(phi*180/math.pi)
             for obs in self.obstacles_ftg:
                 print(obs.geom)
                 inter = obs.geom.segment_intersection_point(seg)
-                print(inter)
+                # print(inter)
                 if inter:
                     d = round(inter.distance(p))
                     if histo[1][phi_i] is None:
                         histo[1][phi_i] = d
                     histo[1][phi_i] = min(histo[1][phi_i], d)
-                print()
-            #print("\n")
-        #print(histo[1])
+                # print()
+        #     print("\n")
+        # print(histo[1])
+
+        import matplotlib.pyplot as plt
+        from matplotlib import cm
+        fig = plt.figure()
+        x = []
+        y = []
+        for i in range(self.nb_phi):
+            if histo[1][i] is not None:
+                x += [math.cos(histo[0][i])*histo[1][i]]
+                y += [math.sin(histo[0][i])*histo[1][i]]
+        plt.plot(x, y, 'ro')
+        plt.axis([-distance_max, distance_max, -distance_max, distance_max])
+        plt.show()
         return histo
 
     def get_gaps(self, histo):
-        [print(round(180/math.pi * x), end="\t") for x in histo[0]]
-        print()
-        [print(x, end="\t") for x in histo[1]]
-        print()
+        # [print(round(180/math.pi * x), end="\t") for x in histo[0]]
+        # print()
+        # [print(x, end="\t") for x in histo[1]]
+        # print()
         gaps = []
         start_st = 0
         end_st = 1
@@ -74,18 +93,6 @@ class ObstacleMap:
                 gaps[0] = (start, gaps[0][1] + self.nb_phi)
             else:
                 gaps += [(start, self.nb_phi)]
-
-        import matplotlib.pyplot as plt
-        from matplotlib import cm
-        fig = plt.figure()
-        x = []
-        y = []
-        for i in range(self.nb_phi):
-            if histo[1][i] is not None:
-                x += [math.cos(histo[0][i])*histo[1][i]]
-                y += [math.sin(histo[0][i])*histo[1][i]]
-        plt.plot(x, y, 'ro')
-        plt.show()
         return gaps
 
     def get_nearest_points_of_gap(self, histo, gap):
@@ -93,10 +100,12 @@ class ObstacleMap:
         i = gap[0] - 1
         j = (gap[1] + 1) % self.nb_phi
         j = (gap[1] + 1) % self.nb_phi
-        p1_nearest = geometry.Point(math.cos(histo[0][i]) * histo[1][i],
-                            math.sin(histo[0][i]) * histo[1][i])
-        p2_nearest= geometry.Point(math.cos(histo[0][j]) * histo[1][j],
-                            math.sin(histo[0][j]) * histo[1][j])
+        # p1_nearest = geometry.Point(math.cos(histo[0][i]) * histo[1][i],
+        #                     math.sin(histo[0][i]) * histo[1][i])
+        # p2_nearest= geometry.Point(math.cos(histo[0][j]) * histo[1][j],
+        #                     math.sin(histo[0][j]) * histo[1][j])
+        p1_nearest = None
+        p2_nearest = None
         while histo[1][i] is not None and \
                 self.angle_difference(self.get_middle_of_gap_basic(gap), histo[0][i]) < math.pi / 2:
             j = (gap[1] + 1) % self.nb_phi
@@ -205,9 +214,8 @@ class ObstacleMap:
         for obj in self.obstacles_pf:
             res = obj.geom.get_force([robot.x, robot.y])
             v_pf = (v_pf[0] + res[0], v_pf[1] + res[1])
-            w_pf += obj.geom.get_scalar([robot.x, robot.y])
         angle_guide_pf = self.normalize_angle(math.atan2(v_pf[1], v_pf[0]))
-        return angle_guide_pf, w_pf
+        return angle_guide_pf, math.hypot(*v_pf)
 
     @staticmethod
     def load(geo, pattern="poly*"):

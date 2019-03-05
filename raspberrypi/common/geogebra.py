@@ -286,6 +286,8 @@ class Geogebra():
             return self._parse_polyline_from_command(command)
         elif command.attrib['name'] == 'Polygon':
             return self._parse_polygon_from_command(command)
+        elif command.attrib['name'] == 'Circle':
+            return self._parse_circle_from_command(command)
         else:
             raise NotImplementedError("'{}' commands currently not handled".format(command.attrib['name']))
 
@@ -295,8 +297,8 @@ class Geogebra():
         labels = [label for label in all_labels if re.match(pattern, label)]
         labels = sorted(labels)
 
-        parse_by_element = ["point", "line", "conic", "angle", "numeric"]
-        parse_by_command = ["Segment", "Vector", "Polyline", "Polygon"]
+        parse_by_element = ["point", "line", "angle", "numeric"]
+        parse_by_command = ["Segment", "Vector", "Polyline", "Polygon", "Circle"]
 
         roadmap = []
         for label in labels:
@@ -308,8 +310,10 @@ class Geogebra():
         commands = self.root.findall('./construction/command')
         for command in commands:
             if command.attrib["name"] in parse_by_command:
-                figure = self.get_from_command(command)
-                roadmap += [figure]
+                output = command.find("output")
+                if re.match(pattern, output.get("a0")):
+                    figure = self.get_from_command(command)
+                    roadmap += [figure]
         return roadmap
 
     def _check_label(self, label):
@@ -430,3 +434,10 @@ class Geogebra():
         value = element.find('value')
         val = float(value.get('val'))
         return Geogebra.Numeric(val)
+
+    def _parse_circle_from_command(self, command):
+        inp = command.find("input")
+        center = self.get(inp.get("a0"))
+        radius = int(inp.get("a1"))
+        c = Geogebra.Circle([*center, radius])
+        return c

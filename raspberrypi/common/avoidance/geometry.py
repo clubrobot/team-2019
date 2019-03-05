@@ -15,6 +15,14 @@ class Point:
     def __str__(self):
         return "POINT (" + str(round(self.x)) + ", " + str(round(self.y)) + ")"
 
+    def __getitem__(self, item):
+        if item == 0:
+            return self.x
+        elif item == 1:
+            return self.y
+        else:
+            return None
+
     def segment_intersection_point(self, seg):
         return seg.intersection_point(self)
 
@@ -44,18 +52,18 @@ class Segment:
         return "Segment (" + str(self.p1) + ", " + str(self.p2) + ")"
 
     def is_point_inside(self, p):
-        print(p, " in ", self)
+        # print(p, " in ", self)
         a = self.p1
         b = self.p2
         c = p
         crossproduct = (c.y - a.y) * (b.x - a.x) - (c.x - a.x) * (b.y - a.y)
         if crossproduct > 0.001:
-            print("cross : ", crossproduct)
+            # print("cross : ", crossproduct)
             return False
 
         dotproduct = (c.x - a.x) * (b.x - a.x) + (c.y - a.y) * (b.y - a.y)
         if dotproduct < 0:
-            print("dot")
+            # print("dot")
             return False
 
         squaredlengthba = (b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y)
@@ -76,16 +84,16 @@ class Segment:
 
         d_12_34 = p_12.determinant(p_34)
         if d_12_34 == 0:
-            print("parallele")
+            # print("parallele")
             return None
 
         x = (d_12 * p_34.x - d_34 * p_12.x) / d_12_34
         y = (d_12 * p_34.y - d_34 * p_12.y) / d_12_34
         p = Point(x, y)
-        print(p)
+        # print(p)
         if line.is_point_inside(p) and self.is_point_inside(p):
             return p
-        print("not in segment")
+        # print("not in segment")
         return None
 
 
@@ -105,12 +113,12 @@ class Polygon:
         p1 = line.p1
         first_inter = None
         for seg in self.edges():
-            print(seg)
+            # print(seg)
             inter = seg.segment_intersection_point(line)
-            print("inter : ", inter)
+            # print("inter : ", inter)
             if inter is not None:
                 if (first_inter is None or first_inter.distance(p1) > inter.distance(p1)):
-                    print("closer than other segments")
+                    # print("closer than other segments")
                     first_inter = inter
         return first_inter
 

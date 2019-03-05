@@ -28,24 +28,32 @@ geo = geogebra.Geogebra("test.ggb")
 robot = geometry.Point(*geo.get("origin"))
 goal = geometry.Point(*geo.get("goal"))
 period = 1
+max_w_pf = 10
+robot_width = 300
+
+obsmap = ObstacleMap()
+
+funct = funct_list["lin"](a=max_w_pf/robot_width, b=max_w_pf)
+for obs in geo.getall("obsc_*"):
+    obsmap.add_obstacle(DiskObs(Point(obs[0], obs[1]), obs[2], funct))
+poly_in = geo.getall("obsin_*")
+for poly in poly_in:
+    obsmap.add_obstacle(PolygonObs(poly, funct))
 
 #ftg
-obsmap = ObstacleMap()
-[obsmap.add_obstacle_ftg(geometry.Polygon(obs)) for obs in geo.getall("obs*")]
-alpha_static = 600
-robot_width = 300
-distance_max = 800
+alpha_static = 1000
+distance_max = 1000
+poly_out = geo.getall("obsout_*")
+print(poly_out)
+for poly in poly_in:
+    obsmap.add_obstacle_ftg(PolygonObs(poly, funct))
 
 #pf
 objs = list()
 maps = geometry.Point(*geo.get("MAP"))
-polys = geo.getall("obsinp*")
-disks = geo.getall("obsinc*")
-max_w_pf = 10
-obsmap.add_obstacle_pf(Map(2000,3000, funct_list["lin"](a=max_w_pf/robot_width, b=max_w_pf)))
+obsmap.add_obstacle_pf(Map(maps.x, maps.y, funct))
 # obsmap.add_obstacle_pf(PointObs(goal.x, goal.y, funct_list["lin"](a=max_w_pf/robot_width, b=max_w_pf)))
-for poly in polys:
-    obsmap.add_obstacle_pf(PolygonObs(poly, funct_list["lin"](a=max_w_pf/robot_width, b=max_w_pf)))
+
 
 step = linvel
 path = []
@@ -56,7 +64,6 @@ if TEST:
 
 max_pts = 100
 
-# obsmap.add_obstacle([(0, 2500), (200, 2500), (200, 2300), (0, 2300)], vel=Velocity(500, 0))
 with open("list_point", "w") as file:
     file.write("Execute[{")
 
@@ -89,15 +96,16 @@ with open("list_point", "w") as file:
 
         diff = time.time() - begin
 
+        # Display debug information
         print("nb : ", nb_pts)
         print("time : ", diff)
         print("angle ftg : ", angle_guide_ftg*180/pi)
-        print("v ftg : ", v_ftg)
-        print("w_ftg : ", w_ftg)
         print("angle pf : ", angle_guide_pf*180/pi)
-        print("v pf : ", v_pf)
-        print("w_pf : ", w_pf)
         print("angle : ", angle_guide*180/pi)
+        print("w_ftg : ", w_ftg)
+        print("w_pf : ", w_pf)
+        print("v ftg : ", v_ftg)
+        print("v pf : ", v_pf)
         print("v : ", v)
 
         path += [(robot.x, robot.y)]
@@ -130,6 +138,8 @@ with open("list_point", "w") as file:
         file.write("\"ftgv_{" + str(nb_pts) + "} = Vector(" + c_path + ", ftg_{" + str(nb_pts) + "})\", \n")
         file.write("\"SetColor(" + "ftgv_{" + str(nb_pts) + "}, 0, 255, 0)\", \n")
         file.write("\"ShowLabel(" + "ftgv_{" + str(nb_pts) + "}, False)\", \n\n")
+
+        # Indicate angle to wheeledbase
         if TEST:
             try:
                 wheeledbase.follow_angle(angle_guide, v)
@@ -139,6 +149,7 @@ with open("list_point", "w") as file:
                 print("spin")
                 break
 
+        # Update position
         if TEST:
             robot = geometry.Point(wheeledbase.get_position()[0], wheeledbase.get_position()[1])
         else:

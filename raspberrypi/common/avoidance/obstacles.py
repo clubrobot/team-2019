@@ -72,7 +72,7 @@ class PolygonObs(Polygon):
             else:
                 return self.funct.saturate(vect)
 
-        vect = [(x_ext - self.vertices[min_i][0]), (y_ext - self.vertices[min_i][1])]
+        vect = [(x_ext - self.vertices[min_i].x), (y_ext - self.vertices[min_i].y)]
         vect = [vect[0] / hypot(*vect), vect[1] / hypot(*vect)]
         if scalar:
             return self.funct.apply(distance_min)
