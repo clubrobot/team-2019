@@ -39,19 +39,19 @@ for obs in geo.getall("obsc_*"):
 poly_in = geo.getall("obsin_*")
 for poly in poly_in:
     obsmap.add_obstacle(PolygonObs(poly, funct))
+maps = geometry.Point(*geo.get("MAP"))
+obsmap.add_obstacle(Map(maps.x, maps.y, funct))
 
 #ftg
-alpha_static = 1000
-distance_max = 1000
-poly_out = geo.getall("obsout_*")
-print(poly_out)
-for poly in poly_in:
-    obsmap.add_obstacle_ftg(PolygonObs(poly, funct))
+alpha_static = 300
+distance_max = 800
+# poly_out = geo.getall("obsout_*")
+# print(poly_out)
+# for poly in poly_in:
+#     obsmap.add_obstacle_ftg(PolygonObs(poly, funct))
 
 #pf
 objs = list()
-maps = geometry.Point(*geo.get("MAP"))
-obsmap.add_obstacle_pf(Map(maps.x, maps.y, funct))
 # obsmap.add_obstacle_pf(PointObs(goal.x, goal.y, funct_list["lin"](a=max_w_pf/robot_width, b=max_w_pf)))
 
 
@@ -153,8 +153,10 @@ with open("list_point", "w") as file:
         if TEST:
             robot = geometry.Point(wheeledbase.get_position()[0], wheeledbase.get_position()[1])
         else:
-            dx = math.cos(angle_guide) * v * diff*10
-            dy = math.sin(angle_guide) * v * diff*10
+            # dx = math.cos(angle_guide) * v * diff*10
+            # dy = math.sin(angle_guide) * v * diff*10
+            dx = math.cos(angle_guide) * v * 0.5
+            dy = math.sin(angle_guide) * v * 0.5
             robot = geometry.Point(robot.x + dx, robot.y + dy)
             print("ROBOT : " + "(" + str(round(robot.x)) + ", " + str(round(robot.y)) + ")")
 
