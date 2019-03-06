@@ -13,8 +13,8 @@ UP_PUSHER1 = 150
 DOWN_PUSHER1 = 5
 UP_PUSHER2 = 35
 DOWN_PUSHER2 = 165
-DEPLOYED_ARM = 80
-UP_ARM = 0
+DEPLOYED_ARM = 83
+UP_ARM = 8
 
 
 class Gripper(SecureSerialTalksProxy):

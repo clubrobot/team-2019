@@ -8,27 +8,49 @@ from common.geogebra import Geogebra
 # manager.connect(10)
 # wheeledbase = WheeledBase(manager)
 
-MAX_TIME_FOR_GOLDENIUM = 3
+MAX_TIME_FOR_GOLDENIUM = 2
 
 wheeledbase.set_velocities(0, 0)
+
+couleur="M"
+# couleur M ou O
 
 test_map = Geogebra("roadmap_bornibus.ggb")
 print("Map chargée")
 
-IniO = test_map.get("iniOp")
-Gold1 = test_map.get("Gold1")
-Gold2 = test_map.get("Gold2O")
-Gold3 = test_map.get("Gold3O")
-Gold4 = test_map.get("Gold4O")
-Gold5 = test_map.get("Gold5O")
-Gold6 = test_map.get("Gold6O")
+IniO = test_map.get("ini"+couleur+"p")
+Gold1 = test_map.get("Gold1"+couleur)
+Gold2 = test_map.get("Gold2"+couleur)
+Gold3 = test_map.get("Gold3"+couleur)
+Gold4 = test_map.get("Gold4"+couleur)
+Gold5 = test_map.get("Gold5"+couleur)
+Gold6 = test_map.get("Gold6"+couleur)
+# Pour le gouter :
+#Gold5 = test_map.get("Gold5"+"M")#couleur)
+#Gold6 = test_map.get("Gold6"+"M")#couleur)
+
 Path = test_map.get("Path1")
 
-wheeledbase.set_position(*IniO , pi/2)
-print("robot placé : ", wheeledbase.get_position())
+print(IniO)
+print(Gold1)
+print(Gold2)
+
+if couleur=="O" :
+    wheeledbase.set_position(*IniO , pi/2)
+    print("robot placé : ", wheeledbase.get_position())
+
+if couleur=="M" :
+    wheeledbase.set_position(*IniO , (3*pi)/2)
+    print("robot placé : ", wheeledbase.get_position())
+
+# Pour le gouter :
+#wheeledbase.set_position(*IniO , -pi/2)
 
 wheeledbase.max_linvel.set(700)
+wheeledbase.max_linacc.set(500.0)
+wheeledbase.max_lindec.set(700.0)
 #avant 300
+
 """
 wheeledbase.goto(*Path, theta=-pi/2)
 while not wheeledbase.isarrived():
@@ -47,6 +69,8 @@ while not wheeledbase.isarrived():
     print(wheeledbase.get_position())
     time.sleep(0.1)
 
+time.sleep(1)
+print(wheeledbase.get_position())
 arm.deploy()
 
 wheeledbase.goto(*Gold2, theta=-pi/2)
@@ -54,6 +78,8 @@ while not wheeledbase.isarrived():
     print(wheeledbase.get_position())
     time.sleep(0.1)
 
+time.sleep(1)
+print(wheeledbase.get_position())
 arm.up()
 gripper.open()
 
@@ -74,7 +100,7 @@ while (goldenium!=1) and (attempt <=4) :
                 print(wheeledbase.get_position())
                 time.sleep(0.1)
             else :
-                raise RuntimeError('time-s-up')
+                raise RuntimeError('time-out')
         gripper.close()
         time.sleep(0.5)
         goldenium=1
@@ -88,13 +114,16 @@ while (goldenium!=1) and (attempt <=4) :
         while not wheeledbase.isarrived() :
             print(wheeledbase.get_position())
             time.sleep(0.1)
-        if pi - error_theta >= 0:
+        if pi - error_theta > 0.1:
             Gold4 = (Gold4[0],Gold4[1]+2)
+        #if abs(pi - error_theta) >= 0.1 :
+        #    Gold4 = (Gold4[0]+2,Gold4[1])
         else :
             Gold4= (Gold4[0],Gold4[1]-2)
 
+#wheeledbase.get_velocities_wanted(True)
 
-wheeledbase.goto(*Gold3, theta=-pi/2)
+wheeledbase.goto(*Gold3, theta=pi)
 while not wheeledbase.isarrived():
     print(wheeledbase.get_position())
     time.sleep(0.1)
@@ -103,6 +132,8 @@ wheeledbase.goto(*Gold5, theta=0)
 while not wheeledbase.isarrived():
     print(wheeledbase.get_position())
     time.sleep(0.1)
+
+time.sleep(1)
 
 wheeledbase.goto(*Gold6, theta=0)
 while not wheeledbase.isarrived():
@@ -113,10 +144,20 @@ time.sleep(0.5)
 gripper.open()
 time.sleep(0.5)
 
-wheeledbase.goto(*IniO, theta=pi/2)
-while not wheeledbase.isarrived():
-    print(wheeledbase.get_position())
-    time.sleep(0.1)
+if couleur=="O" :
+    wheeledbase.goto(*IniO, theta=pi/2)
+    while not wheeledbase.isarrived():
+        print(wheeledbase.get_position())
+        time.sleep(0.1)
+
+if couleur=="M" :
+    wheeledbase.goto(*IniO, theta=-pi/2)
+    while not wheeledbase.isarrived():
+        print(wheeledbase.get_position())
+        time.sleep(0.1)
+
+
+
 """
 wheeledbase.goto(*Gold3, theta=pi)
 while not wheeledbase.isarrived():
