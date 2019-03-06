@@ -1,9 +1,4 @@
 from math import exp, log
-import matplotlib.pyplot as plt
-import numpy as np
-
-
-
 
 class Funct:
     def __init__(self, arguments, kwargs):
@@ -73,15 +68,3 @@ class Lin(Funct):
 
 funct_list = {"lin" : Lin, "exp" : Exp, "log": Log}
 
-if __name__ == "__main__":
-    a = Log(alpha=7, beta=0.3, ceta=2)
-    t = np.arange(-1.0, 20.0, 0.01)
-    s = np.zeros_like(t, dtype=np.float32)
-    for i in range(t.shape[0]):
-        s[i] = a([1,1], t[i])[0]
-    
-    fig, ax = plt.subplots()
-    ax.plot(t, s)
-
-    ax.grid()
-    plt.show()

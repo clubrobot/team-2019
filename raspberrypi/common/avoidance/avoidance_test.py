@@ -10,7 +10,7 @@ import time
 import os
 
 
-TEST = False
+TEST = True
 if TEST:
     from robots.setup_wheeledbase import *
     linvel = 200 #wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/4
