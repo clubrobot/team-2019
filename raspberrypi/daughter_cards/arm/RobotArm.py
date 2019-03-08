@@ -50,7 +50,7 @@ TIMESTEP_ID                  = 0x1E
 Workspace = namedtuple('Workspace', ['x_min', 'x_max', 'y_min', 'y_max', 'elbow_or'])
 
 SpacePoint = namedtuple('SpacePoint', ['x', 'y', 'phi'])
-JointPoint = namedtuple('JointPoint', ['th1', 'th2', 'th2'])
+JointPoint = namedtuple('JointPoint', ['th1', 'th2', 'th3'])
 
 class RobotArm(SecureSerialTalksProxy):
 	def __init__(self, manager, uuid='/dev/arduino/arm'):
