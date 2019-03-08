@@ -42,6 +42,9 @@ void setup()
     talks.bind(START_SLUICE_OPCODE      , START_SLUICE);
     talks.bind(STOP_SLUICE_OPCODE       , STOP_SLUICE);
 
+    talks.bind(SET_PARAMETERS_OPCODE, SET_PARAMETER_VALUE);
+    talks.bind(GET_PARAMETERS_OPCODE, GET_PARAMETER_VALUE);
+
     /* init Motors communication */
     AX12::SerialBegin(AX12_SPEED, AX12_PIN);
 

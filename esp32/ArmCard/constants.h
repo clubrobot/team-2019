@@ -15,6 +15,9 @@ constexpr float FLIP_ELBOW_BACK  = -1;
 constexpr int TIMEOUT      = 10;
 
 /* tasks core */
+constexpr float DELTA_T = 0.025;
+
+/* tasks core */
 constexpr int RUNNING_CORE = 0;
 /* epsilon */
 constexpr float EPSILON = 0.001;

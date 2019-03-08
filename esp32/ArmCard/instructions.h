@@ -16,6 +16,9 @@
 #define START_SLUICE_OPCODE         0X17 
 #define STOP_SLUICE_OPCODE          0x18
 
+#define SET_PARAMETERS_OPCODE       0X19
+#define GET_PARAMETERS_OPCODE       0x1A
+
 #define MOTOR1_ID_ID                0x10
 #define MOTOR1_OFFSET_ID            0x11
 #define MOTOR2_ID_ID                0x12
