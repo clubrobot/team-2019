@@ -83,19 +83,19 @@ void SET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& ou
             break;
         case MOTOR2_ID_ID :
             AX2.setID(input.read<int>());
-            AX2.save(MOTOR1_ADDRESS);
+            AX2.save(MOTOR2_ADDRESS);
             break;
         case MOTOR2_OFFSET_ID :
             AX2.setOFFSET(input.read<float>());
-            AX2.save(MOTOR1_ADDRESS);
+            AX2.save(MOTOR2_ADDRESS);
             break;
         case MOTOR3_ID_ID :
             AX3.setID(input.read<int>());
-            AX3.save(MOTOR1_ADDRESS);
+            AX3.save(MOTOR3_ADDRESS);
             break;
         case MOTOR3_OFFSET_ID :
             AX3.setOFFSET(input.read<float>());
-            AX3.save(MOTOR1_ADDRESS);
+            AX3.save(MOTOR3_ADDRESS);
             break;
         case WORKSPACE_FRONT_ID :
             {
