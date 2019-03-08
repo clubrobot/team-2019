@@ -67,6 +67,7 @@ void STOP_SLUICE(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
     pump.stopSluice();
 }
+
 void SET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
     byte  id = input.read<byte>();
