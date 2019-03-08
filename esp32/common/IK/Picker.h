@@ -16,40 +16,40 @@ class Picker
 {
 	public:
 
-		void init(float l1, float l2, float l3, joints_t joints, coords_t origin, int elbow_or) throw();
+		void init(float l1, float l2, float l3, Joints joints, Coords origin, int elbow_or) throw();
 		
 		void flip_elbow(int elbow) throw();
 		
-		coords_t forward_kinematics(joints_t joints) throw();
+		Coords forward_kinematics(Joints joints) throw();
 
-		joints_t inverse_kinematics(coords_t tool);
+		Joints inverse_kinematics(Coords tool);
 
-		coords_t get_tool(void) const throw();
+		Coords get_tool(void) const throw();
 
-		joints_t get_joints(void) const throw();
+		Joints get_joints(void) const throw();
 
-		detailed_pos_t get_detailed_pos(void) const throw();
+		DetailedPos get_detailed_pos(void) const throw();
 
-		coords_t get_tool_vel(joints_t joints_vel) throw();
+		Coords get_tool_vel(Joints joints_vel) throw();
 
-		joints_t get_joints_vel(coords_t tool_vel);
+		Joints get_joints_vel(Coords tool_vel);
 
 		matrix_t compute_jacobian(void) throw();
 
-		path_t get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, float delta_t);
+		path_t get_path(Coords start_pos, Coords start_vel, Coords target_pos, Coords target_vel, float delta_t);
 
-		float synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel);
+		float synchronisation_time(Joints start_pos, Joints start_vel, Joints target_pos, Joints target_vel);
 
 		float _flip_elbow;
-		constraints_t x_axis;
-		constraints_t y_axis;
-		constraints_t phi_axis;
+		Constraints x_axis;
+		Constraints y_axis;
+		Constraints phi_axis;
 
 	private:
 
-		coords_t _origin;
-		coords_t _tool;
-		joints_t _joints;
+		Coords _origin;
+		Coords _tool;
+		Joints _joints;
 
 		float _l1;
 		float _l2;
@@ -67,9 +67,9 @@ class Picker
 };
 
 /***** Debug *****/
-ostream& operator<< (ostream& out, const coords_t& c);
-ostream& operator<< (ostream& out, const joints_t& j);
-ostream& operator<< (ostream& out, const detailed_pos_t& d);
+ostream& operator<< (ostream& out, const Coords& c);
+ostream& operator<< (ostream& out, const Joints& j);
+ostream& operator<< (ostream& out, const DetailedPos& d);
 ostream& operator<< (ostream& out, const path_t& p);
 }
 

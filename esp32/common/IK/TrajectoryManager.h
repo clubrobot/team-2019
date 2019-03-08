@@ -22,13 +22,19 @@ class TrajectoryManager : public PeriodicProcess
 
         TrajectoryManager() throw():_isExecutingBatch(false),_arrived(false),_error(false){}
 
-        void begin();
-
         void set_armManager(ArmManager& manager);
         void set_Motors(MotorWrapper& motor1, MotorWrapper& motor2, MotorWrapper& motor3);
+        void set_timestep(float timestep);
 
-        void move_directly(coords_t pos);
+        float get_timestep() const {return _timestep;}
+
+        void init();
+
+        void move_directly(Coords pos);
         bool is_arrived() const {return _arrived;}
+
+        void load(int address);
+	    void save(int address) const;
 
     private :
         virtual void process(float timestep);
@@ -53,6 +59,8 @@ class TrajectoryManager : public PeriodicProcess
 
         bool _arrived;
         bool _error;
+
+        float _timestep;
 
         Mutex _mutex;
 };

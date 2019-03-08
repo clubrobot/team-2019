@@ -31,8 +31,13 @@ class MotorWrapper : public PeriodicProcess
     public:
         MotorWrapper();
         
-        void attach(int id);
+        void setID(int id);
         void setOFFSET(float offset);
+
+        int   getID()     const {return _id;}
+        float getOFFSET() const {return _offset;}
+
+        void init();
 
         void setGoalPos(float pos);
         void setVelocityProfile(vector<float> vel);
@@ -41,12 +46,16 @@ class MotorWrapper : public PeriodicProcess
 
         virtual void process(float timestep);
 
+        void load(int address);
+	    void save(int address) const;
+
     private:
 
         float _velInput;
         float _posInput;
         float _pos;
         float _offset;
+        int   _id;
         int _step_counter;
         bool _arrived;
 

@@ -8,6 +8,7 @@
 #include "../common/TaskManager.h"
 #include "../common/VacumPump.h"
 #include "arm_config.h"
+#include "addresses.h"
 #include "PIN.h"
 
 using namespace IK;
@@ -32,7 +33,6 @@ void setup()
     talks.begin(Serial);
 
     talks.bind(ADD_MOVE_OPCODE          , ADD_MOVE);
-    talks.bind(ARM_BEGIN_OPCODE         , ARM_BEGIN);
     talks.bind(ADD_MOVE_OPCODE          , ADD_MOVE);
     talks.bind(RUN_BATCH_OPCODE         , RUN_BATCH);
     talks.bind(STOP_BATCH_OPCODE        , STOP_BATCH);
@@ -43,37 +43,30 @@ void setup()
     talks.bind(START_SLUICE_OPCODE      , START_SLUICE);
     talks.bind(STOP_SLUICE_OPCODE       , STOP_SLUICE);
 
-    talks.bind(SET_MOTORS_ID_OPCODE     , SET_MOTORS_ID);
-    talks.bind(SET_MOTORS_OFFSET_OPCODE , SET_MOTORS_OFFSET);
-    talks.bind(SET_WORKSPACE_OPCODE     , SET_WORKSPACE);
-    talks.bind(SET_ORIGIN_OPCODE        , SET_ORIGIN);
-    talks.bind(SET_LINK_LEN_OPCODE      , SET_LINK_LEN);
-
     /* init Motors communication */
     AX12::SerialBegin(AX12_SPEED, AX12_PIN);
 
     /* configure MotorWrapper 1*/
-    AX1.attach(ID1_DEFAULT);
-    AX1.setOFFSET(LINK1_OFFSET_DEFAULT);
+    AX1.load(MOTOR1_ADDRESS);
+    AX1.init();
+
     /* configure MotorWrapper 2*/
-    AX2.attach(ID2_DEFAULT);
-    AX2.setOFFSET(LINK2_OFFSET_DEFAULT);
+    AX2.load(MOTOR2_ADDRESS);
+    AX2.init();
 
     /* configure MotorWrapper 3*/
-    AX3.attach(ID3_DEFAULT);
-    AX3.setOFFSET(LINK3_OFFSET_DEFAULT);
+    AX3.load(MOTOR3_ADDRESS);
+    AX3.init();
 
     /* init Arm Manager */
-    arm_manager.init_workspace(WS_FRONT_DEFAULT, WS_BACK_DEFAULT);                                      /*      init workspaces      */
-    arm_manager.set_origin(ORIGIN_DEFAULT);                                                             /*      set arm origin       */
-    arm_manager.set_initial_joint_pos(INITIAL_JOINTS_DEFAULT);                                          /*      initial joints pos   */
-    arm_manager.set_arm_link(LINK1_LEN_DEFAULT, LINK2_LEN_DEFAULT, LINK3_LEN_DEFAULT, FLIP_ELBOW_BACK);
+    arm_manager.load(ARM_MANAGER_ADDRESS);
+    arm_manager.init();
 
     /* init traj Manager */
+    traj_manager.load(TRAJ_MANAGER_ADDRESS);
     traj_manager.set_armManager(arm_manager);
     traj_manager.set_Motors(AX1, AX2, AX3);
-    traj_manager.setTimestep(DELTA_T);
-
+    traj_manager.init();
     /* create secondary loop to manage arm deplacements*/
     task_manager.create_task(secondary_loop , NULL);
 }

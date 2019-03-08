@@ -22,13 +22,13 @@ class Joint
 		/* get joint path */
 		vector_t get_path (float initial_pos, float initial_vel , float final_pos, float final_vel, float tf_sync, float delta_t) throw();
 		/* get time to reach position */
-		trajectory_time_t time_to_destination(float initial_pos, float initial_vel, float final_pos, float final_vel);
+		TrajectoryTime time_to_destination(float initial_pos, float initial_vel, float final_pos, float final_vel);
 
 	private :
 		/* private methods */
-		float 			polyval       (polynom_t polynome, float x) throw();
-		polynom_t 		polyder       (polynom_t poly) throw();
-		vector<float> 	vector_polyval(polynom_t polynome, vector<float> x) throw();
+		float 			polyval       (Polynom polynome, float x) throw();
+		Polynom 		polyder       (Polynom poly) throw();
+		vector<float> 	vector_polyval(Polynom polynome, vector<float> x) throw();
 
 		template<typename T>vector<T> arange(T start, T stop, T step) throw();
 
@@ -38,13 +38,13 @@ class Joint
 		vector_t 	floatramp_profile      (float initial_pos, float initial_vel , float final_pos, float final_vel, float tf_sync,float tf_lim, float delta_t) throw();
 		vector_t 	generic_profile         (float initial_pos, float initial_vel, float final_pos, float final_vel, float tf_sync, float tf_lim,float delta_t, int sign_traj, int sign_sync, float vel_c) throw();
 		int 		trajectory_sign		    (float initial_pos, float initial_vel, float final_pos, float final_vel) throw();
-		vector_t 	polynomial_piece_profile(polynom_t polynome, float start, float stop, float delta);
+		vector_t 	polynomial_piece_profile(Polynom polynome, float start, float stop, float delta);
 		
 		/* private variables */
 		int _id;
 
 		/* constraints */
-		constraints_t _constraints;
+		Constraints _constraints;
 
 		Mutex _mutex;
 };
@@ -52,7 +52,7 @@ class Joint
 template<typename T>
 ostream& operator<< (ostream& out, const vector<T>& v);
 ostream& operator<< (ostream& out, const vector_t& v);
-ostream& operator<< (ostream& out, const trajectory_time_t& t);
+ostream& operator<< (ostream& out, const TrajectoryTime& t);
 
 }
 

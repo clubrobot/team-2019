@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <EEPROM.h>
 #include "TrajectoryManager.h"
 #include "Picker.h"
 #include "ArmManager.h"
@@ -14,14 +15,6 @@ using namespace std;
 
 namespace IK
 {
-
-void TrajectoryManager::begin()
-{
-    _mutex.acquire();
-    _manager->init_arm();
-    _mutex.release();
-}
-
 void TrajectoryManager::set_armManager(ArmManager& manager)
 {
     _mutex.acquire();
@@ -38,15 +31,29 @@ void TrajectoryManager::set_Motors(MotorWrapper& motor1, MotorWrapper& motor2, M
     _mutex.release();
 }
 
-void TrajectoryManager::move_directly(coords_t pos)
+void TrajectoryManager::set_timestep(float timestep)
+{
+    _mutex.acquire();
+    _timestep = timestep;
+    _mutex.release();
+}
+
+void TrajectoryManager::init()
+{
+    _mutex.acquire();
+    PeriodicProcess::setTimestep(_timestep);
+    _mutex.release();
+}
+
+void TrajectoryManager::move_directly(Coords pos)
 {
     _mutex.acquire();
 
     MoveBatch mb;
 
     /* set_parameters */
-    coords_t end_coord     = pos;
-    coords_t start_coord   = _manager->get_tool();
+    Coords end_coord     = pos;
+    Coords start_coord   = _manager->get_tool();
 
     LOG_TRAJ("start : " << start_coord);
     LOG_TRAJ("end : " << end_coord );
@@ -150,5 +157,19 @@ float TrajectoryManager::convert_speed(float theta_speed)
     return speed;
 }
 
+void TrajectoryManager::load(int address)
+{
+	_mutex.acquire();
+	EEPROM.get(address, _timestep);        address += sizeof(_timestep);
+	_mutex.release();
+}
+
+void TrajectoryManager::save(int address) const
+{
+	_mutex.acquire();
+	EEPROM.put(address, _timestep); address += sizeof(_timestep);
+	EEPROM.commit();
+	_mutex.release();
+}
 
 } /* end of namespace */

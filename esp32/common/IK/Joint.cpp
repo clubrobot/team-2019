@@ -15,17 +15,17 @@ Joint::Joint(int id, float pos_min, float pos_max, float velociy_min, float velo
 	_id = id;
 
 	// constraints 
-	_constraints.pos_min = pos_min;
-	_constraints.pos_max = pos_max;
+	_constraints.pos.min = pos_min;
+    _constraints.pos.max = pos_max;
 
-	_constraints.vel_min = velociy_min;
-	_constraints.vel_max = velociy_max;
+    _constraints.vel.min = velociy_min;
+    _constraints.vel.max = velociy_max;
 
-	_constraints.acc_min = acc_min;
-	_constraints.acc_max = acc_max;
+    _constraints.acc.min = acc_min;
+    _constraints.acc.max = acc_max;
 }
 
-float Joint::polyval(polynom_t polynome, float x) throw()
+float Joint::polyval(Polynom polynome, float x) throw()
 {
     float ret;
 
@@ -34,9 +34,9 @@ float Joint::polyval(polynom_t polynome, float x) throw()
     return ret;
 }
 
-polynom_t Joint::polyder(polynom_t poly) throw()
+Polynom Joint::polyder(Polynom poly) throw()
 {
-    polynom_t dp;
+    Polynom dp;
 
     dp.a0 = poly.a1;
     dp.a1 = 2*poly.a2;
@@ -45,7 +45,7 @@ polynom_t Joint::polyder(polynom_t poly) throw()
     return dp;
 }
 
-vector<float> Joint::vector_polyval(polynom_t polynome, vector<float> x) throw()
+vector<float> Joint::vector_polyval(Polynom polynome, vector<float> x) throw()
 {
     vector<float> values;
     int size = x.size();
@@ -67,23 +67,23 @@ template<typename T>vector<T> Joint::arange(T start, T stop, T step) throw()
 bool Joint::trajectory_is_feasible(float initial_pos, float initial_vel, float final_pos, float final_vel)
 {
 	// checks boundaries to determine feasibility
-	if(final_pos > (_constraints.pos_max + EPSILON) || final_pos < (_constraints.pos_min - EPSILON))
+	if(final_pos > (_constraints.pos.max + EPSILON) || final_pos < (_constraints.pos.min - EPSILON))
 	{
         LOG_JOINT("Target position unreachable by joint");
         throw string("Target position unreachable by joint");
 		return false;
 	}
 
-	if(final_vel > (_constraints.vel_max + EPSILON) || final_vel < (_constraints.vel_min - EPSILON))
+	if(final_vel > (_constraints.vel.max + EPSILON) || final_vel < (_constraints.vel.min - EPSILON))
 	{
         LOG_JOINT("Target velocity unreachable by joint");
         throw string("Target velocity unreachable by joint");
 		return false;
 	}
 
-	float delta_p_dec = 0.5 * final_vel * abs(final_vel) / _constraints.acc_max;
+	float delta_p_dec = 0.5 * final_vel * abs(final_vel) / _constraints.acc.max;
 
-	if((final_pos + delta_p_dec) > (_constraints.pos_max + EPSILON) || (final_pos + delta_p_dec) < (_constraints.pos_min - EPSILON))
+	if((final_pos + delta_p_dec) > (_constraints.pos.max + EPSILON) || (final_pos + delta_p_dec) < (_constraints.pos.min - EPSILON))
 	{
         LOG_JOINT("Target position unreachable at specified velocity by joint");
         throw string("Target position unreachable at specified velocity by joint");
@@ -128,8 +128,8 @@ vector_t Joint::get_path(float initial_pos, float initial_vel , float final_pos,
     }
 
     float tf_lim = (delta_p / vel_c) \
-                    + (0.5 * sign_traj * (vel_c - final_vel) / _constraints.acc_max)\
-                    + (0.5 * sign_traj * (initial_vel - vel_c) / _constraints.acc_max);
+                    + (0.5 * sign_traj * (vel_c - final_vel) / _constraints.acc.max)\
+                    + (0.5 * sign_traj * (initial_vel - vel_c) / _constraints.acc.max);
 
     //Determine shape of trajectory
     if( (tf_sync < tf_lim) || (initial_vel == 0 && final_vel == 0))
@@ -163,10 +163,10 @@ vector_t Joint::trapezoidal_profile(float initial_pos, float initial_vel , float
         sign_traj = 1;
     }
 
-    float b = (_constraints.acc_max * tf_sync) + (sign_traj * initial_vel);
+    float b = (_constraints.acc.max * tf_sync) + (sign_traj * initial_vel);
 
     float vel_c = 0.5 * ( b - sqrt( pow(b,2) \
-                    - 4 * sign_traj * _constraints.acc_max * delta_p \
+                    - 4 * sign_traj * _constraints.acc.max * delta_p \
                     - 2 * pow((initial_vel - final_vel),2) ) );
 
     ret = generic_profile(initial_pos, initial_vel, final_pos, final_vel, tf_sync, tf_lim, delta_t, sign_traj, 1, vel_c);
@@ -192,7 +192,7 @@ vector_t Joint::floatramp_profile(float initial_pos, float initial_vel , float f
     	sign_traj = 1;
     }   
 
-   	float vel_c = (sign_traj * delta_p - 0.5 * (pow((initial_vel - final_vel),2) / _constraints.acc_max)) / (tf_sync - ((initial_vel  - final_vel) / (sign_traj * _constraints.acc_max)));
+   	float vel_c = (sign_traj * delta_p - 0.5 * (pow((initial_vel - final_vel),2) / _constraints.acc.max)) / (tf_sync - ((initial_vel  - final_vel) / (sign_traj * _constraints.acc.max)));
 
     ret = generic_profile(initial_pos, initial_vel, final_pos, final_vel, tf_sync, tf_lim, delta_t, sign_traj, 1, vel_c);
 
@@ -206,15 +206,15 @@ vector_t Joint::generic_profile(float initial_pos, float initial_vel, float fina
         Generate a generic profile (valid for trapezoidal and float ramp)
     */
 
-    float t1 = (sign_traj * (vel_c - initial_vel)) / (sign_traj * _constraints.acc_max);
-    float t2 = tf_sync - abs(vel_c - final_vel) / _constraints.acc_max;
+    float t1 = (sign_traj * (vel_c - initial_vel)) / (sign_traj * _constraints.acc.max);
+    float t2 = tf_sync - abs(vel_c - final_vel) / _constraints.acc.max;
 
-    polynom_t poly;
+    Polynom poly;
 
     // First piece
     poly.a0 = initial_pos;
     poly.a1 = initial_vel;
-    poly.a2 = 0.5 * sign_traj * sign_sync * _constraints.acc_max;
+    poly.a2 = 0.5 * sign_traj * sign_sync * _constraints.acc.max;
 
     vector_t traj1 = polynomial_piece_profile(poly, 0, t1, delta_t);
 
@@ -228,7 +228,7 @@ vector_t Joint::generic_profile(float initial_pos, float initial_vel, float fina
     //Third piece
     poly.a0 = polyval(poly, t2 - t1);
     poly.a1 = sign_traj * vel_c;
-    poly.a2 = - 0.5 * sign_traj * _constraints.acc_max;
+    poly.a2 = - 0.5 * sign_traj * _constraints.acc.max;
 
     vector_t traj3 = polynomial_piece_profile(poly, t2, tf_sync, delta_t);
 
@@ -270,7 +270,7 @@ vector_t Joint::generic_profile(float initial_pos, float initial_vel, float fina
     return complete_path;
 }
 
-vector_t Joint::polynomial_piece_profile(polynom_t polynome, float start, float stop, float delta)
+vector_t Joint::polynomial_piece_profile(Polynom polynome, float start, float stop, float delta)
 {
     /*
         Generate a polynomial piece profile
@@ -285,8 +285,8 @@ vector_t Joint::polynomial_piece_profile(polynom_t polynome, float start, float 
         throw string("Non causal trajectory profile requested");
     }
         
-    polynom_t polynome_dot = polyder(polynome);
-    polynom_t polynome_dot_dot = polyder(polynome_dot);
+    Polynom polynome_dot = polyder(polynome);
+    Polynom polynome_dot_dot = polyder(polynome_dot);
 
     vector<float> time = arange<float>(start, stop, delta);
     vector<float> dtime = arange<float>(0, stop-start, delta);
@@ -299,9 +299,9 @@ vector_t Joint::polynomial_piece_profile(polynom_t polynome, float start, float 
     return piece;
 }
 
-trajectory_time_t Joint::time_to_destination(float initial_pos, float initial_vel, float final_pos, float final_vel)
+TrajectoryTime Joint::time_to_destination(float initial_pos, float initial_vel, float final_pos, float final_vel)
 {
-    trajectory_time_t time_traj;
+    TrajectoryTime time_traj;
 
     if(!trajectory_is_feasible(initial_pos, initial_vel, final_pos, final_vel))
     {
@@ -322,11 +322,11 @@ trajectory_time_t Joint::time_to_destination(float initial_pos, float initial_ve
 
     int sign_traj = trajectory_sign(initial_pos, initial_vel, final_pos, final_vel);
 
-    time_traj.t1 = (sign_traj * _constraints.vel_max - initial_vel) / (sign_traj * _constraints.acc_max);
+    time_traj.t1 = (sign_traj * _constraints.vel.max - initial_vel) / (sign_traj * _constraints.acc.max);
 
-    time_traj.t2 = (1 / _constraints.vel_max) * ((pow(final_vel,2) + pow(initial_vel,2) - 2 * sign_traj * initial_vel) / (2 * _constraints.acc_max) + (sign_traj * delta_p));
+    time_traj.t2 = (1 / _constraints.vel.max) * ((pow(final_vel,2) + pow(initial_vel,2) - 2 * sign_traj * initial_vel) / (2 * _constraints.acc.max) + (sign_traj * delta_p));
 
-    time_traj.tf = time_traj.t2 - (final_vel - sign_traj * _constraints.vel_max) / (sign_traj * _constraints.acc_max);
+    time_traj.tf = time_traj.t2 - (final_vel - sign_traj * _constraints.vel.max) / (sign_traj * _constraints.acc.max);
 
     return time_traj;
 }
@@ -354,7 +354,7 @@ int Joint::trajectory_sign(float initial_pos, float initial_vel, float final_pos
     	sign = 1;
     }
 
-    float delta_p_crit = 0.5 * sign * (pow(final_vel,2) - pow(initial_vel,2))/ _constraints.acc_max;
+    float delta_p_crit = 0.5 * sign * (pow(final_vel,2) - pow(initial_vel,2))/ _constraints.acc.max;
 
     if(delta_p - delta_p_crit == 0)
     {
@@ -396,7 +396,7 @@ ostream& operator<< (ostream& out, const vector_t& v)
     return out;
 }
 
-ostream& operator<< (ostream& out, const trajectory_time_t& t)
+ostream& operator<< (ostream& out, const TrajectoryTime& t)
 {
     out << "Trejectory time : " << endl;
     out << "t1: "<< t.t1 << " t2 : "<< t.t2 << " tf: "<< t.tf;

@@ -1,3 +1,4 @@
+#include <EEPROM.h>
 #include "MotorWrapper.h"
 #include "mathutils.h"
 #include <iostream>
@@ -28,12 +29,10 @@ MotorWrapper::MotorWrapper()
 	_mutex.release();
 }
 
-void MotorWrapper::attach(int id)
+void MotorWrapper::setID(int id)
 {
 	_mutex.acquire();
-
-	_motor.attach(id);
-
+	_id = id;
 	_mutex.release();
 }
 
@@ -45,6 +44,16 @@ void MotorWrapper::setOFFSET(float offset)
 
 	_mutex.release();
 }
+
+void MotorWrapper::init()
+{
+	_mutex.acquire();
+
+	_motor.attach(_id);
+
+	_mutex.release();
+}
+
 
 void MotorWrapper::setGoalPos(float pos)
 {
@@ -101,6 +110,23 @@ void MotorWrapper::process(float timestep)
 		_arrived = true;
 	}
 
+	_mutex.release();
+}
+
+void MotorWrapper::load(int address)
+{
+	_mutex.acquire();
+	EEPROM.get(address, _id); 			address += sizeof(_id);
+	EEPROM.get(address, _offset);    	address += sizeof(_offset);
+	_mutex.release();
+}
+
+void MotorWrapper::save(int address) const
+{
+	_mutex.acquire();
+	EEPROM.put(address, _id); 			address += sizeof(_id);
+	EEPROM.put(address, _offset);    	address += sizeof(_offset);
+	EEPROM.commit();
 	_mutex.release();
 }
 
