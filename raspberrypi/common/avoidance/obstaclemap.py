@@ -5,7 +5,7 @@ import common.avoidance.geometry as geometry
 
 
 class ObstacleMap:
-    nb_phi = 50
+    nb_phi = 100
     INFINITE = 100000
     last_angle_guide = None
 
@@ -141,6 +141,7 @@ class ObstacleMap:
             return self.INFINITE
 
         distance = p1.distance(p2)
+        print(gap[0]*360/self.nb_phi, gap[1]*360/self.nb_phi, " : ", distance)
         return distance
 
     def get_nearest_gap(self, gaps, angle_to_goal):
@@ -162,11 +163,11 @@ class ObstacleMap:
 
     def get_admissible_gaps(self, histo, min_width):
         return [gap for gap in self.get_gaps(histo)
-                if self.get_gap_width(histo, gap) >= min_width]
+                if abs(gap[0] - gap[1]) > 2 and self.get_gap_width(histo, gap) >= min_width]
 
     def get_ftg_angle_guide(self, robot, goal, min_width=300, distance_max=500, alpha_static=200.0):
         distance_max = min(robot.distance(goal), distance_max)
-        alpha_static = min(distance_max / 2, alpha_static)
+        alpha_static = min(robot.distance(goal)/2, alpha_static)
 
         histo = self.get_polar_histo(robot, distance_max)
 

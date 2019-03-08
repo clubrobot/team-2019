@@ -10,13 +10,13 @@ import time
 import os
 
 
-TEST = True
+TEST = False
 if TEST:
     from robots.setup_wheeledbase import *
     linvel = 200 #wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/4
     angvel = wheeledbase.get_parameter_value(POSITIONCONTROL_ANGVELMAX_ID, FLOAT)
 else:
-    linvel = 200
+    linvel = 600
     angvel = -1
 
 
@@ -27,8 +27,7 @@ print("angvel : ", angvel)
 geo = geogebra.Geogebra("test.ggb")
 robot = geometry.Point(*geo.get("origin"))
 goal = geometry.Point(*geo.get("goal"))
-period = 1
-max_w_pf = 10
+max_w_pf = 2
 robot_width = 300
 
 obsmap = ObstacleMap()
@@ -52,10 +51,11 @@ distance_max = 800
 
 #pf
 objs = list()
-# obsmap.add_obstacle_pf(PointObs(goal.x, goal.y, funct_list["lin"](a=max_w_pf/robot_width, b=max_w_pf)))
+#obsmap.add_obstacle_pf(PointObs(goal.x, goal.y, funct_list["lin"](a=-max_w_pf/robot_width, b=-max_w_pf)))
 
 
-step = linvel
+timestep = 0.2
+step = linvel * timestep
 path = []
 nb_pts = 0
 
@@ -80,8 +80,8 @@ with open("list_point", "w") as file:
 
         # potential field
         angle_guide_pf, w_pf = obsmap.get_pf_angle_guide(robot)
-        w_pf = abs(w_pf/max_w_pf)
-        v_pf = min(1.0, 1-w_pf)
+        w_pf = abs(w_pf)
+        v_pf = min(1.0, max_w_pf-w_pf)
 
         # all
         # if obsmap.angle_difference(angle_guide_ftg, angle_guide_pf) < 3/4*math.pi:
@@ -155,8 +155,8 @@ with open("list_point", "w") as file:
         else:
             # dx = math.cos(angle_guide) * v * diff*10
             # dy = math.sin(angle_guide) * v * diff*10
-            dx = math.cos(angle_guide) * v * 0.5
-            dy = math.sin(angle_guide) * v * 0.5
+            dx = math.cos(angle_guide) * v * timestep
+            dy = math.sin(angle_guide) * v * timestep
             robot = geometry.Point(robot.x + dx, robot.y + dy)
             print("ROBOT : " + "(" + str(round(robot.x)) + ", " + str(round(robot.y)) + ")")
 
