@@ -1,5 +1,6 @@
 #include "instructions.h"
 #include <vector>
+#include "addresses.h"
 #include "../common/SerialTalks.h"
 #include "../common/IK/ArmManager.h"
 #include "../common/IK/TrajectoryManager.h"
@@ -15,17 +16,9 @@ extern MotorWrapper AX1;
 extern MotorWrapper AX2;
 extern MotorWrapper AX3;
 
-void ARM_BEGIN(SerialTalks& talks, Deserializer& input, Serializer& output)
-{
-    traj_manager.begin();
-}
-
 void ADD_MOVE(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
-    coords_t pos;
-    pos.x   = input.read<float>();
-    pos.y   = input.read<float>();
-    pos.phi = input.read<float>();
+    Coords pos(input.read<float>(), input.read<float>(), input.read<float>());
 
     try
     {
@@ -74,66 +67,163 @@ void STOP_SLUICE(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
     pump.stopSluice();
 }
-
-void SET_MOTORS_ID(SerialTalks& talks, Deserializer& input, Serializer& output)
+void SET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
-    float id1     = input.read<int>();
-    float id2     = input.read<int>();
-    float id3     = input.read<int>();
-
-    AX1.attach(id1);
-    AX2.attach(id2);
-    AX3.attach(id3);
+    byte  id = input.read<byte>();
+	switch (id)
+	{
+        case MOTOR1_ID_ID :
+            AX1.setID(input.read<int>());
+            AX1.save(MOTOR1_ADDRESS);
+            break;
+        case MOTOR1_OFFSET_ID :
+            AX1.setOFFSET(input.read<float>());
+            AX1.save(MOTOR1_ADDRESS);
+            break;
+        case MOTOR2_ID_ID :
+            AX2.setID(input.read<int>());
+            AX2.save(MOTOR1_ADDRESS);
+            break;
+        case MOTOR2_OFFSET_ID :
+            AX2.setOFFSET(input.read<float>());
+            AX2.save(MOTOR1_ADDRESS);
+            break;
+        case MOTOR3_ID_ID :
+            AX3.setID(input.read<int>());
+            AX3.save(MOTOR1_ADDRESS);
+            break;
+        case MOTOR3_OFFSET_ID :
+            AX3.setOFFSET(input.read<float>());
+            AX3.save(MOTOR1_ADDRESS);
+            break;
+        case WORKSPACE_FRONT_ID :
+            {
+            Workspace ws(input.read<float>(),input.read<float>(),input.read<float>(),input.read<float>(),input.read<float>());
+            arm_manager.set_workspace(ws, arm_manager.get_workspace_back());
+            arm_manager.save(ARM_MANAGER_ADDRESS);
+            break;
+            }
+        case WORKSPACE_BACK_ID :
+            {
+            Workspace ws(input.read<float>(),input.read<float>(),input.read<float>(),input.read<float>(),input.read<float>());
+            arm_manager.set_workspace(arm_manager.get_workspace_front(), ws);
+            arm_manager.save(ARM_MANAGER_ADDRESS);
+            break;
+            }
+        case ORIGIN_ID :
+            {
+            Coords origin(input.read<float>(), input.read<float>(), input.read<float>());
+            arm_manager.set_origin(origin);
+            arm_manager.save(ARM_MANAGER_ADDRESS);
+            break;
+            }
+        case JOINTS_ID :
+            {
+            Joints joint(input.read<float>(), input.read<float>(), input.read<float>());
+            arm_manager.set_initial_joint_pos(joint);
+            arm_manager.save(ARM_MANAGER_ADDRESS);
+            }
+            break;
+        case LINK_1_ID :
+            arm_manager.set_arm_link(input.read<float>(), arm_manager.get_link2(), arm_manager.get_link3(), arm_manager.get_elbow());
+            arm_manager.save(ARM_MANAGER_ADDRESS);
+            break;
+        case LINK_2_ID :
+            arm_manager.set_arm_link(arm_manager.get_link1(), input.read<float>(), arm_manager.get_link3(), arm_manager.get_elbow());
+            arm_manager.save(ARM_MANAGER_ADDRESS);
+            break;
+        case LINK_3_ID :
+            arm_manager.set_arm_link(arm_manager.get_link1(), arm_manager.get_link2(), input.read<float>(), arm_manager.get_elbow());
+            arm_manager.save(ARM_MANAGER_ADDRESS);
+            break;
+        case ELBOW_ID :
+            arm_manager.set_arm_link(arm_manager.get_link1(), arm_manager.get_link2(), arm_manager.get_link3(), input.read<float>());
+            arm_manager.save(ARM_MANAGER_ADDRESS);
+            break;
+        case TIMESTEP_ID :
+            traj_manager.set_timestep(input.read<float>());
+            traj_manager.save(TRAJ_MANAGER_ADDRESS);
+            break;
+    }
 }
 
-void SET_MOTORS_OFFSET(SerialTalks& talks, Deserializer& input, Serializer& output)
+void GET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
-    float off1     = input.read<float>();
-    float off2     = input.read<float>();
-    float off3     = input.read<float>();
-
-    AX1.setOFFSET(off1);
-    AX2.setOFFSET(off2);
-    AX3.setOFFSET(off3);
-}
-
-void SET_WORKSPACE(SerialTalks& talks, Deserializer& input, Serializer& output)
-{
-    workspace_t front;
-    workspace_t back;
-
-    front.x_min             = input.read<float>();
-    front.x_max             = input.read<float>();
-    front.y_min             = input.read<float>();
-    front.y_max             = input.read<float>();
-    front.elbow_orientation = input.read<int>();
-
-    back.x_min              = input.read<float>();
-    back.x_max              = input.read<float>();
-    back.y_min              = input.read<float>();
-    back.y_max              = input.read<float>();
-    back.elbow_orientation  = input.read<int>();
-
-    arm_manager.init_workspace(front, back);
-
-}
-
-void SET_ORIGIN(SerialTalks& talks, Deserializer& input, Serializer& output)
-{
-    coords_t origin;
-    origin.x   = input.read<float>();
-    origin.y   = input.read<float>();
-    origin.phi = input.read<float>();
-
-    arm_manager.set_origin(origin);
-}
-
-void SET_LINK_LEN(SerialTalks& talks, Deserializer& input, Serializer& output)
-{
-    float link1     = input.read<float>();
-    float link2     = input.read<float>();
-    float link3     = input.read<float>();
-    int   elbow     = input.read<int>();
-
-    arm_manager.set_arm_link(link1, link2, link3, elbow);
+    byte  id = input.read<byte>();
+	switch (id)
+	{
+        case MOTOR1_ID_ID :
+            output.write<int>(AX1.getID());
+            break;
+        case MOTOR1_OFFSET_ID :
+            output.write<float>(AX1.getOFFSET());
+            break;
+        case MOTOR2_ID_ID :
+            output.write<int>(AX2.getID());
+            break;
+        case MOTOR2_OFFSET_ID :
+            output.write<float>(AX2.getOFFSET());
+            break;
+        case MOTOR3_ID_ID :
+            output.write<int>(AX3.getID());
+            break;
+        case MOTOR3_OFFSET_ID :
+            output.write<float>(AX3.getOFFSET());
+            break;
+        case WORKSPACE_FRONT_ID :
+            {
+            Workspace ws;
+            ws = arm_manager.get_workspace_front();
+            output.write<float>(ws.x_min);
+            output.write<float>(ws.x_max);
+            output.write<float>(ws.y_min);
+            output.write<float>(ws.y_max);
+            output.write<float>(ws.elbow_or);
+            break;
+            }
+        case WORKSPACE_BACK_ID :
+            {
+            Workspace ws;
+            ws = arm_manager.get_workspace_back();
+            output.write<float>(ws.x_min);
+            output.write<float>(ws.x_max);
+            output.write<float>(ws.y_min);
+            output.write<float>(ws.y_max);
+            output.write<float>(ws.elbow_or);
+            break;
+            }
+        case ORIGIN_ID :
+            {
+            Coords origin;
+            origin = arm_manager.get_origin();
+            output.write<float>(origin.x);
+            output.write<float>(origin.y);
+            output.write<float>(origin.phi);
+            break;
+            }
+        case JOINTS_ID :
+            {
+            Joints joint;
+            joint = arm_manager.get_joints();
+            output.write<float>(joint.th1);
+            output.write<float>(joint.th2);
+            output.write<float>(joint.th3);
+            }
+            break;
+        case LINK_1_ID :
+            output.write<float>(arm_manager.get_link1());
+            break;
+        case LINK_2_ID :
+            output.write<float>(arm_manager.get_link2());
+            break;
+        case LINK_3_ID :
+            output.write<float>(arm_manager.get_link3());
+            break;
+        case ELBOW_ID :
+            output.write<float>(arm_manager.get_elbow());
+            break;
+        case TIMESTEP_ID :
+            output.write<float>(traj_manager.get_timestep());
+            break;
+    }
 }

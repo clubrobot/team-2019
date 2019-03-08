@@ -16,13 +16,21 @@
 #define START_SLUICE_OPCODE         0X17 
 #define STOP_SLUICE_OPCODE          0x18
 
-#define SET_MOTORS_ID_OPCODE        0X19
-#define SET_MOTORS_OFFSET_OPCODE    0X1A
-#define SET_WORKSPACE_OPCODE        0X1B
-#define SET_ORIGIN_OPCODE           0X1C
-#define SET_LINK_LEN_OPCODE         0X1D
-
-void ARM_BEGIN(SerialTalks& talks, Deserializer& input, Serializer& output);
+#define MOTOR1_ID_ID                0x10
+#define MOTOR1_OFFSET_ID            0x11
+#define MOTOR2_ID_ID                0x12
+#define MOTOR2_OFFSET_ID            0x13
+#define MOTOR3_ID_ID                0x14
+#define MOTOR3_OFFSET_ID            0x15
+#define WORKSPACE_FRONT_ID          0x16
+#define WORKSPACE_BACK_ID           0x17
+#define ORIGIN_ID                   0x18
+#define JOINTS_ID                   0x19
+#define LINK_1_ID                   0x1A
+#define LINK_2_ID                   0x1B
+#define LINK_3_ID                   0x1C
+#define ELBOW_ID                    0x1D
+#define TIMESTEP_ID                 0x1E
 
 void ADD_MOVE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
@@ -40,16 +48,9 @@ void START_SLUICE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void STOP_SLUICE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
-void SET_MOTORS_ID(SerialTalks& talks, Deserializer& input, Serializer& output);
+void SET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
-void SET_MOTORS_OFFSET(SerialTalks& talks, Deserializer& input, Serializer& output);
-
-void SET_WORKSPACE(SerialTalks& talks, Deserializer& input, Serializer& output);
-
-void SET_ORIGIN(SerialTalks& talks, Deserializer& input, Serializer& output);
-
-void SET_LINK_LEN(SerialTalks& talks, Deserializer& input, Serializer& output);
-
+void GET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 #endif //__INSTRUCTIONS_H__
 
