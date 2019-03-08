@@ -12,13 +12,13 @@
 namespace IK
 {
 
-bool equals(double a, double b, double epsilon = EPSILON)
+bool equals(float a, float b, float epsilon = EPSILON)
 { 
     return ((std::abs(a - b) < epsilon));
 }
 
 
-void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or) throw()
+void Picker::init(float l1, float l2, float l3, joints_t joints, coords_t origin, int elbow_or) throw()
 {
     _joints 	= joints;
 	_origin	= origin;
@@ -52,7 +52,7 @@ joints_t Picker::inverse_kinematics(coords_t tool)
 {
     joints_t ret;
 
-    double dotx,doty,costh;
+    float dotx,doty,costh;
 
     dotx = (_tool.x - _origin.x) - (_l3 * cos(_tool.phi));
     doty = (_tool.y - _origin.y) - (_l3 * sin(_tool.phi));
@@ -95,7 +95,7 @@ joints_t Picker::get_joints(void) const throw()
 {
     joints_t new_joints;
 
-    double dotx,doty,costh,k1,k2,c2,s2;
+    float dotx,doty,costh,k1,k2,c2,s2;
 
     dotx = (_tool.x - _origin.x) - (_l3 * cos(_tool.phi));
     doty = (_tool.y - _origin.y) - (_l3 * sin(_tool.phi));
@@ -144,17 +144,17 @@ matrix_t Picker::compute_jacobian(void) throw()
     */
     matrix_t ret;
 
-    double dx_dth1 = - _l1 * sin(_joints.th1) - _l2 * sin(_joints.th1 + _joints.th2) - _l3 * sin(_joints.th1 + _joints.th2 + _joints.th3);
+    float dx_dth1 = - _l1 * sin(_joints.th1) - _l2 * sin(_joints.th1 + _joints.th2) - _l3 * sin(_joints.th1 + _joints.th2 + _joints.th3);
 
-    double dx_dth2 = - _l2 * sin(_joints.th1 + _joints.th2) - _l3 * sin(_joints.th1 + _joints.th2 + _joints.th3);
+    float dx_dth2 = - _l2 * sin(_joints.th1 + _joints.th2) - _l3 * sin(_joints.th1 + _joints.th2 + _joints.th3);
 
-    double dx_dth3 = - _l3 * sin(_joints.th1 + _joints.th2 + _joints.th3);;
+    float dx_dth3 = - _l3 * sin(_joints.th1 + _joints.th2 + _joints.th3);;
 
-    double dy_dth1 = _l1 * cos(_joints.th1) + _l2 * cos(_joints.th1 + _joints.th2) + _l3 * cos(_joints.th1 + _joints.th2 + _joints.th3);
+    float dy_dth1 = _l1 * cos(_joints.th1) + _l2 * cos(_joints.th1 + _joints.th2) + _l3 * cos(_joints.th1 + _joints.th2 + _joints.th3);
 
-    double dy_dth2 = _l2 * cos(_joints.th1 + _joints.th2) + _l3 * cos(_joints.th1 + _joints.th2 + _joints.th3);
+    float dy_dth2 = _l2 * cos(_joints.th1 + _joints.th2) + _l3 * cos(_joints.th1 + _joints.th2 + _joints.th3);
 
-    double dy_dth3 = _l3 * cos(_joints.th1 + _joints.th2 + _joints.th3);
+    float dy_dth3 = _l3 * cos(_joints.th1 + _joints.th2 + _joints.th3);
 
     ret = _matrix.createMatrix33(dx_dth1, dx_dth2, dx_dth3, dy_dth1, dy_dth2, dy_dth3, 1.0, 1.0, 1.0);
      
@@ -222,7 +222,7 @@ joints_t Picker::get_joints_vel(coords_t tool_vel)
     return vel;
 }
 
-path_t Picker::get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t)
+path_t Picker::get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, float delta_t)
 {
     joints_t start_joints_pos = inverse_kinematics(start_pos);
         
@@ -231,7 +231,7 @@ path_t Picker::get_path(coords_t start_pos, coords_t start_vel, coords_t target_
     joints_t target_joints_pos = inverse_kinematics(target_pos);
     joints_t target_joints_vel = get_joints_vel(target_vel);
 
-    double tf_sync = synchronisation_time(start_joints_pos,
+    float tf_sync = synchronisation_time(start_joints_pos,
                                             start_joints_vel,
                                             target_joints_pos,
                                             target_joints_vel);
@@ -263,7 +263,7 @@ path_t Picker::get_path(coords_t start_pos, coords_t start_vel, coords_t target_
     return new_path;
 }
 
-double Picker::synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel)
+float Picker::synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel)
 {
     /*        
     Return largest time to destination to use slowest joint as synchronisation
@@ -276,7 +276,7 @@ double Picker::synchronisation_time(joints_t start_pos, joints_t start_vel, join
 
     trajectory_time_t t_theta3 = Theta3_joint.time_to_destination(start_pos.th3, start_vel.th3, target_pos.th3, target_vel.th3);
 
-    double maxi = max(t_theta1.tf, t_theta2.tf);
+    float maxi = max(t_theta1.tf, t_theta2.tf);
      
     return max(maxi, t_theta3.tf);
 }

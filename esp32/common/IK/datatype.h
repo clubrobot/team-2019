@@ -8,27 +8,27 @@ using namespace std;
 /* coords struct */
 typedef struct
 {
-	double x;
-	double y;
-	double phi;
+	float x;
+	float y;
+	float phi;
 }coords_t;
 
 /* joints angles struct */
 typedef struct
 {
-	double th1;
-	double th2;
-	double th3;
+	float th1;
+	float th2;
+	float th3;
 
 }joints_t;
 
 /* vector type struct */
 typedef struct 
 {
-	vector<double> t;
-	vector<double> pos;
-	vector<double> vel;
-	vector<double> acc;
+	vector<float> t;
+	vector<float> pos;
+	vector<float> vel;
+	vector<float> acc;
 }vector_t;
 
 /* detailled pos struct */
@@ -53,42 +53,42 @@ typedef struct
 /* polynom struct */
 typedef struct
 {
-	double a0;
-	double a1;
-	double a2;
+	float a0;
+	float a1;
+	float a2;
 }polynom_t;
 
 /* constraints struct */
 typedef struct
 {
-	double pos_min;
-	double pos_max;
+	float pos_min;
+	float pos_max;
 
-	double vel_min;
-	double vel_max;
+	float vel_min;
+	float vel_max;
 
-	double acc_min;
-	double acc_max;
+	float acc_min;
+	float acc_max;
 }constraints_t;
 
 /* trajectory time struct */
 typedef struct
 {
-	double t1;
-	double t2;
-	double tf;
+	float t1;
+	float t2;
+	float tf;
 }trajectory_time_t;
 
 /* workaspaces struct */
 typedef struct
 {
-    double x_min;
-    double x_max;
+    float x_min;
+    float x_max;
 
-    double y_min;
-    double y_max;
+    float y_min;
+    float y_max;
 
-    double elbow_orientation;
+    float elbow_orientation;
 }workspace_t;
 
 

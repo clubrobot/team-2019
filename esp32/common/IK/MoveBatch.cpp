@@ -19,7 +19,7 @@ MoveBatch::MoveBatch()
     _mutex.release();
 }
 
-void MoveBatch::addMove(uint8_t id, double pos)
+void MoveBatch::addMove(uint8_t id, float pos)
 {
     _mutex.acquire();
     isActive = true;
@@ -32,7 +32,7 @@ void MoveBatch::addMove(uint8_t id, double pos)
     _mutex.release();
 }
 
-void MoveBatch::addVelocityProfile(uint8_t id, vector<double> vel, vector<double> time)
+void MoveBatch::addVelocityProfile(uint8_t id, vector<float> vel, vector<float> time)
 {
     _mutex.acquire();
     isActive = true;
@@ -45,7 +45,7 @@ void MoveBatch::addVelocityProfile(uint8_t id, vector<double> vel, vector<double
     _mutex.release();
 }
 
-void MoveBatch::addDuration(double time)
+void MoveBatch::addDuration(float time)
 {
     _mutex.acquire();
     moveDuration = time;

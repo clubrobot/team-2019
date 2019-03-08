@@ -16,7 +16,7 @@ class Picker
 {
 	public:
 
-		void init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or) throw();
+		void init(float l1, float l2, float l3, joints_t joints, coords_t origin, int elbow_or) throw();
 		
 		void flip_elbow(int elbow) throw();
 		
@@ -36,11 +36,11 @@ class Picker
 
 		matrix_t compute_jacobian(void) throw();
 
-		path_t get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t);
+		path_t get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, float delta_t);
 
-		double synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel);
+		float synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel);
 
-		double _flip_elbow;
+		float _flip_elbow;
 		constraints_t x_axis;
 		constraints_t y_axis;
 		constraints_t phi_axis;
@@ -51,10 +51,10 @@ class Picker
 		coords_t _tool;
 		joints_t _joints;
 
-		double _l1;
-		double _l2;
-		double _l3;
-		double _lsq;
+		float _l1;
+		float _l2;
+		float _l3;
+		float _lsq;
 
 		Joint Theta1_joint = Joint(0, -M_PI, M_PI, -AX_12_MAX_SPEED_RAD, AX_12_MAX_SPEED_RAD, -25, 25);
 		Joint Theta2_joint = Joint(1, -(5*M_PI)/6, (5*M_PI)/6, -AX_12_MAX_SPEED_RAD, AX_12_MAX_SPEED_RAD, -25, 25);

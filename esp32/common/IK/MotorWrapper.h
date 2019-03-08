@@ -35,7 +35,7 @@ class MotorWrapper : public PeriodicProcess
         void setOFFSET(float offset);
 
         void setGoalPos(float pos);
-        void setVelocityProfile(vector<double> vel);
+        void setVelocityProfile(vector<float> vel);
 
         bool arrived() const {return _arrived;}
 
@@ -54,7 +54,7 @@ class MotorWrapper : public PeriodicProcess
 
         Motor_state_t _state;
 
-        vector<double> _vel_profile;
+        vector<float> _vel_profile;
 
         AX12 _motor;
 

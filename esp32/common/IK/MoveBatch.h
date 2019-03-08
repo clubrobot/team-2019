@@ -13,9 +13,9 @@ using namespace std;
 typedef struct 
 {
     bool isActive;
-    double position;
-    vector<double> vel;
-    vector<double> time;
+    float position;
+    vector<float> vel;
+    vector<float> time;
 }MoveCommand_t;
 
 class MoveBatch
@@ -23,17 +23,17 @@ class MoveBatch
     public:
         MoveBatch();
         
-        void addMove(uint8_t id, double pos);
-        void addVelocityProfile(uint8_t id, vector<double> vel, vector<double> time);
-        void addDuration(double time);
+        void addMove(uint8_t id, float pos);
+        void addVelocityProfile(uint8_t id, vector<float> vel, vector<float> time);
+        void addDuration(float time);
 
         bool   is_active() const {return isActive;}
-        double get_duration() const {return moveDuration;}
+        float get_duration() const {return moveDuration;}
 
         MoveCommand_t batch[MAX_JOINTS];
     private:
         bool isActive;
-        double moveDuration;
+        float moveDuration;
 
         Mutex _mutex;
         

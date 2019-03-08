@@ -33,8 +33,8 @@ class TrajectoryManager : public PeriodicProcess
     private :
         virtual void process(float timestep);
 
-        double convert_deg(double theta);
-        double convert_speed(double theta_speed);
+        float convert_deg(float theta);
+        float convert_speed(float theta_speed);
 
         void addMoveBatch(MoveBatch mb);
 

@@ -57,7 +57,7 @@ void MotorWrapper::setGoalPos(float pos)
 	_mutex.release();
 }
 
-void MotorWrapper::setVelocityProfile(vector<double> vel)
+void MotorWrapper::setVelocityProfile(vector<float> vel)
 {
 	_mutex.acquire();
 	_vel_profile = vel;

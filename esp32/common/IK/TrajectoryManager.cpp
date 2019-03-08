@@ -86,7 +86,7 @@ void TrajectoryManager::process(float timestep)
 {
     _mutex.acquire();
 
-    static double th1, th2, th3, th1_inter, th2_inter, th3_inter;
+    static float th1, th2, th3, th1_inter, th2_inter, th3_inter;
 
     if(!_isExecutingBatch)
     {
@@ -133,17 +133,17 @@ void TrajectoryManager::process(float timestep)
     _mutex.release();
 }
 
-double TrajectoryManager::convert_deg(double theta)
+float TrajectoryManager::convert_deg(float theta)
 {
-    double th;
+    float th;
 
     th =  theta * (180.0 / M_PI);
 
     return th;
 }
-double TrajectoryManager::convert_speed(double theta_speed)
+float TrajectoryManager::convert_speed(float theta_speed)
 {
-    double speed;
+    float speed;
 
     speed = theta_speed * ( 60.0 / (2.0 * M_PI));
 

@@ -11,7 +11,7 @@
 namespace IK
 {
 
-Scara::Scara(double l1, double l2, joints_t joints, coords_t origin)
+Scara::Scara(float l1, float l2, joints_t joints, coords_t origin)
 {
 	_joints 	= joints;
 	_origin	= origin;
@@ -31,7 +31,7 @@ coords_t Scara::forward_kinematics(joints_t joints)
 joints_t Scara::inverse_kinematics(coords_t tool)
 {
 
-	double norm = pow((tool.x - _origin.x),2) + pow((tool.y - _origin.y),2);
+	float norm = pow((tool.x - _origin.x),2) + pow((tool.y - _origin.y),2);
 
     if( norm > pow((_l1 + _l2),2) || norm < pow((_l1 - _l2),2))
     {
@@ -64,8 +64,8 @@ joints_t Scara::get_joints(void)
 {
     joints_t new_joints;
 
-	double x = _tool.x - _origin.x;
-    double y = _tool.y - _origin.y;
+	float x = _tool.x - _origin.x;
+    float y = _tool.y - _origin.y;
 
     if(x == 0 and y == 0)
     {
@@ -73,13 +73,13 @@ joints_t Scara::get_joints(void)
     	return new_joints;
     }
 
-    double l = pow(x,2) + pow(y,2);
+    float l = pow(x,2) + pow(y,2);
     
-   	double lsq = _lsq;
+   	float lsq = _lsq;
 
-    double cos_gamma = (l + pow(_l1,2) - pow(_l2,2)) / (2 * _l1 * sqrt(l));
+    float cos_gamma = (l + pow(_l1,2) - pow(_l2,2)) / (2 * _l1 * sqrt(l));
 
-    double gamma;
+    float gamma;
     //Numerical errors can make abs(cos_gamma) > 1
     if(cos_gamma > 1 - EPSILON || cos_gamma < (-1 + EPSILON))
     {
@@ -122,13 +122,13 @@ matrix_t Scara::compute_jacobian(void)
         Returns jacobian matrix at current state
     */
 
-    double dx_dth1 = - _l1 * sin(_joints.th1) - _l2 * sin(_joints.th1 + _joints.th2);
+    float dx_dth1 = - _l1 * sin(_joints.th1) - _l2 * sin(_joints.th1 + _joints.th2);
 
-    double dx_dth2 = - _l2 * sin(_joints.th1 + _joints.th2);
+    float dx_dth2 = - _l2 * sin(_joints.th1 + _joints.th2);
 
-    double dy_dth1 = _l1 * cos(_joints.th1) + _l2 * cos(_joints.th1 + _joints.th2);
+    float dy_dth1 = _l1 * cos(_joints.th1) + _l2 * cos(_joints.th1 + _joints.th2);
 
-    double dy_dth2 = _l2 * cos(_joints.th1 + _joints.th2);
+    float dy_dth2 = _l2 * cos(_joints.th1 + _joints.th2);
 
     return _matrix.createMatrix22(dx_dth1, dx_dth2, dy_dth1, dy_dth2);
 }
@@ -181,7 +181,7 @@ joints_t Scara::get_joints_vel(coords_t tool_vel)
     return vel;
 }
 
-path_t Scara::get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t)
+path_t Scara::get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, float delta_t)
 {
 
     joints_t start_joints_pos = inverse_kinematics(start_pos);
@@ -192,7 +192,7 @@ path_t Scara::get_path(coords_t start_pos, coords_t start_vel, coords_t target_p
     joints_t target_joints_vel = get_joints_vel(target_vel);
 
         
-    double tf_sync = synchronisation_time(start_joints_pos,
+    float tf_sync = synchronisation_time(start_joints_pos,
                                             start_joints_vel,
                                             target_joints_pos,
                                             target_joints_vel);
@@ -217,7 +217,7 @@ path_t Scara::get_path(coords_t start_pos, coords_t start_vel, coords_t target_p
     return new_path;
 }
 
-double Scara::synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel)
+float Scara::synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel)
 {
     /*        
     Return largest time to destination to use slowest joint as synchronisation

@@ -22,7 +22,7 @@ class ArmManager : public Picker
 
         void        init_workspace(workspace_t ws_front, workspace_t ws_back) throw();
         void        set_origin(coords_t origin) throw();
-        void        set_arm_link(double l1, double l2, double l3, int elbow_or);
+        void        set_arm_link(float l1, float l2, float l3, int elbow_or);
         void        init_arm();
         void        set_initial_joint_pos(joints_t joints) {_joints = joints;}
 
@@ -30,7 +30,7 @@ class ArmManager : public Picker
         coords_t    workspace_center(workspace_t workspace) throw();
         MoveBatch   go_to(coords_t start_pos, coords_t target_pos);
 
-        double      estimated_time_of_arrival(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel);
+        float      estimated_time_of_arrival(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel);
         
     private:
 

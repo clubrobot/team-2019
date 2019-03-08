@@ -7,7 +7,7 @@
     #define LOG_ARM(arg) 
 #endif
 
-static bool double_equals(double a, double b, double epsilon = 0.001)
+static bool float_equals(float a, float b, float epsilon = 0.001)
 {
     return std::abs(a - b) < epsilon;
 }
@@ -35,7 +35,7 @@ void ArmManager::set_origin(coords_t origin) throw()
     
     _mutex.release(); 
 }
-void ArmManager::set_arm_link(double l1, double l2, double l3, int elbow_or)
+void ArmManager::set_arm_link(float l1, float l2, float l3, int elbow_or)
 {
     _mutex.acquire();
 
@@ -187,7 +187,7 @@ MoveBatch ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, wo
     
     // Compute sequence to move from old workspace to the new position
     // in the new workspace defined
-    if(double_equals(new_workspace.elbow_orientation, Picker::_flip_elbow))
+    if(float_equals(new_workspace.elbow_orientation, Picker::_flip_elbow))
     {
         new_joints = goto_position(target_pos);
         new_path   = get_path(start_pos, NULL_VEL, target_pos, NULL_VEL, DELTA_T);
@@ -204,7 +204,7 @@ MoveBatch ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, wo
     }
     LOG_ARM("FLIP elbow move");
 
-    Picker::_flip_elbow *= (double)-1;
+    Picker::_flip_elbow *= (float)-1;
     
     //Go to target
     new_joints = goto_position(target_pos);
@@ -235,9 +235,9 @@ joints_t ArmManager::goto_position(coords_t target_pos)
     return ret;
 }
 
-double ArmManager::estimated_time_of_arrival(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel)
+float ArmManager::estimated_time_of_arrival(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel)
 {
-    double ret;
+    float ret;
 
     joints_t start_joints_pos = Picker::inverse_kinematics(start_pos);
     joints_t start_joints_vel = Picker::get_joints_vel(start_vel);

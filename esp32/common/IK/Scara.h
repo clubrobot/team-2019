@@ -20,9 +20,9 @@ class Scara
 		coords_t _tool;
 		joints_t _joints;
 
-		double _l1;
-		double _l2;
-		double _lsq;
+		float _l1;
+		float _l2;
+		float _lsq;
 
 		Joint Theta1_joint = Joint(0,-M_PI,M_PI,-1,1,-1,1);
 		Joint Theta2_joint = Joint(1,-M_PI,M_PI,-1,1,-1,1);
@@ -30,7 +30,7 @@ class Scara
 		Matrix2 _matrix;
 
 	public:
-		Scara(double l1, double l2, joints_t joints, coords_t origin);
+		Scara(float l1, float l2, joints_t joints, coords_t origin);
 		coords_t forward_kinematics(joints_t joints);
 
 		joints_t inverse_kinematics(coords_t tool);
@@ -47,9 +47,9 @@ class Scara
 
 		joints_t get_joints_vel(coords_t tool_vel);
 
-		path_t get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t);
+		path_t get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, float delta_t);
 
-		double synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel);
+		float synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel);
 };
 
 }
