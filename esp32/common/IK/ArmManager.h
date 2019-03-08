@@ -7,7 +7,7 @@
 #include "MotorWrapper.h"
 #include "../AX12/AX12.h"
 #include "thread_tools.h"
-#include "arm_config.h"
+#include "constants.h"
 #include "datatype.h"
 #include "MoveBatch.h"
 

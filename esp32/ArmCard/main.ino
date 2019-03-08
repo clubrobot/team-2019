@@ -7,7 +7,6 @@
 #include "../common/IK/TrajectoryManager.h"
 #include "../common/TaskManager.h"
 #include "../common/VacumPump.h"
-#include "arm_config.h"
 #include "addresses.h"
 #include "PIN.h"
 
