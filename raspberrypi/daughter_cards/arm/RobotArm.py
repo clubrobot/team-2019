@@ -28,9 +28,29 @@ _SET_WORKSPACE_OPCODE        = 0X1B
 _SET_ORIGIN_OPCODE           = 0X1C
 _SET_LINK_LEN_OPCODE         = 0X1D
 
+_SET_PARAMETERS_OPCODE       = 0X19
+_GET_PARAMETERS_OPCODE       = 0x1A
+
+MOTOR1_ID_ID                 = 0x10
+MOTOR1_OFFSET_ID             = 0x11
+MOTOR2_ID_ID                 = 0x12
+MOTOR2_OFFSET_ID             = 0x13
+MOTOR3_ID_ID                 = 0x14
+MOTOR3_OFFSET_ID             = 0x15
+WORKSPACE_FRONT_ID           = 0x16
+WORKSPACE_BACK_ID            = 0x17
+ORIGIN_ID                    = 0x18
+JOINTS_ID                    = 0x19
+LINK_1_ID                    = 0x1A
+LINK_2_ID                    = 0x1B
+LINK_3_ID                    = 0x1C
+ELBOW_ID                     = 0x1D
+TIMESTEP_ID                  = 0x1E
+
 Workspace = namedtuple('Workspace', ['x_min', 'x_max', 'y_min', 'y_max', 'elbow_or'])
 
-RobotSpacePoint = namedtuple('RobotSpacePoint', ['x', 'y', 'phi'])
+SpacePoint = namedtuple('SpacePoint', ['x', 'y', 'phi'])
+JointPoint = namedtuple('JointPoint', ['th1', 'th2', 'th2'])
 
 class RobotArm(SecureSerialTalksProxy):
 	def __init__(self, manager, uuid='/dev/arduino/arm'):
@@ -75,27 +95,43 @@ class RobotArm(SecureSerialTalksProxy):
 	def stop_sluice(self):
 		self.send(_STOP_SLUICE_OPCODE)
 
-	def set_motors_id(self, id1, id2, id3):
-		self.send(_SET_MOTORS_ID_OPCODE, INT(id1), INT(id2), INT(id3))
-		time.sleep(0.5)
+	def set_parameter_value(self, id, value, valuetype):
+		self.send(_SET_PARAMETERS_OPCODE, BYTE(id), valuetype(value))
+		time.sleep(0.01)
 
-	def set_motors_offsets(self, off1, off2, off3):
-		self.send(_SET_MOTORS_OFFSET_OPCODE, FLOAT(off1), FLOAT(off2), FLOAT(off3))
-		time.sleep(0.5)
+	def get_parameter_value(self, id, valuetype):
+		output = self.execute(_GET_PARAMETERS_OPCODE, BYTE(id))
+		value = output.read(valuetype)
+		return value
+
+	def set_workspace(self, id, ws):
+		self.send(_SET_PARAMETERS_OPCODE, BYTE(id), \
+										  FLOAT(ws.x_min), \
+										  FLOAT(ws.x_max), \
+										  FLOAT(ws.y_min), \
+										  FLOAT(ws.y_max), \
+										  FLOAT(ws.elbow_or))
+		time.sleep(0.01)
 	
-	def set_workspaces(self, ws_front, ws_back):
-		self.send(_SET_WORKSPACE_OPCODE, FLOAT(ws_front.x_min), FLOAT(ws_front.x_max),\
-										 FLOAT(ws_front.y_min), FLOAT(ws_front.y_max),\
-										 INT(ws_front.elbow_or), \
-										 FLOAT(ws_back.x_min), FLOAT(ws_back.x_max),\
-									     FLOAT(ws_back.y_min), FLOAT(ws_back.y_max),\
-										 INT(ws_back.elbow_or))
-		time.sleep(0.5)
-
 	def set_origin(self, origin):
-		self.send(_SET_ORIGIN_OPCODE, FLOAT(origin.x), FLOAT(origin.y), FLOAT(origin.phi))
-		time.sleep(0.5)
+		self.send(_SET_PARAMETERS_OPCODE, BYTE(ORIGIN_ID), FLOAT(origin.x), FLOAT(origin.y), FLOAT(origin.phi))
+		time.sleep(0.01)
 	
-	def set_links_len(self, link1, link2, link3):
-		self.send(_SET_LINK_LEN_OPCODE, FLOAT(link1), FLOAT(link2), FLOAT(link3))
-		time.sleep(0.5)
+	def set_joint(self, joint):
+		self.send(_SET_PARAMETERS_OPCODE, BYTE(JOINTS_ID), FLOAT(joint.th1), FLOAT(joint.th2), FLOAT(joint.th3))
+		time.sleep(0.01)
+
+	def get_workspace(self, id):
+		output = self.execute(_GET_PARAMETERS_OPCODE, BYTE(id))
+		value = output.read(FLOAT, FLOAT, FLOAT, FLOAT, FLOAT)
+		return Workspace(value)
+	
+	def get_origin(self):
+		output = self.execute(_GET_PARAMETERS_OPCODE, BYTE(ORIGIN_ID))
+		value = output.read(FLOAT, FLOAT, FLOAT)
+		return SpacePoint(value)
+	
+	def get_joint(self):
+		output = self.execute(_GET_PARAMETERS_OPCODE, BYTE(JOINTS_ID))
+		value = output.read(FLOAT, FLOAT, FLOAT)
+		return JointPoint(value)
