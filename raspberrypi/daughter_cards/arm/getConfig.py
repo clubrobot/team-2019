@@ -9,8 +9,8 @@ print('MOTOR2 ID : '+str(robArm.get_parameter_value(MOTOR2_ID_ID, INT)))
 print('MOTOR3 ID : '+str(robArm.get_parameter_value(MOTOR3_ID_ID, INT)))
 
 print('MOTOR1 OFFSET : '+str(robArm.get_parameter_value(MOTOR1_OFFSET_ID, FLOAT)))
-print('MOTOR2 OFFSET : '+str(robArm.get_parameter_value(MOTOR1_OFFSET_ID, FLOAT)))
-print('MOTOR3 OFFSET : '+str(robArm.get_parameter_value(MOTOR1_OFFSET_ID, FLOAT)))
+print('MOTOR2 OFFSET : '+str(robArm.get_parameter_value(MOTOR2_OFFSET_ID, FLOAT)))
+print('MOTOR3 OFFSET : '+str(robArm.get_parameter_value(MOTOR3_OFFSET_ID, FLOAT)))
 
 print('LINK1 LEN : '+str(robArm.get_parameter_value(LINK_1_ID, FLOAT)))
 print('LINK2 LEN : '+str(robArm.get_parameter_value(LINK_2_ID, FLOAT)))

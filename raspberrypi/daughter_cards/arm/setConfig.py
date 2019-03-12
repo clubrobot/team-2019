@@ -28,20 +28,22 @@ robArm = RobotArm(manager)
 robArm.set_parameter_value(MOTOR1_ID_ID, AX12_1_ID, INT)
 robArm.set_parameter_value(MOTOR2_ID_ID, AX12_2_ID, INT)
 robArm.set_parameter_value(MOTOR3_ID_ID, AX12_3_ID, INT)
-
+time.sleep(0.1)
 robArm.set_parameter_value(MOTOR1_OFFSET_ID, AX12_1_OFFSET, FLOAT)
 robArm.set_parameter_value(MOTOR2_OFFSET_ID, AX12_2_OFFSET, FLOAT)
 robArm.set_parameter_value(MOTOR3_OFFSET_ID, AX12_3_OFFSET, FLOAT)
-
+time.sleep(0.1)
 robArm.set_parameter_value(LINK_1_ID, LINK1_LEN, FLOAT)
 robArm.set_parameter_value(LINK_2_ID, LINK2_LEN, FLOAT)
 robArm.set_parameter_value(LINK_3_ID, LINK3_LEN, FLOAT)
 robArm.set_parameter_value(ELBOW_ID, ELBOW     , FLOAT)
-
+time.sleep(0.1)
 robArm.set_workspace(WORKSPACE_FRONT_ID, WS_FRONT)
+time.sleep(0.1)
 robArm.set_workspace(WORKSPACE_BACK_ID , WS_BACK)
-
+time.sleep(0.1)
 robArm.set_origin(ORIGIN)
+time.sleep(0.1)
 robArm.set_joint(JOINTS)
 
 robArm.set_parameter_value(TIMESTEP_ID, TIMESTEP, FLOAT)

@@ -124,14 +124,14 @@ class RobotArm(SecureSerialTalksProxy):
 	def get_workspace(self, id):
 		output = self.execute(_GET_PARAMETERS_OPCODE, BYTE(id))
 		value = output.read(FLOAT, FLOAT, FLOAT, FLOAT, FLOAT)
-		return Workspace(value)
+		return Workspace(*value)
 	
 	def get_origin(self):
 		output = self.execute(_GET_PARAMETERS_OPCODE, BYTE(ORIGIN_ID))
 		value = output.read(FLOAT, FLOAT, FLOAT)
-		return SpacePoint(value)
+		return SpacePoint(*value)
 	
 	def get_joint(self):
 		output = self.execute(_GET_PARAMETERS_OPCODE, BYTE(JOINTS_ID))
 		value = output.read(FLOAT, FLOAT, FLOAT)
-		return JointPoint(value)
+		return JointPoint(*value)

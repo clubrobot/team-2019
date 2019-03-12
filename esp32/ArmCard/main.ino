@@ -76,7 +76,6 @@ void setup()
 void loop()
 {
     talks.execute();
-    vTaskDelay(5 / portTICK_PERIOD_MS);
 }
 
 static void secondary_loop(void * parameters)
@@ -84,6 +83,5 @@ static void secondary_loop(void * parameters)
     while(1)
     {
         traj_manager.update();
-        vTaskDelay(5 / portTICK_PERIOD_MS);
     }
 }
