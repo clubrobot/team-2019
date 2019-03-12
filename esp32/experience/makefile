@@ -23,6 +23,15 @@ LIBS = $(ESP_LIBS)/EEPROM \
 	   $(COMMON)/ExperienceEffects.cpp \
 	   $(COMMON)/Pickle.cpp \
 	   $(COMMON)/tcptalks.cpp \
+		 $(COMMON)/fastLED/FastLED.cpp \
+		 $(COMMON)/fastLED/bitswap.cpp \
+		 $(COMMON)/fastLED/colorpalettes.cpp \
+		 $(COMMON)/fastLED/colorutils.cpp \
+		 $(COMMON)/fastLED/hsv2rgb.cpp \
+		 $(COMMON)/fastLED/lib8tion.cpp \
+		 $(COMMON)/fastLED/noise.cpp \
+		 $(COMMON)/fastLED/power_mgt.cpp \
+		 $(COMMON)/fastLED/wiring.cpp \
 	   $(COMMON)/NeoPixel/Adafruit_NeoPixel.cpp\
 	   instructions.cpp
 
