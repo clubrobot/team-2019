@@ -5,11 +5,11 @@ ArmPos = namedtuple('ArmPos', ['x', 'y', 'phi'])
 #                                      | x(cm) | y(cm) | phi(deg)
 HOME                            = ArmPos(2.0,    9.0,    0.0)
 
-TAKE_PUCK_INTER_BEFORE          = ArmPos(12.5,   -1,    0.0)
+TAKE_PUCK_INTER_BEFORE          = ArmPos(14,   0.5,    0.0)
 TAKE_PUCK_INTER_AFTER_1         = ArmPos(9.0,    3.0,    0.0)
 TAKE_PUCK_INTER_AFTER_2         = ArmPos(9.0,    10.0,   45.0)
 TAKE_PUCK_INTER_SOL             = ArmPos(8.0,    8.0,    0.0)
-TAKE_PUCK                       = ArmPos(14,   0.0,    0)
+TAKE_PUCK                       = ArmPos(15,   1,    0)
 
 TANK_POS_INTER_PUT              = ArmPos(0.0,   12.0,   160)
 TANK_POS_INTER                  = ArmPos(-3.0,   10.0,   130)
