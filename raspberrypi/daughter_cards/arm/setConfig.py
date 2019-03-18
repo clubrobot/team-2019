@@ -14,8 +14,8 @@ LINK2_LEN     = 7.0
 LINK3_LEN     = 3.8
 ELBOW         = ELBOW_BACK
 
-WS_FRONT    = Workspace(0.0, 30.0, -10.0, 30.0, ELBOW_BACK)
-WS_BACK     = Workspace(-30.0, 0.0, -10.0, 30.0, ELBOW_FRONT)
+WS_FRONT    = Workspace(1.0, 30.0, -10.0, 30.0, ELBOW_BACK)
+WS_BACK     = Workspace(-30.0, 1.0, -10.0, 30.0, ELBOW_FRONT)
 
 ORIGIN      = SpacePoint(0.0, 0.0, 0.0)
 JOINTS      = JointPoint(0.0, 0.0, 0.0)
