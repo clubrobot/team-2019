@@ -1,6 +1,5 @@
 from common.logger                      import Logger
 from robots.action                      import Action
-from daughter_cards.arm.ArmController   import ArmController
 import time
 
 class R128:
