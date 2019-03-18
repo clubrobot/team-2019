@@ -2,7 +2,7 @@ from math import pi
 import time
 import json
 
-from robots.actions_128 import TakeSyncronized, PutBalance
+from robots.actions_128 import TakeSyncronized, PutBalance, TakeFront
 from common.logger      import Logger
 
 YELLOW = 0
@@ -17,14 +17,15 @@ if __name__ == '__main__':
     print("Map chargée")
 
     print("load points :")
-    start   = geo.get("Start"+str(side))
-    puck1   = geo.get("Puck"+str(side)+"1")
-    puck2   = geo.get("Puck"+str(side)+"2")
-    puck3   = geo.get("Puck"+str(side)+"3")
-    puck4   = geo.get("Puck"+str(side)+"4")
-    balance = geo.get("Balance"+str(side))
+    start       = geo.get("Start"+str(side))
+    puck1       = geo.get("Puck"+str(side)+"_1")
+    puck2       = geo.get("Puck"+str(side)+"_2")
+    puck3       = geo.get("Puck"+str(side)+"_3")
+    puck4       = geo.get("Puck"+str(side)+"_4")
+    puckLittle  = geo.get("PuckLittle"+str(side))
+    balance     = geo.get("Balance"+str(side))
 
-    PathDistrib = geo.getall("PathDistrib"+str(side)+"*")
+    PathDistrib = geo.getall("PathDistrib"+str(side)+"_*")
     print(puck1)
     print(puck2)
     print(puck3)
@@ -33,6 +34,7 @@ if __name__ == '__main__':
     # 128 actions
     print("Creating actions :")
     takeSync    = TakeSyncronized(0, armController, Logger(Logger.SHOW))
+    takeFront   = TakeFront      (0, armController, Logger(Logger.SHOW))
     putBalance  = PutBalance     (0, armController, Logger(Logger.SHOW))
     print("End")
     
@@ -68,6 +70,25 @@ if __name__ == '__main__':
 
     wheeledbase.purepursuit(PathDistrib, finalangle=pi/2)
     wheeledbase.wait()
+
+    time.sleep(1)
+
+    takeFront.realize()
     
-    print("robot placé : ", wheeledbase.get_position())
-    input()
+    wheeledbase.goto(*puckLittle, theta=pi/2)
+    time.sleep(1)
+
+    takeSync.realize()
+    del PathDistrib[-1]
+    PathDistrib.reverse()
+    PathDistrib.append(balance)
+    print(PathDistrib)
+    wheeledbase.purepursuit(PathDistrib, finalangle=pi/2)
+    wheeledbase.wait()
+
+    putBalance.realize()
+
+    wheeledbase.goto(*start, theta=-pi)
+    time.sleep(1)
+
+    # input()

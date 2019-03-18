@@ -25,6 +25,23 @@ class TakeSyncronized(Actionnable):
         self.arm.put_in_tank()
         self.arm.go_home()
 
+class TakeFront(Actionnable):
+    typ = "Take Front"
+    POINTS = 0
+    TIME   = 0
+    def __init__(self, side, armController, logger):
+        self.side        = side
+        self.logger      = logger
+        #arduinos
+        self.arm         = armController
+        self.arm.set_logger(self.logger)
+
+    def realize(self):
+        self.logger("TakeSyncronized :", "Realize")
+        self.arm.take_puck_in_distributor()
+        self.arm.put_in_tank()
+        self.arm.go_home()
+
 class PutBalance(Actionnable):
     typ = "Put in Balance"
     POINTS = 0
