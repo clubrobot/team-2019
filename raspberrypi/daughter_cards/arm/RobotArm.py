@@ -11,7 +11,6 @@ import math
 ELBOW_BACK = -1
 ELBOW_FRONT = 1
 
-_ARM_BEGIN_OPCODE		     = 0X10
 _ADD_MOVE_OPCODE             = 0x11
 _RUN_BATCH_OPCODE            = 0X12 
 _STOP_BATCH_OPCODE           = 0X13 
@@ -55,9 +54,6 @@ JointPoint = namedtuple('JointPoint', ['th1', 'th2', 'th3'])
 class RobotArm(SecureSerialTalksProxy):
 	def __init__(self, manager, uuid='/dev/arduino/arm'):
 		SecureSerialTalksProxy.__init__(self, manager, uuid, dict())
-
-	def begin(self):
-		self.send(_ARM_BEGIN_OPCODE)
 
 	def move(self, x, y, phi):
 		out = self.execute(_ADD_MOVE_OPCODE, FLOAT(x), FLOAT(y), FLOAT(math.radians(phi)))
