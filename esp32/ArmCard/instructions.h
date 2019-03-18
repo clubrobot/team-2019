@@ -5,7 +5,6 @@
 #include "../common/SerialTalks.h"
 #include "../common/VacumPump.h"
 
-#define ARM_BEGIN_OPCODE            0X10
 #define ADD_MOVE_OPCODE             0x11
 #define RUN_BATCH_OPCODE            0X12 
 #define STOP_BATCH_OPCODE           0X13 
