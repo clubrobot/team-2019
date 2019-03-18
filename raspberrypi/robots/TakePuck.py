@@ -2,60 +2,72 @@ from math import pi
 import time
 import json
 
-from setup_128 import *
+from robots.actions_128 import TakeSyncronized, PutBalance
+from common.logger      import Logger
+
+YELLOW = 0
+PURPLE = 1
+
+if __name__ == '__main__':
+    from robots.setup_128 import *
+
+    side = PURPLE
+
+    geo = Geogebra("128.ggb")
+    print("Map chargée")
+
+    print("load points :")
+    start   = geo.get("Start"+str(side))
+    puck1   = geo.get("Puck"+str(side)+"1")
+    puck2   = geo.get("Puck"+str(side)+"2")
+    puck3   = geo.get("Puck"+str(side)+"3")
+    puck4   = geo.get("Puck"+str(side)+"4")
+    balance = geo.get("Balance"+str(side))
+
+    PathDistrib = geo.getall("PathDistrib"+str(side)+"*")
+    print(puck1)
+    print(puck2)
+    print(puck3)
+    print(balance)
+    print(PathDistrib)
+    # 128 actions
+    print("Creating actions :")
+    takeSync    = TakeSyncronized(0, armController, Logger(Logger.SHOW))
+    putBalance  = PutBalance     (0, armController, Logger(Logger.SHOW))
+    print("End")
+    
+    wheeledbase.set_position(*start, -pi)
+    print("robot placé : ", wheeledbase.get_position())
 
 
-test_map = Geogebra("TakePuck.ggb")
-print("Map chargée")
+    wheeledbase.goto(*puck1, theta=pi/2)
+    print("robot placé : ", wheeledbase.get_position())
+    time.sleep(1)
 
-print("load points :")
-puck1   = test_map.get("Puck1")
-puck2   = test_map.get("Puck2")
-puck3   = test_map.get("Puck3")
-balance = test_map.get("Balance")
-path    = test_map.getall("Path_*")
-print(path)
+    wheeledbase.goto(*puck2, theta=pi/2)
+    time.sleep(1)
 
+    takeSync.realize()
 
-wheeledbase.set_position(755, 2678, -pi)
-print("robot placé : ", wheeledbase.get_position())
+    wheeledbase.goto(*puck3, theta=pi/2)
+    time.sleep(1)
 
-# #input()
+    takeSync.realize()
 
-wheeledbase.goto(1290, 2678, theta=pi/2)
-print("robot placé : ", wheeledbase.get_position())
-time.sleep(1)
+    wheeledbase.goto(*puck4, theta=pi/2)
+    time.sleep(1)
 
-wheeledbase.goto(1290, 2460, theta=pi/2)
-time.sleep(1)
+    takeSync.realize()
 
-armController.take_puck_in_distributor()
-armController.put_in_tank()
-armController.go_home()
+    wheeledbase.goto(*balance, theta=pi/2)
+    time.sleep(1)
 
-wheeledbase.goto(1300, 2260,theta=pi/2)
-time.sleep(1)
-armController.take_puck_in_distributor()
-armController.put_in_tank()
-armController.go_home()
+    putBalance.realize()
 
-wheeledbase.goto(1300, 2060,theta=pi/2)
-time.sleep(1)
-armController.take_puck_in_distributor()
-armController.put_in_tank()
-armController.go_home()
+    armController.go_home()
 
-wheeledbase.goto(*balance,theta=pi/2)
-time.sleep(1)
-armController.take_in_tank()
-armController.put_in_balance()
-armController.take_in_tank()
-armController.put_in_balance()
-armController.take_in_tank()
-armController.put_in_balance()
-
-armController.go_home()
-
-wheeledbase.goto(755, 2678, theta=-pi)
-print("robot placé : ", wheeledbase.get_position())
-input()
+    wheeledbase.purepursuit(PathDistrib, finalangle=pi/2)
+    wheeledbase.wait()
+    
+    print("robot placé : ", wheeledbase.get_position())
+    input()
