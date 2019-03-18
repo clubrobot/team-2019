@@ -27,10 +27,15 @@ class ArmController():
     def arrived(self):
         return self.arm.is_arrived()
 
-    def wait(self, timeout = 0.1):
+    def wait(self, timestep = 0.1, timeout = 200):
         self.logger(self.name, "WAIT...")
+        init_time = time.time()
         while not self.arrived():
-            time.sleep(timeout)
+            time.sleep(timestep)
+            if (time.time()-init_time > timeout):
+                print("Arm Timeout !")
+                return
+            
     # private func
     def move(self, PosID):
         self.logger(self.name, "Sending Move command: {}".format(PosID))
