@@ -24,16 +24,17 @@ class ArmController():
     def set_logger(self, loggger):
         self.logger = loggger
 
+    def arrived(self):
+        return self.arm.is_arrived()
+
     def wait(self, timeout = 0.1):
+        self.logger(self.name, "WAIT...")
         while not self.arrived():
             time.sleep(timeout)
     # private func
     def move(self, PosID):
         self.logger(self.name, "Sending Move command: {}".format(PosID))
         self.arm.move(PosID.x, PosID.y, PosID.phi)
-
-    def arrived(self):
-        return self.arm.is_arrived()
 
     def start_pump(self):
         self.logger(self.name, "Start Pump")
@@ -131,16 +132,20 @@ class ArmController():
 
             self.move(self.TankPosListTake[self.CurrentTankPos])
             self.wait()
+            self.logger(self.name, "Arrived to : {}".format(self.TankPosListTake[self.CurrentTankPos]))
 
             self.move(self.TankPosList[self.CurrentTankPos])
             self.wait()
+            self.logger(self.name, "Arrived to : {}".format(self.TankPosList[self.CurrentTankPos]))
 
             self.move(self.TankPosListTakeBis[self.CurrentTankPos])
             self.wait()
+            self.logger(self.name, "Arrived to : {}".format(self.TankPosListTakeBis[self.CurrentTankPos]))
 
             time.sleep(0.5)
             self.move(TANK_POS_INTER_TAKE)
             self.wait()
+            self.logger(self.name, "Arrived to : {}".format(TANK_POS_INTER_TAKE))
 
             self.CurrentTankPos -= 1
             if(self.CurrentTankPos < 0):
