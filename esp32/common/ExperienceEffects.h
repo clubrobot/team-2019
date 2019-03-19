@@ -1,6 +1,9 @@
 #include <Arduino.h>
 #include "NeoPixel/Adafruit_NeoPixel.h"
+#include <FastLED.h>
 
+#define COLOR_ORDER BRG
+#define CHIPSET     WS2811
 #define NUMPIXEL 60
 #define PINPIXEL 34
 #define PWM_MOTOR 21
@@ -22,7 +25,8 @@ class ExperienceEffects
 
 	private:
 
-		Adafruit_NeoPixel logo;
+
+		CRGB leds[NUMPIXEL];
 		long hasStarted;
 
 };
