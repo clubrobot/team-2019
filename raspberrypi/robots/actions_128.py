@@ -55,6 +55,7 @@ class PutBalance(Actionnable):
 
     def realize(self):
         self.logger("PutBalance :", "Realize")
-        for i in range(0,2):
+        for i in range(0,3):
             self.arm.take_in_tank()
             self.arm.put_in_balance()
+        time.sleep(0.5)
