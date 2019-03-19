@@ -15,14 +15,23 @@ void FollowAngle::computeVelSetpoints(float timestep)
     const float dx = getPosSetpoint().x - getPosInput().x;
     const float dy = getPosSetpoint().y - getPosInput().y;
     const float theta = getPosInput().theta;
-    const float dtheta = getPosSetpoint().theta - theta;
+    float dtheta = getPosSetpoint().theta - theta;
+
     const float linVelKp  = getLinVelKp();
     const float linVelMax = getLinVelMax();
     const float angVelKp  = getAngVelKp();
     const float angVelMax = getAngVelMax();
 
+    int dir = 1;
+
+    if (fabs(dtheta) > M_PI)
+    {
+        dtheta = -dtheta;
+        dir = -1;
+    }
+
     const float angPosSetpoint = inrange(dtheta, -M_PI, M_PI);
-    const float linVelSetpoint = saturate(getVelSetpoint(), -linVelMax, linVelMax);
+    const float linVelSetpoint = saturate(dir * getVelSetpoint(), -linVelMax, linVelMax);
     const float angVelSetpoint = saturate(angVelKp * angPosSetpoint, -angVelMax, angVelMax);
 
     setVelSetpoints(linVelSetpoint, angVelSetpoint);
