@@ -19,12 +19,12 @@ TANK_POS_INTER_TAKE_PUCK3       = ArmPos(-4.5,   5.0,    220)
 TANK_POS_INTER_TAKE_PUCK2       = ArmPos(-6.0,   4.0,    220)
 TANK_POS_INTER_TAKE_PUCK1       = ArmPos(-8.5,   3.0,    220)
 
-TANK_POS_INTER_TAKE_PUCK3_BIS   = ArmPos(-5.0,   6.0,    140)
-TANK_POS_INTER_TAKE_PUCK2_BIS   = ArmPos(-8.0,   6.0,    140)
-TANK_POS_INTER_TAKE_PUCK1_BIS   = ArmPos(-9.0,   6.0,    140)
+TANK_POS_INTER_TAKE_PUCK3_BIS   = ArmPos(-4.0,   6.0,    140)
+TANK_POS_INTER_TAKE_PUCK2_BIS   = ArmPos(-7.0,   6.0,    140)
+TANK_POS_INTER_TAKE_PUCK1_BIS   = ArmPos(-8.0,   6.0,    140)
 
-TANK_POS_3                      = ArmPos(-7.0,   3.0,    205)
-TANK_POS_2                      = ArmPos(-9.0,   3.0,    205)
+TANK_POS_3                      = ArmPos(-7.0,   4.5,    205)
+TANK_POS_2                      = ArmPos(-9.0,   3.5,    205)
 TANK_POS_1                      = ArmPos(-12.0,  3.0,    205)
    
 BALANCE                         = ArmPos(13.0,   10.0,   0)

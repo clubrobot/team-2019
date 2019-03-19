@@ -132,7 +132,7 @@ void TrajectoryManager::process(float timestep)
 
         if(_motor1->arrived() && _motor2->arrived() && _motor3->arrived())
         {
-            _arrived          = true;
+            //_arrived          = true;
             _isExecutingBatch = false;
         }
     }

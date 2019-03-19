@@ -59,3 +59,4 @@ class PutBalance(Actionnable):
             self.arm.take_in_tank()
             self.arm.put_in_balance()
         time.sleep(0.5)
+        self.arm.go_home()
