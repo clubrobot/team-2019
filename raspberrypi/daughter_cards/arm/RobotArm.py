@@ -60,7 +60,6 @@ class RobotArm(SecureSerialTalksProxy):
 		ret = out.read(BYTE)
 		if bool(ret):
 			raise RuntimeError('Error on move command : Position unreachable')
-		self.send(_RUN_BATCH_OPCODE)
 
 	def run_batch(self):
 		self.send(_RUN_BATCH_OPCODE)

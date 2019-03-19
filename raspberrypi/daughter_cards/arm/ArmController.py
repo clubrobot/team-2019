@@ -40,6 +40,15 @@ class ArmController():
     def move(self, PosID):
         self.logger(self.name, "Sending Move command: {}".format(PosID))
         self.arm.move(PosID.x, PosID.y, PosID.phi)
+        self.logger(self.name, "Start")
+        self.arm.run_batch()
+
+    def movePath(self, Path):
+        for PosID in Path:
+            self.logger(self.name, "Sending Move command: {}".format(PosID))
+            self.arm.move(PosID.x, PosID.y, PosID.phi)
+        self.logger(self.name, "Start")
+        self.arm.run_batch()
 
     def start_pump(self):
         self.logger(self.name, "Start Pump")
@@ -61,26 +70,19 @@ class ArmController():
         self.tankSize = size - 1
 
     def go_home(self):
+        path = [GLOBAL_POS_INTER, HOME]
 
-        self.move(GLOBAL_POS_INTER)
-        self.wait()
-        self.logger(self.name, "Arrived to : {}".format(GLOBAL_POS_INTER))
-
-        self.move(HOME)
+        self.movePath(path)
         self.wait()
         self.logger(self.name, "Arrived to : {}".format(HOME))
-
-        time.sleep(1)
+        time.sleep(0.2)
 
     def take_puck_in_distributor(self):
 
         self.start_pump()
-
-        self.move(TAKE_PUCK_INTER_BEFORE)
-        self.wait()
-        self.logger(self.name, "Arrived to : {}".format(TAKE_PUCK_INTER_BEFORE))
-
-        self.move(TAKE_PUCK)
+        path = [TAKE_PUCK_INTER_BEFORE, TAKE_PUCK]
+        
+        self.movePath(path)
         self.wait()
         self.logger(self.name, "Arrived to : {}".format(TAKE_PUCK))
 
@@ -104,11 +106,11 @@ class ArmController():
 
     def put_in_tank(self):
         if not self.Tankfull:
-            self.move(TANK_POS_INTER_PUT)
-            self.wait()
-            self.logger(self.name, "Arrived to : {}".format(TANK_POS_INTER_PUT))
+            path = []
+            path.append(TANK_POS_INTER_PUT)
+            path.append(self.TankPosList[self.CurrentTankPos])
 
-            self.move(self.TankPosList[self.CurrentTankPos])
+            self.movePath(path)
             self.wait()
             self.logger(self.name, "Arrived to : {}".format(self.TankPosList[self.CurrentTankPos]))
 
@@ -135,15 +137,12 @@ class ArmController():
             self.stop_sluice()
             self.start_pump()
 
-            self.move(self.TankPosListTake[self.CurrentTankPos])
-            self.wait()
-            self.logger(self.name, "Arrived to : {}".format(self.TankPosListTake[self.CurrentTankPos]))
+            path = []
+            path.append(self.TankPosListTake[self.CurrentTankPos])
+            path.append(self.TankPosList[self.CurrentTankPos])
+            path.append(self.TankPosListTakeBis[self.CurrentTankPos])
 
-            self.move(self.TankPosList[self.CurrentTankPos])
-            self.wait()
-            self.logger(self.name, "Arrived to : {}".format(self.TankPosList[self.CurrentTankPos]))
-
-            self.move(self.TankPosListTakeBis[self.CurrentTankPos])
+            self.movePath(path)
             self.wait()
             self.logger(self.name, "Arrived to : {}".format(self.TankPosListTakeBis[self.CurrentTankPos]))
 
