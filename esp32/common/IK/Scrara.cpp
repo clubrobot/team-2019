@@ -168,7 +168,7 @@ Joints Scara::get_joints_vel(Coords tool_vel)
     if (_matrix.norm(tool_v) < EPSILON)
         return vel;
 
-    if (abs(_matrix.det(jacobian)) < EPSILON)
+    if (std::abs(_matrix.det(jacobian)) < EPSILON)
     {
         //raise ValueError('Singularity')
     }

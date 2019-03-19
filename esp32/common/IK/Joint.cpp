@@ -114,11 +114,11 @@ vector_t Joint::get_path(float initial_pos, float initial_vel , float final_pos,
 
     float vel_c;
 
-    if( (abs(initial_vel) < EPSILON) || (abs(final_vel) < EPSILON) )
+    if( (std::abs(initial_vel) < EPSILON) || (std::abs(final_vel) < EPSILON) )
     {
         vel_c = EPSILON; //ensure we use a trapezoidal trajectory
     }
-    else if(abs(initial_vel) < abs(final_vel))
+    else if(std::abs(initial_vel) < std::abs(final_vel))
     {
         vel_c = final_vel;
     }
@@ -207,7 +207,7 @@ vector_t Joint::generic_profile(float initial_pos, float initial_vel, float fina
     */
 
     float t1 = (sign_traj * (vel_c - initial_vel)) / (sign_traj * _constraints.acc.max);
-    float t2 = tf_sync - abs(vel_c - final_vel) / _constraints.acc.max;
+    float t2 = tf_sync - std::abs(vel_c - final_vel) / _constraints.acc.max;
 
     Polynom poly;
 

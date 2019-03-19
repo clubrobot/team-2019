@@ -203,7 +203,7 @@ Joints Picker::get_joints_vel(Coords tool_vel)
     {
         return vel;
     }
-    if (abs(_matrix.det(jacobian)) < EPSILON)
+    if (std::abs(_matrix.det(jacobian)) < EPSILON)
     {
         LOG_PICKER("Singularity");
         throw string("Singularity");
