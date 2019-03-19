@@ -14,13 +14,16 @@ void PING(SerialTalks& talks, Deserializer& input, Serializer& output)
 
 void SET_START(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
-	Animation.start();
-	output.write<long>(Animation.getStart());
+	output.write<int>(362);
 }
 
 void GET_START(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
 	output.write<long>(Animation.getStart());
+}
+
+void SET_TASK(SerialTalks &talks, Deserializer &input, Serializer &output){
+	digitalWrite(2, LOW);
 }
 
 

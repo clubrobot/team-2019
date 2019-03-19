@@ -81,24 +81,17 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks
 void setup()
 {
     Serial.begin(115200);
-
+    pinMode(2, OUTPUT);
+    digitalWrite(2, HIGH);
     talks.begin(Serial);
     talks.bind(PING_OPCODE, PING);
     talks.bind(SET_START_OPCODE, SET_START);
     talks.bind(GET_START_OPCODE, GET_START);
+    talks.bind(SET_TASK_DEBUG, SET_TASK);
 
 }
 
 void loop()
 {
     talks.execute();
-    //Animation.execute();
-
-    /* Auto re-connect step */
-    /*current_time = millis();
-    if((talk.is_connected() == false) && ((current_time - last_time)) > 500)
-    {
-        talk.connect(500);
-        last_time = millis();
-    }*/
 }
