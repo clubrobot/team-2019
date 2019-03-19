@@ -46,7 +46,7 @@ void VelocityController::process(float timestep)
 	bool angVelSpin = (m_angVelOutput <= m_angPID->getMinOutput()) || (m_angVelOutput >= m_angPID->getMaxOutput());
 	if (linVelSpin || angVelSpin)
 	{
-		bool abnormalSpin = (abs(m_linInput) < 1) && (abs(m_angInput) < 0.05);
+		bool abnormalSpin = (fabs(m_linInput) < 1) && (fabs(m_angInput) < 0.05);
 		if (abnormalSpin && m_spinShutdown)
 		{
 			m_leftWheel ->setVelocity(0);
