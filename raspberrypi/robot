@@ -18,136 +18,15 @@ MATCH_MODE = False
 arduino_list = ['sensors', 'wheeledbase', 'power', 'display', 'modulescollector', 'mineralscollector', 'watershooter', 'watersorter']
 
 
-
 def start(args):
-    m = Manager()
-    m.connect()
-    if ROBOT_ID==BORNIBUS_ID:
-        button_card = ButtonCard(m)
-        ssd = SevenSegments(m)
-        b= WheeledBase(m)
-        s_lat   = Sensors(m, "sensorsLat")
-        s_front = Sensors(m, "sensorsAv")
-        s_back  = Sensors(m, "sensorsAr")
-        led1 = LEDMatrix(m, 1)
-        led2 = LEDMatrix(m, 2)
-        geo = Geogebra('{}/robots/bornibus.ggb'.format(sys.path[0]))
-        rm = RoadMap.load(geo)
-        br = BaliseReceiver("192.168.12.3")
-        try:
-            br.launch()
-        except:
-            print("Balise Receiver not connected ! ")
-
-        bm = BeaconsManagement(br, "{}/robots/area.ggb".format(sys.path[0]))
-        automate = Bornibus(0, rm, geo, b, l, d, ssd, led1, led2, a, s_front, s_lat, s_back,  br, bm)
-        button_gesture = ButtonGestureMatch(button_card, l, ssd, b, m, automate.set_side)
-        button_gesture.run()
-        m.start_match()
-        button_card.disconnect()
-        try:
-            automate.run()
-        except TimeoutError:
-            pass
-        m.disconnect()
-    else:
-        button_card = ButtonCard(m)
-        ssd = SevenSegments(m)
-        b= WheeledBase(m)
-        a = BeeActuator(m)
-        s_lat   = Sensors(m, "sensorsLat")
-        s_front = Sensors(m, "sensorsAv")
-        s_back  = Sensors(m, "sensorsAr")
-        led1 = LEDMatrix(m, 1)
-        led2 = LEDMatrix(m, 2)
-        geo = Geogebra('{}/robots/128.ggb'.format(sys.path[0]))
-        patern = None#Pattern()
-        rm = RoadMap.load(geo)
-        br = BaliseReceiver("192.168.12.3")
-        try:
-            br.launch()
-        except:
-            print("Balise Receiver not connected ! ")
-
-        bm = BeaconsManagement(br, "{}/robots/area.ggb".format(sys.path[0]))
-        automate = R128(0, rm, geo, b, ssd, led1, led2, a, s_front, s_lat, s_back,  br, bm, patern)
-        button_gesture = ButtonGestureMatch(button_card, ssd, b, m, automate.set_side)
-        button_gesture.run()
-        m.start_match()
-        button_card.disconnect()
-        try:
-            automate.run()
-        except TimeoutError:
-            pass
-        m.disconnect()
-
+    init_robot()
+    m.disconnect()
+    pass
 
 def start_approval(args):
-    m = Manager()
-    m.connect()
-    if ROBOT_ID == BORNIBUS_ID:
-        button_card = ButtonCard(m)
-        ssd = SevenSegments(m)
-        b= WheeledBase(m)
-        d = WaterSorter(m)
-        l = WaterLauncher(m)
-        a = BeeActuator(m)
-        s_lat   = Sensors(m, "sensorsLat")
-        s_front = Sensors(m, "sensorsAv")
-        s_back  = Sensors(m, "sensorsAr")
-        led1 = LEDMatrix(m, 1)
-        led2 = LEDMatrix(m, 2)
-        geo = Geogebra('{}/robots/bornibus.ggb'.format(sys.path[0]))
-        rm = RoadMap.load(geo)
-        br = BaliseReceiver("192.168.12.3")
-        try:
-            br.connect()
-        except:
-            print("Balise Receiver not connected ! ")
-
-        bm = BeaconsManagement(br, "{}/robots/area.ggb".format(sys.path[0]))
-        automate = BornibusApproval(0, rm, geo, b, l, d, ssd, led1, led2, a, s_front, s_lat, s_back,  br, bm)
-        button_gesture = ButtonGestureMatch(button_card, l, ssd, b, m, automate.set_side)
-        button_gesture.run()
-        m.start_match()
-        button_card.disconnect()
-        try:
-            automate.run()
-        except TimeoutError:
-            pass
-        m.disconnect()
-
-    else:
-        button_card = ButtonCard(m)
-        ssd = SevenSegments(m)
-        ssd.set_message("LAUNCH")
-        b= WheeledBase(m)
-        s_lat   = Sensors(m, "sensorsLat")
-        s_front = Sensors(m, "sensorsAv")
-        s_back  = Sensors(m, "sensorsAr")
-        led1 = LEDMatrix(m, 1)
-        led2 = LEDMatrix(m, 2)
-        geo = Geogebra('{}/robots/128.ggb'.format(sys.path[0]))
-        patern = None#Pattern()
-        rm = RoadMap.load(geo)
-        br = BaliseReceiver("192.168.12.3")
-        try:
-            br.connect()
-        except:
-            print("Balise Receiver not connected ! ")
-
-        bm = BeaconsManagement(br, "{}/robots/area.ggb".format(sys.path[0]))
-        automate = R128Approval(0, rm, geo, b, ssd, led1, led2, a, s_front, s_lat, s_back,  br, bm, patern)
-        button_gesture = ButtonGestureMatch(button_card, ssd, b, m, automate.set_side)
-        button_gesture.run()
-        m.start_match()
-        button_card.disconnect()
-        try:
-            automate.run()
-        except TimeoutError:
-            pass
-        m.disconnect()
-
+    init_robot()
+    m.disconnect()
+    pass
 
 def dev_mode(args):
     m = Manager()
@@ -192,8 +71,6 @@ def showip(args):
                 ips = proc.stdout.strip().decode('utf8').split(" ")
             else:
                 attempts += 1
-                time.sleep(1)
-                continue
         if wlan_up:
             [ss.set_message(ip) for ip in ips]
         else:
@@ -272,11 +149,15 @@ def update(args):
 from robots.get_robot_name import *
 import sys
 
-if sys.argv[1] != "server" and sys.argv[1] != "getuuid":
-    manager = Manager("127.0.0.1")
+no_server = ["server", "getuuid"]
+
+if sys.argv[1] not in no_server:
+    manager = Manager()
     manager.connect()
     if ROBOT_ID == BORNIBUS_ID:
         from robots.setup_bornibus import *
+    if ROBOT_ID == R128_ID:
+        from robots.setup_128 import *
 
 parser = ArgumentParser()
 subparsers = parser.add_subparsers()
