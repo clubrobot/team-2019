@@ -152,7 +152,7 @@ import sys
 no_server = ["server", "getuuid"]
 
 if sys.argv[1] not in no_server:
-    manager = Manager()
+    manager = Manager("127.0.0.1")
     manager.connect()
     if ROBOT_ID == BORNIBUS_ID:
         from robots.setup_bornibus import *
