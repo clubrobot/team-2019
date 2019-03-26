@@ -13,6 +13,7 @@ import os
 TEST = True
 FILE = True
 PRINT = True
+max_pts = 100
 
 if TEST:
     from robots.setup_wheeledbase import *
@@ -30,7 +31,7 @@ print("angvel : ", angvel)
 geo = geogebra.Geogebra("test.ggb")
 robot = geometry.Point(*geo.get("origin"))
 goal = geometry.Point(*geo.get("goal"))
-max_w_pf = 2
+max_w_pf = 1
 robot_width = 300
 
 obsmap = ObstacleMap()
@@ -45,17 +46,10 @@ maps = geometry.Point(*geo.get("MAP"))
 obsmap.add_obstacle(Map(maps.x, maps.y, funct))
 
 #ftg
-alpha_static = 300
+alpha_static = 600
 distance_max = 800
-# poly_out = geo.getall("obsout_*")
-# print(poly_out)
-# for poly in poly_in:
-#     obsmap.add_obstacle_ftg(PolygonObs(poly, funct))
 
 #pf
-objs = list()
-#obsmap.add_obstacle_pf(PointObs(goal.x, goal.y, funct_list["lin"](a=-max_w_pf/robot_width, b=-max_w_pf)))
-
 
 timestep = 0.2
 step = linvel * timestep
@@ -64,8 +58,6 @@ nb_pts = 0
 
 if TEST:
     wheeledbase.set_position(robot.x, robot.y, -math.pi/2)
-
-max_pts = 100
 
 with open("list_point", "w") as file:
     if FILE:
