@@ -13,7 +13,7 @@ void Odometry::process(float timestep)
 	const float dR = m_rightCodewheel->restart();
 
 	const float deltaLinPos = (dL + dR) / 2;
-	const float deltaOrthLinPos = abs(deltaLinPos) * m_slippage;
+	const float deltaOrthLinPos = fabs(deltaLinPos) * m_slippage;
 	const float deltaAngPos = (dR - dL) / m_axleTrack;
 
 	const float avgTheta = m_pos.theta + deltaAngPos / 2;
