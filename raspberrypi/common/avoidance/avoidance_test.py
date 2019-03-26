@@ -93,6 +93,19 @@ with open("list_point", "w") as file:
 
         diff = time.time() - begin
 
+        # Indicate angle to wheeledbase
+        if TEST:
+            wheeledbase.follow_angle(angle_guide, v)
+
+        # Update position
+        if TEST:
+            robot_f = geometry.Point(wheeledbase.get_position()[0], wheeledbase.get_position()[1])
+        else:
+            dx = math.cos(angle_guide) * v * timestep
+            dy = math.sin(angle_guide) * v * timestep
+            robot_f = geometry.Point(robot.x + dx, robot.y + dy)
+        path += [(robot_f.x, robot_f.y)]
+
         # Display debug information
         if PRINT:
             print("nb : ", nb_pts)
@@ -105,11 +118,10 @@ with open("list_point", "w") as file:
             print("v ftg : ", v_ftg)
             print("v pf : ", v_pf)
             print("v : ", v)
-
-        path += [(robot.x, robot.y)]
+            print("ROBOT : " + "(" + str(round(robot.x)) + ", " + str(round(robot.y)) + ")")
+            print()
 
         # write geogebra debug information in file
-
         if FILE:
             # global path
             c_path = "path_{" + str(nb_pts) + "}"
@@ -138,20 +150,7 @@ with open("list_point", "w") as file:
             file.write("\"SetColor(" + "ftgv_{" + str(nb_pts) + "}, 0, 255, 0)\", \n")
             file.write("\"ShowLabel(" + "ftgv_{" + str(nb_pts) + "}, False)\", \n\n")
 
-        # Indicate angle to wheeledbase
-        if TEST:
-            wheeledbase.follow_angle(angle_guide, v)
-
-        # Update position
-        if TEST:
-            robot = geometry.Point(wheeledbase.get_position()[0], wheeledbase.get_position()[1])
-        else:
-            dx = math.cos(angle_guide) * v * timestep
-            dy = math.sin(angle_guide) * v * timestep
-            robot = geometry.Point(robot.x + dx, robot.y + dy)
-            print("ROBOT : " + "(" + str(round(robot.x)) + ", " + str(round(robot.y)) + ")")
-
-        print()
+        robot = robot_f
         nb_pts += 1
 
     if TEST:
