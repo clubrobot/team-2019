@@ -9,11 +9,14 @@
 #include "../common/VacumPump.h"
 #include "addresses.h"
 #include "PIN.h"
+#include "../common/PressureSensor.h"
+
 
 using namespace IK;
 using namespace std;
 
 VacumPump pump(VACCUM_PIN, SLUICE_PIN);
+PressureSensor pSensor = PressureSensor(ANALOG_SENSOR_PIN);
 
 ArmManager        arm_manager;
 TrajectoryManager traj_manager;
@@ -41,6 +44,8 @@ void setup()
     talks.bind(STOP_PUMP_OPCODE         , STOP_PUMP);
     talks.bind(START_SLUICE_OPCODE      , START_SLUICE);
     talks.bind(STOP_SLUICE_OPCODE       , STOP_SLUICE);
+    talks.bind(GET_PRESSURE_OPCODE, GET_PRESSURE);
+    talks.bind(ATMOSPHERE_PRESSURE_OPCODE, ATMOSPHERE_PRESSURE);
 
     talks.bind(SET_PARAMETERS_OPCODE, SET_PARAMETER_VALUE);
     talks.bind(GET_PARAMETERS_OPCODE, GET_PARAMETER_VALUE);

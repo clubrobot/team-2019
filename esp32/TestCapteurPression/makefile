@@ -2,27 +2,19 @@ BOARD = esp32
 CHIP = esp32
 
 #Arduino file
-SKETCH = main.ino
+SKETCH = testpression.ino
 
-BOARD_UUID = arm
+BOARD_UUID = esp32
 COMMON = ../common
 #Setup all libs used !
 LIBS = $(ESP_LIBS)/EEPROM \
 	   $(COMMON)/SerialTalks.cpp \
-	   $(COMMON)/PeriodicProcess.cpp \
-	   $(COMMON)/mathutils.cpp \
-	   $(COMMON)/PID.cpp \
 	   $(COMMON)/CRC16.cpp \
-	   $(COMMON)/IK \
-	   $(COMMON)/AX12 \
-	   $(COMMON)/VacumPump.cpp \
-	   $(COMMON)/TaskManager.cpp \
-	   $(COMMON)/PressureSensor.cpp \
+	   $(COMMON)/PressureSensor.cpp\
 	   instructions.cpp
 
-
+CPPFLAGS = -fexceptions
 CPPFLAGS += -DCONFIG_CXX_EXCEPTIONS=1
-CPPFLAGS += -DSERIALTALKS_MAX_OPCODE=0x30
 # Congratulations! You made a pretty Makefile :)
 # Now let the grown-ups do the hard work :D
 MODULEMK_DIR = ..

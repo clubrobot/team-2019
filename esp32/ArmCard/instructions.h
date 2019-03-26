@@ -6,17 +6,20 @@
 #include "../common/VacumPump.h"
 
 #define ADD_MOVE_OPCODE             0x11
-#define RUN_BATCH_OPCODE            0X12 
-#define STOP_BATCH_OPCODE           0X13 
+#define RUN_BATCH_OPCODE            0X12
+#define STOP_BATCH_OPCODE           0X13
 #define IS_ARRIVED_OPCODE           0x14
 
 #define START_PUMP_OPCODE           0x15
-#define STOP_PUMP_OPCODE            0X16 
-#define START_SLUICE_OPCODE         0X17 
+#define STOP_PUMP_OPCODE            0X16
+#define START_SLUICE_OPCODE         0X17
 #define STOP_SLUICE_OPCODE          0x18
 
 #define SET_PARAMETERS_OPCODE       0X19
 #define GET_PARAMETERS_OPCODE       0x1A
+
+#define GET_PRESSURE_OPCODE	        0X1B
+#define ATMOSPHERE_PRESSURE_OPCODE	0X1C
 
 #define MOTOR1_ID_ID                0x10
 #define MOTOR1_OFFSET_ID            0x11
@@ -33,6 +36,11 @@
 #define LINK_3_ID                   0x1C
 #define ELBOW_ID                    0x1D
 #define TIMESTEP_ID                 0x1E
+
+
+void GET_PRESSURE(SerialTalks& talks, Deserializer& input, Serializer& output);
+
+void ATMOSPHERE_PRESSURE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void ADD_MOVE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
@@ -55,4 +63,3 @@ void SET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& ou
 void GET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 #endif //__INSTRUCTIONS_H__
-

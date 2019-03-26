@@ -4,10 +4,20 @@
 #include "../common/SerialTalks.h"
 #include "../common/IK/ArmManager.h"
 #include "../common/IK/TrajectoryManager.h"
+#include "../common/PressureSensor.h"
 
 using namespace IK;
 
 extern VacumPump pump;
+extern PressureSensor pSensor;
+
+void GET_PRESSURE(SerialTalks& talks, Deserializer& input, Serializer& output){
+	output.write<int>(pSensor.getPressurekPa());
+}
+
+void ATMOSPHERE_PRESSURE(SerialTalks& talks, Deserializer& input, Serializer& output){
+	output.write<bool>(pSensor.currentlyAtmospherePressure());
+}
 
 extern ArmManager        arm_manager;
 extern TrajectoryManager traj_manager;
