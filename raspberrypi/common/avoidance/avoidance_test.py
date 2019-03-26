@@ -60,7 +60,7 @@ path = []
 nb_pts = 0
 
 if TEST:
-    wheeledbase.set_position(robot.x, robot.y, math.pi/2)
+    wheeledbase.set_position(robot.x, robot.y, -math.pi/2)
 
 max_pts = 100
 
