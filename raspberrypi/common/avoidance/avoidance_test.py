@@ -10,13 +10,13 @@ import time
 import os
 
 
-TEST = False
-FILE = False
-PRINT = False
+TEST = True
+FILE = True
+PRINT = True
 
 if TEST:
     from robots.setup_wheeledbase import *
-    linvel = 500 #wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/4
+    linvel = 200 #wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/4
     angvel = wheeledbase.get_parameter_value(POSITIONCONTROL_ANGVELMAX_ID, FLOAT)
 else:
     linvel = 600
@@ -158,6 +158,8 @@ with open("list_point", "w") as file:
 
         robot = robot_f
         nb_pts += 1
+
+        print("time ALL : ", time.time() - begin)
 
     if TEST:
         wheeledbase.stop()
