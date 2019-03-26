@@ -180,6 +180,13 @@ void START_FOLLOW_ANGLE(SerialTalks& talks, Deserializer& input, Serializer& out
 	float vel   = input.read<float>();
 	Position posSetpoint = odometry.getPosition();
 	followAngle.setVelSetpoint(vel);
+    float dtheta = theta - posSetpoint.theta;
+
+    if (fabs(dtheta) > M_PI/2)
+    {
+        dtheta = inrange(dtheta+M_PI, -M_PI, M_PI);
+        vel = -vel;
+    }
 
 	velocityControl.enable();
 	positionControl.setPosSetpoint(posSetpoint);
