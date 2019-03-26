@@ -72,8 +72,9 @@ with open("list_point", "w") as file:
         file.write("Execute[{")
 
     while nb_pts < max_pts and robot.distance(goal) > step/2:
-        # follow the gap
         begin = time.time()
+
+        # follow the gap
         ret = obsmap.get_ftg_angle_guide(robot, goal, distance_max=distance_max, alpha_static=alpha_static, min_width=robot_width)
         if ret is None:
             break
@@ -81,11 +82,14 @@ with open("list_point", "w") as file:
             angle_guide_ftg, n_distance = ret
             v_ftg = min(1.0, abs(n_distance)*2)
         w_ftg = v_ftg
+        diff_ftg = time.time() - begin
 
+        begin_pf = time.time()
         # potential field
         angle_guide_pf, w_pf = obsmap.get_pf_angle_guide(robot)
         w_pf = abs(w_pf)
         v_pf = min(1.0, max_w_pf-w_pf)
+        diff_pf = time.time() - begin_pf
 
         # all
         angle_guide = obsmap.angle_average(angle_guide_pf, angle_guide_ftg, w1=w_pf, w2=w_ftg)
@@ -110,6 +114,8 @@ with open("list_point", "w") as file:
         if PRINT:
             print("nb : ", nb_pts)
             print("time : ", diff)
+            print("time ftg : ", diff_ftg)
+            print("time pf : ", diff_pf)
             print("angle ftg : ", angle_guide_ftg*180/pi)
             print("angle pf : ", angle_guide_pf*180/pi)
             print("angle : ", angle_guide*180/pi)
