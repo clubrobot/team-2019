@@ -30,6 +30,9 @@ _SET_LINK_LEN_OPCODE         = 0X1D
 _SET_PARAMETERS_OPCODE       = 0X19
 _GET_PARAMETERS_OPCODE       = 0x1A
 
+_GET_PRESSURE_OPCODE 		= 0X1B
+_ATMOSPHERE_PRESSURE_OPCODE	= 0X1C
+
 MOTOR1_ID_ID                 = 0x10
 MOTOR1_OFFSET_ID             = 0x11
 MOTOR2_ID_ID                 = 0x12
@@ -130,3 +133,13 @@ class RobotArm(SecureSerialTalksProxy):
 		output = self.execute(_GET_PARAMETERS_OPCODE, BYTE(JOINTS_ID))
 		value = output.read(FLOAT, FLOAT, FLOAT)
 		return JointPoint(*value)
+
+	def get_pressure_kpa(self):
+		out = self.execute(_GET_PRESSURE_OPCODE)
+		ret = out.read(INT)
+		return ret
+
+	def atmosphere_pressure(self):
+		out = self.execute(_ATMOSPHERE_PRESSURE_OPCODE)
+		ret = out.read(INT)
+		return ret
