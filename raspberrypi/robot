@@ -71,6 +71,7 @@ def showip(args):
                 ips = proc.stdout.strip().decode('utf8').split(" ")
             else:
                 attempts += 1
+                time.sleep(1)
         if wlan_up:
             [ssd.set_message(ip) for ip in ips]
         else:
