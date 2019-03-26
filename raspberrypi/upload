@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rasp_root="~/git/clubrobot/team-2018/"
+rasp_root="~/git/clubrobot/team-2019/"
 
 # check arguments number and types.
 if [ $# -ne 2 ] && [ $# -ne 1 ]
@@ -43,7 +43,7 @@ for link in ${path_elements[*]}
         local_root=$link
     fi
 done
-local_root=$(echo $local_root | sed 's/\/team-2018\/raspberrypi/\//')
+local_root=$(echo $local_root | sed 's/\/team-2019\/raspberrypi/\//')
 
 # Looking for newest file to upload
 local_root_formated=$(echo $local_root | sed 's/\//\\\//g')
@@ -52,5 +52,5 @@ readarray -t files_liste <<<$files
 file_selected=$(ls -t ${files_liste[@]} | head -n 1)
 
 # Sending
-file_upload=$(echo $file_selected | sed 's/.*\/team-2018\///')
+file_upload=$(echo $file_selected | sed 's/.*\/team-2019\///')
 scp $file_selected pi@$ip:$rasp_root$file_upload
