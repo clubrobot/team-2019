@@ -38,20 +38,13 @@ class ObstacleMap:
             dx = self.cos_phi[phi_i] * distance_max
             dy = self.sin_phi[phi_i] * distance_max
             seg = geometry.Segment(geometry.Point(p.x, p.y), geometry.Point(p.x + dx, p.y + dy))
-            # print()
-            # print(phi*180/math.pi)
             for obs in self.obstacles_ftg:
-                # print(obs.geom)
                 inter = obs.geom.segment_intersection_point(seg)
-                # print(inter)
                 if inter:
                     d = round(inter.distance(p))
                     if histo[1][phi_i] is None:
                         histo[1][phi_i] = d
                     histo[1][phi_i] = min(histo[1][phi_i], d)
-                # print()
-        #     print("\n")
-        # print(histo[1])
 
         # import matplotlib.pyplot as plt
         # from matplotlib import cm
@@ -141,7 +134,6 @@ class ObstacleMap:
             return self.INFINITE
 
         distance = p1.distance(p2)
-        print(gap[0]*360/self.nb_phi, gap[1]*360/self.nb_phi, " : ", distance)
         return distance
 
     def get_nearest_gap(self, gaps, angle_to_goal):
