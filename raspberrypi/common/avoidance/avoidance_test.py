@@ -10,7 +10,10 @@ import time
 import os
 
 
-TEST = True
+TEST = False
+FILE = False
+PRINT = False
+
 if TEST:
     from robots.setup_wheeledbase import *
     linvel = 500 #wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/4
@@ -65,7 +68,8 @@ if TEST:
 max_pts = 100
 
 with open("list_point", "w") as file:
-    file.write("Execute[{")
+    if FILE:
+        file.write("Execute[{")
 
     while nb_pts < max_pts and robot.distance(goal) > step/2:
         # follow the gap
@@ -84,77 +88,64 @@ with open("list_point", "w") as file:
         v_pf = min(1.0, max_w_pf-w_pf)
 
         # all
-        # if obsmap.angle_difference(angle_guide_ftg, angle_guide_pf) < 3/4*math.pi:
-        #    angle_guide = obsmap.angle_average(angle_guide_pf, angle_guide_ftg, w1=v_pf, w2=v_ftg)
-        # else:
-        #    angle_guide = angle_guide_ftg
-
         angle_guide = obsmap.angle_average(angle_guide_pf, angle_guide_ftg, w1=w_pf, w2=w_ftg)
-
         v = (v_pf + v_ftg) / 2 * linvel
-        v = min(v, linvel)
 
         diff = time.time() - begin
 
         # Display debug information
-        print("nb : ", nb_pts)
-        print("time : ", diff)
-        print("angle ftg : ", angle_guide_ftg*180/pi)
-        print("angle pf : ", angle_guide_pf*180/pi)
-        print("angle : ", angle_guide*180/pi)
-        print("w_ftg : ", w_ftg)
-        print("w_pf : ", w_pf)
-        print("v ftg : ", v_ftg)
-        print("v pf : ", v_pf)
-        print("v : ", v)
+        if PRINT:
+            print("nb : ", nb_pts)
+            print("time : ", diff)
+            print("angle ftg : ", angle_guide_ftg*180/pi)
+            print("angle pf : ", angle_guide_pf*180/pi)
+            print("angle : ", angle_guide*180/pi)
+            print("w_ftg : ", w_ftg)
+            print("w_pf : ", w_pf)
+            print("v ftg : ", v_ftg)
+            print("v pf : ", v_pf)
+            print("v : ", v)
 
         path += [(robot.x, robot.y)]
 
         # write geogebra debug information in file
 
-        # global path
-        c_path = "path_{" + str(nb_pts) + "}"
-        file.write("\"" + c_path + " = Point({" + str(round(robot.x)) + ", " + str(round(robot.y)) + "})\", \n")
-        file.write("\"SetVisibleInView(" + c_path + ", 1, False)\", \n\n")
+        if FILE:
+            # global path
+            c_path = "path_{" + str(nb_pts) + "}"
+            file.write("\"" + c_path + " = Point({" + str(round(robot.x)) + ", " + str(round(robot.y)) + "})\", \n")
+            file.write("\"SetVisibleInView(" + c_path + ", 1, False)\", \n\n")
 
-        # PF vectors
-        display_pf_ratio = 100
-        dx_pf = round(display_pf_ratio*w_pf * cos(angle_guide_pf))
-        dy_pf = round(display_pf_ratio*w_pf * sin(angle_guide_pf))
+            # PF vectors
+            display_pf_ratio = 100
+            dx_pf = round(display_pf_ratio*w_pf * cos(angle_guide_pf))
+            dy_pf = round(display_pf_ratio*w_pf * sin(angle_guide_pf))
 
-        file.write("\"pf_{" + str(nb_pts) + "} = Point(" + c_path + ", Vector((" + str(dx_pf) + ", " + str(dy_pf) + ")))\", \n")
-        file.write("\"SetVisibleInView(" + "pf_{" + str(nb_pts) + "}, 1, False)\", \n")
-        file.write("\"pfv_{" + str(nb_pts) + "} = Vector(" + c_path + ", pf_{" + str(nb_pts) + "})\", \n")
-        file.write("\"SetColor(" + "pfv_{" + str(nb_pts) + "}, 255, 0, 0)\", \n")
-        file.write("\"ShowLabel(" + "pfv_{" + str(nb_pts) + "}, False)\", \n\n")
+            file.write("\"pf_{" + str(nb_pts) + "} = Point(" + c_path + ", Vector((" + str(dx_pf) + ", " + str(dy_pf) + ")))\", \n")
+            file.write("\"SetVisibleInView(" + "pf_{" + str(nb_pts) + "}, 1, False)\", \n")
+            file.write("\"pfv_{" + str(nb_pts) + "} = Vector(" + c_path + ", pf_{" + str(nb_pts) + "})\", \n")
+            file.write("\"SetColor(" + "pfv_{" + str(nb_pts) + "}, 255, 0, 0)\", \n")
+            file.write("\"ShowLabel(" + "pfv_{" + str(nb_pts) + "}, False)\", \n\n")
 
-        #FTG vectors
-        display_ftg_ratio = 100
-        dx_ftg = round(display_ftg_ratio*v_ftg * cos(angle_guide_ftg))
-        dy_ftg = round(display_ftg_ratio*v_ftg * sin(angle_guide_ftg))
+            #FTG vectors
+            display_ftg_ratio = 100
+            dx_ftg = round(display_ftg_ratio*v_ftg * cos(angle_guide_ftg))
+            dy_ftg = round(display_ftg_ratio*v_ftg * sin(angle_guide_ftg))
 
-        file.write("\"ftg_{" + str(nb_pts) + "} = Point(" + c_path + ", Vector((" + str(dx_ftg) + ", " + str(dy_ftg) + ")))\", \n")
-        file.write("\"SetVisibleInView(" + "ftg_{" + str(nb_pts) + "}, 1, False)\", \n")
-        file.write("\"ftgv_{" + str(nb_pts) + "} = Vector(" + c_path + ", ftg_{" + str(nb_pts) + "})\", \n")
-        file.write("\"SetColor(" + "ftgv_{" + str(nb_pts) + "}, 0, 255, 0)\", \n")
-        file.write("\"ShowLabel(" + "ftgv_{" + str(nb_pts) + "}, False)\", \n\n")
+            file.write("\"ftg_{" + str(nb_pts) + "} = Point(" + c_path + ", Vector((" + str(dx_ftg) + ", " + str(dy_ftg) + ")))\", \n")
+            file.write("\"SetVisibleInView(" + "ftg_{" + str(nb_pts) + "}, 1, False)\", \n")
+            file.write("\"ftgv_{" + str(nb_pts) + "} = Vector(" + c_path + ", ftg_{" + str(nb_pts) + "})\", \n")
+            file.write("\"SetColor(" + "ftgv_{" + str(nb_pts) + "}, 0, 255, 0)\", \n")
+            file.write("\"ShowLabel(" + "ftgv_{" + str(nb_pts) + "}, False)\", \n\n")
 
         # Indicate angle to wheeledbase
         if TEST:
-            try:
-                wheeledbase.follow_angle(angle_guide, v)
-                while not wheeledbase.isarrived():
-                    time.sleep(0.05)
-            except RuntimeError:
-                print("spin")
-                break
+            wheeledbase.follow_angle(angle_guide, v)
 
         # Update position
         if TEST:
             robot = geometry.Point(wheeledbase.get_position()[0], wheeledbase.get_position()[1])
         else:
-            # dx = math.cos(angle_guide) * v * diff*10
-            # dy = math.sin(angle_guide) * v * diff*10
             dx = math.cos(angle_guide) * v * timestep
             dy = math.sin(angle_guide) * v * timestep
             robot = geometry.Point(robot.x + dx, robot.y + dy)
@@ -167,14 +158,15 @@ with open("list_point", "w") as file:
         wheeledbase.stop()
 
     # Write Polyline
-    if nb_pts > 1:
-        file.write("\"polypath = Polyline(")
-        for i in range(nb_pts):
-            file.write("path_{"+str(i) + "},")
+    if FILE:
+        if nb_pts > 1:
+            file.write("\"polypath = Polyline(")
+            for i in range(nb_pts):
+                file.write("path_{"+str(i) + "},")
 
-    file.seek(0, os.SEEK_END)
-    file.seek(file.tell() - 1, os.SEEK_SET)
-    file.write(")\", \"SetColor(polypath, 255, 255, 255)\"}]\n")
+        file.seek(0, os.SEEK_END)
+        file.seek(file.tell() - 1, os.SEEK_SET)
+        file.write(")\", \"SetColor(polypath, 255, 255, 255)\"}]\n")
 
 if nb_pts == max_pts:
     print("goal not reached")
