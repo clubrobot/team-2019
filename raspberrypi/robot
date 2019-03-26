@@ -56,7 +56,7 @@ def getuuid(args):
 
 def showip(args):
     try:
-        ss.clear_messages()
+        ssd.clear_messages()
         import subprocess
         ips = []
         wlan_up = False
@@ -72,9 +72,9 @@ def showip(args):
             else:
                 attempts += 1
         if wlan_up:
-            [ss.set_message(ip) for ip in ips]
+            [ssd.set_message(ip) for ip in ips]
         else:
-            ss.set_message("No Ip found ")
+            ssd.set_message("No Ip found ")
     except:
         pass
 
