@@ -13,7 +13,7 @@ import os
 TEST = True
 if TEST:
     from robots.setup_wheeledbase import *
-    linvel = 200 #wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/4
+    linvel = 500 #wheeledbase.get_parameter_value(POSITIONCONTROL_LINVELMAX_ID, FLOAT)/4
     angvel = wheeledbase.get_parameter_value(POSITIONCONTROL_ANGVELMAX_ID, FLOAT)
 else:
     linvel = 600
@@ -28,7 +28,7 @@ geo = geogebra.Geogebra("test.ggb")
 robot = geometry.Point(*geo.get("origin"))
 goal = geometry.Point(*geo.get("goal"))
 max_w_pf = 2
-robot_width = 400
+robot_width = 300
 
 obsmap = ObstacleMap()
 
