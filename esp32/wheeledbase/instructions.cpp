@@ -358,16 +358,14 @@ void START_FOLLOW_ANGLE(SerialTalks& talks, Deserializer& input, Serializer& out
 
     if (fabs(dtheta) > M_PI/2)
     {
-        dtheta = inrange(dtheta+M_PI, -M_PI, M_PI);
+        theta = inrange(theta+M_PI, -M_PI, M_PI);
         vel = -vel;
     }
 
 	followAngle.setVelSetpoint(vel);
-
     velocityControl.enable();
     positionControl.setPosSetpoint(posSetpoint);
     positionControl.setThetaSetpoint(theta);
-
     positionControl.setMoveStrategy(followAngle);
     positionControl.enable();
 }
