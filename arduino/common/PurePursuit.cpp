@@ -60,7 +60,7 @@ bool PurePursuit::checkLookAheadGoal(const float x, const float y)
 
 		// `h` is the distance between the robot and the current line (i.e. the current segment but
 		// without regard to its endpoints).
-		float h = abs(edgedx * dy - edgedy * dx) / edgeLength;
+		float h = fabs(edgedx * dy - edgedy * dx) / edgeLength;
 		if (m_lookAhead < h) // There is no intersection between the current line and the circle.
 			continue;
 		
@@ -128,7 +128,7 @@ void PurePursuit::checkProjectionGoal(const float x, const float y)
 		}
 		else
 		{
-			h = abs(edgedx * dy - edgedy * dx) / edgeLength;
+			h = fabs(edgedx * dy - edgedy * dx) / edgeLength;
 		}
 
 		// Save the new projection point if it is closer than the current one.
@@ -212,10 +212,10 @@ void PurePursuit::computeVelSetpoints(float timestep)
 	// angular velocity allowed to compute the maximum linear velocity setpoint.
 	float newLinVelMax = linVelMax;
 	float newAngVelMax = angVelMax;
-	if (newAngVelMax * chord >= newLinVelMax * abs(2 * sin(delta)))
-		newAngVelMax = newLinVelMax * abs(2 * sin(delta)) / chord;
+	if (newAngVelMax * chord >= newLinVelMax * fabs(2 * sin(delta)))
+		newAngVelMax = newLinVelMax * fabs(2 * sin(delta)) / chord;
 	else
-		newLinVelMax = newAngVelMax * chord / abs(2 * sin(delta));
+		newLinVelMax = newAngVelMax * chord / fabs(2 * sin(delta));
 	
 	// Then we do a simple proportional control for both linear and angular velocities.
 	float linPosSetpoint = (chord + getDistAfterGoal()) * m_direction;
@@ -232,7 +232,7 @@ void PurePursuit::computeVelSetpoints(float timestep)
 		linVelSetpoint *= 0;
 	
 	// This could be computed elsewhere but here is convenient. 
-	m_goalReached = abs(chord + getDistAfterGoal()) < getLinPosThreshold();
+	m_goalReached = fabs(chord + getDistAfterGoal()) < getLinPosThreshold();
 
 	setVelSetpoints(linVelSetpoint, angVelSetpoint);
 }
