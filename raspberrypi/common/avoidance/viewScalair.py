@@ -14,25 +14,22 @@ geo = geogebra.Geogebra("test.ggb")
 robot = geometry.Point(*geo.get("origin"))
 goal = geometry.Point(*geo.get("goal"))
 period = 1
-max_w_pf = 10
+max_w_pf = 1
 robot_width = 300
 
 objs = []
 
-funct = funct_list["lin"](a=max_w_pf/robot_width, b=max_w_pf)
+mini = 0.5
+funct = funct_list["exp"](alpha=log(1/mini)/robot_width, beta=max_w_pf)
 for obs in geo.getall("obsc_*"):
-    print("c")
     objs += [DiskObs(Point(obs[0], obs[1]), obs[2], funct)]
 poly_in = geo.getall("obsin_*")
 for poly in poly_in:
-    print("p")
     objs += [PolygonObs(poly, funct)]
 
 #pf
 maps = geometry.Point(*geo.get("MAP"))
 objs += [Map(maps.x, maps.y, funct)]
-
-print(objs)
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
