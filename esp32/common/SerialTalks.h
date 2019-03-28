@@ -8,7 +8,7 @@
 
 
 #ifndef EEPROM_SIZE
-#define EEPROM_SIZE 1024
+#define EEPROM_SIZE 512
 #endif
 
 

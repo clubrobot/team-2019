@@ -6,66 +6,66 @@
 #include "Joint.h"
 #include "Scara.h"
 #include "Matrix.h"
-#include "arm_config.h"
+#include "constants.h"
 
 namespace IK
 {
 
-Scara::Scara(double l1, double l2, joints_t joints, coords_t origin)
+Scara::Scara(float l1, float l2, Joints joints, Coords origin)
 {
-	m_joints 	= joints;
-	m_origin	= origin;
-	m_tool	 	= get_tool();
+	_joints 	= joints;
+	_origin	= origin;
+	_tool	 	= get_tool();
 
-	m_l1		= l1;
-	m_l2		= l2;
-	m_lsq   	= pow(l1,2)+pow(l2,2);
+	_l1		= l1;
+	_l2		= l2;
+	_lsq   	= pow(l1,2)+pow(l2,2);
 }
 
-coords_t Scara::forward_kinematics(joints_t joints)
+Coords Scara::forward_kinematics(Joints joints)
 {
-	m_joints = joints;
+	_joints = joints;
 	return get_tool();
 }
 
-joints_t Scara::inverse_kinematics(coords_t tool)
+Joints Scara::inverse_kinematics(Coords tool)
 {
 
-	double norm = pow((tool.x - m_origin.x),2) + pow((tool.y - m_origin.y),2);
+	float norm = pow((tool.x - _origin.x),2) + pow((tool.y - _origin.y),2);
 
-    if( norm > pow((m_l1 + m_l2),2) || norm < pow((m_l1 - m_l2),2))
+    if( norm > pow((_l1 + _l2),2) || norm < pow((_l1 - _l2),2))
     {
     	//Target unreachable
-        m_tool = get_tool();
+        _tool = get_tool();
         //return ;
     }
             
 
-    m_tool = tool;
-    m_joints = get_joints();
+    _tool = tool;
+    _joints = get_joints();
 
-    return m_joints;
+    return _joints;
 }
 
-coords_t Scara::get_tool(void)
+Coords Scara::get_tool(void)
 {
-    coords_t new_cords;
+    Coords new_cords;
 
-    new_cords.x = (m_l1 * cos(m_joints.th1) + m_l2 * cos(m_joints.th1 + m_joints.th2));
-    new_cords.y = m_l1 * sin(m_joints.th1) + m_l2 * sin(m_joints.th2 + m_joints.th1);
+    new_cords.x = (_l1 * cos(_joints.th1) + _l2 * cos(_joints.th1 + _joints.th2));
+    new_cords.y = _l1 * sin(_joints.th1) + _l2 * sin(_joints.th2 + _joints.th1);
 
-    new_cords.x += m_origin.x;
-    new_cords.y += m_origin.y;
+    new_cords.x += _origin.x;
+    new_cords.y += _origin.y;
 
     return new_cords;
 }
 
-joints_t Scara::get_joints(void)
+Joints Scara::get_joints(void)
 {
-    joints_t new_joints;
+    Joints new_joints;
 
-	double x = m_tool.x - m_origin.x;
-    double y = m_tool.y - m_origin.y;
+	float x = _tool.x - _origin.x;
+    float y = _tool.y - _origin.y;
 
     if(x == 0 and y == 0)
     {
@@ -73,13 +73,13 @@ joints_t Scara::get_joints(void)
     	return new_joints;
     }
 
-    double l = pow(x,2) + pow(y,2);
+    float l = pow(x,2) + pow(y,2);
     
-   	double lsq = m_lsq;
+   	float lsq = _lsq;
 
-    double cos_gamma = (l + pow(m_l1,2) - pow(m_l2,2)) / (2 * m_l1 * sqrt(l));
+    float cos_gamma = (l + pow(_l1,2) - pow(_l2,2)) / (2 * _l1 * sqrt(l));
 
-    double gamma;
+    float gamma;
     //Numerical errors can make abs(cos_gamma) > 1
     if(cos_gamma > 1 - EPSILON || cos_gamma < (-1 + EPSILON))
     {
@@ -91,7 +91,7 @@ joints_t Scara::get_joints(void)
     }
 
     new_joints.th1 = atan2(y, x) - gamma;
-    new_joints.th2 = atan2(sqrt(1 - pow(((l - lsq) / (2 * m_l1 * m_l2)),2)), (l - lsq) / (2 * m_l1 * m_l2));
+    new_joints.th2 = atan2(sqrt(1 - pow(((l - lsq) / (2 * _l1 * _l2)),2)), (l - lsq) / (2 * _l1 * _l2));
 
 
     new_joints.th1 = std::fmod((new_joints.th1 + M_PI) , (2 * M_PI)) - M_PI; // Stay between -pi and pi
@@ -100,18 +100,18 @@ joints_t Scara::get_joints(void)
     return new_joints;
 }
 
-detailed_pos_t Scara::get_detailed_pos(void)
+DetailedPos Scara::get_detailed_pos(void)
 {
     /*
         Returns origin, position of end of link 1, position of end of link 2
     */
-    detailed_pos_t new_pos;
+    DetailedPos new_pos;
 
-    new_pos.link1.x = m_l1 * cos(m_joints.th1) + m_origin.x;
-    new_pos.link1.y = m_l1 * sin(m_joints.th1) + m_origin.y;
+    new_pos.link1.x = _l1 * cos(_joints.th1) + _origin.x;
+    new_pos.link1.y = _l1 * sin(_joints.th1) + _origin.y;
 
-    new_pos.origin  = m_origin;
-    new_pos.tool    = m_tool;
+    new_pos.origin  = _origin;
+    new_pos.tool    = _tool;
 
     return new_pos;
 }
@@ -122,29 +122,29 @@ matrix_t Scara::compute_jacobian(void)
         Returns jacobian matrix at current state
     */
 
-    double dx_dth1 = - m_l1 * sin(m_joints.th1) - m_l2 * sin(m_joints.th1 + m_joints.th2);
+    float dx_dth1 = - _l1 * sin(_joints.th1) - _l2 * sin(_joints.th1 + _joints.th2);
 
-    double dx_dth2 = - m_l2 * sin(m_joints.th1 + m_joints.th2);
+    float dx_dth2 = - _l2 * sin(_joints.th1 + _joints.th2);
 
-    double dy_dth1 = m_l1 * cos(m_joints.th1) + m_l2 * cos(m_joints.th1 + m_joints.th2);
+    float dy_dth1 = _l1 * cos(_joints.th1) + _l2 * cos(_joints.th1 + _joints.th2);
 
-    double dy_dth2 = m_l2 * cos(m_joints.th1 + m_joints.th2);
+    float dy_dth2 = _l2 * cos(_joints.th1 + _joints.th2);
 
-    return m_matrix.createMatrix22(dx_dth1, dx_dth2, dy_dth1, dy_dth2);
+    return _matrix.createMatrix22(dx_dth1, dx_dth2, dy_dth1, dy_dth2);
 }
 
-coords_t Scara::get_tool_vel(joints_t joints_vel)
+Coords Scara::get_tool_vel(Joints joints_vel)
 {
     /*
         Computes current tool velocity using jacobian
     */
-    coords_t new_vel;
+    Coords new_vel;
 
-    matrix_t jt_vel = m_matrix.createMatrix21(joints_vel.th1, joints_vel.th1);
+    matrix_t jt_vel = _matrix.createMatrix21(joints_vel.th1, joints_vel.th1);
 
     matrix_t jacobian = compute_jacobian();
 
-    matrix_t tl_vel = m_matrix.multMatrix22x12(jacobian , jt_vel);
+    matrix_t tl_vel = _matrix.multMatrix22x12(jacobian , jt_vel);
 
     new_vel.x = tl_vel[0][0];
     new_vel.y = tl_vel[1][0];
@@ -152,28 +152,28 @@ coords_t Scara::get_tool_vel(joints_t joints_vel)
     return new_vel;
 }
 
-joints_t Scara::get_joints_vel(coords_t tool_vel)
+Joints Scara::get_joints_vel(Coords tool_vel)
 {
     /*
         Computes current tool velocity using jacobian
     */
-    joints_t vel;
+    Joints vel;
     vel.th1 = 0;
     vel.th2 = 0;
 
-    matrix_t tool_v = m_matrix.createMatrix21(tool_vel.x, tool_vel.y);
+    matrix_t tool_v = _matrix.createMatrix21(tool_vel.x, tool_vel.y);
 
     matrix_t jacobian = compute_jacobian();
 
-    if (m_matrix.norm(tool_v) < EPSILON)
+    if (_matrix.norm(tool_v) < EPSILON)
         return vel;
 
-    if (abs(m_matrix.det(jacobian)) < EPSILON)
+    if (std::abs(_matrix.det(jacobian)) < EPSILON)
     {
         //raise ValueError('Singularity')
     }
 
-    matrix_t joints_vel = m_matrix.solve(jacobian, tool_v);
+    matrix_t joints_vel = _matrix.solve(jacobian, tool_v);
 
     vel.th1 = joints_vel[0][0];
     vel.th2 = joints_vel[1][0];
@@ -181,18 +181,18 @@ joints_t Scara::get_joints_vel(coords_t tool_vel)
     return vel;
 }
 
-path_t Scara::get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t)
+path_t Scara::get_path(Coords start_pos, Coords start_vel, Coords target_pos, Coords target_vel, float delta_t)
 {
 
-    joints_t start_joints_pos = inverse_kinematics(start_pos);
+    Joints start_joints_pos = inverse_kinematics(start_pos);
         
-    joints_t start_joints_vel = get_joints_vel(start_vel);
+    Joints start_joints_vel = get_joints_vel(start_vel);
 
-    joints_t target_joints_pos = inverse_kinematics(target_pos);
-    joints_t target_joints_vel = get_joints_vel(target_vel);
+    Joints target_joints_pos = inverse_kinematics(target_pos);
+    Joints target_joints_vel = get_joints_vel(target_vel);
 
         
-    double tf_sync = synchronisation_time(start_joints_pos,
+    float tf_sync = synchronisation_time(start_joints_pos,
                                             start_joints_vel,
                                             target_joints_pos,
                                             target_joints_vel);
@@ -217,7 +217,7 @@ path_t Scara::get_path(coords_t start_pos, coords_t start_vel, coords_t target_p
     return new_path;
 }
 
-double Scara::synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel)
+float Scara::synchronisation_time(Joints start_pos, Joints start_vel, Joints target_pos, Joints target_vel)
 {
     /*        
     Return largest time to destination to use slowest joint as synchronisation
@@ -225,9 +225,9 @@ double Scara::synchronisation_time(joints_t start_pos, joints_t start_vel, joint
     */
 
     // Compute time to destination for all joints
-    trajectory_time_t t_theta1 = Theta1_joint.time_to_destination(start_pos.th1, start_vel.th1, target_pos.th1, target_vel.th1);
+    TrajectoryTime t_theta1 = Theta1_joint.time_to_destination(start_pos.th1, start_vel.th1, target_pos.th1, target_vel.th1);
 
-    trajectory_time_t t_theta2 = Theta2_joint.time_to_destination(start_pos.th2, start_vel.th2, target_pos.th2, target_vel.th2);
+    TrajectoryTime t_theta2 = Theta2_joint.time_to_destination(start_pos.th2, start_vel.th2, target_pos.th2, target_vel.th2);
     
     return max(t_theta1.tf, t_theta2.tf);
 }

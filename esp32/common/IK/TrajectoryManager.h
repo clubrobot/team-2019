@@ -5,7 +5,7 @@
 #include "Picker.h"
 #include "ArmManager.h"
 #include "thread_tools.h"
-#include "arm_config.h"
+#include "constants.h"
 #include "MoveBatch.h"
 #include "Queue.h"
 #include "PeriodicProcess.h"
@@ -20,37 +20,49 @@ class TrajectoryManager : public PeriodicProcess
 
     public :
 
-        TrajectoryManager() throw():_isExecutingBatch(false),_arrived(false){}
+        TrajectoryManager() throw():_isExecutingBatch(false),_arrived(false),_error(false){}
+
         void set_armManager(ArmManager& manager);
         void set_Motors(MotorWrapper& motor1, MotorWrapper& motor2, MotorWrapper& motor3);
+        void set_timestep(float timestep);
 
-        void move_directly(coords_t pos);
+        float get_timestep() const {return _timestep;}
+
+        void init();
+
+        void move_directly(Coords pos);
         bool is_arrived() const {return _arrived;}
+
+        void load(int address);
+	    void save(int address) const;
 
     private :
         virtual void process(float timestep);
 
-        double convert_deg(double theta);
-        double convert_speed(double theta_speed);
+        float convert_deg(float theta);
+        float convert_speed(float theta_speed);
 
         void addMoveBatch(MoveBatch mb);
 
         MoveBatch popMoveBatch();
         MoveBatch peekMoveBatch();
 
-        ArmManager      *m_manager;
+        ArmManager      *_manager;
 
-        MotorWrapper    *m_motor1;
-        MotorWrapper    *m_motor2;
-        MotorWrapper    *m_motor3;
+        MotorWrapper    *_motor1;
+        MotorWrapper    *_motor2;
+        MotorWrapper    *_motor3;
 
         Queue<MoveBatch> _batchQueue = Queue<MoveBatch>(MAX_NUM_OF_BATCHED_MOVES);
 
         bool _isExecutingBatch;
 
         bool _arrived;
+        bool _error;
 
-        Mutex m_mutex;
+        float _timestep;
+
+        Mutex _mutex;
 };
 }
 

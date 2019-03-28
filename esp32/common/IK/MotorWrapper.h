@@ -11,6 +11,14 @@
 
 using namespace std;
 
+typedef struct
+{
+    uint8_t id;
+    uint8_t timeout;
+    uint8_t err_code;
+}Motor_state_t;
+
+
 namespace IK
 {
 #define RMP_TO_DEG_S 0.16666666666667
@@ -23,32 +31,43 @@ class MotorWrapper : public PeriodicProcess
     public:
         MotorWrapper();
         
-        void setPID(PID& pid){m_PID = &pid;}
-        void setMOTOR(AX12& motor){m_motor = &motor;}
-        void setOFFSET(float offset){m_offset = offset;}
+        void setID(int id);
+        void setOFFSET(float offset);
 
-        void setGoalPos(float pos){m_pos = pos; m_step_counter = 0; m_arrived = false;}
-        void setVelocityProfile(vector<double> vel){m_vel_profile = vel;}
+        int   getID()     const {return _id;}
+        float getOFFSET() const {return _offset;}
 
-        bool arrived() const {return m_arrived;}
+        void init();
+
+        void setGoalPos(float pos);
+        void setVelocityProfile(vector<float> vel);
+
+        bool arrived() const {return _arrived;}
 
         virtual void process(float timestep);
 
+        void load(int address);
+	    void save(int address) const;
+
     private:
 
-        float m_velInput;
-        float m_posInput;
-        float m_pos;
-        float m_offset;
-        int m_step_counter;
-        bool m_arrived;
+        float _velInput;
+        float _posInput;
+        float _pos;
+        float _offset;
+        int   _id;
+        int _step_counter;
+        bool _arrived;
 
-        vector<double> m_vel_profile;
+        bool _error_occur;
 
-        PID* m_PID;
-        AX12* m_motor;
+        Motor_state_t _state;
 
-        Mutex m_mutex;
+        vector<float> _vel_profile;
+
+        AX12 _motor;
+
+        Mutex _mutex;
 	
 };
 

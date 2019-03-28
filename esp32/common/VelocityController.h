@@ -64,6 +64,8 @@ protected:
 	virtual void process(float timestep);
 
 	const VelocityController* m_controller;
+
+	Mutex m_mutex;
 };
 #endif // ENABLE_VELOCITYCONTROLLER_LOGS
 

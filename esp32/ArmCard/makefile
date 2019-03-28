@@ -16,8 +16,9 @@ LIBS = $(ESP_LIBS)/EEPROM \
 	   $(COMMON)/IK \
 	   $(COMMON)/AX12 \
 	   $(COMMON)/VacumPump.cpp \
-	   $(COMMON)/TaskManager.cpp
-
+	   $(COMMON)/TaskManager.cpp \
+	   $(COMMON)/PressureSensor.cpp \
+	   instructions.cpp
 
 
 CPPFLAGS += -DCONFIG_CXX_EXCEPTIONS=1
@@ -27,4 +28,3 @@ CPPFLAGS += -DSERIALTALKS_MAX_OPCODE=0x30
 MODULEMK_DIR = ..
 CPP_EXTRA += -fexceptions
 include $(MODULEMK_DIR)/Module.mk
-

@@ -43,7 +43,7 @@ void DCMotor::update()
 float DCMotor::getMaxVelocity() const
 {
 	m_mutex.acquire();
-	float ret = abs((2 * M_PI * m_wheelRadius) / m_constant) * m_maxPWM;
+	float ret = fabs((2 * M_PI * m_wheelRadius) / m_constant) * m_maxPWM;
 	m_mutex.release();
 	return ret;
 }

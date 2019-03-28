@@ -12,15 +12,28 @@ from robots.display_manager import *
 from math import pi
 from common.geogebra import Geogebra
 
-#bmap = Geogebra("roadmap.ggb")
-points = dict()
+
+led1 = LEDMatrix(manager, 1)
+led2 = LEDMatrix(manager, 2)
+ssd = SevenSegments(manager)
+
+disp = DisplayPoints(ssd, led1, led2)
 
 gripper = Gripper(manager)
-gripper.open()
 pushers = Pushers(manager)
-pushers.up()
 arm = Arm(manager)
 arm.up()
+
+
+def init_robot():
+    gripper.open()
+    pushers.up()
+    arm.up()
+
+if __name__ == "__main__":
+    init_robot()
+
+
 """
 button_manager = BornibusButtonsManager(ButtonCard(manager))
 while button_manager.team is none:

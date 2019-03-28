@@ -20,7 +20,6 @@ class DisplayPoints:
         self.start_time = time.time()
         Thread(target=self.run).start()
 
-    
     def addPoints(self, points):
         self.locker.acquire()
         self.points += points
@@ -76,7 +75,8 @@ class DisplayPoints:
         self._reset_normal(duration)
 
     def updateDisplay(self):
-        remaining_time = MATCH_DURATION-2-round(time.time()- self.start_time)
+        self.display.clear_messages()
+        remaining_time = MATCH_DURATION-round(time.time()- self.start_time)
         if remaining_time > 0:
             try:
                 self.display.set_message("T:"+str(remaining_time)+ "  P:" + str(self.points))
