@@ -72,7 +72,7 @@ public:
 	 * @param linVelKp Coefficient proportionnel de vitesse linéaire.
 	 * @param angVelKp Coefficient proportionnel de vitesse angulaire.
 	 */
-	void setVelTunings(float linVelKp, float angVelKp) {m_linVelKp  = linVelKp;  m_angVelKp  = angVelKp;}
+	void setVelTunings(float linVelKp, float angVelKp);
 	/**
 	 * @brief Paramètre les vitesses max.
 	 * 
@@ -81,7 +81,7 @@ public:
 	 * @param linVelMax Vitesse linéaire max.
 	 * @param angVelMax Vitesse angulaire max.
 	 */
-	void setVelLimits(float linVelMax, float angVelMax){m_linVelMax = linVelMax; m_angVelMax = angVelMax;}
+	void setVelLimits(float linVelMax, float angVelMax);
 	/**
 	 * @brief Paramètre les précisions en position.
 	 * 
@@ -90,7 +90,7 @@ public:
 	 * @param linPosThreshold Précision en coordonnés cartésiens (en mm).
 	 * @param angPosThreshold Précision d'angle (en rad).
 	 */
-	void setPosThresholds(float linPosThreshold, float angPosThreshold){m_linPosThreshold = linPosThreshold; m_angPosThreshold = angPosThreshold;}
+	void setPosThresholds(float linPosThreshold, float angPosThreshold);
 	/**
 	 * @brief Charge une stratégie de mouvement.
 	 * 

@@ -65,14 +65,14 @@ public:
 	 * 
 	 * @param countsPerRev nb de tics par tour.
 	 */
-	void setCountsPerRev(long countsPerRev){m_countsPerRev = countsPerRev;}
+	void setCountsPerRev(long countsPerRev);
 
 	/**
 	 * @brief Set le rayon en mm de la roue.
 	 * 
 	 * @param wheelRadius rayon en mm.
 	 */
-	void setWheelRadius (float wheelRadius){m_wheelRadius  = wheelRadius;}
+	void setWheelRadius (float wheelRadius);
 
 	/**
 	 * @brief Réinitialise le compteur à 0.
@@ -110,7 +110,7 @@ public:
 	 * 
 	 * @param address Offset à utiliser pour ecrire dans l'EEPROM.
 	 */
-	void save(int address) const;
+	void save(int address);
 
 protected:
 
