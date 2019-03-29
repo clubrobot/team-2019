@@ -70,7 +70,6 @@ public:
 class Odometry : public PeriodicProcess
 {
 public:
-	Odometry() : PeriodicProcess(), m_valuesModified(false){}
 	/**
 	 * @brief Attribut une nouvelle position.
 	 * 
@@ -155,7 +154,7 @@ public:
 	 * 
 	 * @param address Adresse à utilisé pour la sauvegarde.
 	 */
-	void save(int address);
+	void save(int address) const;
 
 protected:
 	/**
@@ -170,7 +169,6 @@ protected:
 	float m_angVel; /*!< Vitesse angulaire en rad/s.*/
 	float m_axleTrack;/*!< Entraxe entre les deux roues codeuses. */
 	float m_slippage;/*!< Constante de dérivation othogonal. */
-	bool  m_valuesModified;
 
 	AbstractCodewheel* m_leftCodewheel;/*!< Pointeur de l'AbstractCodewheel gauche. */
 	AbstractCodewheel* m_rightCodewheel;/*!< Pointeur de l'AbstractCodewheel droite.  */
