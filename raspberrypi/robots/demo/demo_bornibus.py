@@ -1,4 +1,4 @@
-from robots.demo_wheeledbase import *
+from robots.demo.demo_wheeledbase import *
 from robots.setup_bornibus   import *
 
 controller_keys.update({

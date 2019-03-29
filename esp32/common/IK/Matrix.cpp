@@ -5,13 +5,13 @@
 namespace IK
 {
 
-matrix_t Matrix3::createMatrix33(double X1, double X2, double X3, double Y1, double Y2, double Y3, double Z1, double Z2, double Z3)
+matrix_t Matrix3::createMatrix33(float X1, float X2, float X3, float Y1, float Y2, float Y3, float Z1, float Z2, float Z3)
 {
-    double** matrix = 0;
-    matrix = new double*[3];
-    matrix[0] = new double[3];
-    matrix[1] = new double[3];
-    matrix[2] = new double[3];
+    float** matrix = 0;
+    matrix = new float*[3];
+    matrix[0] = new float[3];
+    matrix[1] = new float[3];
+    matrix[2] = new float[3];
 
     matrix[0][0] = X1;
     matrix[0][1] = X2;
@@ -28,13 +28,13 @@ matrix_t Matrix3::createMatrix33(double X1, double X2, double X3, double Y1, dou
     return matrix;
 }
 
-matrix_t Matrix3::createMatrix31(double X1, double Y1, double Z1)
+matrix_t Matrix3::createMatrix31(float X1, float Y1, float Z1)
 {
-    double** matrix = 0;
-    matrix = new double*[3];
-    matrix[0] = new double[1];
-    matrix[1] = new double[1];
-    matrix[2] = new double[1];
+    float** matrix = 0;
+    matrix = new float*[3];
+    matrix[0] = new float[1];
+    matrix[1] = new float[1];
+    matrix[2] = new float[1];
 
     matrix[0][0] = X1;
     matrix[1][0] = Y1;
@@ -45,7 +45,7 @@ matrix_t Matrix3::createMatrix31(double X1, double Y1, double Z1)
 
 matrix_t Matrix3::multMatrix33x13(matrix_t mat33, matrix_t mat13)
 {
-	double a,b,c;
+	float a,b,c;
 
 	a = (mat33[0][0] * mat13[0][0]) + (mat33[0][1] * mat13[1][0]) + (mat33[0][2] * mat13[2][0]) ;
 	b = (mat33[1][0] * mat13[0][0]) + (mat33[1][1] * mat13[1][0]) + (mat33[1][2] * mat13[2][0]) ;
@@ -54,9 +54,9 @@ matrix_t Matrix3::multMatrix33x13(matrix_t mat33, matrix_t mat13)
 	return createMatrix31(a,b,c);
 }
 
-double Matrix3::norm(matrix_t mat)
+float Matrix3::norm(matrix_t mat)
 {
-    double norm = 0;
+    float norm = 0;
 
     for(int i = 0; i > 3; i++)
     {
@@ -70,9 +70,9 @@ double Matrix3::norm(matrix_t mat)
     return norm;
 }
 
-double Matrix3::det(matrix_t mat)
+float Matrix3::det(matrix_t mat)
 {
-    double a,b,c;
+    float a,b,c;
 
     a = mat[0][0]*((mat[1][1]*mat[2][2])-(mat[2][1]*mat[1][2]));
     b = mat[1][0]*((mat[0][1]*mat[2][2])-(mat[2][1]*mat[0][2]));
@@ -87,7 +87,7 @@ matrix_t Matrix3::solve(matrix_t mat33, matrix_t mat13)
     matrix_t matb = createMatrix33(mat33[0][0],mat33[0][1],mat33[0][2],mat13[0][0],mat13[1][0],mat13[2][0],mat33[2][0],mat33[2][1],mat33[2][2]);
     matrix_t matc = createMatrix33(mat33[0][0],mat33[0][1],mat33[0][2],mat33[1][0],mat33[1][1],mat33[1][2],mat13[0][0],mat13[1][0],mat13[2][0]);
 
-    double a,b,c,deter,detera,deterb,deterc;
+    float a,b,c,deter,detera,deterb,deterc;
 
     deter  = det(mat33);
     detera = det(mata);
@@ -113,12 +113,12 @@ void Matrix3::free(matrix_t m)
     delete m;
 }
 
-matrix_t Matrix2::createMatrix22(double X1, double X2, double Y1, double Y2)
+matrix_t Matrix2::createMatrix22(float X1, float X2, float Y1, float Y2)
 {
-    double** matrix = 0;
-    matrix = new double*[2];
-    matrix[0] = new double[2];
-    matrix[1] = new double[2];
+    float** matrix = 0;
+    matrix = new float*[2];
+    matrix[0] = new float[2];
+    matrix[1] = new float[2];
 
     matrix[0][0] = X1;
     matrix[0][1] = X2;
@@ -128,12 +128,12 @@ matrix_t Matrix2::createMatrix22(double X1, double X2, double Y1, double Y2)
     return matrix;
 }
 
-matrix_t Matrix2::createMatrix21(double X1, double Y1)
+matrix_t Matrix2::createMatrix21(float X1, float Y1)
 {
-    double** matrix = 0;
-    matrix = new double*[1];
-    matrix[0] = new double[1];
-    matrix[1] = new double[1];
+    float** matrix = 0;
+    matrix = new float*[1];
+    matrix[0] = new float[1];
+    matrix[1] = new float[1];
 
     matrix[0][0] = X1;
     matrix[1][0] = Y1;
@@ -143,7 +143,7 @@ matrix_t Matrix2::createMatrix21(double X1, double Y1)
 
 matrix_t Matrix2::multMatrix22x12(matrix_t mat22, matrix_t mat12)
 {
-	double a,b;
+	float a,b;
 
 	a = (mat22[0][0] * mat12[0][0]) + (mat22[0][1] * mat12[1][0]);
 	b = (mat22[1][0] * mat12[0][0]) + (mat22[1][1] * mat12[1][0]);
@@ -151,12 +151,12 @@ matrix_t Matrix2::multMatrix22x12(matrix_t mat22, matrix_t mat12)
 	return createMatrix21(a,b);
 }
 
-double Matrix2::norm(matrix_t mat)
+float Matrix2::norm(matrix_t mat)
 {
     return sqrt( pow((mat[0][0]),2) + pow((mat[0][1]),2) + pow((mat[1][0]),2) + pow(mat[1][1],2) );
 }
 
-double Matrix2::det(matrix_t mat)
+float Matrix2::det(matrix_t mat)
 {
     return (mat[0][0] * mat[1][1]) -(mat[1][0] * mat[0][1]);
 }
@@ -165,7 +165,7 @@ matrix_t Matrix2::solve(matrix_t mat22, matrix_t mat12)
 {
     matrix_t result;
 
-    double a,b,deter;
+    float a,b,deter;
 
     deter = det(mat22);
 

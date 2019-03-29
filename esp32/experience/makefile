@@ -21,7 +21,8 @@ LIBS = $(ESP_LIBS)/EEPROM \
 	   $(COMMON)/WiFi/src/WiFiServer.cpp \
 	   $(COMMON)/WiFi/src/WiFiUdp.cpp \
 	   $(COMMON)/ExperienceEffects.cpp \
-	   $(COMMON)/Pickle.cpp \
+		 $(COMMON)/ESP32-Arduino-Servo-Library/src/Servo.cpp \
+		 $(COMMON)/Pickle.cpp \
 	   $(COMMON)/tcptalks.cpp \
 		 $(COMMON)/fastLED/FastLED.cpp \
 		 $(COMMON)/fastLED/bitswap.cpp \
@@ -33,7 +34,8 @@ LIBS = $(ESP_LIBS)/EEPROM \
 		 $(COMMON)/fastLED/power_mgt.cpp \
 		 $(COMMON)/fastLED/wiring.cpp \
 	   $(COMMON)/NeoPixel/Adafruit_NeoPixel.cpp\
-	   instructions.cpp
+		 $(COMMON)/DCMotor.cpp\
+	   instructions.cpp\
 
 
 CPPFLAGS = -fexceptions

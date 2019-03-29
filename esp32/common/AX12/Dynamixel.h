@@ -209,6 +209,7 @@ class AX12error
 
         bool resolve_AX_error();
 		int get_id() const {return m_id;}
+		int get_error_code() const {return m_error_code;}
     
     private :
         

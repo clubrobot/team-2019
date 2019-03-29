@@ -6,7 +6,7 @@
 #include <iostream>
 #include "thread_tools.h"
 #include "datatype.h"
-#include "arm_config.h"
+#include "constants.h"
 
 using namespace std;
 
@@ -17,42 +17,42 @@ class Joint
 {		
 	public:
 		/* Joint constructor */
-		Joint(int id, double pos_min, double pos_max, double velociy_min, double velociy_max, double acc_min, double acc_max) throw();
+		Joint(int id, float pos_min, float pos_max, float velociy_min, float velociy_max, float acc_min, float acc_max) throw();
 
 		/* get joint path */
-		vector_t get_path (double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync, double delta_t) throw();
+		vector_t get_path (float initial_pos, float initial_vel , float final_pos, float final_vel, float tf_sync, float delta_t) throw();
 		/* get time to reach position */
-		trajectory_time_t time_to_destination(double initial_pos, double initial_vel, double final_pos, double final_vel);
+		TrajectoryTime time_to_destination(float initial_pos, float initial_vel, float final_pos, float final_vel);
 
 	private :
 		/* private methods */
-		double 			polyval       (polynom_t polynome, double x) throw();
-		polynom_t 		polyder       (polynom_t poly) throw();
-		vector<double> 	vector_polyval(polynom_t polynome, vector<double> x) throw();
+		float 			polyval       (Polynom polynome, float x) throw();
+		Polynom 		polyder       (Polynom poly) throw();
+		vector<float> 	vector_polyval(Polynom polynome, vector<float> x) throw();
 
 		template<typename T>vector<T> arange(T start, T stop, T step) throw();
 
 		/* trajectory generation utils */
-		bool 		trajectory_is_feasible  (double initial_pos, double initial_vel, double final_pos, double final_vel);
-		vector_t 	trapezoidal_profile	    (double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync,double tf_lim, double delta_t) throw();
-		vector_t 	doubleramp_profile      (double initial_pos, double initial_vel , double final_pos, double final_vel, double tf_sync,double tf_lim, double delta_t) throw();
-		vector_t 	generic_profile         (double initial_pos, double initial_vel, double final_pos, double final_vel, double tf_sync, double tf_lim,double delta_t, int sign_traj, int sign_sync, double vel_c) throw();
-		int 		trajectory_sign		    (double initial_pos, double initial_vel, double final_pos, double final_vel) throw();
-		vector_t 	polynomial_piece_profile(polynom_t polynome, double start, double stop, double delta);
+		bool 		trajectory_is_feasible  (float initial_pos, float initial_vel, float final_pos, float final_vel);
+		vector_t 	trapezoidal_profile	    (float initial_pos, float initial_vel , float final_pos, float final_vel, float tf_sync,float tf_lim, float delta_t) throw();
+		vector_t 	floatramp_profile      (float initial_pos, float initial_vel , float final_pos, float final_vel, float tf_sync,float tf_lim, float delta_t) throw();
+		vector_t 	generic_profile         (float initial_pos, float initial_vel, float final_pos, float final_vel, float tf_sync, float tf_lim,float delta_t, int sign_traj, int sign_sync, float vel_c) throw();
+		int 		trajectory_sign		    (float initial_pos, float initial_vel, float final_pos, float final_vel) throw();
+		vector_t 	polynomial_piece_profile(Polynom polynome, float start, float stop, float delta);
 		
 		/* private variables */
-		int m_id;
+		int _id;
 
 		/* constraints */
-		constraints_t m_constraints;
+		Constraints _constraints;
 
-		Mutex m_mutex;
+		Mutex _mutex;
 };
 /***** Debug *****/
 template<typename T>
 ostream& operator<< (ostream& out, const vector<T>& v);
 ostream& operator<< (ostream& out, const vector_t& v);
-ostream& operator<< (ostream& out, const trajectory_time_t& t);
+ostream& operator<< (ostream& out, const TrajectoryTime& t);
 
 }
 

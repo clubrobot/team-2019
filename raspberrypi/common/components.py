@@ -216,7 +216,7 @@ class Server(TCPTalksServer):
         comp = SwitchComponent(switchpin)
         compid = (switchpin,)
         self.addcomponent(comp, compid)
-        comp.SetFunction(self.send, MAKE_MANAGER_EXECUTE_OPCODE, None, compid)
+        comp.set_function(self.send, MAKE_MANAGER_EXECUTE_OPCODE, None, compid)
         return compid
 
     def CREATE_LIGHTBUTTON_COMPONENT(self, switchpin, ledpin):

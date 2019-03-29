@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <EEPROM.h>
 #include "ArmManager.h"
 
 #ifdef IK_LOG
@@ -7,7 +8,10 @@
     #define LOG_ARM(arg) 
 #endif
 
-static bool double_equals(double a, double b, double epsilon = 0.001)
+/* null velocity parameter*/
+Coords NULL_VEL;
+
+static bool float_equals(float a, float b, float epsilon = 0.001)
 {
     return std::abs(a - b) < epsilon;
 }
@@ -15,70 +19,80 @@ static bool double_equals(double a, double b, double epsilon = 0.001)
 namespace IK
 {
 
-void ArmManager::init_workspace(workspace_t ws_front, workspace_t ws_back) throw()
+void ArmManager::set_workspace(Workspace ws_front, Workspace ws_back) throw()
 {
-    m_mutex.acquire();
+    _mutex.acquire();
 
-    m_ws_front  = ws_front;
-    m_ws_back   = ws_back;
+    _ws_front  = ws_front;
+    _ws_back   = ws_back;
 
-    m_mutex.release();
+    _mutex.release();
 }
 
-void ArmManager::set_origin(coords_t origin) throw()
+void ArmManager::set_origin(Coords origin) throw()
 {
-    m_mutex.acquire();
+    _mutex.acquire();
 
-    m_origin.x   = origin.x;
-    m_origin.y   = origin.y;
-    m_origin.phi = origin.phi; 
+    _origin  = origin;
+
+    _mutex.release(); 
+}
+void ArmManager::set_arm_link(float l1, float l2, float l3, int elbow_or)
+{
+    _mutex.acquire();
+
+    _l1    = l1;
+    _l2    = l2;
+    _l3    = l3;
+    _elbow = elbow_or;
+
+    _mutex.release();
+}
+void ArmManager::set_initial_joint_pos(Joints joints)
+{
+    _mutex.acquire();
+
+    _joints = joints;
     
-    m_mutex.release(); 
+    _mutex.release();
+}
+void ArmManager::init()
+{
+    _mutex.acquire();
+
+    Picker::init(_l1, _l2, _l3, _joints, _origin, _elbow);
+
+    _mutex.release();
 }
 
-void ArmManager::init_arm(double l1, double l2, double l3, int elbow_or)
+Workspace ArmManager::workspace_containing_position(Coords position) throw()
 {
-    m_mutex.acquire();
-
-    Picker::init(l1, l2, l3, m_joints, m_origin, elbow_or);
-
-    m_mutex.release();
-}
-
-workspace_t ArmManager::workspace_containing_position(coords_t position) throw()
-{
-    workspace_t ret;
-
-    if(position_within_workspace(position, m_ws_front))
+    if(position_within_workspace(position, _ws_front))
     {
-        ret = m_ws_front;
+        return _ws_front;
     }
-    else if(position_within_workspace(position, m_ws_back))
+    else if(position_within_workspace(position, _ws_back))
     {
-        ret = m_ws_back;  
+        return _ws_back;  
     }
     else
     {
          
-        joints_t joints;
-        joints.th1 = 0;
-        joints.th2 = 0;
-        joints.th3 = 0;
+        Joints joints;
         Picker::forward_kinematics(joints);
-        ret = m_ws_front;  
+        return _ws_front;  
     }    
-    return ret;
+    return _ws_front;  
 }
 
-bool ArmManager::workspace_within_constraints(workspace_t workspace) throw()
+bool ArmManager::workspace_within_constraints(Workspace workspace) throw()
 {
-    m_mutex.acquire();
-
+    _mutex.acquire();
     bool ret;
-    if ((workspace.x_min < Picker::x_axis.pos_min) \
-            || (workspace.x_max > Picker::x_axis.pos_max) \
-            || (workspace.y_min < Picker::y_axis.pos_min) \
-            || (workspace.y_max > Picker::y_axis.pos_max))
+    if ((workspace.x_min < Picker::x_axis.pos.min) \
+            || (workspace.x_max > Picker::x_axis.pos.max) \
+            || (workspace.y_min < Picker::y_axis.pos.min) \
+            || (workspace.y_max > Picker::y_axis.pos.max))
     {
         ret = false;
     }
@@ -86,26 +100,26 @@ bool ArmManager::workspace_within_constraints(workspace_t workspace) throw()
     {
         ret = true;
     }     
-    m_mutex.release();
+    _mutex.release();
     return ret;
 }
 
-workspace_t ArmManager::clip_workspace_to_constraints(workspace_t workspace) throw()
+Workspace ArmManager::clip_Workspaceo_constraints(Workspace workspace) throw()
 {
-    m_mutex.acquire();
-    workspace_t new_ws;
-    new_ws.x_min = max(workspace.x_min, Picker::x_axis.pos_min);
-    new_ws.x_max = min(workspace.x_max, Picker::x_axis.pos_max);
+    _mutex.acquire();
+    Workspace new_ws;
+    new_ws.x_min = max(workspace.x_min, Picker::x_axis.pos.min);
+    new_ws.x_max = min(workspace.x_max, Picker::x_axis.pos.max);
         
-    new_ws.y_min = max(workspace.y_min, Picker::y_axis.pos_min);
-    new_ws.y_max = min(workspace.y_max, Picker::y_axis.pos_max);
+    new_ws.y_min = max(workspace.y_min, Picker::y_axis.pos.min);
+    new_ws.y_max = min(workspace.y_max, Picker::y_axis.pos.max);
 
-    new_ws.elbow_orientation = workspace.elbow_orientation;
-    m_mutex.release();
+    new_ws.elbow_or = workspace.elbow_or;
+    _mutex.release();
     return new_ws;
 }
 
-bool ArmManager::position_within_workspace(coords_t position, workspace_t workspace) throw()
+bool ArmManager::position_within_workspace(Coords position, Workspace workspace) throw()
 {
     bool ret;
 
@@ -122,44 +136,43 @@ bool ArmManager::position_within_workspace(coords_t position, workspace_t worksp
     return ret;
 }
 
-coords_t ArmManager::workspace_center(workspace_t workspace) throw()
+Coords ArmManager::workspace_center(Workspace workspace) throw()
 {
-    m_mutex.acquire();
-    coords_t coord;
+    _mutex.acquire();
+    Coords coord;
     coord.x = (workspace.x_min + workspace.x_max) / 2;
     coord.y = (workspace.y_min + workspace.y_max) / 2;
     coord.phi = 0;
-    m_mutex.release();
+    _mutex.release();
     return coord;
 }
 
-MoveBatch ArmManager::go_to(coords_t start_pos, coords_t target_pos)
+MoveBatch ArmManager::go_to(Coords start_pos, Coords target_pos)
 {
-    m_mutex.acquire();
-    workspace_t new_ws = workspace_containing_position(target_pos);
+    _mutex.acquire();
+    Workspace new_ws = workspace_containing_position(target_pos);
 
     MoveBatch  new_batch;
-    joints_t new_joints;
+    Joints new_joints;
     try
     { 
         new_batch = goto_workspace(start_pos, target_pos, new_ws);
     }
     catch(const string& err)
     {
-        m_tool = start_pos;
-        new_joints = Picker::inverse_kinematics(m_tool);
+        _tool = start_pos;
+        new_joints = Picker::inverse_kinematics(_tool);
         new_batch.addMove(0, new_joints.th1);
         new_batch.addMove(1, new_joints.th2);
         new_batch.addMove(2, new_joints.th3);
     }
-
-    m_mutex.release();
+    _mutex.release();
     return new_batch;
 }
 
-MoveBatch ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, workspace_t new_workspace)
+MoveBatch ArmManager::goto_workspace(Coords start_pos, Coords target_pos, Workspace new_workspace)
 {
-    joints_t new_joints;
+    Joints new_joints;
     path_t   new_path;
     MoveBatch new_batch;
 
@@ -170,13 +183,13 @@ MoveBatch ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, wo
         throw string("Target position not within new workspace boundaries, target may be out of defined workspaces");
     }
      
-    m_workspace = new_workspace;
+    _workspace = new_workspace;
 
     new_batch.addDuration(estimated_time_of_arrival(start_pos, NULL_VEL, target_pos, NULL_VEL));
     
     // Compute sequence to move from old workspace to the new position
     // in the new workspace defined
-    if(double_equals(new_workspace.elbow_orientation, Picker::m_flip_elbow))
+    if(float_equals(new_workspace.elbow_or, Picker::_flip_elbow))
     {
         new_joints = goto_position(target_pos);
         new_path   = get_path(start_pos, NULL_VEL, target_pos, NULL_VEL, DELTA_T);
@@ -193,7 +206,7 @@ MoveBatch ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, wo
     }
     LOG_ARM("FLIP elbow move");
 
-    Picker::m_flip_elbow *= (double)-1;
+    Picker::_flip_elbow *= (float)-1;
     
     //Go to target
     new_joints = goto_position(target_pos);
@@ -215,27 +228,56 @@ MoveBatch ArmManager::goto_workspace(coords_t start_pos, coords_t target_pos, wo
     return new_batch;
 }
 
-joints_t ArmManager::goto_position(coords_t target_pos)
+Joints ArmManager::goto_position(Coords target_pos)
 {
-    joints_t ret;
+    Joints ret;
 
     ret = Picker::inverse_kinematics(target_pos);
 
     return ret;
 }
 
-double ArmManager::estimated_time_of_arrival(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel)
+float ArmManager::estimated_time_of_arrival(Coords start_pos, Coords start_vel, Coords target_pos, Coords target_vel)
 {
-    double ret;
+    float ret;
 
-    joints_t start_joints_pos = Picker::inverse_kinematics(start_pos);
-    joints_t start_joints_vel = Picker::get_joints_vel(start_vel);
+    Joints start_joints_pos = Picker::inverse_kinematics(start_pos);
+    Joints start_joints_vel = Picker::get_joints_vel(start_vel);
 
-    joints_t target_joints_pos = Picker::inverse_kinematics(target_pos);
-    joints_t target_joints_vel = Picker::get_joints_vel(target_vel);
+    Joints target_joints_pos = Picker::inverse_kinematics(target_pos);
+    Joints target_joints_vel = Picker::get_joints_vel(target_vel);
 
     ret = Picker::synchronisation_time(start_joints_pos, start_joints_vel, target_joints_pos, target_joints_vel);
     return ret;
+}
+
+void ArmManager::load(int address)
+{
+	_mutex.acquire();
+	EEPROM.get(address, _ws_front);     address += sizeof(_ws_front);
+	EEPROM.get(address, _ws_back);      address += sizeof(_ws_back);
+    EEPROM.get(address, _origin);       address += sizeof(_origin);
+    EEPROM.get(address, _joints);       address += sizeof(_joints);
+    EEPROM.get(address, _l1);           address += sizeof(_l1);
+    EEPROM.get(address, _l2);           address += sizeof(_l2);
+    EEPROM.get(address, _l3);           address += sizeof(_l3);
+    EEPROM.get(address, _elbow);        address += sizeof(_elbow);
+	_mutex.release();
+}
+
+void ArmManager::save(int address) const
+{
+	_mutex.acquire();
+	EEPROM.put(address, _ws_front);     address += sizeof(_ws_front);
+	EEPROM.put(address, _ws_back);      address += sizeof(_ws_back);
+    EEPROM.put(address, _origin);       address += sizeof(_origin);
+    EEPROM.put(address, _joints);       address += sizeof(_joints);
+    EEPROM.put(address, _l1);           address += sizeof(_l1);
+    EEPROM.put(address, _l2);           address += sizeof(_l2);
+    EEPROM.put(address, _l3);           address += sizeof(_l3);
+    EEPROM.put(address, _elbow);        address += sizeof(_elbow);
+	EEPROM.commit();
+	_mutex.release();
 }
 
 } /* end of namespace */
