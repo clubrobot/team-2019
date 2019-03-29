@@ -37,7 +37,7 @@ void DCMotor::update()
 
 float DCMotor::getMaxVelocity() const
 {
-	return abs((2 * M_PI * m_wheelRadius) / m_constant) * m_maxPWM;
+	return fabs((2 * M_PI * m_wheelRadius) / m_constant) * m_maxPWM;
 }
 
 void DCMotor::load(int address)
@@ -45,27 +45,22 @@ void DCMotor::load(int address)
 	EEPROM.get(address, m_wheelRadius); address += sizeof(m_wheelRadius);
 	EEPROM.get(address, m_constant);    address += sizeof(m_constant);
 	EEPROM.get(address, m_maxPWM);      address += sizeof(m_maxPWM);
-	m_valuesModified = false;
 }
 
-void DCMotor::save(int address)
+void DCMotor::save(int address) const
 {
-	if(m_valuesModified) {
-		EEPROM.put(address, m_wheelRadius);
-		address += sizeof(m_wheelRadius);
-		EEPROM.put(address, m_constant);
-		address += sizeof(m_constant);
-		EEPROM.put(address, m_maxPWM);
-		address += sizeof(m_maxPWM);
-	}
-	m_valuesModified = false;
+    EEPROM.put(address, m_wheelRadius);
+    address += sizeof(m_wheelRadius);
+    EEPROM.put(address, m_constant);
+    address += sizeof(m_constant);
+    EEPROM.put(address, m_maxPWM);
+    address += sizeof(m_maxPWM);
 }
 
 
 void DCMotor::setConstant   (float constant)   {
 	if(m_constant != constant) {
 		m_constant = constant;
-		m_valuesModified = true;
 		update();
 	}
 }
@@ -73,7 +68,6 @@ void DCMotor::setConstant   (float constant)   {
 void DCMotor::setWheelRadius   (float wheelRadius)   {
 	if(m_wheelRadius != wheelRadius) {
 		m_wheelRadius = wheelRadius;
-		m_valuesModified = true;
 		update();
 	}
 }
@@ -81,7 +75,6 @@ void DCMotor::setWheelRadius   (float wheelRadius)   {
 void DCMotor::setMaxPWM   (float maxPWM)   {
 	if(m_maxPWM != maxPWM) {
 		m_maxPWM = maxPWM;
-		m_valuesModified = true;
 		update();
 	}
 }

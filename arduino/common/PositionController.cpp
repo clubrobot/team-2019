@@ -37,33 +37,28 @@ void PositionController::load(int address)
 	EEPROM.get(address, m_angVelMax); address += sizeof(m_angVelMax);
 	EEPROM.get(address, m_linPosThreshold); address += sizeof(m_linPosThreshold);
 	EEPROM.get(address, m_angPosThreshold); address += sizeof(m_angPosThreshold);
-	m_valuesModified = false;
 }
 
-void PositionController::save(int address)
+void PositionController::save(int address) const
 {
-	if(m_valuesModified) {
-		EEPROM.put(address, m_linVelKp);
-		address += sizeof(m_linVelKp);
-		EEPROM.put(address, m_angVelKp);
-		address += sizeof(m_angVelKp);
-		EEPROM.put(address, m_linVelMax);
-		address += sizeof(m_linVelMax);
+	EEPROM.put(address, m_linVelKp);
+	address += sizeof(m_linVelKp);
+	EEPROM.put(address, m_angVelKp);
+	address += sizeof(m_angVelKp);
+	EEPROM.put(address, m_linVelMax);
+	address += sizeof(m_linVelMax);
 ;		EEPROM.put(address, m_angVelMax);
-		address += sizeof(m_angVelMax);
-		EEPROM.put(address, m_linPosThreshold);
-		address += sizeof(m_linPosThreshold);
-		EEPROM.put(address, m_angPosThreshold);
-		address += sizeof(m_angPosThreshold);
-		m_valuesModified = false;
-	}
+	address += sizeof(m_angVelMax);
+	EEPROM.put(address, m_linPosThreshold);
+	address += sizeof(m_linPosThreshold);
+	EEPROM.put(address, m_angPosThreshold);
+	address += sizeof(m_angPosThreshold);
 }
 
 void PositionController::setVelTunings(float linVelKp, float angVelKp) {
 	if(!(m_linVelKp == linVelKp && linVelKp)) {
 		m_linVelKp = linVelKp;
 		m_angVelKp = angVelKp;
-		m_valuesModified = true;
 	}
 }
 
@@ -72,7 +67,6 @@ void PositionController::setVelLimits(float linVelMax, float angVelMax){
 	{
 		m_linVelMax = linVelMax;
 		m_angVelMax = angVelMax;
-		m_valuesModified = true;
 	}
 }
 
@@ -80,6 +74,5 @@ void PositionController::setPosThresholds(float linPosThreshold, float angPosThr
 	if (!(m_linPosThreshold == linPosThreshold && m_angPosThreshold == angPosThreshold)) {
 		m_linPosThreshold = linPosThreshold;
 		m_angPosThreshold = angPosThreshold;
-		m_valuesModified = true;
 	}
 }
