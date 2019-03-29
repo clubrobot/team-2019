@@ -253,5 +253,3 @@ class WheeledBase(SecureSerialTalksProxy):
 
     def save_parameters(self):
         self.send(SAVE_PARAMETERS_OPCODE)
-        #output = self.execute(SAVE_PARAMETERS_OPCODE)
-        #print(output.read(LONG))
