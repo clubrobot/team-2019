@@ -153,156 +153,120 @@ void SET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& ou
 	{
 	case LEFTWHEEL_RADIUS_ID:
 		leftWheel.setWheelRadius(input.read<float>());
-		leftWheel.save(LEFTWHEEL_ADDRESS);
 		break;
 	case LEFTWHEEL_CONSTANT_ID:
 		leftWheel.setConstant(input.read<float>());
-		leftWheel.save(LEFTWHEEL_ADDRESS);
 		break;
 	case LEFTWHEEL_MAXPWM_ID:
 		leftWheel.setMaxPWM(input.read<float>());
-		leftWheel.save(LEFTWHEEL_ADDRESS);
 		break;
-	
+
 	case RIGHTWHEEL_RADIUS_ID:
 		rightWheel.setWheelRadius(input.read<float>());
-		rightWheel.save(RIGHTWHEEL_ADDRESS);
 		break;
 	case RIGHTWHEEL_CONSTANT_ID:
 		rightWheel.setConstant(input.read<float>());
-		rightWheel.save(RIGHTWHEEL_ADDRESS);
 		break;
 	case RIGHTWHEEL_MAXPWM_ID:
 		rightWheel.setMaxPWM(input.read<float>());
-		rightWheel.save(RIGHTWHEEL_ADDRESS);
 		break;
 
 	case LEFTCODEWHEEL_RADIUS_ID:
 		leftCodewheel.setWheelRadius(input.read<float>());
-		leftCodewheel.save(LEFTCODEWHEEL_ADDRESS);
 		break;
 	case LEFTCODEWHEEL_COUNTSPERREV_ID:
 		leftCodewheel.setCountsPerRev(input.read<long>());
-		leftCodewheel.save(LEFTCODEWHEEL_ADDRESS);
 		break;
-	
+
 	case RIGHTCODEWHEEL_RADIUS_ID:
 		rightCodewheel.setWheelRadius(input.read<float>());
-		rightCodewheel.save(RIGHTCODEWHEEL_ADDRESS);
 		break;
 	case RIGHTCODEWHEEL_COUNTSPERREV_ID:
 		rightCodewheel.setCountsPerRev(input.read<long>());
-		rightCodewheel.save(RIGHTCODEWHEEL_ADDRESS);
 		break;
 	
 	case ODOMETRY_AXLETRACK_ID:
 		odometry.setAxleTrack(input.read<float>());
-		odometry.save(ODOMETRY_ADDRESS);
 		break;
 	case ODOMETRY_SLIPPAGE_ID:
 		odometry.setSlippage(input.read<float>());
-		odometry.save(ODOMETRY_ADDRESS);
 		break;
 	
 	case VELOCITYCONTROL_AXLETRACK_ID:
 		velocityControl.setAxleTrack(input.read<float>());
-		velocityControl.save(VELOCITYCONTROL_ADDRESS);
 		break;
 	case VELOCITYCONTROL_MAXLINACC_ID:
-		velocityControl.setMaxAcc(input.read<float>(), velocityControl.getMaxAngAcc());
-		velocityControl.save(VELOCITYCONTROL_ADDRESS);
+		velocityControl.setMaxLinAcc(input.read<float>());
 		break;
 	case VELOCITYCONTROL_MAXLINDEC_ID:
-		velocityControl.setMaxDec(input.read<float>(), velocityControl.getMaxAngDec());
-		velocityControl.save(VELOCITYCONTROL_ADDRESS);
+		velocityControl.setMaxLinDec(input.read<float>());
 		break;
 	case VELOCITYCONTROL_MAXANGACC_ID:
-		velocityControl.setMaxAcc(velocityControl.getMaxLinAcc(), input.read<float>());
-		velocityControl.save(VELOCITYCONTROL_ADDRESS);
+		velocityControl.setMaxAngAcc(input.read<float>());
 		break;
 	case VELOCITYCONTROL_MAXANGDEC_ID:
-		velocityControl.setMaxDec(velocityControl.getMaxLinDec(), input.read<float>());
-		velocityControl.save(VELOCITYCONTROL_ADDRESS);
+		velocityControl.setMaxAngDec(input.read<float>());
 		break;
 	case VELOCITYCONTROL_SPINSHUTDOWN_ID:
 		velocityControl.setSpinShutdown(input.read<byte>());
-		velocityControl.save(VELOCITYCONTROL_ADDRESS);
 		break;
 	
 	case LINVELPID_KP_ID:
 		linVelPID.setTunings(input.read<float>(), linVelPID.getKi(), linVelPID.getKd());
-		linVelPID.save(LINVELPID_ADDRESS);
 		break;
 	case LINVELPID_KI_ID:
 		linVelPID.setTunings(linVelPID.getKp(), input.read<float>(), linVelPID.getKd());
-		linVelPID.save(LINVELPID_ADDRESS);
 		break;
 	case LINVELPID_KD_ID:
 		linVelPID.setTunings(linVelPID.getKp(), linVelPID.getKi(), input.read<float>());
-		linVelPID.save(LINVELPID_ADDRESS);
 		break;
 	case LINVELPID_MINOUTPUT_ID:
 		linVelPID.setOutputLimits(input.read<float>(), linVelPID.getMaxOutput());
-		linVelPID.save(LINVELPID_ADDRESS);
 		break;
 	case LINVELPID_MAXOUTPUT_ID:
 		linVelPID.setOutputLimits(linVelPID.getMinOutput(), input.read<float>());
-		linVelPID.save(LINVELPID_ADDRESS);
 		break;
 	
 	case ANGVELPID_KP_ID:
 		angVelPID.setTunings(input.read<float>(), angVelPID.getKi(), angVelPID.getKd());
-		angVelPID.save(ANGVELPID_ADDRESS);
 		break;
 	case ANGVELPID_KI_ID:
 		angVelPID.setTunings(angVelPID.getKp(), input.read<float>(), angVelPID.getKd());
-		angVelPID.save(ANGVELPID_ADDRESS);
 		break;
 	case ANGVELPID_KD_ID:
 		angVelPID.setTunings(angVelPID.getKp(), angVelPID.getKi(), input.read<float>());
-		angVelPID.save(ANGVELPID_ADDRESS);
 		break;
 	case ANGVELPID_MINOUTPUT_ID:
 		angVelPID.setOutputLimits(input.read<float>(), angVelPID.getMaxOutput());
-		angVelPID.save(ANGVELPID_ADDRESS);
 		break;
 	case ANGVELPID_MAXOUTPUT_ID:
 		angVelPID.setOutputLimits(angVelPID.getMinOutput(), input.read<float>());
-		angVelPID.save(ANGVELPID_ADDRESS);
 		break;
 	
 	case POSITIONCONTROL_LINVELKP_ID:
 		positionControl.setVelTunings(input.read<float>(), positionControl.getAngVelKp());
-		positionControl.save(POSITIONCONTROL_ADDRESS);
 		break;
 	case POSITIONCONTROL_ANGVELKP_ID:
 		positionControl.setVelTunings(positionControl.getLinVelKp(), input.read<float>());
-		positionControl.save(POSITIONCONTROL_ADDRESS);
 		break;
 	case POSITIONCONTROL_LINVELMAX_ID:
 		positionControl.setVelLimits(input.read<float>(), positionControl.getAngVelMax());
-		positionControl.save(POSITIONCONTROL_ADDRESS);
 		break;
 	case POSITIONCONTROL_ANGVELMAX_ID:
 		positionControl.setVelLimits(positionControl.getLinVelMax(), input.read<float>());
-		positionControl.save(POSITIONCONTROL_ADDRESS);
 		break;
 	case POSITIONCONTROL_LINPOSTHRESHOLD_ID:
 		positionControl.setPosThresholds(input.read<float>(), positionControl.getAngPosThreshold());
-		positionControl.save(POSITIONCONTROL_ADDRESS);
 		break;
 	case POSITIONCONTROL_ANGPOSTHRESHOLD_ID:
 		positionControl.setPosThresholds(positionControl.getLinPosThreshold(), input.read<float>());
-		positionControl.save(POSITIONCONTROL_ADDRESS);
 		break;
 
 	case PUREPURSUIT_LOOKAHED_ID:
 		purePursuit.setLookAhead(input.read<float>());
-		purePursuit.save(PUREPURSUIT_ADDRESS);
 		break;
 	case PUREPURSUIT_LOOKAHEADBIS_ID:
 		purePursuit.setLookAheadBis(input.read<float>());
-		purePursuit.save(PUREPURSUIT_ADDRESS);
 		break;
 	}
 }
@@ -348,6 +312,21 @@ void GOTO_DELTA(SerialTalks& talks, Deserializer& input, Serializer& output)
 }
 
 
+
+void SAVE_PARAMETERS(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+	leftWheel.save(LEFTWHEEL_ADDRESS);
+	rightWheel.save(RIGHTWHEEL_ADDRESS);
+	leftCodewheel.save(LEFTCODEWHEEL_ADDRESS);
+	rightCodewheel.save(RIGHTCODEWHEEL_ADDRESS);
+	odometry.save(ODOMETRY_ADDRESS);
+	velocityControl.save(VELOCITYCONTROL_ADDRESS);
+	linVelPID.save(LINVELPID_ADDRESS);
+	angVelPID.save(ANGVELPID_ADDRESS);
+	positionControl.save(POSITIONCONTROL_ADDRESS);
+	purePursuit.save(PUREPURSUIT_ADDRESS);
+}
+
 void GET_VELOCITIES_WANTED(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
 
@@ -362,11 +341,6 @@ void GET_VELOCITIES_WANTED(SerialTalks& talks, Deserializer& input, Serializer& 
 	}
 }
 
-
-void RESET_PARAMETERS(SerialTalks& talks, Deserializer& input, Serializer& output)
-{
-	// Nothing to do
-}
 
 void GET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
@@ -493,3 +467,17 @@ void GET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& ou
 	}
 }
 
+void RESET_PARAMETERS(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+	leftWheel.load(LEFTWHEEL_ADDRESS);
+	rightWheel.load(RIGHTWHEEL_ADDRESS);
+	leftCodewheel.load(LEFTCODEWHEEL_ADDRESS);
+	rightCodewheel.load(RIGHTCODEWHEEL_ADDRESS);
+	odometry.load(ODOMETRY_ADDRESS);
+	velocityControl.load(VELOCITYCONTROL_ADDRESS);
+	linVelPID.load(LINVELPID_ADDRESS);
+	angVelPID.load(ANGVELPID_ADDRESS);
+	positionControl.load(POSITIONCONTROL_ADDRESS);
+	purePursuit.load(PUREPURSUIT_ADDRESS);
+	purePursuit.load(PUREPURSUIT_ADDRESS);
+}
