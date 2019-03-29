@@ -50,7 +50,7 @@ public:
 	 * @brief Constructeur de DifferentialController
 	 * Constructeur de DifferentialController qui initialise les variables à des valeurs neutres. 
 	 */
-	DifferentialController() : m_linSetpoint(0), m_angSetpoint(0), m_axleTrack(1){}
+	DifferentialController() : m_linSetpoint(0), m_angSetpoint(0), m_axleTrack(1), m_valuesModified(false){}
 
 	/**
 	 * @brief Charge les vitesses actuel.
@@ -145,7 +145,7 @@ public:
 	 *  
 	 * @param address Adresse à utiliser.
 	 */
-	void save(int address) const;
+	void save(int address);
 
 protected:
 	/**
@@ -163,6 +163,7 @@ protected:
 	float m_linSetpoint; /*!< Vitesse linéaire demandée (en mm/s). */
 	float m_angSetpoint; /*!< Vitesse angulaire demandée (en rad/s).*/
 	float m_axleTrack; /*!< Entraxe entre les deux roues motrices du robot (en mm).*/
+	bool m_valuesModified;
 
 	float m_linVelOutput;/*!< Vitesse linéaire asservie.*/
 	float m_angVelOutput;/*!< Vitesse angiulaire asservie.*/

@@ -20,7 +20,7 @@
 class DCMotor : private NonCopyable, public AbstractMotor
 {
 public:
-	DCMotor() : m_enabled(false), m_velocity(0), m_wheelRadius(1 / (2 * M_PI)), m_constant(1), m_maxPWM(1){}
+	DCMotor() : m_enabled(false), m_velocity(0), m_wheelRadius(1 / (2 * M_PI)), m_constant(1), m_maxPWM(1), m_valuesModified(false){}
 
 	//!Indique quels pins de l'arduino son utilisé pour ce moteur (actuellement correspond à moteur 1 ou 2)
 	void attach(int EN, int PWM, int DIR);
@@ -84,7 +84,7 @@ public:
 	float getMaxVelocity() const;
 
 	void load(int address);
-	void save(int address) const;
+	void save(int address);
 	
 protected:
 
@@ -95,6 +95,7 @@ protected:
 	float m_wheelRadius; //!<  in mm
 	float m_constant; //!<  (60 * reduction_ratio / velocity_constant_in_RPM) / supplied_voltage_in_V
 	float m_maxPWM; //!<  in range ]0, 1]
+	bool  m_valuesModified;
 
 	int	m_EN;
 	int	m_PWM;

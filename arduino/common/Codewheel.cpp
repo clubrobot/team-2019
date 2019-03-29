@@ -79,20 +79,26 @@ void Codewheel::load(int address)
 {
 	EEPROM.get(address, m_wheelRadius);  address += sizeof(m_wheelRadius);
 	EEPROM.get(address, m_countsPerRev); address += sizeof(m_countsPerRev);
+	m_valuesModified = false;
 }
 
 void Codewheel::save(int address)
 {
-	EEPROM.put(address, m_wheelRadius);
-	address += sizeof(m_wheelRadius);
-	EEPROM.put(address, m_countsPerRev);
-	address += sizeof(m_countsPerRev);
+	if(m_valuesModified)
+	{
+		EEPROM.put(address, m_wheelRadius);
+		address += sizeof(m_wheelRadius);
+		EEPROM.put(address, m_countsPerRev);
+		address += sizeof(m_countsPerRev);
+	}
+	m_valuesModified = false;
 }
 
 void Codewheel::setCountsPerRev(long countsPerRev)
 {
 	if(m_countsPerRev != countsPerRev) {
 		m_countsPerRev = countsPerRev;
+		m_valuesModified = true;
 	}
 }
 
@@ -100,5 +106,6 @@ void Codewheel::setWheelRadius (float wheelRadius)
 {
 	if(m_wheelRadius != wheelRadius) {
 		m_wheelRadius = wheelRadius;
+		m_valuesModified = true;
 	}
 }

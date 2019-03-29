@@ -16,7 +16,7 @@ public:
 	 * @brief Constructeur de PID
 	 * Constructeur de PID qui initialise toutes les valeurs à des valeurs neutres (Kp=1,Ki=0,Kd=0).
 	 */
-	PID() : m_Kp(1), m_Ki(0), m_Kd(0), m_minOutput(-INFINITY), m_maxOutput(INFINITY){}
+	PID() : m_Kp(1), m_Ki(0), m_Kd(0), m_minOutput(-INFINITY), m_maxOutput(INFINITY), m_valuesModified(false){}
 	/**
 	 * @brief Calcul l'asservissement.
 	 * 
@@ -84,7 +84,7 @@ public:
 	 * @brief Sauvegarde les paramètres dans la mémoire.
 	 * @param address Adresse à utiliser.
 	 */
-	 void save(int address) const;
+	void save(int address);
 
 private:
 
@@ -96,6 +96,7 @@ private:
 	float m_Kd;/*!< Coefficient dérivateur.*/
 	float m_minOutput; /*!< Sortie minimal.*/
 	float m_maxOutput;/*!< Sortie maximal.*/
+	bool  m_valuesModified;
 };
 
 #endif // __PID_H__

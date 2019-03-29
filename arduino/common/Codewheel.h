@@ -16,7 +16,7 @@ class Codewheel : private NonCopyable, public AbstractCodewheel
 {
 public:
 
-	Codewheel() : m_currentCounter(0), m_startCounter(0), m_wheelRadius(1 / (2 * M_PI)), m_countsPerRev(1000){}
+	Codewheel() : m_currentCounter(0), m_startCounter(0), m_wheelRadius(1 / (2 * M_PI)), m_countsPerRev(1000), m_valuesModified(false){}
 
 	/**
 	 * @brief Set les pins pour le compteur.
@@ -125,6 +125,7 @@ protected:
 
 	float m_wheelRadius; //!< Rayon de la roue codeuse en  mm
 	long m_countsPerRev;   //!<  Nombre de tics par tour de roue.
+	bool m_valuesModified; //!< Indique si les valeurs ont été modifiées
 
 	int m_COUNTER_XY;   //!<  Select one of the two quad counters. See below.
 	int m_COUNTER_AXIS; //!<  Not a pin: X = 0, Y = 0

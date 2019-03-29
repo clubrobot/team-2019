@@ -46,7 +46,7 @@ void VelocityController::process(float timestep)
 	bool angVelSpin = (m_angVelOutput <= m_angPID->getMinOutput()) || (m_angVelOutput >= m_angPID->getMaxOutput());
 	if (linVelSpin || angVelSpin)
 	{
-		bool abnormalSpin = (fabs(m_linInput) < 1) && (fabs(m_angInput) < 0.05);
+		bool abnormalSpin = (abs(m_linInput) < 1) && (abs(m_angInput) < 0.05);
 		if (abnormalSpin && m_spinShutdown)
 		{
 			m_leftWheel ->setVelocity(0);
@@ -77,22 +77,26 @@ void VelocityController::load(int address)
 	EEPROM.get(address, m_maxAngAcc);    address += sizeof(m_maxAngAcc);
 	EEPROM.get(address, m_maxAngDec);    address += sizeof(m_maxAngDec);
 	EEPROM.get(address, m_spinShutdown); address += sizeof(m_spinShutdown);
+	m_valuesModified = false;
 }
 
-void VelocityController::save(int address) const
+void VelocityController::save(int address)
 {
-	EEPROM.put(address, m_axleTrack);
-	address += sizeof(m_axleTrack);
-	EEPROM.put(address, m_maxLinAcc);
-	address += sizeof(m_maxLinAcc);
-	EEPROM.put(address, m_maxLinDec);
-	address += sizeof(m_maxLinDec);
-	EEPROM.put(address, m_maxAngAcc);
-	address += sizeof(m_maxAngAcc);
-	EEPROM.put(address, m_maxAngDec);
-	address += sizeof(m_maxAngDec);
-	EEPROM.put(address, m_spinShutdown);
-	address += sizeof(m_spinShutdown);
+	if(m_valuesModified) {
+		EEPROM.put(address, m_axleTrack);
+		address += sizeof(m_axleTrack);
+		EEPROM.put(address, m_maxLinAcc);
+		address += sizeof(m_maxLinAcc);
+		EEPROM.put(address, m_maxLinDec);
+		address += sizeof(m_maxLinDec);
+		EEPROM.put(address, m_maxAngAcc);
+		address += sizeof(m_maxAngAcc);
+		EEPROM.put(address, m_maxAngDec);
+		address += sizeof(m_maxAngDec);
+		EEPROM.put(address, m_spinShutdown);
+		address += sizeof(m_spinShutdown);
+	}
+	m_valuesModified = false;
 }
 
 
@@ -100,6 +104,7 @@ void VelocityController::save(int address) const
 void VelocityController::setMaxLinAcc   (float maxLinAcc)   {
 	if(m_maxLinAcc != maxLinAcc) {
 		m_maxLinAcc = maxLinAcc;
+		m_valuesModified = true;
 		update();
 	}
 }
@@ -107,6 +112,7 @@ void VelocityController::setMaxLinAcc   (float maxLinAcc)   {
 void VelocityController::setMaxLinDec   (float maxLinDec)   {
 	if(m_maxLinDec != maxLinDec) {
 		m_maxLinDec = maxLinDec;
+		m_valuesModified = true;
 		update();
 	}
 }
@@ -114,6 +120,7 @@ void VelocityController::setMaxLinDec   (float maxLinDec)   {
 void VelocityController::setMaxAngAcc   (float maxAngAcc)   {
 	if(m_maxAngAcc != maxAngAcc) {
 		m_maxAngAcc = maxAngAcc;
+		m_valuesModified = true;
 		update();
 	}
 }
@@ -121,6 +128,7 @@ void VelocityController::setMaxAngAcc   (float maxAngAcc)   {
 void VelocityController::setMaxAngDec   (float maxAngDec)   {
 	if(m_maxAngDec != maxAngDec) {
 		m_maxAngDec = maxAngDec;
+		m_valuesModified = true;
 		update();
 	}
 }
@@ -128,6 +136,7 @@ void VelocityController::setMaxAngDec   (float maxAngDec)   {
 void VelocityController::setSpinShutdown   (bool spinShutdown)   {
 	if(m_spinShutdown != spinShutdown) {
 		m_spinShutdown = spinShutdown;
+		m_valuesModified = true;
 		update();
 	}
 }
