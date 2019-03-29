@@ -349,18 +349,16 @@ void SET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& ou
 
 void SAVE_PARAMETERS(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
-	//leftWheel.save(LEFTWHEEL_ADDRESS);
-	//rightWheel.save(RIGHTWHEEL_ADDRESS);
-	//leftCodewheel.save(LEFTCODEWHEEL_ADDRESS);
-	//rightCodewheel.save(RIGHTCODEWHEEL_ADDRESS);
-	//odometry.save(ODOMETRY_ADDRESS);
-	//velocityControl.save(VELOCITYCONTROL_ADDRESS);
-	//linVelPID.save(LINVELPID_ADDRESS);
-	//angVelPID.save(ANGVELPID_ADDRESS);
-	//positionControl.save(POSITIONCONTROL_ADDRESS);
-	//purePursuit.save(PUREPURSUIT_ADDRESS);
-	talks.out << "test";
-	//output.write<long>(42);
+	leftWheel.save(LEFTWHEEL_ADDRESS);
+	rightWheel.save(RIGHTWHEEL_ADDRESS);
+	leftCodewheel.save(LEFTCODEWHEEL_ADDRESS);
+	rightCodewheel.save(RIGHTCODEWHEEL_ADDRESS);
+	odometry.save(ODOMETRY_ADDRESS);
+	velocityControl.save(VELOCITYCONTROL_ADDRESS);
+	linVelPID.save(LINVELPID_ADDRESS);
+	angVelPID.save(ANGVELPID_ADDRESS);
+	positionControl.save(POSITIONCONTROL_ADDRESS);
+	purePursuit.save(PUREPURSUIT_ADDRESS);
 }
 
 void GET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& output)
