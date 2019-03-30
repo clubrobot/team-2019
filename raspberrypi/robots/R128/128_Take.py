@@ -6,7 +6,8 @@ from common.geogebra import Geogebra
 color = {'YELLOW':0, 'PURPLE':1}
 
 if __name__ == '__main__':
-    from robots.setup_128 import *
+    from robots.R128.setup_128 import *
+    
     print(color)
     side = color['PURPLE']
 
