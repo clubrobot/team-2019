@@ -79,6 +79,8 @@ void DISABLE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void GOTO_DELTA(SerialTalks& talks, Deserializer& input, Serializer& output);
 
+void RESET_PARAMETERS(SerialTalks& talks, Deserializer& input, Serializer& output);
+
 void SET_OPENLOOP_VELOCITIES(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void GET_CODEWHEELS_COUNTERS(SerialTalks& talks, Deserializer& input, Serializer& output);
