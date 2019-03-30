@@ -311,8 +311,6 @@ void GOTO_DELTA(SerialTalks& talks, Deserializer& input, Serializer& output)
 
 }
 
-
-
 void SAVE_PARAMETERS(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
 	leftWheel.save(LEFTWHEEL_ADDRESS);
