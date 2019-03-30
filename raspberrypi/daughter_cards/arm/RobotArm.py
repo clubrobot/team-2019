@@ -11,28 +11,26 @@ import math
 ELBOW_BACK = -1
 ELBOW_FRONT = 1
 
+# OPCODES
 _ADD_MOVE_OPCODE             = 0x11
 _RUN_BATCH_OPCODE            = 0X12 
 _STOP_BATCH_OPCODE           = 0X13 
 _IS_ARRIVED_OPCODE           = 0x14
-
 _START_PUMP_OPCODE           = 0x15
 _STOP_PUMP_OPCODE            = 0X16 
 _START_SLUICE_OPCODE         = 0X17 
 _STOP_SLUICE_OPCODE          = 0x18
-
 _SET_MOTORS_ID_OPCODE        = 0X19
 _SET_MOTORS_OFFSET_OPCODE    = 0X1A
 _SET_WORKSPACE_OPCODE        = 0X1B
 _SET_ORIGIN_OPCODE           = 0X1C
 _SET_LINK_LEN_OPCODE         = 0X1D
-
 _SET_PARAMETERS_OPCODE       = 0X19
 _GET_PARAMETERS_OPCODE       = 0x1A
+_GET_PRESSURE_OPCODE 		 = 0X1B
+_ATMOSPHERE_PRESSURE_OPCODE	 = 0X1C
 
-_GET_PRESSURE_OPCODE 		= 0X1B
-_ATMOSPHERE_PRESSURE_OPCODE	= 0X1C
-
+# EEPROM INDEX
 MOTOR1_ID_ID                 = 0x10
 MOTOR1_OFFSET_ID             = 0x11
 MOTOR2_ID_ID                 = 0x12
@@ -64,10 +62,10 @@ class RobotArm(SecureSerialTalksProxy):
 		if bool(ret):
 			raise RuntimeError('Error on move command : Position unreachable')
 
-	def run_batch(self):
+	def run(self):
 		self.send(_RUN_BATCH_OPCODE)
 
-	def stop_batch(self):
+	def stop(self):
 		self.send(_STOP_BATCH_OPCODE)
 
 	def is_arrived(self):
@@ -93,6 +91,16 @@ class RobotArm(SecureSerialTalksProxy):
 	def stop_sluice(self):
 		self.send(_STOP_SLUICE_OPCODE)
 
+	def get_pressure_kpa(self):
+		out = self.execute(_GET_PRESSURE_OPCODE)
+		ret = out.read(INT)
+		return ret
+
+	def atmosphere_pressure(self):
+		out = self.execute(_ATMOSPHERE_PRESSURE_OPCODE)
+		ret = out.read(BYTE)
+		return bool(ret)
+
 	def set_parameter_value(self, id, value, valuetype):
 		self.send(_SET_PARAMETERS_OPCODE, BYTE(id), valuetype(value))
 		time.sleep(0.01)
@@ -104,11 +112,11 @@ class RobotArm(SecureSerialTalksProxy):
 
 	def set_workspace(self, id, ws):
 		self.send(_SET_PARAMETERS_OPCODE, BYTE(id), \
-										  FLOAT(ws.x_min), \
-										  FLOAT(ws.x_max), \
-										  FLOAT(ws.y_min), \
-										  FLOAT(ws.y_max), \
-										  FLOAT(ws.elbow_or))
+										FLOAT(ws.x_min), \
+										FLOAT(ws.x_max), \
+										FLOAT(ws.y_min), \
+										FLOAT(ws.y_max), \
+										FLOAT(ws.elbow_or))
 		time.sleep(0.01)
 	
 	def set_origin(self, origin):
@@ -133,13 +141,3 @@ class RobotArm(SecureSerialTalksProxy):
 		output = self.execute(_GET_PARAMETERS_OPCODE, BYTE(JOINTS_ID))
 		value = output.read(FLOAT, FLOAT, FLOAT)
 		return JointPoint(*value)
-
-	def get_pressure_kpa(self):
-		out = self.execute(_GET_PRESSURE_OPCODE)
-		ret = out.read(INT)
-		return ret
-
-	def atmosphere_pressure(self):
-		out = self.execute(_ATMOSPHERE_PRESSURE_OPCODE)
-		ret = out.read(INT)
-		return ret
