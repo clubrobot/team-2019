@@ -8,33 +8,25 @@ from common.funcutils      import *
 from daughter_cards.wheeledbase import *
 
 class TakeSyncDistrib(Actionnable):
-    def __init__(self, geogebra, daughter_cards, armFront, armBack, color, distrib_pos, log):
+    def __init__(self, geogebra, daughter_cards, side, distrib_pos, log):
         self.geogebra       = geogebra
         self.log            = log
-        self.color          = color
+        self.side           = side
         self.distrib_pos    = distrib_pos
-        self.armFront       = daughter_cards[armFront]
-        self.armBack        = daughter_cards[armBack]
+        self.armFront       = daughter_cards['armFront']
+        self.armBack        = daughter_cards['armBack']
         self.wheeledbase    = daughter_cards['wheeledbase']
-        self.actionPoint    = self.geogebra.get('Distrib_{}_{}'.format(self.color,self.distrib_pos))
-
-        self.wheeledbase.goto           = ThreadMethod(self.wheeledbase.goto)
-        self.armFront.prepare_to_take   = ThreadMethod(self.armFront.prepare_to_take)
-        self.armBack.prepare_to_take    = ThreadMethod(self.armBack.prepare_to_take)
-        self.armFront.take              = ThreadMethod(self.armFront.take)
-        self.armBack.take               = ThreadMethod(self.armBack.take)        
+        self.actionPoint    = self.geogebra.get('Distrib_{}_{}'.format(self.side,self.distrib_pos))
+        self.theta          = pi/2
 
     def realize(self):
         self.log("TakeSyncDistrib")
-        self.wheeledbase.goto(*self.actionPoint, theta=pi/2)
-        
-        self.armFront.prepare_to_take()
-        self.armBack.prepare_to_take()
 
         self.armFront.start_pump()
         self.armBack.start_pump()
 
-        while not (self.wheeledbase.goto.end() and self.armFront.prepare_to_take.end() and self.armBack.prepare_to_take.end()):
+        self.wheeledbase.turnonthespot(self.theta)
+        while not self.wheeledbase.is_arrived():
             time.sleep(0.1)
 
         self.armFront.take()
@@ -42,7 +34,12 @@ class TakeSyncDistrib(Actionnable):
 
         while not (self.armFront.take.end() and self.armBack.take.end()):
             time.sleep(0.1)
-        
+
+        self.armFront.take()
+        self.armBack.take()
+
+        while not (self.armFront.take.end() and self.armBack.take.end()):
+            time.sleep(0.1)
 
     #override
     def getAction(self):
@@ -68,13 +65,13 @@ class TakeSpecificArm(Actionnable):
         return [Action(self.actionPoint, lambda : self.realize(), 'Distrib_{}_{}'.format(self.color,self.distrib_pos))]
 
 class PutBalance(Actionnable):
-    def __init__(self, geogebra, daughter_cards, armFront, color, log):
+    def __init__(self, geogebra, daughter_cards, side, log):
         self.geogebra       = geogebra
         self.log            = log
-        self.color          = color
-        self.armFront       = daughter_cards[armFront]
+        self.side           = side
+        self.armFront       = daughter_cards['armFront']
         self.wheeledbase    = daughter_cards['wheeledbase']
-        self.actionPoint    = self.geogebra.get('Balance_{}'.format(self.color))
+        self.actionPoint    = self.geogebra.get('Balance_{}'.format(self.side))
 
     def realize(self):
         self.log("PutBalance")
