@@ -3,10 +3,10 @@ from collections import namedtuple
 ArmPos = namedtuple('ArmPos', ['x', 'y', 'phi'])
 
 #                                      | x(cm) | y(cm) | phi(deg)
-HOME                            = ArmPos(1.5,    6.0,    10)
-
-PREPARE_TAKING_POS              = ArmPos(14.5,   1.5,    10)
-TAKE_PUCK                       = ArmPos(15.7,   1.5,    10)
+HOME                            = ArmPos(1.5,    7.0,    0)
+PREPARE_TAKING_POS              = ArmPos(11.5,   2,    15)
+PREPARE_TAKING_POS_1            = ArmPos(12.5,   2.5,    15)
+TAKE_PUCK                       = ArmPos(14.5,     3.5,    10)
 
 TAKE_PUCK_INTER_AFTER           = ArmPos(9.0,    10.0,   90.0)
 TAKE_PUCK_INTER_SOL             = ArmPos(8.0,    8.0,    0.0)

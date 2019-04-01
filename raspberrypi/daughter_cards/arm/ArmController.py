@@ -71,6 +71,14 @@ class ArmController():
         self.log(self.name, "Prepare to take")
         self.move(PREPARE_TAKING_POS)
 
+    def prepare_to_take_1(self):
+        self.log(self.name, "Prepare to take")
+        self.move(PREPARE_TAKING_POS_1)
+
     def take(self):
         self.log(self.name, "Take")
         self.move(TAKE_PUCK)
+
+    def after_take(self):
+        self.log(self.name, "Take")
+        self.move(TAKE_PUCK_INTER_AFTER)
