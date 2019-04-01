@@ -16,53 +16,58 @@ class TakeSyncDistrib(Actionnable):
         self.armFront       = daughter_cards['armFront']
         self.armBack        = daughter_cards['armBack']
         self.wheeledbase    = daughter_cards['wheeledbase']
-        self.actionPoint    = self.geogebra.get('Distrib_{}_{}'.format(self.side,self.distrib_pos))
-        self.theta          = pi/2
+        self.point          = self.geogebra.get('Distrib{}_{}'.format(self.side,self.distrib_pos))
+        self.actionPoint    = ActPoint(self.point, pi/2)
 
+    # Main action
     def realize(self):
-        self.log("TakeSyncDistrib")
-
         self.armFront.start_pump()
         self.armBack.start_pump()
 
-        self.wheeledbase.turnonthespot(self.theta)
-        while not self.wheeledbase.is_arrived():
+        self.wheeledbase.turnonthespot(self.actionPoint.theta)
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
+
+        self.armFront.prepare_to_take_1()
+        self.armBack.prepare_to_take_1()
+
+        while not (self.armFront.is_arrived() and self.armBack.is_arrived()):
             time.sleep(0.1)
 
         self.armFront.take()
         self.armBack.take()
 
-        while not (self.armFront.take.end() and self.armBack.take.end()):
+        while not (self.armFront.is_arrived() and self.armBack.is_arrived()):
             time.sleep(0.1)
 
-        self.armFront.take()
-        self.armBack.take()
+        self.armFront.after_take()
+        self.armBack.after_take()
 
-        while not (self.armFront.take.end() and self.armBack.take.end()):
-            time.sleep(0.1)
+        while not (self.armFront.is_arrived() and self.armBack.is_arrived):
+                time.sleep(0.1)
+
+    def prepare(self):
+        self.armFront.prepare_to_take()
+        self.armBack.prepare_to_take()
+
+        while not (self.armFront.is_arrived() and self.armBack.is_arrived):
+                time.sleep(0.1)
+
+    def complete(self):
+        self.armFront.go_home()
+        self.armBack.go_home()
+
+        while not (self.armFront.is_arrived() and self.armBack.is_arrived):
+                time.sleep(0.1)
+
 
     #override
     def getAction(self):
-        return [Action(self.actionPoint, lambda : self.realize(), 'Distrib_{}_{}'.format(self.color,self.distrib_pos))]
-
-
-
-class TakeSpecificArm(Actionnable):
-    def __init__(self, geogebra, daughter_cards, arm, color, distrib_pos, log):
-        self.geogebra       = geogebra
-        self.log            = log
-        self.color          = color
-        self.distrib_pos    = distrib_pos
-        self.arm            = daughter_cards[arm]
-        self.wheeledbase    = daughter_cards['wheeledbase']
-        self.actionPoint    = self.geogebra.get('Distrib_{}_{}'.format(self.color,self.distrib_pos))
-
-    def realize(self):
-        self.log("TakeSpecificArm")
-
-    #override
-    def getAction(self):
-        return [Action(self.actionPoint, lambda : self.realize(), 'Distrib_{}_{}'.format(self.color,self.distrib_pos))]
+        return [Action(self.actionPoint, 
+                lambda : self.realize(), 
+                'TakeSyncDistrib', 
+                actionPrep = self.prepare,
+                actionComp = self.complete)]
 
 class PutBalance(Actionnable):
     def __init__(self, geogebra, daughter_cards, side, log):
@@ -71,27 +76,49 @@ class PutBalance(Actionnable):
         self.side           = side
         self.armFront       = daughter_cards['armFront']
         self.wheeledbase    = daughter_cards['wheeledbase']
-        self.actionPoint    = self.geogebra.get('Balance_{}'.format(self.side))
+        self.point    = self.geogebra.get('Balance{}'.format(self.side))
+        self.actionPoint    = ActPoint(self.point, pi/2)
 
     def realize(self):
-        self.log("PutBalance")
+        pass
+    
+    def prepare(self):
+        pass
+
+    def complete(self):
+        pass
 
     #override
     def getAction(self):
-        return [Action(self.actionPoint, lambda : self.realize(), 'Balance_{}'.format(self.color))]
+        return [Action(self.actionPoint, 
+                lambda : self.realize(), 
+                'PutBalance', 
+                actionPrep = self.prepare,
+                actionComp = self.complete)]
 
-class PutRedZone(Actionnable):
-    def __init__(self, geogebra, daughter_cards, armFront, color, log):
+class PutRed(Actionnable):
+    def __init__(self, geogebra, daughter_cards, side, log):
         self.geogebra       = geogebra
         self.log            = log
-        self.color          = color
-        self.armFront       = daughter_cards[armFront]
+        self.side           = side
+        self.armFront       = daughter_cards['armFront']
         self.wheeledbase    = daughter_cards['wheeledbase']
-        self.actionPoint    = self.geogebra.get('Balance_{}'.format(self.color))
+        self.point          = self.geogebra.get('Start{}'.format(self.side))
+        self.actionPoint    = ActPoint(self.point, -pi/2)
 
     def realize(self):
-        self.log("PutRedZone")
+        pass
+    
+    def prepare(self):
+        pass
+
+    def complete(self):
+        pass
 
     #override
     def getAction(self):
-        return [Action(self.actionPoint, lambda : self.realize(), 'Red_Zone_{}'.format(self.color))]
+        return [Action(self.actionPoint, 
+                lambda : self.realize(), 
+                'PutBalance', 
+                actionPrep = self.prepare,
+                actionComp = self.complete)]

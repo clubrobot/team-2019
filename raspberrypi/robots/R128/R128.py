@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
 
-from robots.R128.R128Actionss import TakeSyncDistrib, TakeSpecificArm, PutBalance, PutRedZone
+from robots.R128.R128Actions import TakeSyncDistrib, PutBalance, PutRed
 from common.geogebra import Geogebra
 
 class R128:
@@ -28,6 +28,7 @@ class R128:
     def set_side(self, side):
         self.side = side
         # Apply cube obstacle
+        self.log("MAIN : ", "Set Side : {}".format(self.side))
 
         self.TakeSync1  = TakeSyncDistrib(self.geogebra, self.daughter_cards, self.side, R128.DISTRIB6_1, self.log)
         self.TakeSync2  = TakeSyncDistrib(self.geogebra, self.daughter_cards, self.side, R128.DISTRIB6_2, self.log)
@@ -40,11 +41,15 @@ class R128:
         self.Balance    = PutBalance(self.geogebra, self.daughter_cards, self.side, self.log)
         self.BalanceAct = self.Balance.getAction()[0]
 
+        self.Red    = PutRed(self.geogebra, self.daughter_cards, self.side, self.log)
+        self.RedAct = self.Red.getAction()[0]
+
         self.action_list = [
             self.TakeSync1Act,
             self.TakeSync2Act,
             self.TakeSync3Act,
             self.BalanceAct,
+            self.RedAct
         ]
 
         if self.side == R128.YELLOW:
@@ -53,20 +58,29 @@ class R128:
             wheeledbase.set_position(755, 3000-322, -pi)
 
     def run(self):
+        self.log("MAIN : ", "RUN...")
         self.log.reset_time()
         
         for act in self.action_list:
                 self.log("MAIN : ", "Let's go to the next action : {}".format(act.name))
-                self.daughter_cards['wheeledbase'].goto(*act.actionPoint, theta=act.theta)
+                act.prepare()
+                self.daughter_cards['wheeledbase'].goto(*act.actionPoint.point, theta=act.actionPoint.theta)
+                while not act.prepareEnd():
+                    time.sleep(0.1)
                 self.log("MAIN ; ", "Arrived on action point ! Go execute it =)")
                 act()
                 act.done.set()
+                act.complete()
+
+                while not act.completeEnd():
+                    time.sleep(0.1)
 
 
 if __name__ == '__main__':
     from robots.R128.setup_128 import *
+    init_robot()
+    log("MAIN : ", "DEBUT CHARGEMENT ROADMAP")
 
-    print("DEBUT CHARGEMENT ROADMAP")
     geo = Geogebra('128.ggb')
 
     auto = R128(R128.PURPLE,geo, wheeledbase, armFront,  armBack, log)
