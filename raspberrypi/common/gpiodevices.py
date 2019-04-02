@@ -10,6 +10,9 @@ class Device:
 
 
 class Switch(Device):
+    def launch_function(self, *args):
+        if self.function != None:
+            self.function(*self.args,**self.kwargs)
     def __init__(self, input_pin, function=None, *args, **kwargs):
         if Device.list_pin[input_pin] == 0:
             self.function = function
@@ -18,15 +21,10 @@ class Switch(Device):
             self.args = args
             self.kwargs = kwargs
             self.input_pin = input_pin
-            self.button = Button(input_pin, pull_up=true)
-            self.button.when_pressed = launch_fuction
+            self.button = Button(input_pin, pull_up=True)
+            self.button.when_pressed = self.launch_function
         else:
             raise RuntimeError('pin already in use')
-
-    def launch_function(self, *args):
-        if self.function != None:
-            self.function(*self.args,**self.kwargs)
-
     def set_function(self, function, *args, **kwargs):
         self.function = function
         self.kwargs = kwargs
