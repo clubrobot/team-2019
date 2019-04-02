@@ -1,4 +1,5 @@
 from RPi import GPIO
+from gpiozero import Button
 import time
 
 
@@ -17,25 +18,12 @@ class Switch(Device):
             self.args = args
             self.kwargs = kwargs
             self.input_pin = input_pin
-            if (GPIO.getmode() != 10):
-                GPIO.setmode(GPIO.BOARD)
-            GPIO.setup(self.input_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-            GPIO.add_event_detect(self.input_pin, GPIO.BOTH, callback=self.launch_function, bouncetime=500)
-            if (GPIO.input(self.input_pin) == 0):
-                self.state = True
-            else:
-                self.state = False
+            self.button = Button(input_pin, pull_up=true)
+            self.button.when_pressed = launch_fuction
         else:
             raise RuntimeError('pin already in use')
 
     def launch_function(self, *args):
-        time.sleep(0.001)
-
-        if (GPIO.input(self.input_pin) == 0):
-            self.state = True
-        else:
-            self.state = False
-
         if self.function != None:
             self.function(*self.args,**self.kwargs)
 
@@ -46,8 +34,7 @@ class Switch(Device):
 
     def close(self):
         Device.list_pin[self.input_pin] = 0
-        GPIO.remove_event_detect(self.input_pin)
-        GPIO.cleanup(self.input_pin)
+        self.button.close()
 
 class LightButton(Device):
 
