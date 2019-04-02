@@ -53,9 +53,9 @@ class R128:
         ]
 
         if self.side == R128.YELLOW:
-            wheeledbase.set_position(755, 322, pi)
+            self.daughter_cards['wheeledbase'].set_position(755, 322, pi)
         else:
-            wheeledbase.set_position(755, 3000-322, -pi)
+            self.daughter_cards['wheeledbase'].set_position(755, 3000-322, -pi)
 
     def run(self):
         self.log("MAIN : ", "RUN...")
