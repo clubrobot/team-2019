@@ -16,7 +16,7 @@ LOCAL_CPP_SRCS = \
 	$(COMMON)/Odometry.cpp \
 	$(COMMON)/PID.cpp \
 	$(COMMON)/DifferentialController.cpp \
-	$(COjetbrains tab placementMMON)/VelocityController.cpp \
+	$(COMMON)/VelocityController.cpp \
 	$(COMMON)/PositionController.cpp \
 	$(COMMON)/PurePursuit.cpp \
 	$(COMMON)/TurnOnTheSpot.cpp \
