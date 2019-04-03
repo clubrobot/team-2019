@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
-
-from threading import Event, Thread
+from threading import Thread, Event
+from Queue import Queue
 from collections import namedtuple
-from common.funcutils   import Job
 import time
 
 ActPoint = namedtuple('ActPoint', ['point', 'theta'])
@@ -16,36 +15,19 @@ class Action():
         self.actionPrep     = actionPrep
         self.actionComp     = actionComp
 
-        self.prepJob        = None
-        self.compJob        = None
-
         self.name           = name
-        self.done           = Event()
 
     def __call__(self):
         self.actionFunc()
-    
-    def __bool__(self):
-        return self.done.is_set()
 
     def realize(self):
         self()
 
     def prepare(self):
-        self.prepJob    = Job(self.actionPrep)
-        self.prepJob.stopped.clear()
-        self.prepJob.start()
+        self.actionPrep()
 
     def complete(self):
-        self.compJob    = Job(self.actionComp)
-        self.compJob.stopped.clear()
-        self.compJob.start()
-
-    def prepareEnd(self):
-        return self.prepJob
-
-    def completeEnd(self):
-        return self.compJob
+        self.actionComp()
 
     def getActionPoint(self):
         return self.actionPoint
@@ -54,3 +36,61 @@ class Actionnable():
     def getAction(self):
         raise NotImplementedError("Need implementation")
 
+class ThreadActionManager(Thread):
+    def __init__(self):
+        Thread.__init__(self)
+        self.daemon         = False
+        self.stopped        = Event()
+        self.jobEnd         = Event()
+        self.queueFunc      = Queue()
+
+    def putJob(self, func):
+        self.queueFunc.put(func)
+        self.jobEnd.clear()
+        
+    def stop(self):
+        self.stopped.set()
+        self.join()
+
+    def run(self):
+        while not self.stopped.is_set():
+            while not self.queueFunc.empty():
+                self.queueFunc.get()()
+            self.jobEnd.set()
+    
+    def end(self):
+        if self.jobEnd.is_set():
+            self.jobEnd.clear()
+            return True
+        else:
+            return False
+
+def test1():
+    print('1')
+    time.sleep(2)
+
+def test2():
+    print('2')
+
+if __name__ == '__main__':
+    Act = ThreadActionManager()
+
+    Act.start()
+
+    Act.putJob(test2)
+
+    while not Act.end():
+        time.sleep(0.1)
+
+    Act.putJob(test1)
+    Act.putJob(test1)
+
+    while not Act.end():
+        time.sleep(0.1)
+    
+    Act.putJob(test2)
+
+    while not Act.end():
+        time.sleep(0.1)
+
+    Act.stop()
