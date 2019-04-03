@@ -8,14 +8,16 @@
 // The remote service we wish to connect to.
 static BLEUUID serviceUUID("6a54cace-89bf-4e0b-a9f9-7f78a7aab1ef");
 // The characteristic of the remote service we are interested in.
-static BLEUUID charUUID("bc4878c0-426a-45ed-b5db-2a9e1a1e43d7");
+static BLEUUID startCharUUID("bc4878c0-426a-45ed-b5db-2a9e1a1e43d7");
+static BLEUUID isOnTopUUID("561a3414-8b23-462e-ab59-1cdb47905789");
 
 static BLEAddress *pServerAddress;
 static boolean doConnect = false;
 static boolean connected = false;
-static BLERemoteCharacteristic *pRemoteCharacteristic;
+static BLERemoteCharacteristic *pStartCharacteristic;
+static BLERemoteCharacteristic *pIsOnTopCharacteristic;
 
-ExperienceEffects experience;
+ExperienceEffects experience(true);
 
 long current_time = 0;
 long last_time = 0;
@@ -46,16 +48,23 @@ bool connectToServer(BLEAddress pAddress)
   }
   Serial.println("getService");
   // Obtain a reference to the characteristic in the service of the remote BLE server.
-  pRemoteCharacteristic = pRemoteService->getCharacteristic(charUUID);
-  if (pRemoteCharacteristic == nullptr) {
+  pStartCharacteristic = pRemoteService->getCharacteristic(startCharUUID);
+  if (pStartCharacteristic == nullptr) {
     Serial.print("Failed to find our characteristic UUID: ");
-    Serial.println(charUUID.toString().c_str());
+    Serial.println(startCharUUID.toString().c_str());
     return false;
   }
   Serial.println(" - Found our characteristic");
-
+  if (experience.isElectron){
+    pIsOnTopCharacteristic = pRemoteService->getCharacteristic(isOnTopUUID);
+    if (pIsOnTopCharacteristic == nullptr) {
+      Serial.print("Failed to find our characteristic UUID: ");
+      Serial.println(isOnTopUUID.toString().c_str());
+      return false;
+    }
+  }
   // Read the value of the characteristic.
-  std::string value = pRemoteCharacteristic->readValue();
+  std::string value = pStartCharacteristic->readValue();
   Serial.print("The characteristic value was: ");
   Serial.println(value.c_str());
 
@@ -109,25 +118,16 @@ void loop()
     doConnect = false;
   }
   if (connected){
-    String result = pRemoteCharacteristic->readValue().c_str();
+    String result = pStartCharacteristic->readValue().c_str();
     Serial.println(result);
     if (result=="start\0"){
       Serial.println("ok");
       experience.start();
     }
-    if (result=="get\0"){
-      if (experience.isElectron){
-        if (experience.getOnTop){
-          pRemoteCharacteristic->writeValue("top");
-        }
-        else{
-          pRemoteCharacteristic->writeValue("nope");
-        }
-      }
-    }
   }
-  if (digitalRead(INTERRUPT) && experience.getTimer()+TEMPS_MIN*1000 < millis()){
+  if (digitalRead(INTERRUPT) && experience.getTimer()+TEMPS_MIN*1000 < millis() && experience.isElectron){
     experience.stayOnTop();
+    pIsOnTopCharacteristic->writeValue("top");
   }
 
   delay(500);
