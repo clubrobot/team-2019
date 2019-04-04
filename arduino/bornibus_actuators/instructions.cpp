@@ -1,12 +1,15 @@
 #include "instructions.h"
 #include <Servo.h>
 #include "../common/SerialTalks.h"
+#include "../common/EndStop.h"
 #include "PIN.h"
 
 extern Servo gripper;
 extern Servo pusher1;
 extern Servo pusher2;
 extern Servo arm;
+extern EndStop endStop1;
+extern EndStop endStop2;
 
 void SET_POSITION_GRIPPER(SerialTalks &inst, Deserializer &input, Serializer &output){
 	if(!gripper.attached()){gripper.attach(SERVO1);}
@@ -23,4 +26,19 @@ void SET_POSITION_PUSHERS(SerialTalks &inst, Deserializer &input, Serializer &ou
 void SET_POSITION_ARM(SerialTalks &inst, Deserializer &input, Serializer &output){
 	if(!arm.attached()){arm.attach(SERVO2);}
 	arm.write(input.read<int>());
+}
+
+void GET_ENDSTOP1_STATE(SerialTalks &inst, Deserializer &input, Serializer &output){
+	if(endStop1.getState()){
+		output.write<int>(0);
+	}else{
+		output.write<int>(1);
+	}
+}
+void GET_ENDSTOP2_STATE(SerialTalks &inst, Deserializer &input, Serializer &output){
+	if(endStop2.getState()){
+		output.write<int>(0);
+	}else{
+		output.write<int>(1);
+	}
 }

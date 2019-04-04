@@ -22,6 +22,7 @@ disp = DisplayPoints(ssd, led1, led2)
 gripper = Gripper(manager)
 pushers = Pushers(manager)
 arm = Arm(manager)
+endstops = EndStops(manager)
 arm.up()
 
 
