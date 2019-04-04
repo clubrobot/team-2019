@@ -20,7 +20,7 @@ class ButtonsManager:
     def run_match(self):
         self.red_switch.close()
         self.green_switch.close()
-        self.tirette.when_released = None
+        self.tirette_switch.when_released = None
         self.state = "running"
     def ready(self):
         if(self.tirette_switch.is_pressed):
