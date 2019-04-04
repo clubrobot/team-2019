@@ -10,27 +10,29 @@ class ButtonsManager:
     def set_team_orange(self):
         self.team = "O"
         self.green_switch.when_pressed = self.odometry
+        self.orange_switch.close()
+        self.blue_switch.close()
         self.state = "team selected"
     def set_team_purple(self):
         self.team = "M"
         self.green_switch.when_pressed = self.odometry
+        self.orange_switch.close()
+        self.blue_switch.close()
         self.state = "team selected"
     def run_match(self):
         self.tirette.close()
         self.state = "running"
     def ready(self):
-        self.orange_switch.close()
-        self.blue_switch.close()
         self.red_switch.close()
-        if(tirette_switch.is_pressed()):
+        if(self.tirette_switch.is_pressed()):
             self.green_switch.close()
             self.tirette_switch.when_released = self.run_match
     def __init__(self):
         self.state = None
         self.red = 13
-        self.green = 12
-        self.blue = 6
-        self.orange = 5
+        self.green = 5
+        self.blue = 12
+        self.orange = 6
         self.tirette = 26
 
         self.red_switch = Button(self.red, pull_up=True)
