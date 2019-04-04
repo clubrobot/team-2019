@@ -1,6 +1,7 @@
 from math import pi
 from robots.setup_bornibus import *
 from common.geogebra import Geogebra
+from robots.buttons_manager import ButtonsManager
 
 # from common.components import *
 # from daughter_cards.wheeledbase import *
