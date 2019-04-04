@@ -22,7 +22,7 @@ class Switch(Device):
             self.kwargs = kwargs
             self.input_pin = input_pin
             self.button = Button(input_pin, pull_up=True)
-            self.button.when_pressed = launch_fuction
+            self.button.when_pressed = self.launch_function
         else:
             raise RuntimeError('pin already in use')
     def set_function(self, function, *args, **kwargs):
