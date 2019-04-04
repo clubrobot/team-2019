@@ -9,14 +9,17 @@ from common.geogebra import Geogebra
 # wheeledbase = WheeledBase(manager)
 
 MAX_TIME_FOR_GOLDENIUM = 2
-
+buttons = ButtonsManager()
 # couleur M ou O
-couleur="M"
+while(buttons.state!="team selected"):
+    time.sleep(0.1)
 
 wheeledbase.set_velocities(0, 0)
 
 test_map = Geogebra("roadmap_bornibus.ggb")
 print("Map chargée")
+
+couleur = buttons.team
 
 IniO = test_map.get("Ini"+couleur)
 #Gold1 = test_map.get("Gold1"+couleur)
@@ -41,6 +44,9 @@ tmp = test_map.get("tmp"+couleur)
 tmp2 = test_map.get("tmp2"+couleur)
 tmp3 = test_map.get("tmp3"+couleur)
 
+while(self.state!="position selected"):
+    time.sleep(0.1)
+
 if couleur=="O" :
     wheeledbase.set_position(*IniO , pi/2)
     print("robot placé : ", wheeledbase.get_position())
@@ -62,7 +68,9 @@ gripper.open()
 
 wheeledbase.stop()
 
-input()
+while(buttons.state!="running"):
+    time.sleep(0.1)
+
 print("Get position : ", wheeledbase.get_position())
 print("Dep1 : ", Dep1)
 disp.start()
