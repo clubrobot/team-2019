@@ -7,6 +7,9 @@ from common.components import SecureSerialTalksProxy
 _SET_POSITION_GRIPPER_OPCODE    = 0x10
 _SET_POSITION_PUSHERS_OPCODE    = 0x11
 _SET_POSITION_ARM_OPCODE        = 0x12
+_GET_ENDSTOP1_STATE_OPCODE      = 0x13
+_GET_ENDSTOP2_STATE_OPCODE      = 0x14
+
 OPEN_GRIPPER = 90
 CLOSED_GRIPPER = 128
 UP_PUSHER1 = 150
@@ -63,3 +66,16 @@ class Arm(SecureSerialTalksProxy):
 
     def up(self):
         self.send(_SET_POSITION_ARM_OPCODE,INT(UP_ARM))
+
+class EndStops(SecureSerialTalksProxy):
+    _DEFAULT = {}
+
+    def __init__(self, parent, uuid='actuators'):
+        SecureSerialTalksProxy.__init__(self, parent, uuid, EndStops._DEFAULT)
+
+    def get_ES1(self):
+        out = self.execute(_GET_ENDSTOP1_STATE_OPCODE)
+        return out.read(INT)==0
+    def get_ES2(self):
+        out = self.execute(_GET_ENDSTOP2_STATE_OPCODE)
+        return out.read(INT)==0
