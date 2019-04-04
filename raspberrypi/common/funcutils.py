@@ -20,6 +20,9 @@ class Job(threading.Thread):
         self.execute(*self.args, **self.kwargs)
         self.stopped.set()
 
+    def __bool__(self):
+        return self.stopped.is_set()
+
 # Func class to bind existing func to it's threading homolog
 class ThreadMethod():
     def __init__(self, func):
@@ -41,4 +44,4 @@ class ThreadMethod():
         self.job.stop()
     
     def end(self):
-        return self.job.stopped.is_set()
+        return self.job
