@@ -5,6 +5,7 @@ from gpiozero import Button
 
 class ButtonsManager{
     def __init__(self):
+        self.team = None
         self.red = 13
         self.green = 12
         self.blue = 6
@@ -22,10 +23,12 @@ class ButtonsManager{
         self.orange_switch.when_pressed = set_team_orange
 
     def set_team_orange(self):
+        self.team = "O"
         print("orange team selected")
         self.green_switch.when_pressed = ready
     
     def set_team_purple(self):
+        self.team = "M"
         print("purple team selected")
         self.green_switch.when_pressed = ready
     
