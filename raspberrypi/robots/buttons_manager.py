@@ -3,7 +3,7 @@ from gpiozero import Button
 
 #GPIO: BTN_1=13 marche pas, BTN_2=12, BTN_3=6, BTN_4=5, TIR=26
 
-class ButtonsManager{
+class ButtonsManager
     def __init__(self):
         self.state = None
         self.red = 13
@@ -21,7 +21,9 @@ class ButtonsManager{
         self.red_switch.when_pressed = odometry;
         self.blue_switch.when_pressed = set_team_purple
         self.orange_switch.when_pressed = set_team_orange
-
+    def odometry(self):
+        self.state = "position selected"
+        self.ready()
     def set_team_orange(self):
         self.team = "O"
         ssd.set_message("orange")
@@ -36,7 +38,6 @@ class ButtonsManager{
     def run_match(self):
         tirette.close()
         self.state = "running"
-    
     def ready(self):
         self.orange_switch.close()
         self.purple_switch.close()
@@ -48,8 +49,3 @@ class ButtonsManager{
             ssd.set_message("ready")
         else:
             ssd.set_message("tirette")
-    
-    def odometry(self):
-        self.state = "position selected"
-        self.ready()
-}
