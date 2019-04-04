@@ -18,12 +18,12 @@ class ButtonsManager:
         self.green_switch.when_pressed = self.odometry
         self.state = "team selected"
     def run_match(self):
-        self.tirette.close()
+        self.red_switch.close()
+        self.green_switch.close()
+        self.tirette.when_released = None
         self.state = "running"
     def ready(self):
-        self.red_switch.close()
-        if(self.tirette_switch.is_pressed()):
-            self.green_switch.close()
+        if(self.tirette_switch.is_pressed):
             self.tirette_switch.when_released = self.run_match
     def __init__(self):
         self.state = None
