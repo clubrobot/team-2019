@@ -11,9 +11,10 @@ from common.geogebra import Geogebra
 MAX_TIME_FOR_GOLDENIUM = 2
 buttons = ButtonsManager()
 # couleur M ou O
+print("wait for team")
 while(buttons.state!="team selected"):
     time.sleep(0.1)
-
+print(buttons.team)
 wheeledbase.set_velocities(0, 0)
 
 test_map = Geogebra("roadmap_bornibus.ggb")
