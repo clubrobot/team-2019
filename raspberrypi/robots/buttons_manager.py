@@ -27,10 +27,10 @@ class ButtonsManager:
             self.tirette_switch.when_released = self.run_match
     def __init__(self):
         self.state = None
-        self.red = 13
-        self.green = 5
-        self.blue = 12
-        self.orange = 6
+        self.red = 12
+        self.green = 6
+        self.blue = 5
+        self.orange = 13
         self.tirette = 26
 
         self.red_switch = Button(self.red, pull_up=True)
