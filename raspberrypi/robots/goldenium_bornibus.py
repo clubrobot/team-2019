@@ -47,6 +47,7 @@ tmp = test_map.get("tmp"+couleur)
 tmp2 = test_map.get("tmp2"+couleur)
 tmp3 = test_map.get("tmp3"+couleur)
 
+ssd.clear_messages()
 ssd.set_message("T="+couleur+", set pos")
 
 while(buttons.state!="position selected"):
@@ -72,7 +73,7 @@ pushers.up()
 gripper.open()
 
 wheeledbase.stop()
-
+ssd.clear_messages()
 while(buttons.state!="running"):
     time.sleep(0.1)
 

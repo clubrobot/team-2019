@@ -5,19 +5,17 @@ from gpiozero import Button
 
 class ButtonsManager:
     def odometry(self):
+        self.orange_switch.close()
+        self.blue_switch.close()
         self.state = "position selected"
         self.ready()
     def set_team_orange(self):
         self.team = "O"
         self.green_switch.when_pressed = self.odometry
-        self.orange_switch.close()
-        self.blue_switch.close()
         self.state = "team selected"
     def set_team_purple(self):
         self.team = "M"
         self.green_switch.when_pressed = self.odometry
-        self.orange_switch.close()
-        self.blue_switch.close()
         self.state = "team selected"
     def run_match(self):
         self.tirette.close()
