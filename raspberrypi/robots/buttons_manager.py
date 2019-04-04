@@ -16,7 +16,7 @@ class ButtonsManager:
         self.green_switch.when_pressed = self.odometry
         self.state = "team selected"
     def run_match(self):
-        tirette.close()
+        self.tirette.close()
         self.state = "running"
     def ready(self):
         self.orange_switch.close()

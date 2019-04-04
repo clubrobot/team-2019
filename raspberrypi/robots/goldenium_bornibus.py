@@ -13,6 +13,7 @@ MAX_TIME_FOR_GOLDENIUM = 2
 buttons = ButtonsManager()
 # couleur M ou O
 print("wait for team")
+ssd.set_message("set team")
 while(buttons.state!="team selected"):
     time.sleep(0.1)
 print(buttons.team)
@@ -46,6 +47,8 @@ tmp = test_map.get("tmp"+couleur)
 tmp2 = test_map.get("tmp2"+couleur)
 tmp3 = test_map.get("tmp3"+couleur)
 
+ssd.set_message("T="+couleur+", set pos")
+
 while(buttons.state!="position selected"):
     time.sleep(0.1)
 
@@ -56,7 +59,7 @@ if couleur=="O" :
 if couleur=="M" :
     wheeledbase.set_position(*IniO , (3*pi)/2)
     print("robot placé : ", wheeledbase.get_position())
-
+ssd.set_message("ready")
 wheeledbase.reset_parameters()
 wheeledbase.max_linvel.set(700)
 wheeledbase.max_angvel.set(10)
