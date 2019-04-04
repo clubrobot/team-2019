@@ -46,7 +46,7 @@ tmp = test_map.get("tmp"+couleur)
 tmp2 = test_map.get("tmp2"+couleur)
 tmp3 = test_map.get("tmp3"+couleur)
 
-while(self.state!="position selected"):
+while(buttons.state!="position selected"):
     time.sleep(0.1)
 
 if couleur=="O" :

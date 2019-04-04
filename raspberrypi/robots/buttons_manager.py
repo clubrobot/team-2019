@@ -34,8 +34,8 @@ class ButtonsManager:
         self.state = None
         self.red = 13
         self.green = 12
-        self.blue = 5
-        self.orange = 6
+        self.blue = 6
+        self.orange = 5
         self.tirette = 26
 
         self.red_switch = Button(self.red, pull_up=True)
@@ -44,5 +44,5 @@ class ButtonsManager:
         self.orange_switch = Button(self.orange, pull_up=True)
         self.tirette_switch = Button(self.tirette, pull_up=True)
 
-        self.blue_switch.when_pressed = set_team_purple
-        self.orange_switch.when_pressed = set_team_orange
+        self.blue_switch.when_pressed = self.set_team_purple
+        self.orange_switch.when_pressed = self.set_team_orange
