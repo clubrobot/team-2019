@@ -10,7 +10,7 @@ import time
 import os
 
 
-TEST = True
+TEST = False
 FILE = True
 PRINT = True
 max_pts = 100

@@ -27,9 +27,7 @@ poly_in = geo.getall("obsin_*")
 for poly in poly_in:
     objs += [PolygonObs(poly, funct)]
 
-#pf
-maps = geometry.Point(*geo.get("MAP"))
-objs += [Map(maps.x, maps.y, funct)]
+objs += [PolygonObsInverse(geo.get("land"), funct)]
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
