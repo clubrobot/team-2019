@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * @todo
  *  - move strings to flash (less RAM consumption)
  *  - fix deprecated convertation form string to char* startAsAnchor
@@ -15,7 +15,7 @@
 #include "DW1000.h"
 #include "../common/dataSync.h"
 
-#include "SSD1306.h"
+// #include "SSD1306.h"
 #include <Wire.h>
 
 #include "../../common/SerialTalks.h"
@@ -25,17 +25,21 @@
 #include <BLEUtils.h>
 #include <BLEServer.h>
 #include <BLE2902.h>
-#include "../common/OLED_display.h"
+// #include "../common/OLED_display.h"
 
+#define SERVICE_UUID    "6a54cace-89bf-4e0b-a9f9-7f78a7aab1ef"
+#define STARTCHAR_UUID  "bc4878c0-426a-45ed-b5db-2a9e1a1e43d7"
+#define ISONTOP_UUID    "561a3414-8b23-462e-ab59-1cdb47905789"
 
-OLEDdisplay display(0x3C, PIN_SDA, PIN_SCL);
+// OLEDdisplay display(0x3C, PIN_SDA, PIN_SCL);
 
 byte currentBeaconNumber = 1;
 boolean calibrationRunning = false;
 DataSync data = {GREEN, LONGDATA_RANGE_ACCURACY};
 
 // BLE variables
-BLECharacteristic *pCharacteristic;
+BLECharacteristic *pStartCharacteristic;
+BLECharacteristic *pIsOnTopCharacteristic;
 boolean deviceConnected = false;
 
 class MyServerCallbacks : public BLEServerCallbacks
@@ -44,14 +48,32 @@ class MyServerCallbacks : public BLEServerCallbacks
   {
     //  Serial.println("connected");
     deviceConnected = true;
-    display.log("panneau connecté");
+    // display.log("Connecté");
   };
 
   void onDisconnect(BLEServer *pServer)
   {
     //  Serial.println("disconnected");
     deviceConnected = false;
-    display.log("panneau déconnecté");
+    // display.log("Déconnecté");
+  }
+};
+
+class MyCallbacks : public BLECharacteristicCallbacks{
+  void onWrite(BLECharacteristic *mCharacteristic){
+    std::string rxValue = mCharacteristic->getValue();
+    int dataLength = rxValue.length();
+    Serial.print("Received value (" );
+    Serial.print( dataLength );
+    Serial.println( " bytes)");
+    Serial.print("Received : ");
+    char rxData[dataLength];
+    for(int i = 0; i < dataLength; ++i){
+      rxData[i] = rxValue[i];
+      Serial.print(rxData[i]);
+    }
+    Serial.println("");
+    //Serial.println(rxData);
   }
 };
 
@@ -69,10 +91,10 @@ void newRange()
 {
   DW1000Ranging.setRangeFilterValue(5);
 
-  String toDisplay;
+   String toDisplay;
 
   if(calibrationRunning==true){
-    display.log("timeOut");
+    // display.log("timeOut");
   } else {
     // get master tag coordinates
     float x = DW1000Ranging.getPosX(TAG_SHORT_ADDRESS[0]) / 10;
@@ -92,7 +114,7 @@ void newRange()
     toDisplay += ")\n";
   }
 
-  display.displayMsg(Text(toDisplay, 3, 64, 0));
+  // display.displayMsg(Text(toDisplay, 3, 64, 0));
   digitalWrite(PIN_LED_OK, HIGH);
   digitalWrite(PIN_LED_FAIL, LOW);
 }
@@ -107,9 +129,9 @@ void calibration(int realDistance, int mesure){
   }
   DW1000Ranging.setRangeFilterValue(15);
   mesure = sqrt(mesure * mesure - ((Z_HEIGHT[currentBeaconNumber] - Z_TAG) * (Z_HEIGHT[currentBeaconNumber] - Z_TAG))); // projection dans le plan des tags
-  
+
   lastErrors[errorIndex++] = realDistance - mesure;
-  
+
   if(errorIndex > 2){
     errorIndex = 0;
     int meanError = (lastErrors[0] + lastErrors[1] + lastErrors[2]) / 3;
@@ -133,14 +155,14 @@ void calibration(int realDistance, int mesure){
       DW1000Class::setAntennaDelay(antennaDelay);
     }
   }
-  
+
   String toDisplay = "target: ";
   toDisplay += realDistance;
   toDisplay += "mm\nmesure: ";
   toDisplay += mesure;
   toDisplay += "mm\ndelay: ";
   toDisplay += antennaDelay;
-  display.displayMsg(Text(toDisplay, 6, 64, 0));
+  // display.displayMsg(Text(toDisplay, 6, 64, 0));
 }
 
 void newBlink(DW1000Device *device)
@@ -153,7 +175,7 @@ void newBlink(DW1000Device *device)
   toDisplay += "\nTAG : ";
   toDisplay += tagNumber;
 
-  display.displayMsg(Text(toDisplay, 3, 64, 0));
+  // display.displayMsg(Text(toDisplay, 3, 64, 0));
 
   digitalWrite(PIN_LED_OK, HIGH);
   digitalWrite(PIN_LED_FAIL, LOW);
@@ -169,7 +191,7 @@ void inactiveDevice(DW1000Device *device)
   toDisplay += "\nTAG : ";
   toDisplay += tagNumber;
 
-  display.displayMsg(Text(toDisplay, 3, 64, 0));
+  // display.displayMsg(Text(toDisplay, 3, 64, 0));
 
   if (tagNumber + networkNumber == 0)
   {
@@ -186,7 +208,7 @@ void handleNewChannel(uint16_t channel){
     DW1000Ranging.startAsAnchor("82:17:FC:87:0D:71:DC:75", DW1000.MODE_LONGDATA_RANGE_LOWPOWER, ANCHOR_SHORT_ADDRESS[currentBeaconNumber]);
     String s = "Channel ";
     s += channel;
-    display.displayMsg(Text(s, 8, 64, 0));
+    // display.displayMsg(Text(s, 8, 64, 0));
   }
   break;
   case SHORTDATA_FAST_LOWPOWER:
@@ -194,7 +216,7 @@ void handleNewChannel(uint16_t channel){
     DW1000Ranging.startAsAnchor("82:17:FC:87:0D:71:DC:75", DW1000.MODE_SHORTDATA_FAST_LOWPOWER, ANCHOR_SHORT_ADDRESS[currentBeaconNumber]);
     String s = "Channel ";
     s += channel;
-    display.displayMsg(Text(s, 8, 64, 0));
+    // display.displayMsg(Text(s, 8, 64, 0));
   }
   break;
   case LONGDATA_FAST_LOWPOWER:
@@ -202,7 +224,7 @@ void handleNewChannel(uint16_t channel){
     DW1000Ranging.startAsAnchor("82:17:FC:87:0D:71:DC:75", DW1000.MODE_LONGDATA_FAST_LOWPOWER, ANCHOR_SHORT_ADDRESS[currentBeaconNumber]);
    String s = "Channel ";
     s += channel;
-    display.displayMsg(Text(s, 8, 64, 0));
+    // display.displayMsg(Text(s, 8, 64, 0));
   }
   break;
   case SHORTDATA_FAST_ACCURACY:
@@ -210,7 +232,7 @@ void handleNewChannel(uint16_t channel){
     DW1000Ranging.startAsAnchor("82:17:FC:87:0D:71:DC:75", DW1000.MODE_SHORTDATA_FAST_ACCURACY, ANCHOR_SHORT_ADDRESS[currentBeaconNumber]);
     String s = "Channel ";
     s += channel;
-    display.displayMsg(Text(s, 8, 64, 0));
+    // display.displayMsg(Text(s, 8, 64, 0));
   }
   break;
   case LONGDATA_FAST_ACCURACY:
@@ -218,7 +240,7 @@ void handleNewChannel(uint16_t channel){
     DW1000Ranging.startAsAnchor("82:17:FC:87:0D:71:DC:75", DW1000.MODE_LONGDATA_FAST_ACCURACY, ANCHOR_SHORT_ADDRESS[currentBeaconNumber]);
    String s = "Channel ";
     s += channel;
-    display.displayMsg(Text(s, 8, 64, 0));
+    // display.displayMsg(Text(s, 8, 64, 0));
   }
   break;
   case LONGDATA_RANGE_ACCURACY:
@@ -226,29 +248,44 @@ void handleNewChannel(uint16_t channel){
     DW1000Ranging.startAsAnchor("82:17:FC:87:0D:71:DC:75", DW1000.MODE_LONGDATA_RANGE_ACCURACY, ANCHOR_SHORT_ADDRESS[currentBeaconNumber]);
     String s = "Channel ";
     s += channel;
-    display.displayMsg(Text(s, 8, 64, 0));
+    // display.displayMsg(Text(s, 8, 64, 0));
   }
   break;
   default:
     String s = "Error\nchannel ";
     s += channel;
-    display.displayMsg(Text(s, 8, 64, 0));
+    // display.displayMsg(Text(s, 8, 64, 0));
     break;
   }
 }
 
 void setup() {
-  
+
   Serial.begin(SERIALTALKS_BAUDRATE);
   talks.begin(Serial);
-  
+
   talks.bind(UPDATE_ANCHOR_NUMBER_OPCODE, UPDATE_ANCHOR_NUMBER);
   talks.bind(UPDATE_ANTENNA_DELAY_OPCODE, UPDATE_ANTENNA_DELAY);
   talks.bind(CALIBRATION_ROUTINE_OPCODE, CALIBRATION_ROUTINE);
   talks.bind(UPDATE_COLOR_OPCODE, UPDATE_COLOR);
   talks.bind(GET_COORDINATE_OPCODE,GET_COORDINATE);
-  talks.bind(GET_PANEL_STATUS_OPCODE, GET_PANEL_STATUS);
+  talks.bind(GET_ELECTRON_STATUS_OPCODE, GET_ELECTRON_STATUS);
   talks.bind(CHANGE_CHANNEL_OPCODE, CHANGE_CHANNEL);
+
+  BLEDevice::init("Server");
+  BLEServer *pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallbacks());
+  BLEService *pService = pServer->createService(SERVICE_UUID);
+  pStartCharacteristic = pService->createCharacteristic(STARTCHAR_UUID, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE | BLECharacteristic::PROPERTY_NOTIFY);
+  pIsOnTopCharacteristic = pService->createCharacteristic(ISONTOP_UUID, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE | BLECharacteristic::PROPERTY_NOTIFY);
+
+  pStartCharacteristic->setCallbacks(new MyCallbacks());
+  pIsOnTopCharacteristic->setCallbacks(new MyCallbacks());
+  pStartCharacteristic->setValue("0");
+  pIsOnTopCharacteristic->setValue("0");
+  pService->start();
+  BLEAdvertising *pAdvertising = pServer->getAdvertising();
+  pAdvertising->start();
 
   /*if (!EEPROM.begin(EEPROM_SIZE))   // Already done in serialtalks lib
   {
@@ -285,7 +322,7 @@ void setup() {
       replyTime = 49000;
       break;
   }
-  
+
   DW1000Ranging.setReplyTime(replyTime);
   //Enable the filter to smooth the distance
   DW1000Ranging.useRangeFilter(true);
@@ -303,9 +340,9 @@ void setup() {
   //we start the module as an anchor
   DW1000Ranging.startAsAnchor("82:17:FC:87:0D:71:DC:75", DW1000.MODE_LONGDATA_RANGE_ACCURACY, ANCHOR_SHORT_ADDRESS[currentBeaconNumber]);
 
-  display.init();
-  display.flipScreenVertically();
-  display.setTextAlignment(TEXT_ALIGN_CENTER );
+  // display.init();
+  // display.flipScreenVertically();
+  // display.setTextAlignment(TEXT_ALIGN_CENTER );
 
   xTaskCreatePinnedToCore(
       loopCore0,   /* Function to implement the task */
@@ -321,39 +358,22 @@ void setup() {
   digitalWrite(PIN_LED_OK,HIGH);
   digitalWrite(PIN_LED_FAIL,HIGH);
 
-  display.displayMsg(Text("SYNC", 3, 64, 0));
+  // display.displayMsg(Text("SYNC", 3, 64, 0));
 
   // Start BLE Server only if this is the supervisor anchor
   if (ANCHOR_SHORT_ADDRESS[currentBeaconNumber] == BEACON_BLE_ADDRESS)
   {
     DW1000Ranging.setDataSync(&data);
     DW1000Ranging.setDataSyncSize(sizeof(data));
-    display.log(data.color==GREEN?"green":"orange");
-
-    BLEDevice::init("srv");
-    BLEServer *pServer = BLEDevice::createServer();
-    pServer->setCallbacks(new MyServerCallbacks());
-    BLEService *pService = pServer->createService(SERVICE_UUID);
-    pCharacteristic = pService->createCharacteristic(
-        CHARACTERISTIC_UUID,
-        BLECharacteristic::PROPERTY_READ |
-            BLECharacteristic::PROPERTY_WRITE |
-            BLECharacteristic::PROPERTY_NOTIFY);
-    pCharacteristic->setValue("insa rennes");
-    pService->start();
-    BLEAdvertising *pAdvertising = pServer->getAdvertising();
-    pAdvertising->addServiceUUID(pService->getUUID());
-    pAdvertising->start();
+    // display.log(data.color==GREEN?"green":"orange");
 
   } else {
     String s = "ANCHOR\n";
     s += currentBeaconNumber;
-    display.displayMsg(Text(s, 4, 64, 0));
+    // display.displayMsg(Text(s, 4, 64, 0));
   }
 }
 
 void loop() {
   DW1000Ranging.loop();
 }
-
-

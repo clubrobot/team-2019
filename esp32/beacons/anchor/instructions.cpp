@@ -3,11 +3,17 @@
 #include "EEPROM.h"
 #include "DW1000Ranging.h"
 #include "../common/dataSync.h"
-#include "../common/OLED_display.h"
+// #include "../common/OLED_display.h"
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEServer.h>
 
 extern boolean deviceConnected;
 extern DataSync data;
-extern OLEDdisplay display;
+// extern OLEDdisplay display;
+
+extern BLECharacteristic *pStartCharacteristic;
+extern BLECharacteristic *pIsOnTopCharacteristic;
 
 void UPDATE_ANCHOR_NUMBER(SerialTalks &talks, Deserializer &input, Serializer &output){
     talks.out << "update anchor number\n";
@@ -31,7 +37,7 @@ void UPDATE_ANTENNA_DELAY(SerialTalks &talks, Deserializer &input, Serializer &o
     //ESP.restart();
 }
 
- 
+
 void CALIBRATION_ROUTINE(SerialTalks &talks, Deserializer &input, Serializer &output){
     talks.out << "calibration routine\n";
     int realDistance = input.read<uint16_t>();
@@ -43,7 +49,7 @@ void UPDATE_COLOR(SerialTalks &talks, Deserializer &input, Serializer &output)
 {
     talks.out << "changed color\n";
     data.color = (Color)input.read<uint16_t>();
-    display.log(data.color == GREEN ? "green" : "orange");
+    // display.log(data.color == GREEN ? "green" : "orange");
 }
 
 void GET_COORDINATE(SerialTalks &talks, Deserializer &input, Serializer &output)
@@ -63,9 +69,12 @@ void GET_COORDINATE(SerialTalks &talks, Deserializer &input, Serializer &output)
 }
 
 
-// return true if pannel connected, false otherwise
-void GET_PANEL_STATUS(SerialTalks &talks, Deserializer &input, Serializer &output){
-    output.write<bool>(deviceConnected);
+void GET_ELECTRON_STATUS(SerialTalks &talks, Deserializer &input, Serializer &output){
+    output.write<String>(pIsOnTopCharacteristic->getValue().c_str());
+}
+
+void START_EXP(SerialTalks &talks, Deserializer &input, Serializer &output){
+    pStartCharacteristic->setValue("start");
 }
 
 void CHANGE_CHANNEL(SerialTalks &talks, Deserializer &input, Serializer &output)

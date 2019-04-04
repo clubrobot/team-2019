@@ -5,7 +5,7 @@
 
 #define MAX_ANCHORS 4   // nombre maximum de balises fixes
 #define MAX_TAG 2 // nombre maximum de trackers
-
+/*
 const byte TAG_SHORT_ADDRESS[MAX_TAG] = {50, 51};
 const byte MASTER_TAG_ADDRESS = 50;
 
