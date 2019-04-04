@@ -69,7 +69,7 @@ public:
 	 * 
 	 * @param lookAhead Distance en mm.
 	 */
-	void setLookAhead   (float lookAhead)   {m_lookAhead    = lookAhead;}
+	void setLookAhead   (float lookAhead) ;
 	/**
 	 * @brief Setter du lookAheadBis.
 	 * 
@@ -77,7 +77,7 @@ public:
 	 * 
 	 * @param lookAheadBis Distance en mm.
 	 */
-	void setLookAheadBis(float lookAheadBis){m_lookAheadBis = lookAheadBis;}
+	void setLookAheadBis(float lookAheadBis);
 	/**
 	 * @brief Getter de la direction courant.
 	 * 

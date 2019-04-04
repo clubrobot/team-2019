@@ -43,7 +43,7 @@ void DCMotor::update()
 float DCMotor::getMaxVelocity() const
 {
 	m_mutex.acquire();
-	float ret = abs((2 * M_PI * m_wheelRadius) / m_constant) * m_maxPWM;
+	float ret = fabs((2 * M_PI * m_wheelRadius) / m_constant) * m_maxPWM;
 	m_mutex.release();
 	return ret;
 }
@@ -66,6 +66,29 @@ void DCMotor::save(int address) const
 	EEPROM.commit();
 	m_mutex.release();
 }
+
+
+void DCMotor::setConstant   (float constant)   {
+	if(m_constant != constant) {
+		m_constant = constant;
+		update();
+	}
+}
+
+void DCMotor::setWheelRadius   (float wheelRadius)   {
+	if(m_wheelRadius != wheelRadius) {
+		m_wheelRadius = wheelRadius;
+		update();
+	}
+}
+
+void DCMotor::setMaxPWM   (float maxPWM)   {
+	if(m_maxPWM != maxPWM) {
+		m_maxPWM = maxPWM;
+		update();
+	}
+}
+
 
 void DCMotorsDriver::attach(int RESET, int FAULT)
 {

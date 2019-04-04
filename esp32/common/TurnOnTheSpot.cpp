@@ -28,5 +28,5 @@ bool TurnOnTheSpot::getPositionReached()
 {
 	const float theta = getPosInput().theta;
 	const float angPosSetpoint = inrange(getPosSetpoint().theta - theta, -M_PI, M_PI);
-	return abs(angPosSetpoint) < getAngPosThreshold();
+	return fabs(angPosSetpoint) < getAngPosThreshold();
 }

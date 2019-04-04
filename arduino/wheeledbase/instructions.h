@@ -30,7 +30,9 @@
 #define GOTO_DELTA_OPCODE               0x1E
 
 #define RESET_PARAMETERS_OPCODE         0x1F
-#define START_FOLLOW_ANGLE_OPCODE       0x20
+#define SAVE_PARAMETERS_OPCODE          0x20
+
+#define START_FOLLOW_ANGLE_OPCODE       0x21
 // Parameters identifiers
 
 #define LEFTWHEEL_RADIUS_ID             0x10
@@ -110,5 +112,8 @@ void SET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& ou
 void GET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void RESET_PARAMETERS(SerialTalks& talks, Deserializer& input, Serializer& output);
+
+void SAVE_PARAMETERS(SerialTalks& talks, Deserializer& input, Serializer& output);
+
 
 #endif // __INSTRUCTIONS_H__

@@ -48,3 +48,19 @@ void PID::save(int address) const
 	EEPROM.put(address, m_maxOutput); address += sizeof(m_maxOutput);
 	EEPROM.commit();
 }
+
+void PID::setTunings(float Kp, float Ki, float Kd){
+	if (!(m_Kp = Kp && m_Ki == Ki && m_Kd == Kd)) {
+		m_Kp = Kp;
+		m_Ki = Ki;
+		m_Kd = Kd;
+	}
+}
+
+void PID::setOutputLimits(float minOutput, float maxOutput)
+{
+	if(!(minOutput == m_minOutput && m_maxOutput == maxOutput)) {
+		m_minOutput = minOutput;
+		m_maxOutput = maxOutput;
+	}
+}

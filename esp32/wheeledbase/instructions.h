@@ -4,6 +4,7 @@
 #include "../common/SerialTalks.h"
 
 // Opcodes declaration
+
 #define SET_OPENLOOP_VELOCITIES_OPCODE  0x13 //0x12
 
 #define GET_CODEWHEELS_COUNTERS_OPCODE  0x1C //0x0D
@@ -29,7 +30,8 @@
 #define GOTO_DELTA_OPCODE               0x1E
 
 #define RESET_PARAMETERS_OPCODE         0x1F
-#define START_FOLLOW_ANGLE_OPCODE       0x20
+#define SAVE_PARAMETERS_OPCODE          0x20
+#define START_FOLLOW_ANGLE_OPCODE       0x21
 // Parameters identifiers
 
 #define LEFTWHEEL_RADIUS_ID             0x10
@@ -72,8 +74,6 @@
 
 
 // Instructions prototypes
-void GET_VELOCITIES_WANTED(SerialTalks& talks, Deserializer& input, Serializer& output);
-
 void GOTO_DELTA(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void START_FOLLOW_ANGLE(SerialTalks& talks, Deserializer& input, Serializer& output);
@@ -94,9 +94,9 @@ void START_PUREPURSUIT(SerialTalks& talks, Deserializer& input, Serializer& outp
 
 void START_TURNONTHESPOT(SerialTalks& talks, Deserializer& input, Serializer& output);
 
-void START_FOLLOW_ANGLE(SerialTalks& talks, Deserializer& input, Serializer& output);
-
 void POSITION_REACHED(SerialTalks& talks, Deserializer& input, Serializer& output);
+
+void GET_VELOCITIES_WANTED(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void SET_POSITION(SerialTalks& talks, Deserializer& input, Serializer& output);
 
@@ -107,5 +107,10 @@ void GET_VELOCITIES(SerialTalks& talks, Deserializer& input, Serializer& output)
 void SET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void GET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& output);
+
+void RESET_PARAMETERS(SerialTalks& talks, Deserializer& input, Serializer& output);
+
+void SAVE_PARAMETERS(SerialTalks& talks, Deserializer& input, Serializer& output);
+
 
 #endif // __INSTRUCTIONS_H__

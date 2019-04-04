@@ -11,6 +11,14 @@ from robots.setup_wheeledbase import *
 test_map = Geogebra("roadmap.ggb")
 print("Map chargée")
 
+while True:
+    wheeledbase.goto_delta(500, 0)
+    while not wheeledbase.isarrived():
+        time.sleep(0.1)
+    wheeledbase.goto_delta(-500, 0)
+    while not wheeledbase.isarrived():
+        time.sleep(0.1)
+
 wheeledbase.set_position(415, 2610, -pi/2)
 path = test_map.getall("Path_*")
 print(path)

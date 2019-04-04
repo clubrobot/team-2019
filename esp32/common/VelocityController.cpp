@@ -5,17 +5,32 @@
 #include "SerialTalks.h"
 #include "mathutils.h"
 
-void VelocityController::setMaxAcc(float maxLinAcc, float maxAngAcc)
+
+void VelocityController::setMaxAngAcc   (float maxAngAcc)
 {
 	m_mutex.acquire();
-	m_maxLinAcc = maxLinAcc;
 	m_maxAngAcc = maxAngAcc;
 	m_mutex.release();
 }
-void VelocityController::setMaxDec(float maxLinDec, float maxAngDec)
+
+void VelocityController::setMaxLinAcc   (float maxLinAcc)
+{
+	m_mutex.acquire();
+	m_maxLinAcc = maxLinAcc;
+	m_mutex.release();
+}
+
+
+void VelocityController::setMaxLinDec   (float maxLinDec)
 {
 	m_mutex.acquire();
 	m_maxLinDec = maxLinDec;
+	m_mutex.release();
+}
+
+void VelocityController::setMaxAngDec   (float maxAngDec)
+{
+	m_mutex.acquire();
 	m_maxAngDec = maxAngDec;
 	m_mutex.release();
 }
@@ -121,7 +136,7 @@ void VelocityController::process(float timestep)
 	bool angVelSpin = (m_angVelOutput <= m_angPID->getMinOutput()) || (m_angVelOutput >= m_angPID->getMaxOutput());
 	if (linVelSpin || angVelSpin)
 	{
-		bool abnormalSpin = (abs(m_linInput) < 1) && (abs(m_angInput) < 0.05);
+		bool abnormalSpin = (fabs(m_linInput) < 1) && (fabs(m_angInput) < 0.05);
 		if (abnormalSpin && m_spinShutdown)
 		{
 			m_leftWheel ->setVelocity(0);
@@ -147,16 +162,22 @@ void VelocityController::onProcessEnabling()
 
 void VelocityController::load(int address)
 {
+	m_mutex.acquire();
+
 	EEPROM.get(address, m_axleTrack);    address += sizeof(m_axleTrack);
 	EEPROM.get(address, m_maxLinAcc);    address += sizeof(m_maxLinAcc);
 	EEPROM.get(address, m_maxLinDec);    address += sizeof(m_maxLinDec);
 	EEPROM.get(address, m_maxAngAcc);    address += sizeof(m_maxAngAcc);
 	EEPROM.get(address, m_maxAngDec);    address += sizeof(m_maxAngDec);
 	EEPROM.get(address, m_spinShutdown); address += sizeof(m_spinShutdown);
+
+	m_mutex.release();
 }
 
 void VelocityController::save(int address) const
 {
+	m_mutex.acquire();
+
 	EEPROM.put(address, m_axleTrack);    address += sizeof(m_axleTrack);
 	EEPROM.put(address, m_maxLinAcc);    address += sizeof(m_maxLinAcc);
 	EEPROM.put(address, m_maxLinDec);    address += sizeof(m_maxLinDec);
@@ -164,13 +185,20 @@ void VelocityController::save(int address) const
 	EEPROM.put(address, m_maxAngDec);    address += sizeof(m_maxAngDec);
 	EEPROM.put(address, m_spinShutdown); address += sizeof(m_spinShutdown);
 	EEPROM.commit();
+
+	m_mutex.release();
 }
+
 
 #if ENABLE_VELOCITYCONTROLLER_LOGS
 void VelocityControllerLogs::process(float timestep)
 {
+	m_mutex.acquire();
+
 	talks.out << millis() << "\t";
 	talks.out << m_controller->m_rampLinVelSetpoint << "\t" << m_controller->m_linInput << "\t" << m_controller->m_linVelOutput << "\t";
 	talks.out << m_controller->m_rampAngVelSetpoint << "\t" << m_controller->m_angInput << "\t" << m_controller->m_angVelOutput << "\n";
+	
+	m_mutex.release();
 };
 #endif // ENABLE_VELOCITYCONTROLLER_LOGS

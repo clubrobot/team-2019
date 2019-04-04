@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <EEPROM.h>
 #include "TrajectoryManager.h"
 #include "Picker.h"
 #include "ArmManager.h"
@@ -14,40 +15,59 @@ using namespace std;
 
 namespace IK
 {
-
 void TrajectoryManager::set_armManager(ArmManager& manager)
 {
-    m_mutex.acquire();
-    m_manager = &manager;
-    m_mutex.release();
+    _mutex.acquire();
+    _manager = &manager;
+    _mutex.release();
 }
 
 void TrajectoryManager::set_Motors(MotorWrapper& motor1, MotorWrapper& motor2, MotorWrapper& motor3)
 {
-    m_mutex.acquire();
-    m_motor1 = &motor1;
-    m_motor2 = &motor2;
-    m_motor3 = &motor3;
-    m_mutex.release();
+    _mutex.acquire();
+    _motor1 = &motor1;
+    _motor2 = &motor2;
+    _motor3 = &motor3;
+    _mutex.release();
 }
 
-void TrajectoryManager::move_directly(coords_t pos)
+void TrajectoryManager::set_timestep(float timestep)
 {
-    m_mutex.acquire();
+    _mutex.acquire();
+    _timestep = timestep;
+    _mutex.release();
+}
+
+void TrajectoryManager::init()
+{
+    _mutex.acquire();
+    PeriodicProcess::setTimestep(_timestep);
+    _mutex.release();
+}
+
+void TrajectoryManager::move_directly(Coords pos)
+{
+    _mutex.acquire();
 
     MoveBatch mb;
 
     /* set_parameters */
-    coords_t end_coord     = pos;
-    coords_t start_coord   = m_manager->get_tool();
+    Coords end_coord     = pos;
+    Coords start_coord   = _manager->get_tool();
 
     LOG_TRAJ("start : " << start_coord);
     LOG_TRAJ("end : " << end_coord );
 
-    mb = m_manager->go_to(start_coord, end_coord);
-
-    addMoveBatch(mb);
-    m_mutex.release();
+    try
+    {
+        mb = _manager->go_to(start_coord, end_coord);
+        addMoveBatch(mb);
+    }
+    catch(const string& e)
+    {
+        cout << e << endl;
+    }
+    _mutex.release();
 }
 
 void TrajectoryManager::addMoveBatch(MoveBatch mb)
@@ -71,9 +91,9 @@ MoveBatch TrajectoryManager::peekMoveBatch()
 
 void TrajectoryManager::process(float timestep)
 {
-    m_mutex.acquire();
+    _mutex.acquire();
 
-    static double th1, th2, th3, th1_inter, th2_inter, th3_inter;
+    static float th1, th2, th3, th1_inter, th2_inter, th3_inter;
 
     if(!_isExecutingBatch)
     {
@@ -87,13 +107,13 @@ void TrajectoryManager::process(float timestep)
                 th2 = convert_deg(mb.batch[1].position);
                 th3 = convert_deg(mb.batch[2].position);
 
-                m_motor1->setGoalPos(th1);
-                m_motor2->setGoalPos(th2);
-                m_motor3->setGoalPos(th3);
+                _motor1->setGoalPos(th1);
+                _motor2->setGoalPos(th2);
+                _motor3->setGoalPos(th3);
 
-                m_motor1->setVelocityProfile(mb.batch[0].vel);
-                m_motor2->setVelocityProfile(mb.batch[1].vel);
-                m_motor3->setVelocityProfile(mb.batch[2].vel);
+                _motor1->setVelocityProfile(mb.batch[0].vel);
+                _motor2->setVelocityProfile(mb.batch[1].vel);
+                _motor3->setVelocityProfile(mb.batch[2].vel);
             }
             _isExecutingBatch = true;
             _arrived          = false;
@@ -106,36 +126,50 @@ void TrajectoryManager::process(float timestep)
     }
     else
     {
-        m_motor1->process(timestep);
-        m_motor2->process(timestep);
-        m_motor3->process(timestep);
+        _motor1->process(timestep);
+        _motor2->process(timestep);
+        _motor3->process(timestep);
 
-        if(m_motor1->arrived() && m_motor2->arrived() && m_motor3->arrived())
+        if(_motor1->arrived() && _motor2->arrived() && _motor3->arrived())
         {
+            //_arrived          = true;
             _isExecutingBatch = false;
         }
-
     }
     
-    m_mutex.release();
+    _mutex.release();
 }
 
-double TrajectoryManager::convert_deg(double theta)
+float TrajectoryManager::convert_deg(float theta)
 {
-    double th;
+    float th;
 
     th =  theta * (180.0 / M_PI);
 
     return th;
 }
-double TrajectoryManager::convert_speed(double theta_speed)
+float TrajectoryManager::convert_speed(float theta_speed)
 {
-    double speed;
+    float speed;
 
     speed = theta_speed * ( 60.0 / (2.0 * M_PI));
 
     return speed;
 }
 
+void TrajectoryManager::load(int address)
+{
+	_mutex.acquire();
+	EEPROM.get(address, _timestep);        address += sizeof(_timestep);
+	_mutex.release();
+}
+
+void TrajectoryManager::save(int address) const
+{
+	_mutex.acquire();
+	EEPROM.put(address, _timestep); address += sizeof(_timestep);
+	EEPROM.commit();
+	_mutex.release();
+}
 
 } /* end of namespace */

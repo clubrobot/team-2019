@@ -103,3 +103,17 @@ void Codewheel::save(int address) const
 	EEPROM.put(address, m_countsPerRev); address += sizeof(m_countsPerRev);
 	EEPROM.commit();
 }
+
+void Codewheel::setCountsPerRev(long countsPerRev)
+{
+	if(m_countsPerRev != countsPerRev) {
+		m_countsPerRev = countsPerRev;
+	}
+}
+
+void Codewheel::setWheelRadius (float wheelRadius)
+{
+	if(m_wheelRadius != wheelRadius) {
+		m_wheelRadius = wheelRadius;
+	}
+}

@@ -20,30 +20,38 @@ class VelocityController : public DifferentialController
 public:
 	/**
 	 * @brief Constructeur de VelocityController
-	 * 
+	 *
 	 * Construteur de VelocityController qui initialise ces vairables sur des valeurs neutres.
-	 * 
+	 *
 	 */
 	VelocityController() : m_rampLinVelSetpoint(0), m_rampAngVelSetpoint(0), m_maxLinAcc(INFINITY), m_maxLinDec(INFINITY), m_maxAngAcc(INFINITY), m_maxAngDec(INFINITY), m_linSpinGoal(0.0), m_angSpinGoal(0.0),m_spinShutdown(true){}
 	/**
 	 * @brief Paramètre les accélérations max.
-	 * 
+	 *
 	 * @param maxLinAcc Accélération linéaire en mm/s².
 	 * @param maxAngAcc Accélération angulaire en rad/s².
 	 */
-	void setMaxAcc(float maxLinAcc, float maxAngAcc){m_maxLinAcc = maxLinAcc; m_maxAngAcc = maxAngAcc;}
+
+	void setMaxAngAcc   (float maxAngAcc);
+
+	void setMaxLinAcc   (float maxLinAcc);
+
 	/**
 	 * @brief Paramètre les décéleration max.
-	 * 
+	 *
 	 * @param maxLinDec Décélération linéaire en mm/s².
 	 * @param maxAngDec Décélération angulaire en rad/s².
 	 */
-	void setMaxDec(float maxLinDec, float maxAngDec){m_maxLinDec = maxLinDec; m_maxAngDec = maxAngDec;}
+
+	void setMaxLinDec   (float maxLinDec);
+
+	void setMaxAngDec   (float maxAngDec);
+
 	/**
 	 * @brief Change l'état de l'arret d'urgence.
 	 * @param spinShutdown Etat à appliquer à la variable spinShutdown.
 	 */
-	void setSpinShutdown(bool spinShutdown){m_spinShutdown = spinShutdown;}
+	void setSpinShutdown(bool spinShutdown);
 	/**
 	 * @brief Retourne l'accélération max linéaire.
 	 * 
@@ -126,7 +134,7 @@ protected:
 	float m_maxLinDec; /*!< Accélération max angulaire en rad/s². Toujours positif.*/ // always positive, in mm/s^2
 	float m_maxAngAcc; /*!< Décélération max linéaire en mm/s². Toujours positif. */   // always positive, in mm/s^2
 	float m_maxAngDec; /*!< Décélération max angulaire en rad/s². Toujours positif.*/ // always positive, in mm/s^2
-	bool m_spinShutdown; /*!< Etat de la sécurité de patinage.*/
+	bool  m_spinShutdown; /*!< Etat de la sécurité de patinage.*/
 	float m_linSpinGoal; // Velocity wanted before the spin alarm
 	float m_angSpinGoal; // Velocity wanted before the spin alarm
 

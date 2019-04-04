@@ -41,7 +41,7 @@ public:
 	 * @param Ki Coefficient intégrateur.
 	 * @param Kd Coefficient dérivateur.
 	 */
-	void setTunings(float Kp, float Ki, float Kd){m_Kp = Kp, m_Ki = Ki, m_Kd = Kd;}
+	void setTunings(float Kp, float Ki, float Kd);
 	/**
 	 * @brief Charge les limites de sorties.
 	 *
@@ -49,7 +49,7 @@ public:
 	 * @param minOutput Minimun de sortie (peux être négatif).
 	 * @param maxOutput Maximum de sortie (peux être).
 	 */
-	void setOutputLimits(float minOutput, float maxOutput){m_minOutput = minOutput; m_maxOutput = maxOutput;}
+	void setOutputLimits(float minOutput, float maxOutput);
 	/**
 	 * @brief Retourne le coefficient proportionnel. 
 	 * @return Coefficient proportionnel.
@@ -84,7 +84,7 @@ public:
 	 * @brief Sauvegarde les paramètres dans la mémoire.
 	 * @param address Adresse à utiliser.
 	 */
-	void save(int address) const;
+	 void save(int address) const;
 
 private:
 

@@ -1,10 +1,13 @@
 #include <Arduino.h>
+#include "Arduino.h"
 #include "../common/Pickle.h"
-#include "../common/SerialTalks.h"
+#include "../common/tcptalks.h"
 #include "../common/ExperienceEffects.h"
 #include "instructions.h"
 #include <BLEDevice.h>
 #include <BLEClient.h>
+#include "../common/ESP32-Arduino-Servo-Library/src/Servo.h"
+#include "../common/DCMotor.h"
 
 // The remote service we wish to connect to.
 static BLEUUID serviceUUID("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
@@ -16,6 +19,34 @@ static boolean doConnect = false;
 static boolean connected = false;
 static BLERemoteCharacteristic *pRemoteCharacteristic;
 
+String result = "";
+
+DCMotor motor;
+DCMotorsDriver driver;
+
+TCPTalks talk("CLUB_ROBOT", "zigouigoui", "192.168.1.17", 26656);
+
+ExperienceEffects Animation;
+
+long current_time = 0;
+long last_time = 0;
+
+void start(){
+  Animation.start();
+  motor.enable();
+}
+
+static void notifyCallback(
+  BLERemoteCharacteristic* pBLERemoteCharacteristic,
+  uint8_t* pData,
+  size_t length,
+  bool isNotify) {
+    Serial.print("Notify callback for characteristic ");
+    Serial.print(pBLERemoteCharacteristic->getUUID().toString().c_str());
+    Serial.print(" of data length ");
+    Serial.println(length);
+}
+
 class ClientCallbacks : public BLEClientCallbacks
 {
     void onDisconnect(BLEClient *pClient)
@@ -25,13 +56,6 @@ class ClientCallbacks : public BLEClientCallbacks
 
     void onConnect(BLEClient *pClient) {}
 };
-
-//TCPTalks talk("CLUB_ROBOT", "zigouigoui", "192.168.1.17", 26656);
-
-ExperienceEffects Animation;
-
-long current_time = 0;
-long last_time = 0;
 
 bool connectToServer(BLEAddress pAddress)
 {
@@ -54,6 +78,7 @@ bool connectToServer(BLEAddress pAddress)
     {
         return false;
     }
+    pRemoteCharacteristic->registerForNotify(notifyCallback);
 }
 /**
  * Scan for BLE servers and find the first one that advertises the service we are looking for.
@@ -78,27 +103,46 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks
     } // onResult
 };    // MyAdvertisedDeviceCallbacks
 
+
+
 void setup()
 {
     Serial.begin(115200);
+    talk.connect(500);
+    talk.bind(PING_OPCODE, PING);
+    talk.bind(SET_START_OPCODE, SET_START);
+    talk.bind(GET_START_OPCODE, GET_START);
+    talk.bind(SET_TASK_DEBUG, SET_TASK);
+    motor.attach(27, 21, 0, 5000, 12);
+    driver.attach(23, 0);
+    driver.reset();
+    Animation.setup();
 
-    talks.begin(Serial);
-    talks.bind(PING_OPCODE, PING);
-    talks.bind(SET_START_OPCODE, SET_START);
-    talks.bind(GET_START_OPCODE, GET_START);
+    BLEDevice::init("");
+    Serial.println("init BLE");
+    // Retrieve a Scanner and set the callback we want to use to be informed when we
+    // have detected a new device.  Specify that we want active scanning and start the
+    // scan to run for 30 seconds.
+    BLEScan *pBLEScan = BLEDevice::getScan();
+    pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
+    pBLEScan->setActiveScan(true);
+    pBLEScan->start(15);
 
 }
 
 void loop()
 {
-    talks.execute();
-    //Animation.execute();
-
-    /* Auto re-connect step */
-    /*current_time = millis();
+    talk.execute();
     if((talk.is_connected() == false) && ((current_time - last_time)) > 500)
     {
         talk.connect(500);
         last_time = millis();
-    }*/
+    }
+
+    if (doConnect == true)
+    {
+        connectToServer(*pServerAddress);
+        doConnect = false;
+    }
+    Serial.println(pRemoteCharacteristic->readValue());
 }

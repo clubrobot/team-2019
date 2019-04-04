@@ -13,7 +13,7 @@ void Odometry::process(float timestep)
 	const float dR = m_rightCodewheel->restart();
 
 	const float deltaLinPos = (dL + dR) / 2;
-	const float deltaOrthLinPos = abs(deltaLinPos) * m_slippage;
+	const float deltaOrthLinPos = fabs(deltaLinPos) * m_slippage;
 	const float deltaAngPos = (dR - dL) / m_axleTrack;
 
 	const float avgTheta = m_pos.theta + deltaAngPos / 2;
@@ -33,6 +33,22 @@ void Odometry::load(int address)
 
 void Odometry::save(int address) const
 {
-	EEPROM.put(address, m_axleTrack); address += sizeof(m_axleTrack);
-	EEPROM.put(address, m_slippage);  address += sizeof(m_slippage);
+    EEPROM.put(address, m_axleTrack); address += sizeof(m_axleTrack);
+    EEPROM.put(address, m_slippage);  address += sizeof(m_slippage);
 }
+
+
+void Odometry::setAxleTrack   (float axleTrack)   {
+	if(m_axleTrack != axleTrack) {
+		m_axleTrack = axleTrack;
+		update();
+	}
+}
+
+void Odometry::setSlippage   (float slippage)   {
+	if(m_slippage != slippage) {
+		m_slippage = slippage;
+		update();
+	}
+}
+

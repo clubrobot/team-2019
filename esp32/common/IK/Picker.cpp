@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <math.h>
 #include "Picker.h"
-#include "arm_config.h"
+#include "constants.h"
 
 #ifdef IK_LOG
     #define LOG_PICKER(arg) cout << __TIME__<<" (PICKER)("<< __func__ << " , " << __LINE__ << ")\t\t\t: "<< arg <<endl;
@@ -12,112 +12,104 @@
 namespace IK
 {
 
-bool equals(double a, double b, double epsilon = EPSILON)
+bool equals(float a, float b, float epsilon = EPSILON)
 { 
     return ((std::abs(a - b) < epsilon));
 }
 
 
-void Picker::init(double l1, double l2, double l3, joints_t joints, coords_t origin, int elbow_or) throw()
+void Picker::init(float l1, float l2, float l3, Joints joints, Coords origin, int elbow_or) throw()
 {
-    m_joints 	= joints;
-	m_origin	= origin;
+    _joints 	= joints;
+	_origin	= origin;
      
-	m_tool	 	= get_tool();
+	_tool	 	= get_tool();
 
-	m_l1		= l1;
-	m_l2		= l2;
-    m_l3        = l3;
-	m_lsq   	= pow(l1,2)+pow(l2,2);
+	_l1		= l1;
+	_l2		= l2;
+    _l3        = l3;
+	_lsq   	= pow(l1,2)+pow(l2,2);
 
-    x_axis   = {-(m_l1 + m_l2 + m_l3), (m_l1 + m_l2 + m_l3), -1, 1, -1, 1};
-	y_axis   = {-(m_l1 + m_l2 + m_l3), (m_l1 + m_l2 + m_l3), -1, 1, -1, 1};
-	phi_axis = {-(5*M_PI)/6, (5*M_PI)/6 , -1, 1, -1, 1};
-
-    m_flip_elbow = elbow_or;
+    _flip_elbow = elbow_or;
 }
 
 void Picker::flip_elbow(int elbow) throw()
 {
-    m_flip_elbow = elbow;
+    _flip_elbow = elbow;
 }
 
-coords_t Picker::forward_kinematics(joints_t joints) throw()
+Coords Picker::forward_kinematics(Joints joints) throw()
 {
-    coords_t ret;
-	m_joints = joints;
+    Coords ret;
+	_joints = joints;
 
 	ret = get_tool();
 
     return ret;
 }
 
-joints_t Picker::inverse_kinematics(coords_t tool)
+Joints Picker::inverse_kinematics(Coords tool)
 {
-    joints_t ret;
+    Joints ret;
 
-    double dotx = (tool.x - m_origin.x) - (m_l3 * cos(tool.phi));
-    double doty = (tool.y - m_origin.y) - (m_l3 * sin(tool.phi));
+    float dotx,doty,costh;
 
-	double norm = pow(dotx,2) + pow(doty,2);
-    
-    if( norm > pow((m_l1 + m_l2 + m_l3),2) || norm < pow((m_l1 - m_l2 - m_l3),2))
+    dotx = (_tool.x - _origin.x) - (_l3 * cos(_tool.phi));
+    doty = (_tool.y - _origin.y) - (_l3 * sin(_tool.phi));
+
+    costh = (pow(dotx,2) + pow(doty,2) - pow(_l1,2) - pow(_l2, 2)) / (2 * _l1 * _l2);
+
+    if(costh < -1 || costh > 1)
     {
-        m_tool = get_tool();
+        _tool = get_tool();
         LOG_PICKER("Target unreacheable");
         throw string("Target unreacheable");
     }
     else
     {
-        m_tool = tool;
+        _tool = tool;
          
-        m_joints = get_joints();
+        _joints = get_joints();
          
-        ret = m_joints;
+        ret = _joints;
     }      
     return ret;
 }
 
-coords_t Picker::get_tool(void) const throw()
+Coords Picker::get_tool(void) const throw()
 {
-    coords_t new_cords;
+    Coords new_cords;
 
-    new_cords.x     = m_l1 * cos(m_joints.th1) + m_l2 * cos(m_joints.th1 + m_joints.th2) + m_l3 * cos(m_joints.th1 + m_joints.th2 + m_joints.th3);
-    new_cords.y     = m_l1 * sin(m_joints.th1) + m_l2 * sin(m_joints.th1 + m_joints.th2) + m_l3 * sin(m_joints.th1 + m_joints.th2 + m_joints.th3);
-    new_cords.phi   = m_joints.th1 + m_joints.th2 + m_joints.th3;
+    new_cords.x     = _l1 * cos(_joints.th1) + _l2 * cos(_joints.th1 + _joints.th2) + _l3 * cos(_joints.th1 + _joints.th2 + _joints.th3);
+    new_cords.y     = _l1 * sin(_joints.th1) + _l2 * sin(_joints.th1 + _joints.th2) + _l3 * sin(_joints.th1 + _joints.th2 + _joints.th3);
+    new_cords.phi   = _joints.th1 + _joints.th2 + _joints.th3;
 
-    new_cords.x     += m_origin.x;
-    new_cords.y     += m_origin.y;
-    new_cords.phi   += m_origin.phi;
+    new_cords.x     += _origin.x;
+    new_cords.y     += _origin.y;
+    new_cords.phi   += _origin.phi;
      
     return new_cords;
 }
 
-joints_t Picker::get_joints(void) const throw()
+Joints Picker::get_joints(void) const throw()
 {
-    joints_t new_joints;
+    Joints new_joints;
 
-    double dotx,doty,costh,sinth,k1,k2, sqr;
+    float dotx,doty,costh,k1,k2,c2,s2;
 
-    dotx = (m_tool.x - m_origin.x) - (m_l3 * cos(m_tool.phi));
-    doty = (m_tool.y - m_origin.y) - (m_l3 * sin(m_tool.phi));
+    dotx = (_tool.x - _origin.x) - (_l3 * cos(_tool.phi));
+    doty = (_tool.y - _origin.y) - (_l3 * sin(_tool.phi));
 
-    costh = (pow(dotx,2) + pow(doty,2) - pow(m_l1,2) - pow(m_l2, 2)) / (2 * m_l1 * m_l2);
+    costh = (pow(dotx,2) + pow(doty,2) - pow(_l1,2) - pow(_l2, 2)) / (2 * _l1 * _l2);
 
-    if(costh > 1)
-    {
-        LOG_PICKER("ERROR : NOT A NUMBER");
-        throw string("Not A number");
-    }
+    new_joints.th2 = _flip_elbow * acos(costh);
 
-    sinth = m_flip_elbow * sqrt(1 - pow(costh,2));
+    k2 = _l2 * sin(new_joints.th2);
+    k1 = _l1 + (_l2 * cos(new_joints.th2));
 
-    k1 = m_l1 + (m_l2 * costh);
-    k2 = m_l2 * sinth ;
+    new_joints.th1 = atan2(doty, dotx) - atan2(k2, k1);
+    new_joints.th3 = _tool.phi - new_joints.th1 - new_joints.th2;
 
-    new_joints.th1 = atan2(doty, dotx) - atan2(k2 , k1);
-    new_joints.th2 = atan2(sinth, costh);
-    new_joints.th3 = m_tool.phi - (new_joints.th1 + new_joints.th2);
 
     new_joints.th1 = std::fmod((new_joints.th1 + (M_PI)) , 2*M_PI) - M_PI; // Stay between -pi and pi
     new_joints.th2 = std::fmod((new_joints.th2 + (M_PI)) , 2*M_PI) - M_PI; // Stay between -pi and pi
@@ -126,21 +118,21 @@ joints_t Picker::get_joints(void) const throw()
     return new_joints;
 }
 
-detailed_pos_t Picker::get_detailed_pos(void) const throw()
+DetailedPos Picker::get_detailed_pos(void) const throw()
 {
     /*
         Returns origin, position of end of link 1, position of end of link 2
     */ 
-    detailed_pos_t new_pos;
+    DetailedPos new_pos;
 
-    new_pos.link1.x = m_l1 * cos(m_joints.th1) + m_origin.x;
-    new_pos.link1.y = m_l1 * sin(m_joints.th1) + m_origin.y;
+    new_pos.link1.x = _l1 * cos(_joints.th1) + _origin.x;
+    new_pos.link1.y = _l1 * sin(_joints.th1) + _origin.y;
     
-    new_pos.link2.x = new_pos.link1.x + m_l2 * cos(m_joints.th1 + m_joints.th2);
-    new_pos.link2.y = new_pos.link1.x + m_l2 * cos(m_joints.th1 + m_joints.th2);
+    new_pos.link2.x = new_pos.link1.x + _l2 * cos(_joints.th1 + _joints.th2);
+    new_pos.link2.y = new_pos.link1.x + _l2 * cos(_joints.th1 + _joints.th2);
 
-    new_pos.origin  = m_origin;
-    new_pos.tool    = m_tool;
+    new_pos.origin  = _origin;
+    new_pos.tool    = _tool;
      
     return new_pos;
 }
@@ -152,94 +144,94 @@ matrix_t Picker::compute_jacobian(void) throw()
     */
     matrix_t ret;
 
-    double dx_dth1 = - m_l1 * sin(m_joints.th1) - m_l2 * sin(m_joints.th1 + m_joints.th2) - m_l3 * sin(m_joints.th1 + m_joints.th2 + m_joints.th3);
+    float dx_dth1 = - _l1 * sin(_joints.th1) - _l2 * sin(_joints.th1 + _joints.th2) - _l3 * sin(_joints.th1 + _joints.th2 + _joints.th3);
 
-    double dx_dth2 = - m_l2 * sin(m_joints.th1 + m_joints.th2) - m_l3 * sin(m_joints.th1 + m_joints.th2 + m_joints.th3);
+    float dx_dth2 = - _l2 * sin(_joints.th1 + _joints.th2) - _l3 * sin(_joints.th1 + _joints.th2 + _joints.th3);
 
-    double dx_dth3 = - m_l3 * sin(m_joints.th1 + m_joints.th2 + m_joints.th3);;
+    float dx_dth3 = - _l3 * sin(_joints.th1 + _joints.th2 + _joints.th3);;
 
-    double dy_dth1 = m_l1 * cos(m_joints.th1) + m_l2 * cos(m_joints.th1 + m_joints.th2) + m_l3 * cos(m_joints.th1 + m_joints.th2 + m_joints.th3);
+    float dy_dth1 = _l1 * cos(_joints.th1) + _l2 * cos(_joints.th1 + _joints.th2) + _l3 * cos(_joints.th1 + _joints.th2 + _joints.th3);
 
-    double dy_dth2 = m_l2 * cos(m_joints.th1 + m_joints.th2) + m_l3 * cos(m_joints.th1 + m_joints.th2 + m_joints.th3);
+    float dy_dth2 = _l2 * cos(_joints.th1 + _joints.th2) + _l3 * cos(_joints.th1 + _joints.th2 + _joints.th3);
 
-    double dy_dth3 = m_l3 * cos(m_joints.th1 + m_joints.th2 + m_joints.th3);
+    float dy_dth3 = _l3 * cos(_joints.th1 + _joints.th2 + _joints.th3);
 
-    ret = m_matrix.createMatrix33(dx_dth1, dx_dth2, dx_dth3, dy_dth1, dy_dth2, dy_dth3, 1.0, 1.0, 1.0);
+    ret = _matrix.createMatrix33(dx_dth1, dx_dth2, dx_dth3, dy_dth1, dy_dth2, dy_dth3, 1.0, 1.0, 1.0);
      
     return ret;
 }
 
-coords_t Picker::get_tool_vel(joints_t joints_vel) throw()
+Coords Picker::get_tool_vel(Joints joints_vel) throw()
 {
     /*
         Computes current tool velocity using jacobian
     */
-    coords_t new_vel;
+    Coords new_vel;
 
-    matrix_t jt_vel = m_matrix.createMatrix31(joints_vel.th1, joints_vel.th2, joints_vel.th3);
+    matrix_t jt_vel = _matrix.createMatrix31(joints_vel.th1, joints_vel.th2, joints_vel.th3);
 
     matrix_t jacobian = compute_jacobian();
      
-    matrix_t tl_vel = m_matrix.multMatrix33x13(jacobian , jt_vel);
+    matrix_t tl_vel = _matrix.multMatrix33x13(jacobian , jt_vel);
 
     new_vel.x   = tl_vel[0][0];
     new_vel.y   = tl_vel[1][0];
     new_vel.phi = tl_vel[2][0];
 
-    m_matrix.free(jt_vel);
-    m_matrix.free(jacobian);
-    m_matrix.free(tl_vel);
+    _matrix.free(jt_vel);
+    _matrix.free(jacobian);
+    _matrix.free(tl_vel);
      
     return new_vel;
 }
 
-joints_t Picker::get_joints_vel(coords_t tool_vel)
+Joints Picker::get_joints_vel(Coords tool_vel)
 {
     /*
         Computes current tool velocity using jacobian
     */
-    joints_t vel;
+    Joints vel;
     vel.th1 = 0;
     vel.th2 = 0;
     vel.th3 = 0;
 
-    matrix_t tool_v = m_matrix.createMatrix31(tool_vel.x, tool_vel.y, tool_vel.phi);
+    matrix_t tool_v = _matrix.createMatrix31(tool_vel.x, tool_vel.y, tool_vel.phi);
      
     matrix_t jacobian = compute_jacobian();
      
-    if (m_matrix.norm(tool_v) < EPSILON)
+    if (_matrix.norm(tool_v) < EPSILON)
     {
         return vel;
     }
-    if (abs(m_matrix.det(jacobian)) < EPSILON)
+    if (std::abs(_matrix.det(jacobian)) < EPSILON)
     {
         LOG_PICKER("Singularity");
         throw string("Singularity");
     }
 
-    matrix_t joints_vel = m_matrix.solve(jacobian, tool_v);
+    matrix_t joints_vel = _matrix.solve(jacobian, tool_v);
 
     vel.th1 = joints_vel[0][0];
     vel.th2 = joints_vel[1][0];
     vel.th3 = joints_vel[2][0];
 
-    m_matrix.free(tool_v);
-    m_matrix.free(jacobian);
-    m_matrix.free(joints_vel);
+    _matrix.free(tool_v);
+    _matrix.free(jacobian);
+    _matrix.free(joints_vel);
      
     return vel;
 }
 
-path_t Picker::get_path(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel, double delta_t)
+path_t Picker::get_path(Coords start_pos, Coords start_vel, Coords target_pos, Coords target_vel, float delta_t)
 {
-    joints_t start_joints_pos = inverse_kinematics(start_pos);
+    Joints start_joints_pos = inverse_kinematics(start_pos);
         
-    joints_t start_joints_vel = get_joints_vel(start_vel);
+    Joints start_joints_vel = get_joints_vel(start_vel);
 
-    joints_t target_joints_pos = inverse_kinematics(target_pos);
-    joints_t target_joints_vel = get_joints_vel(target_vel);
+    Joints target_joints_pos = inverse_kinematics(target_pos);
+    Joints target_joints_vel = get_joints_vel(target_vel);
 
-    double tf_sync = synchronisation_time(start_joints_pos,
+    float tf_sync = synchronisation_time(start_joints_pos,
                                             start_joints_vel,
                                             target_joints_pos,
                                             target_joints_vel);
@@ -271,40 +263,40 @@ path_t Picker::get_path(coords_t start_pos, coords_t start_vel, coords_t target_
     return new_path;
 }
 
-double Picker::synchronisation_time(joints_t start_pos, joints_t start_vel, joints_t target_pos, joints_t target_vel)
+float Picker::synchronisation_time(Joints start_pos, Joints start_vel, Joints target_pos, Joints target_vel)
 {
     /*        
     Return largest time to destination to use slowest joint as synchronisation
         reference
     */
     // Compute time to destination for all joints
-    trajectory_time_t t_theta1 = Theta1_joint.time_to_destination(start_pos.th1, start_vel.th1, target_pos.th1, target_vel.th1);
+    TrajectoryTime t_theta1 = Theta1_joint.time_to_destination(start_pos.th1, start_vel.th1, target_pos.th1, target_vel.th1);
 
-    trajectory_time_t t_theta2 = Theta2_joint.time_to_destination(start_pos.th2, start_vel.th2, target_pos.th2, target_vel.th2);
+    TrajectoryTime t_theta2 = Theta2_joint.time_to_destination(start_pos.th2, start_vel.th2, target_pos.th2, target_vel.th2);
 
-    trajectory_time_t t_theta3 = Theta3_joint.time_to_destination(start_pos.th3, start_vel.th3, target_pos.th3, target_vel.th3);
+    TrajectoryTime t_theta3 = Theta3_joint.time_to_destination(start_pos.th3, start_vel.th3, target_pos.th3, target_vel.th3);
 
-    double maxi = max(t_theta1.tf, t_theta2.tf);
+    float maxi = max(t_theta1.tf, t_theta2.tf);
      
     return max(maxi, t_theta3.tf);
 }
 
 /***** Debug *****/
-ostream& operator<< (ostream& out, const coords_t& c)
+ostream& operator<< (ostream& out, const Coords& c)
 {
-    out << "coords_t : ";
+    out << "Coords : ";
     out << "[x : " << c.x << " y : " << c.y << " phi : " << c.phi << "]";
     return out;
 }
-ostream& operator<< (ostream& out, const joints_t& j)
+ostream& operator<< (ostream& out, const Joints& j)
 {
-    out << "joints_t : ";
+    out << "Joints : ";
     out << "[th1 : " << j.th1 << " th2 : " << j.th2 << " th3 : " << j.th3 << "]";
     return out;
 }
-ostream& operator<< (ostream& out, const detailed_pos_t& d)
+ostream& operator<< (ostream& out, const DetailedPos& d)
 {
-    out << "detailed_pos_t : " <<endl;
+    out << "DetailedPos : " <<endl;
     out << "{" << endl;
     out << 	d.origin << endl;
     out << d.link1 << endl;
