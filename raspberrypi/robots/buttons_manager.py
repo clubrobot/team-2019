@@ -8,8 +8,8 @@ class ButtonsManager{
         self.team = None
         self.red = 13
         self.green = 12
-        self.blue = 6
-        self.orange = 5
+        self.blue = 5
+        self.orange = 6
         self.tirette = 26
 
         self.red_switch = Button(self.red, pull_up=True)
