@@ -13,7 +13,7 @@ import os, sys, glob
 # Import robot stuff
 from common.components         import *
 #from common.serialtalks        import *
-from arduino.bornibus_actuators           import *
+from daughter_cards.bornibus_actuators           import *
 # Define temporary modules
 
 # Connect to the Raspberry Pi and the different modules
@@ -30,5 +30,7 @@ g = Gripper(m)
 p = Pushers(m)
 
 a = Arm(m)
+
+e = EndStops(m)
 
 #Initialisation 

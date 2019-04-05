@@ -67,6 +67,23 @@ void DCMotor::save(int address) const
 	m_mutex.release();
 }
 
+
+void DCMotor::setConstant   (float constant)   {
+        m_constant = constant;
+        update();
+}
+
+void DCMotor::setWheelRadius   (float wheelRadius)   {
+        m_wheelRadius = wheelRadius;
+        update();
+}
+
+void DCMotor::setMaxPWM   (float maxPWM)   {
+        m_maxPWM = maxPWM;
+        update();
+}
+
+
 void DCMotorsDriver::attach(int RESET, int FAULT)
 {
 	m_mutex.acquire();

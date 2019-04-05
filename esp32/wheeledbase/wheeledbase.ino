@@ -71,6 +71,8 @@ void setup()
 	talks.bind(RESET_PARAMETERS_OPCODE, RESET_PARAMETERS);
 	talks.bind(GET_VELOCITIES_WANTED_OPCODE, GET_VELOCITIES_WANTED);
 	talks.bind(GOTO_DELTA_OPCODE,GOTO_DELTA);
+	talks.bind(RESET_PARAMETERS_OPCODE, RESET_PARAMETERS);
+	talks.bind(SAVE_PARAMETERS_OPCODE, SAVE_PARAMETERS);
 
 	// DC motors wheels
 	
@@ -108,13 +110,8 @@ void setup()
 	velocityControl.setPID(linVelPID, angVelPID);
 	velocityControl.disable();
 
-	const float maxLinVel = min(leftWheel.getMaxVelocity(), rightWheel.getMaxVelocity());
-	const float maxAngVel = min(leftWheel.getMaxVelocity(), rightWheel.getMaxVelocity()) * 2 / WHEELS_AXLE_TRACK;
-
 	linVelPID.load(LINVELPID_ADDRESS);
 	angVelPID.load(ANGVELPID_ADDRESS);
-	linVelPID.setOutputLimits(-maxLinVel, maxLinVel);
-	angVelPID.setOutputLimits(-maxAngVel, maxAngVel);
 
 #if ENABLE_VELOCITYCONTROLLER_LOGS
 	controllerLogs.setController(velocityControl);

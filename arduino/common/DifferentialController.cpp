@@ -31,3 +31,10 @@ void DifferentialController::save(int address) const
 {
 	EEPROM.put(address, m_axleTrack); address += sizeof(m_axleTrack);
 }
+
+void DifferentialController::setAxleTrack   (float axleTrack)   {
+	if(m_axleTrack != axleTrack) {
+		m_axleTrack = axleTrack;
+		update();
+	}
+}

@@ -30,6 +30,7 @@
 #define GOTO_DELTA_OPCODE               0x1E
 
 #define RESET_PARAMETERS_OPCODE         0x1F
+#define SAVE_PARAMETERS_OPCODE          0x20
 // Parameters identifiers
 
 #define LEFTWHEEL_RADIUS_ID             0x10
@@ -78,6 +79,8 @@ void DISABLE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void GOTO_DELTA(SerialTalks& talks, Deserializer& input, Serializer& output);
 
+void RESET_PARAMETERS(SerialTalks& talks, Deserializer& input, Serializer& output);
+
 void SET_OPENLOOP_VELOCITIES(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void GET_CODEWHEELS_COUNTERS(SerialTalks& talks, Deserializer& input, Serializer& output);
@@ -107,5 +110,8 @@ void SET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& ou
 void GET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void RESET_PARAMETERS(SerialTalks& talks, Deserializer& input, Serializer& output);
+
+void SAVE_PARAMETERS(SerialTalks& talks, Deserializer& input, Serializer& output);
+
 
 #endif // __INSTRUCTIONS_H__

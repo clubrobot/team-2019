@@ -7,7 +7,7 @@
 #include "MotorWrapper.h"
 #include "../AX12/AX12.h"
 #include "thread_tools.h"
-#include "arm_config.h"
+#include "constants.h"
 #include "datatype.h"
 #include "MoveBatch.h"
 
@@ -20,34 +20,55 @@ class ArmManager : public Picker
 
         ArmManager() throw(){};
 
-        void        init_workspace(workspace_t ws_front, workspace_t ws_back) throw();
-        void        set_origin(coords_t origin) throw();
-        void        init_arm(double l1, double l2, double l3, int elbow_or);
-        void        set_initial_joint_pos(joints_t joints) {m_joints = joints;}
+        void        set_workspace(Workspace ws_front, Workspace ws_back) throw();
+        void        set_origin(Coords origin) throw();
+        void        set_arm_link(float l1, float l2, float l3, int elbow_or);
+        void        set_initial_joint_pos(Joints joints);
 
-        workspace_t clip_workspace_to_constraints(workspace_t workspace) throw();
-        coords_t    workspace_center(workspace_t workspace) throw();
-        MoveBatch   go_to(coords_t start_pos, coords_t target_pos);
+        float        get_link1() const {return _l1;}
+        float        get_link2() const {return _l2;}
+        float        get_link3() const {return _l3;}
+        float        get_elbow() const {return _elbow;}
 
-        double      estimated_time_of_arrival(coords_t start_pos, coords_t start_vel, coords_t target_pos, coords_t target_vel);
+        Workspace   get_workspace_front() const {return _ws_front;}
+        Workspace   get_workspace_back () const {return _ws_back;}
+
+        Coords      get_origin() const {return _origin;}
+        Joints      get_joints() const {return _joints;}
+
+        void        init();
+
+        Workspace clip_Workspaceo_constraints(Workspace workspace) throw();
+        Coords    workspace_center(Workspace workspace) throw();
+        MoveBatch   go_to(Coords start_pos, Coords target_pos);
+
+        float      estimated_time_of_arrival(Coords start_pos, Coords start_vel, Coords target_pos, Coords target_vel);
+
+        void load(int address);
+	    void save(int address) const;
         
     private:
 
-        workspace_t workspace_containing_position(coords_t position) throw();
-        bool        workspace_within_constraints(workspace_t workspace) throw();
-        bool        position_within_workspace(coords_t position, workspace_t workspace) throw();
-        MoveBatch   goto_workspace(coords_t start_pos, coords_t target_pos, workspace_t new_workspace);
-        joints_t    goto_position(coords_t target_pos);
+        Workspace workspace_containing_position(Coords position) throw();
+        bool        workspace_within_constraints(Workspace workspace) throw();
+        bool        position_within_workspace(Coords position, Workspace workspace) throw();
+        MoveBatch   goto_workspace(Coords start_pos, Coords target_pos, Workspace new_workspace);
+        Joints    goto_position(Coords target_pos);
 
-        workspace_t m_ws_front;
-        workspace_t m_ws_back;
-        workspace_t m_workspace;
+        Workspace _ws_front;
+        Workspace _ws_back;
+        Workspace _workspace;
 
-        coords_t m_tool;
-        coords_t m_origin;
-        joints_t m_joints;
+        Coords _tool;
+        Coords _origin;
+        Joints _joints;
 
-        Mutex m_mutex;
+        float _l1;
+        float _l2;
+        float _l3;
+        float _elbow;
+
+        Mutex _mutex;
 };
 
 }

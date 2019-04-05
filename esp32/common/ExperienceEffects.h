@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "NeoPixel/Adafruit_NeoPixel.h"
-#include <FastLED.h>
+#include "/Users/apegne/Documents/Arduino/libraries/FastLED/FastLED.h"
 
 #define COLOR_ORDER BRG
 #define CHIPSET     WS2811
@@ -22,6 +22,7 @@ class ExperienceEffects
 		void start();
 		long getStart();
 		void execute();
+		void setup();
 
 	private:
 

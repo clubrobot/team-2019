@@ -20,21 +20,19 @@
 #detect os type
 UNAME_S := $(shell uname -s)
 #=== Default values not available in the Arduino configuration files
-ifeq ($(UNAME_S),Darwin)
-  CHIP ?= esp8266
-else
-  #Set the baudrate upload
-  UPLOAD_SPEED = 921600
-  # Add preprocesseur rules for SerialTalks. 
-  BUILD_EXTRA_FLAGS = -D BOARD_UUID=\"$(BOARD_UUID)\" $(CPPFLAGS)
-  CHIP ?= esp32
-endif
+
+#Set the baudrate upload
+UPLOAD_SPEED = 921600
+# Add preprocesseur rules for SerialTalks. 
+BUILD_EXTRA_FLAGS = -D BOARD_UUID=\"$(BOARD_UUID)\" $(CPPFLAGS)
+CHIP ?= esp32
+
 # Set chip specific default board unless specified
 BOARD ?= $(if $(filter $(CHIP), esp32),esp32,generic)
 
 ifeq ($(UNAME_S),Darwin)
   # Serial flashing parameters
-  UPLOAD_PORT ?= $(shell ls -1tr /dev/tty*USB* 2>/dev/null | tail -1)
+  UPLOAD_PORT ?= $(shell ls -1tr /tmp/arduino/$(BOARD_UUID) 2>/dev/null | tail -1)
   UPLOAD_PORT := $(if $(UPLOAD_PORT),$(UPLOAD_PORT),/dev/tty.SLAB_USBtoUART)
 else
   UPLOAD_PORT ?= $(shell ls -1tr /dev/arduino/$(BOARD_UUID) 2>/dev/null | tail -1)

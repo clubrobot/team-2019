@@ -1,3 +1,4 @@
+#include <EEPROM.h>
 #include "MotorWrapper.h"
 #include "mathutils.h"
 #include <iostream>
@@ -15,51 +16,118 @@ namespace IK
 
 MotorWrapper::MotorWrapper()
 {
-	m_mutex.acquire();
+	_mutex.acquire();
 
-    m_pos			= 0;
-    m_velInput		= 0;
-	m_posInput		= 0;
-	m_offset 	    = 0;
+    _pos			= 0;
+    _velInput		= 0;
+	_posInput		= 0;
+	_offset 	    = 0;
 
-	m_arrived = false;
+	_arrived = false;
+	_error_occur = false;
 
-	m_mutex.release();
+	_mutex.release();
 }
+
+void MotorWrapper::setID(int id)
+{
+	_mutex.acquire();
+	_id = id;
+	_mutex.release();
+}
+
+void MotorWrapper::setOFFSET(float offset)
+{
+	_mutex.acquire();
+
+	_offset = offset;
+
+	_mutex.release();
+}
+
+void MotorWrapper::init()
+{
+	_mutex.acquire();
+
+	_motor.attach(_id);
+
+	_mutex.release();
+}
+
+
+void MotorWrapper::setGoalPos(float pos)
+{
+	_mutex.acquire();
+
+	_pos = pos;
+	_step_counter = 0;
+	_arrived = false;
+
+	_mutex.release();
+}
+
+void MotorWrapper::setVelocityProfile(vector<float> vel)
+{
+	_mutex.acquire();
+	_vel_profile = vel;
+	_mutex.release();
+}
+
 
 void MotorWrapper::process(float timestep)
 {
-	m_mutex.acquire();
+	_mutex.acquire();
 
 	static float vel = 0;
 	/* TODO : add asservissement and control reached position*/
-	if(m_step_counter < (m_vel_profile.size()))
+	if(_step_counter < (_vel_profile.size()) && !_error_occur)
 	{
-		vel = m_vel_profile[m_step_counter++];
+		vel = _vel_profile[_step_counter++];
 		vel = (vel * 180)/M_PI;
 		vel = vel * RMP_TO_DEG_S;
 
-		vel = saturate(vel,1,1024);
+		vel = saturate(vel,400,600);
 
 		try
 		{
-			m_motor->move(m_pos + m_offset);
+			_motor.moveSpeed(_pos + _offset, vel);
 		}
         catch(const AX12Timeout& e)
         {
-            cout<<"AX_12 Timeout"<<endl;
+            _state.id      = e.get_id();
+			_state.timeout = 1;
+			//_error_occur   = true;
         }
-        catch(const AX12error e)
+        catch(const AX12error& e)
         {
-            cout<<"AX_12 error"<<endl;
+			_state.id       = e.get_id();
+			_state.err_code = e.get_error_code();
+			//_error_occur   = true;
         }
 	}
-	else
+	else if(!_error_occur)
 	{
-		m_arrived = true;
+		_arrived = true;
 	}
 
-	m_mutex.release();
+	_mutex.release();
+}
+
+void MotorWrapper::load(int address)
+{
+	_mutex.acquire();
+	EEPROM.get(address, _id); 			address += sizeof(_id);
+	EEPROM.get(address, _offset);    	address += sizeof(_offset);
+	_mutex.release();
+}
+
+void MotorWrapper::save(int address) const
+{
+	_mutex.acquire();
+	EEPROM.put(address, _id); 			address += sizeof(_id);
+	EEPROM.put(address, _offset);    	address += sizeof(_offset);
+	EEPROM.commit();
+	_mutex.release();
 }
 
 }

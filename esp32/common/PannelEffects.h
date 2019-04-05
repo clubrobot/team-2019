@@ -3,7 +3,7 @@
 
 /* MATRIX PINS*/
 #define ENGR_PIN 27
-#define LOGO_PIN 26
+#define LOGO_PIN 34
 #define BAR_PIN 25
 
 /* MATRIX SIZE*/
@@ -32,7 +32,7 @@
 /* **************************FIRE PARAMETERS *********************************
 * COOLING: How much does the air cool as it rises?
 * Less cooling = taller flames.  More cooling = shorter flames.
-* Default 50, suggested range 20-100 
+* Default 50, suggested range 20-100
 */
 #define COOLING  20
 /*
@@ -56,7 +56,7 @@ class PannelEffects
 
 		void set_engr_animation(int id);
 
-		void set_logo_animation(int id);	
+		void set_logo_animation(int id);
 
 		int  get_bar_animation();
 
@@ -90,6 +90,6 @@ void cylon(CRGB * led_matrix, const int size);
 
 /* MATRIX func */
 /* return index in led array */
-uint16_t XY(uint8_t x, uint8_t y); 
+uint16_t XY(uint8_t x, uint8_t y);
 void matrix(CRGB * led_matrix, const int size);
 void DrawOneFrame(CRGB * led_matrix, byte startHue8, int8_t yHueDelta8, int8_t xHueDelta8);

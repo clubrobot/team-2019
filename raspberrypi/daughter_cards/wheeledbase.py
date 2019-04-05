@@ -9,9 +9,6 @@ from common.components import SecureSerialTalksProxy
 from common.serialutils import Deserializer
 
 # Instructions
-
-
-
 SET_VELOCITIES_OPCODE           = 0x10
 
 START_PUREPURSUIT_OPCODE        = 0x11
@@ -35,6 +32,7 @@ GET_CODEWHEELS_COUNTERS_OPCODE  = 0x1C
 GET_VELOCITIES_WANTED_OPCODE    = 0x1D
 GOTO_DELTA_OPCODE               = 0x1E
 RESET_PARAMETERS_OPCODE         = 0x1F
+SAVE_PARAMETERS_OPCODE          = 0x20
 
 LEFTWHEEL_RADIUS_ID	            = 0x10
 LEFTWHEEL_CONSTANT_ID           = 0x11
@@ -97,51 +95,51 @@ class WheeledBase(SecureSerialTalksProxy):
     def __init__(self, parent, uuid='wheeledbase'):
         SecureSerialTalksProxy.__init__(self, parent, uuid, WheeledBase._DEFAULT)
 
-        self.left_wheel_radius   = WheeledBase.Parameter(self, LEFTWHEEL_RADIUS_ID, FLOAT)
-        self.left_wheel_constant = WheeledBase.Parameter(self, LEFTWHEEL_CONSTANT_ID, FLOAT)
-        self.left_wheel_maxPWM   = WheeledBase.Parameter(self, LEFTWHEEL_MAXPWM_ID, FLOAT)
+        self.left_wheel_radius              = WheeledBase.Parameter(self, LEFTWHEEL_RADIUS_ID, FLOAT)
+        self.left_wheel_constant            = WheeledBase.Parameter(self, LEFTWHEEL_CONSTANT_ID, FLOAT)
+        self.left_wheel_maxPWM              = WheeledBase.Parameter(self, LEFTWHEEL_MAXPWM_ID, FLOAT)
 
-        self.right_wheel_radius   = WheeledBase.Parameter(self, RIGHTWHEEL_RADIUS_ID, FLOAT)
-        self.right_wheel_constant = WheeledBase.Parameter(self, RIGHTWHEEL_CONSTANT_ID, FLOAT)
-        self.right_wheel_maxPWM   = WheeledBase.Parameter(self, RIGHTWHEEL_MAXPWM_ID, FLOAT)
+        self.right_wheel_radius             = WheeledBase.Parameter(self, RIGHTWHEEL_RADIUS_ID, FLOAT)
+        self.right_wheel_constant           = WheeledBase.Parameter(self, RIGHTWHEEL_CONSTANT_ID, FLOAT)
+        self.right_wheel_maxPWM             = WheeledBase.Parameter(self, RIGHTWHEEL_MAXPWM_ID, FLOAT)
 
-        self.left_codewheel_radius         = WheeledBase.Parameter(self, LEFTCODEWHEEL_RADIUS_ID, FLOAT)
-        self.left_codewheel_counts_per_rev = WheeledBase.Parameter(self, LEFTCODEWHEEL_COUNTSPERREV_ID, LONG)
+        self.left_codewheel_radius          = WheeledBase.Parameter(self, LEFTCODEWHEEL_RADIUS_ID, FLOAT)
+        self.left_codewheel_counts_per_rev  = WheeledBase.Parameter(self, LEFTCODEWHEEL_COUNTSPERREV_ID, LONG)
 
         self.right_codewheel_radius         = WheeledBase.Parameter(self, RIGHTCODEWHEEL_RADIUS_ID, FLOAT)
         self.right_codewheel_counts_per_rev = WheeledBase.Parameter(self, RIGHTCODEWHEEL_COUNTSPERREV_ID, LONG)
 
-        self.codewheels_axletrack = WheeledBase.Parameter(self, ODOMETRY_AXLETRACK_ID, FLOAT)
-        self.odometry_slippage    = WheeledBase.Parameter(self, ODOMETRY_SLIPPAGE_ID, FLOAT)
+        self.codewheels_axletrack           = WheeledBase.Parameter(self, ODOMETRY_AXLETRACK_ID, FLOAT)
+        self.odometry_slippage              = WheeledBase.Parameter(self, ODOMETRY_SLIPPAGE_ID, FLOAT)
 
-        self.wheels_axletrack = WheeledBase.Parameter(self, VELOCITYCONTROL_AXLETRACK_ID, FLOAT)
-        self.max_linacc = WheeledBase.Parameter(self, VELOCITYCONTROL_MAXLINACC_ID, FLOAT)
-        self.max_lindec = WheeledBase.Parameter(self, VELOCITYCONTROL_MAXLINDEC_ID, FLOAT)
-        self.max_angacc = WheeledBase.Parameter(self, VELOCITYCONTROL_MAXANGACC_ID, FLOAT)
-        self.max_angdec = WheeledBase.Parameter(self, VELOCITYCONTROL_MAXANGDEC_ID, FLOAT)
-        self.spin_shutdown = WheeledBase.Parameter(self, VELOCITYCONTROL_SPINSHUTDOWN_ID, BYTE)
+        self.wheels_axletrack               = WheeledBase.Parameter(self, VELOCITYCONTROL_AXLETRACK_ID, FLOAT)
+        self.max_linacc                     = WheeledBase.Parameter(self, VELOCITYCONTROL_MAXLINACC_ID, FLOAT)
+        self.max_lindec                     = WheeledBase.Parameter(self, VELOCITYCONTROL_MAXLINDEC_ID, FLOAT)
+        self.max_angacc                     = WheeledBase.Parameter(self, VELOCITYCONTROL_MAXANGACC_ID, FLOAT)
+        self.max_angdec                     = WheeledBase.Parameter(self, VELOCITYCONTROL_MAXANGDEC_ID, FLOAT)
+        self.spin_shutdown                  = WheeledBase.Parameter(self, VELOCITYCONTROL_SPINSHUTDOWN_ID, BYTE)
 
-        self.linvel_KP = WheeledBase.Parameter(self, LINVELPID_KP_ID, FLOAT)
-        self.linvel_KI = WheeledBase.Parameter(self, LINVELPID_KI_ID, FLOAT)
-        self.linvel_KD = WheeledBase.Parameter(self, LINVELPID_KD_ID, FLOAT)
+        self.linvel_KP                      = WheeledBase.Parameter(self, LINVELPID_KP_ID, FLOAT)
+        self.linvel_KI                      = WheeledBase.Parameter(self, LINVELPID_KI_ID, FLOAT)
+        self.linvel_KD                      = WheeledBase.Parameter(self, LINVELPID_KD_ID, FLOAT)
 
-        self.angvel_KP = WheeledBase.Parameter(self, ANGVELPID_KP_ID, FLOAT)
-        self.angvel_KI = WheeledBase.Parameter(self, ANGVELPID_KI_ID, FLOAT)
-        self.angvel_KD = WheeledBase.Parameter(self, ANGVELPID_KD_ID, FLOAT)
+        self.angvel_KP                      = WheeledBase.Parameter(self, ANGVELPID_KP_ID, FLOAT)
+        self.angvel_KI                      = WheeledBase.Parameter(self, ANGVELPID_KI_ID, FLOAT)
+        self.angvel_KD                      = WheeledBase.Parameter(self, ANGVELPID_KD_ID, FLOAT)
 
-        self.linpos_KP  = WheeledBase.Parameter(self, POSITIONCONTROL_LINVELKP_ID, FLOAT)
-        self.angpos_KP  = WheeledBase.Parameter(self, POSITIONCONTROL_ANGVELKP_ID, FLOAT)
-        self.max_linvel = WheeledBase.Parameter(self, POSITIONCONTROL_LINVELMAX_ID, FLOAT)
-        self.max_angvel = WheeledBase.Parameter(self, POSITIONCONTROL_ANGVELMAX_ID, FLOAT)
-        self.linpos_threshold = WheeledBase.Parameter(self, POSITIONCONTROL_LINPOSTHRESHOLD_ID, FLOAT)
-        self.angpos_threshold = WheeledBase.Parameter(self, POSITIONCONTROL_ANGPOSTHRESHOLD_ID, FLOAT)
+        self.linpos_KP                      = WheeledBase.Parameter(self, POSITIONCONTROL_LINVELKP_ID, FLOAT)
+        self.angpos_KP                      = WheeledBase.Parameter(self, POSITIONCONTROL_ANGVELKP_ID, FLOAT)
+        self.max_linvel                     = WheeledBase.Parameter(self, POSITIONCONTROL_LINVELMAX_ID, FLOAT)
+        self.max_angvel                     = WheeledBase.Parameter(self, POSITIONCONTROL_ANGVELMAX_ID, FLOAT)
+        self.linpos_threshold               = WheeledBase.Parameter(self, POSITIONCONTROL_LINPOSTHRESHOLD_ID, FLOAT)
+        self.angpos_threshold               = WheeledBase.Parameter(self, POSITIONCONTROL_ANGPOSTHRESHOLD_ID, FLOAT)
 
-        self.lookahead    = WheeledBase.Parameter(self, PUREPURSUIT_LOOKAHEAD_ID, FLOAT)
-        self.lookaheadbis = WheeledBase.Parameter(self, PUREPURSUIT_LOOKAHEADBIS_ID, FLOAT)
-        self.x = 0
-        self.y = 0
-        self.theta = 0
-        self.previous_measure = 0
+        self.lookahead                      = WheeledBase.Parameter(self, PUREPURSUIT_LOOKAHEAD_ID, FLOAT)
+        self.lookaheadbis                   = WheeledBase.Parameter(self, PUREPURSUIT_LOOKAHEADBIS_ID, FLOAT)
+        self.x                              = 0
+        self.y                              = 0
+        self.theta                          = 0
+        self.previous_measure               = 0
 
     def set_openloop_velocities(self, left, right):
         self.send(SET_OPENLOOP_VELOCITIES_OPCODE, FLOAT(left), FLOAT(right))
@@ -182,7 +180,6 @@ class WheeledBase(SecureSerialTalksProxy):
             raise RuntimeError('spin urgency')
         return bool(isarrived)
 
-
     def get_velocities_wanted(self,real_output=False):
         output = self.execute(GET_VELOCITIES_WANTED_OPCODE,BYTE(int(real_output)))
         return output.read(FLOAT, FLOAT)
@@ -196,11 +193,10 @@ class WheeledBase(SecureSerialTalksProxy):
                 command()
                 time.sleep(timestep)
 
-
     def goto_delta(self, x, y):
         self.send(GOTO_DELTA_OPCODE, FLOAT(x) + FLOAT(y))
 
-    def goto(self, x, y, theta=None, direction=None, **kwargs):
+    def goto(self, x, y, theta=None, direction=None, finalangle=None, lookahead=None, lookaheadbis=None, linvelmax=None, angvelmax=None, **kwargs):
         # Compute the preferred direction if not set
         if direction is None:
             x0, y0, theta0 = self.get_position()
@@ -210,7 +206,7 @@ class WheeledBase(SecureSerialTalksProxy):
                 direction = 'backward'
 
         # Go to the setpoint position
-        self.purepursuit([self.get_position()[0:2], (x, y)], direction)
+        self.purepursuit([self.get_position()[0:2], (x, y)], direction, finalangle, lookahead, lookaheadbis, linvelmax, angvelmax)
         self.wait(**kwargs)
 
         # Get the setpoint orientation
@@ -245,6 +241,7 @@ class WheeledBase(SecureSerialTalksProxy):
 
     def set_parameter_value(self, id, value, valuetype):
         self.send(SET_PARAMETER_VALUE_OPCODE, BYTE(id), valuetype(value))
+        time.sleep(0.01)
 
     def get_parameter_value(self, id, valuetype):
         output = self.execute(GET_PARAMETER_VALUE_OPCODE, BYTE(id))
@@ -252,4 +249,7 @@ class WheeledBase(SecureSerialTalksProxy):
         return value
 
     def reset_parameters(self):
-        self.send(RESET_PARAMETERS_OPCODE, BYTE(ROBOT_ID))
+        self.send(RESET_PARAMETERS_OPCODE)
+
+    def save_parameters(self):
+        self.send(SAVE_PARAMETERS_OPCODE)
