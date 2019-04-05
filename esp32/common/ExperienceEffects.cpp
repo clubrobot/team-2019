@@ -7,6 +7,10 @@ ExperienceEffects::ExperienceEffects(boolean electron){
 	isOnTop = false;
 	isElectron = electron;
 	FastLED.addLeds<NEOPIXEL, PINPIXEL>(leds, NUMPIXEL);
+	pinMode(BUILTIN_LED, OUTPUT);
+	pinMode(GO_BACK, INPUT_PULLUP);
+	digitalWrite(BUILTIN_LED, LOW);
+	pinMode(INTERRUPT, INPUT_PULLUP);
 }
 
 void ExperienceEffects::setup(){
@@ -21,6 +25,19 @@ void ExperienceEffects::setup(){
 	}
 }
 
+void ExperienceEffects::goBack(){
+	motor.setVelocity(1);
+	motor.enable();
+}
+
+void ExperienceEffects::motorStop(){
+	motor.disable();
+}
+
+void ExperienceEffects::connected(){
+	digitalWrite(BUILTIN_LED, HIGH);
+}
+
 void ExperienceEffects::start(){
 	if (!hasStarted){
 		timer = millis();
@@ -30,7 +47,7 @@ void ExperienceEffects::start(){
 		FastLED.show();
 		hasStarted = 1;
 		if (isElectron){
-			motor.setVelocity(1);
+			motor.setVelocity(-1);
 			motor.enable();
 		}
 	}
@@ -38,10 +55,14 @@ void ExperienceEffects::start(){
 
 void ExperienceEffects::stayOnTop(){
 	if (isElectron){
-		motor.setVelocity(1);
+		motor.setVelocity(0.1);
 		motor.enable();
 		isOnTop = true;
 	}
+	for (int i = 0; i < 60; i++){
+		leds[i] = CRGB::Blue;
+	}
+	FastLED.show();
 }
 
 boolean ExperienceEffects::getOnTop(){

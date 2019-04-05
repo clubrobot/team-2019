@@ -17,7 +17,7 @@ static boolean connected = false;
 static BLERemoteCharacteristic *pStartCharacteristic;
 static BLERemoteCharacteristic *pIsOnTopCharacteristic;
 
-ExperienceEffects experience(true);
+ExperienceEffects experience(false);
 
 long current_time = 0;
 long last_time = 0;
@@ -81,6 +81,8 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks
   */
   void onResult(BLEAdvertisedDevice advertisedDevice)
   {
+    Serial.print("BLE Advertised Device found: ");
+    Serial.println(advertisedDevice.toString().c_str());
     // We have found a device, let us now see if it contains the service we are looking for.
     if (advertisedDevice.haveServiceUUID() && advertisedDevice.getServiceUUID().equals(serviceUUID))
     {
@@ -100,7 +102,6 @@ void setup()
 {
   Serial.begin(115200);
   experience.setup();
-
   BLEDevice::init("");
   Serial.println("init BLE");
   BLEScan *pBLEScan = BLEDevice::getScan();
@@ -114,8 +115,15 @@ void loop()
 {
   if (doConnect == true)
   {
-    if (connectToServer(*pServerAddress)){connected = true;}
+    if (connectToServer(*pServerAddress)){
+      connected = true;
+      experience.connected();}
     doConnect = false;
+  }
+  if (digitalRead(GO_BACK)==LOW){
+    experience.goBack();
+    while(digitalRead(GO_BACK)==LOW);
+    experience.motorStop();
   }
   if (connected){
     String result = pStartCharacteristic->readValue().c_str();
@@ -125,7 +133,7 @@ void loop()
       experience.start();
     }
   }
-  if (digitalRead(INTERRUPT) && experience.getTimer()+TEMPS_MIN*1000 < millis() && experience.isElectron){
+  if (digitalRead(INTERRUPT) && experience.getTimer()+TEMPS_MIN*1000 < millis() && experience.isElectron && connected){
     experience.stayOnTop();
     pIsOnTopCharacteristic->writeValue("top");
   }

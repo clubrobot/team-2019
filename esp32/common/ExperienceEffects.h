@@ -13,14 +13,18 @@
 #define RST_DC_DRV 		23
 #define FLT_DC_DRV		0
 
+#define BUILTIN_LED		2
+
 #define SERVO1 				32
 #define SERVO2 				25
 
 #define ROTARY 				4
 
-#define INTERRUPT			5
+#define INTERRUPT			4
 
-#define TEMPS_MIN			30
+#define TEMPS_MIN			5
+
+#define GO_BACK				32
 
 
 class ExperienceEffects
@@ -29,6 +33,7 @@ class ExperienceEffects
 		ExperienceEffects(boolean);
 
 		void start();
+		void connected();
 		void execute();
 		void setup();
 		void launch();
@@ -37,6 +42,8 @@ class ExperienceEffects
 		boolean getOnTop();
 		long getStart();
 		bool isElectron;
+		void goBack();
+		void motorStop();
 
 	private:
 		bool isOnTop;
