@@ -22,9 +22,9 @@ ssd = SevenSegments(manager)
 
 disp = DisplayPoints(ssd, led1, led2)
 
-def init_robot():
-        wheeledbase.set_velocities(0,0)
+buttons = ButtonsManager()
 
+def init_robot():
         armFront.go_home()
         armBack.go_home()
         while not (armFront.is_arrived() and armBack.is_arrived):

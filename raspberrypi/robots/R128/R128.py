@@ -25,10 +25,52 @@ class R128:
 
         self.action_list = []
 
+        # Wheeledbase
+        self.wheeledbase = self.daughter_cards['wheeledbase']
+
+    def approval(self):
+        self.log("APPROVAL","wait for team")
+        ssd.set_message("set team")
+        while(buttons.state!="team selected"):
+            time.sleep(0.1)
+
+        self.log("APPROVAL","Selected team is : {}".format(buttons.team))
+
+        if(buttons.team == 'O')
+            self.side = R128.YELLOW
+        else:
+            self.side = R128.PURPLE
+
+        ssd.clear_messages()
+
+        while(buttons.state!="position selected"):
+            time.sleep(0.1)
+
+         if self.side == R128.YELLOW:
+            self.set_side(R128.YELLOW)
+            self.wheeledbase.set_position(755, 322, pi)
+        else:
+            self.set_side(R128.PURPLE)
+            self.wheeledbase.set_position(755, 3000-322, -pi)
+
+        self.log("APPROVAL","robot placé : {}", .format(self.wheeledbase.get_position()))
+        ssd.set_message("ready")
+
+        self.daughter_cards['armFront'].go_home()
+        self.daughter_cards['armBack'].go_home()
+        while not (self.daughter_cards['armFront'].is_arrived() and self.daughter_cards['armBack'].is_arrived):
+                time.sleep(0.1)
+
+        self.log("APPROVAL","Ready For the match")
+        ssd.clear_messages()
+        
+        while(buttons.state!="running"):
+            time.sleep(0.1)
+
     def set_side(self, side):
         self.side = side
         # Apply cube obstacle
-        self.log("MAIN : ", "Set Side : {}".format(self.side))
+        self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
 
         self.TakeSync1  = TakeSyncDistrib(self.geogebra, self.daughter_cards, self.side, R128.DISTRIB6_1, self.log)
         self.TakeSync2  = TakeSyncDistrib(self.geogebra, self.daughter_cards, self.side, R128.DISTRIB6_2, self.log)
@@ -44,18 +86,14 @@ class R128:
         self.Red    = PutRed(self.geogebra, self.daughter_cards, self.side, self.log)
         self.RedAct = self.Red.getAction()[0]
 
-        self.action_list = [
+        self.action_list = 
+        [
             self.TakeSync1Act,
             self.TakeSync2Act,
             self.TakeSync3Act,
             self.BalanceAct,
             self.RedAct
         ]
-
-        if self.side == R128.YELLOW:
-            self.daughter_cards['wheeledbase'].set_position(755, 322, pi)
-        else:
-            self.daughter_cards['wheeledbase'].set_position(755, 3000-322, -pi)
 
     def run(self):
         self.log("MAIN : ", "RUN...")
@@ -64,10 +102,14 @@ class R128:
         for act in self.action_list:
                 self.log("MAIN : ", "Let's go to the next action : {}".format(act.name))
                 act.prepare()
-                self.daughter_cards['wheeledbase'].goto(*act.actionPoint.point, theta=act.actionPoint.theta)
+
+                self.wheeledbase.goto(*act.actionPoint.point, theta=act.actionPoint.theta)
+
                 while not act.prepareEnd():
                     time.sleep(0.1)
+                
                 self.log("MAIN ; ", "Arrived on action point ! Go execute it =)")
+
                 act()
                 act.done.set()
                 act.complete()
