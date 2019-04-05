@@ -5,9 +5,9 @@
 
 
 // Opcodes declaration  
-#define GET_ROBOT_ACC_OPCODE		    0x10
+#define GET_DIST_OPCODE		    0x10
 
 // Instructions prototypes
-void GET_ROBOT_ACC(SerialTalks& inst, Deserializer& input, Serializer& output);
+void GET_DIST(SerialTalks& inst, Deserializer& input, Serializer& output);
 
 #endif

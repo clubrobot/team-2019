@@ -1,18 +1,16 @@
-BOARD_UUID = inertial
+BOARD_UUID = sensors_IR
 BOARD_TAG  = nano
 BOARD_SUB  = atmega328
 
 # Sketch sources
 COMMON = ../common
-LOCAL_INO_SRCS = inertial.ino
+LOCAL_INO_SRCS = VLcontroller.ino
 LOCAL_CPP_SRCS = \
 	instructions.cpp \
-	AccelerationController.cpp \
+	VLSensors.cpp \
 	$(COMMON)/SerialTalks.cpp \
 	$(COMMON)/CRC16.cpp \
 	$(COMMON)/Clock.cpp \
-	$(COMMON)/LSM303.cpp \
-	$(COMMON)/MagneticCompas.cpp \
 	$(COMMON)/Wire.cpp \
 	$(COMMON)/PeriodicProcess.cpp
 
