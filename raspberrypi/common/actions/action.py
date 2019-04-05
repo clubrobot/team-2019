@@ -8,9 +8,11 @@ import time
 ActPoint = namedtuple('ActPoint', ['point', 'theta'])
 
 class Action():
-    def __init__(self, actionPoint, actionFunc, name):
+    def __init__(self, actionPoint, actionFunc, before, after, name):
         self.actionPoint    = actionPoint
         self.actionFunc     = actionFunc
+        self.before         = before
+        self.after          = after
         self.name           = name
 
         self.done           = Event()
@@ -28,32 +30,15 @@ class Action():
     def getActionPoint(self):
         return self.actionPoint
 
-class ThreadAction():
-    def __init__(self, actionFunc, name):
-        self.actionFunc     = actionFunc
-        self.name           = name
+    def getBefore():
+        return self.before
 
-        self.done           = Event()
-        self.done.clear()
-
-    def __call__(self):
-        self.actionFunc()
-    
-    def __bool__(self):
-        return self.done.is_set()
-
-    def realize(self):
-        self()
+    def getAfter():
+        return self.after
 
 class Actionnable():
     def getAction(self):
         raise NotImplementedError("Need implementation")
-
-    def getBeforeAction(self):
-        pass
-
-    def getAfterAction(self):
-        pass
 
 class ThreadActionManager(Thread):
     def __init__(self):
