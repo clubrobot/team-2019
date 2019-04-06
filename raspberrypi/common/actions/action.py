@@ -30,10 +30,10 @@ class Action():
     def getActionPoint(self):
         return self.actionPoint
 
-    def getBefore():
+    def getBefore(self):
         return self.before
 
-    def getAfter():
+    def getAfter(self):
         return self.after
 
 class Actionnable():
