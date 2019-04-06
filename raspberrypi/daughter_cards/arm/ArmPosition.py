@@ -43,6 +43,7 @@ AFTER_TAKE_TANK_PUCK3           = ArmPos(-7.5,  4.0,   160)
 
 # Put Balance
 BALANCE                         = ArmPos(13.0,   10.0,   10)
+RED_ZONE                        = ArmPos(10.0,   8.0,   300)
 
 
 HomePath = [GLOBAL_POS_INTER, HOME]

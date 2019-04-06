@@ -8,7 +8,7 @@ from common.funcutils      import *
 from daughter_cards.wheeledbase import *
 from daughter_cards.arm.ArmPosition import *
 
-class Balance(Actionnable):
+class PutRedZone(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
 
@@ -18,9 +18,9 @@ class Balance(Actionnable):
         self.side           = side
 
         if self.side == self.YELLOW:
-            self.arm        = daughter_cards['armFront']
-        else:
             self.arm        = daughter_cards['armBack']
+        else:
+            self.arm        = daughter_cards['armFront']
         
         self.wheeledbase    = daughter_cards['wheeledbase']
         # action Points
@@ -35,7 +35,7 @@ class Balance(Actionnable):
         self.handeledPuck   = None
 
     def realize(self):
-        self.arm.move(BALANCE)
+        self.arm.move(RED_ZONE)
         
         while not self.arm.is_arrived():
             time.sleep(0.1)
@@ -77,4 +77,4 @@ class Balance(Actionnable):
 
     #override
     def getAction(self):
-        return Action(self.actionPoint, lambda : self.realize(), self.before, self.after, 'PutBalance')
+        return Action(self.actionPoint, lambda : self.realize(), self.before, self.after, 'PutRedZone')
