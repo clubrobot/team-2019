@@ -34,11 +34,6 @@ AFTER_TAKE_TANK_PUCK1           = ArmPos(-10.5,   5,   160)
 # Tank Take Puck2
 BEFORE_TAKE_TANK_PUCK2          = ArmPos(-9.5,   3.5,   200)
 TAKE_TANK_PUCK2                 = ArmPos(-11.5,   3,   200)
-AFTER_TAKE_TANK_PUCK3           = ArmPos(-9.5,   5,   160)
-
-# Tank Take Puck2
-BEFORE_TAKE_TANK_PUCK2          = ArmPos(-9.5,   3.5,   200)
-TAKE_TANK_PUCK2                 = ArmPos(-11.5,   3,   200)
 AFTER_TAKE_TANK_PUCK2           = ArmPos(-9.5,   5,   160)
 
 # Tank Take Puck3
@@ -47,7 +42,7 @@ TAKE_TANK_PUCK3                 = ArmPos(-9.5,  2.0,   200)
 AFTER_TAKE_TANK_PUCK3           = ArmPos(-7.5,  4.0,   160)
 
 # Put Balance
-BALANCE                         = ArmPos(13.0,   10.0,   0)
+BALANCE                         = ArmPos(13.0,   10.0,   10)
 
 
 HomePath = [GLOBAL_POS_INTER, HOME]
