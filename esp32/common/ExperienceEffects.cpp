@@ -4,13 +4,20 @@
 ExperienceEffects::ExperienceEffects()
 {
 	hasStarted = 0;
-	//FastLED.addLeds<CHIPSET, LOGO_PIN, COLOR_ORDER>(leds,34).setCorrection(TypicalSMD5050);
+	//FastLED.addLeds<NEOPIXEL, 10, COLOR_ORDER>(leds,10).setCorrection(TypicalSMD5050);
 
-	FastLED.addLeds<NEOPIXEL, 6>(leds, 60);
+	FastLED.addLeds<NEOPIXEL, 33>(leds, 60);
 }
 
 
 /* public methodes */
+void ExperienceEffects::setup()
+{
+  for (int i = 0; i < 60; i++){
+		leds[i] = CRGB::Black;
+	}
+	FastLED.show();
+}
 
 void ExperienceEffects::start()
 {

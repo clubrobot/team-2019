@@ -250,6 +250,22 @@ void PurePursuit::load(int address)
 
 void PurePursuit::save(int address) const
 {
-	EEPROM.put(address, m_lookAhead);    address += sizeof(m_lookAhead);
-	EEPROM.put(address, m_lookAheadBis); address += sizeof(m_lookAheadBis);
+	EEPROM.put(address, m_lookAhead);
+	address += sizeof(m_lookAhead);
+	EEPROM.put(address, m_lookAheadBis);
+	address += sizeof(m_lookAheadBis);
+}
+
+void PurePursuit::setLookAheadBis(float lookAheadBis)
+{
+	if(!m_lookAheadBis == lookAheadBis) {
+		m_lookAheadBis = lookAheadBis;
+	}
+}
+
+void PurePursuit::setLookAhead(float lookAhead)
+{
+	if(!m_lookAhead == lookAhead) {
+		m_lookAhead = lookAhead;
+	}
 }

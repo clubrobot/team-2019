@@ -2,6 +2,8 @@ from robots.setup_wheeledbase import *
 from robots.setup_serialtalks import *
 from daughter_cards.arm.RobotArm import *
 from daughter_cards.arm.ArmController import *
+from daughter_cards.display import *
+from robots.display_manager import
 from common.funcutils import *
 from common.logger import *
 import time
@@ -14,9 +16,15 @@ armB = RobotArm(manager, uuid='arm_back')
 armFront = ArmController(armF, 'ARM FRONT', log)
 armBack  = ArmController(armB, 'ARM BACK' , log)
 
-def init_robot():
-        wheeledbase.set_velocities(0,0)
+led1 = LEDMatrix(manager, 1)
+led2 = LEDMatrix(manager, 2)
+ssd = SevenSegments(manager)
 
+disp = DisplayPoints(ssd, led1, led2)
+
+buttons = ButtonsManager()
+
+def init_robot():
         armFront.go_home()
         armBack.go_home()
         while not (armFront.is_arrived() and armBack.is_arrived):

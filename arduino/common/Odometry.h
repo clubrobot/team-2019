@@ -87,15 +87,15 @@ public:
 	 * 
 	 * @param axleTrack Nouvelle entraxe en mm.
 	 */
-	void setAxleTrack(float axleTrack){m_axleTrack = axleTrack;}
+	void setAxleTrack(float axleTrack);
 	/**
 	 * @brief Defini la nouvelle dérive orthogonal.
 	 * 
 	 * Change la dérive orthogonal par celle indiquée en paramètre.
-	 * 
+	 *
 	 * @param slippage Nouvelle dérive orthogonal sans unité et signé.
 	 */
-	void setSlippage (float slippage) {m_slippage  = slippage;}
+	void setSlippage (float slippage);
 	/**
 	 * @brief Defini les roues codeuses de Odometry.
 	 * 

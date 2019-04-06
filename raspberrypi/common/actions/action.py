@@ -1,56 +1,70 @@
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
-
-from threading import Event, Thread
+from threading import Thread, Event
+from Queue import Queue
 from collections import namedtuple
-from common.funcutils   import Job
 import time
 
 ActPoint = namedtuple('ActPoint', ['point', 'theta'])
 
 class Action():
-    def __init__(self, actionPoint, actionFunc, name, actionPrep, actionComp):
+    def __init__(self, actionPoint, actionFunc, before, after, name):
         self.actionPoint    = actionPoint
-
         self.actionFunc     = actionFunc
-        self.actionPrep     = actionPrep
-        self.actionComp     = actionComp
-
-        self.prepJob        = None
-        self.compJob        = None
-
+        self.before         = before
+        self.after          = after
         self.name           = name
+
         self.done           = Event()
+        self.done.clear()
 
     def __call__(self):
         self.actionFunc()
-    
+
     def __bool__(self):
         return self.done.is_set()
 
     def realize(self):
         self()
 
-    def prepare(self):
-        self.prepJob    = Job(self.actionPrep)
-        self.prepJob.stopped.clear()
-        self.prepJob.start()
-
-    def complete(self):
-        self.compJob    = Job(self.actionComp)
-        self.compJob.stopped.clear()
-        self.compJob.start()
-
-    def prepareEnd(self):
-        return self.prepJob
-
-    def completeEnd(self):
-        return self.compJob
-
     def getActionPoint(self):
         return self.actionPoint
+
+    def getBefore():
+        return self.before
+
+    def getAfter():
+        return self.after
 
 class Actionnable():
     def getAction(self):
         raise NotImplementedError("Need implementation")
 
+class ThreadActionManager(Thread):
+    def __init__(self):
+        Thread.__init__(self)
+        self.daemon         = False
+        self.stopped        = Event()
+        self.ActionEnd      = Event()
+        self.queueFunc      = Queue()
+
+    def putAction(self, func):
+        self.queueFunc.put(func)
+        self.ActionEnd.clear()
+        
+    def stop(self):
+        self.stopped.set()
+        self.join()
+
+    def run(self):
+        while not self.stopped.is_set():
+            while not self.queueFunc.empty():
+                self.queueFunc.get()()
+            self.ActionEnd.set()
+    
+    def end(self):
+        if self.ActionEnd.is_set():
+            self.ActionEnd.clear()
+            return True
+        else:
+            return False

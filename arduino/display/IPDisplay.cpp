@@ -62,16 +62,17 @@ void Ipdisplay::process(float timestep)
 void Ipdisplay::clearIPs()
 {
 	m_nb_ips = 0;
+    m_acc_time = IP_CHANGE_TIME+1;
 }
 
 void Ipdisplay::addIP(char* buffer, byte nbDigits)
 {
-	if (m_nb_ips < IP_MAX_NB && strlen(buffer) <= IP_MAX_SIZE) 
-	{
-		m_current_ip = 0;
-		strcpy(m_ips[m_nb_ips], buffer);
-		m_nb_digits[m_nb_ips++] = nbDigits;
-	}
+	if (m_nb_ips < IP_MAX_NB && strlen(buffer) <= IP_MAX_SIZE) {
+        m_current_ip = 0;
+        strcpy(m_ips[m_nb_ips], buffer);
+        m_nb_digits[m_nb_ips++] = nbDigits;
+    }
+    m_acc_time = IP_CHANGE_TIME+1;
 }
 
 void Ipdisplay::clearDisplay()

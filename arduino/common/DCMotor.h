@@ -35,19 +35,19 @@ public:
 	/*!
 		\param constant constante en rad/s/Volt
 	*/
-	void setConstant   (float constant)   {m_constant    = constant;    update();}
+	void setConstant   (float constant);
 
 	//!Paramètre le rayon de la roue liée au moteur
 	/*!
 		\param wheelRadius rayon en mm
 	*/
-	void setWheelRadius(float wheelRadius){m_wheelRadius = wheelRadius; update();}
+	void setWheelRadius(float wheelRadius);
 
 	//!Paramètre une valeur limite de PWN à ne pas dépasser
 	/*!
 		\param maxPWM valeur limite entre 0 et 1
 	*/
-	void setMaxPWM     (float maxPWM)     {m_maxPWM      = maxPWM;      update();}
+	void setMaxPWM     (float maxPWM);
 
 	void enable (){m_enabled = true;  update();}
 	void disable(){m_enabled = false; update();}
