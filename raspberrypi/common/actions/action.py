@@ -53,6 +53,8 @@ class ThreadActionManager(Thread):
         self.ActionEnd.clear()
         
     def stop(self):
+        while not self.end():
+            time.sleep(0.1)
         self.stopped.set()
         self.join()
 
