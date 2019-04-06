@@ -67,18 +67,18 @@ class ArmController():
         self.log(self.name, "Go Home")
         self.movePath(HomePath)
 
+    def prepare_to_take_road(self):
+        self.log(self.name, "Prepare to take")
+        self.move(PREPARE_TAKING_POS_ROAD)
+
     def prepare_to_take(self):
         self.log(self.name, "Prepare to take")
-        self.move(PREPARE_TAKING_POS)
-
-    def prepare_to_take_1(self):
-        self.log(self.name, "Prepare to take")
-        self.move(PREPARE_TAKING_POS_1)
+        self.move(PREPARE_TAKING_POS_STATIC)
 
     def take(self):
         self.log(self.name, "Take")
-        self.move(TAKE_PUCK)
+        self.move(TAKE_PUCK_STATIC)
 
     def after_take(self):
-        self.log(self.name, "Take")
-        self.move(TAKE_PUCK_INTER_AFTER)
+        self.log(self.name, "after Take")
+        self.move(TAKE_PUCK_INTER_AFTER_STATIC)
