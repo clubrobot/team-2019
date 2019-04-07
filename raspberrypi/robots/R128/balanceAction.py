@@ -41,6 +41,7 @@ class Balance(Actionnable):
             time.sleep(0.1)
 
         self.arm.stop_pump()
+        time.sleep(1)
     
     def before(self):
         self.arm.start_pump()
@@ -49,23 +50,21 @@ class Balance(Actionnable):
         while not self.arm.is_arrived():
             time.sleep(0.1)
 
+        time.sleep(0.5)
+
         self.arm.move(self.TankPos[self.arm.tank.index()-1])
 
         while not self.arm.is_arrived():
             time.sleep(0.1)
         
+        time.sleep(1)
+        
         try:   
-            self.handeledPuck = self.arm.tank.get_puck()
-
             self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
-
+            self.handeledPuck = self.arm.tank.get_puck()
             while not self.arm.is_arrived():
                 time.sleep(0.1)
 
-            self.arm.move(TANK_POS_INTER)
-
-            while not self.arm.is_arrived():
-                time.sleep(0.1)
         except :
             pass
 
