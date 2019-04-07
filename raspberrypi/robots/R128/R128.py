@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
 
-from robots.R128.R128Actions import TakeSyncDistrib, PutBalance, PutRed
+from robots.R128.balanceAction import *
+from robots.R128.takePuckActions import *
+from robots.R128.PutRedZoneAction import *
 from common.actions.action import ThreadActionManager
 from common.geogebra import Geogebra
 
@@ -32,38 +34,38 @@ class R128:
 
     def approval(self):
         self.log("APPROVAL","wait for team")
-        ssd.set_message("set team")
-        while(buttons.state!="team selected"):
-            time.sleep(0.1)
+        # ssd.set_message("set team")
+        # while(buttons.state!="team selected"):
+        #     time.sleep(0.1)
 
-        self.log("APPROVAL","Selected team is : {}".format(buttons.team))
-        ssd.set_message("T= {}, set pos".format(buttons.team))
-        ssd.clear_messages()
+        # self.log("APPROVAL","Selected team is : {}".format(buttons.team))
+        # ssd.set_message("T= {}, set pos".format(buttons.team))
+        # ssd.clear_messages()
 
-        while(buttons.state!="position selected"):
-            time.sleep(0.1)
+        # while(buttons.state!="position selected"):
+        #     time.sleep(0.1)
 
-        if(buttons.team == 'O')
-            self.set_side(R128.YELLOW)
-            self.wheeledbase.set_position(755, 322, pi)
-        else:
-            self.set_side(R128.PURPLE)
-            self.wheeledbase.set_position(755, 3000-322, -pi)
+        # if(buttons.team == 'O'):
+        #     self.set_side(R128.YELLOW)
+        #     self.wheeledbase.set_position(755, 322, pi)
+        # else:
+        #     self.set_side(R128.PURPLE)
+        #     self.wheeledbase.set_position(755, 3000-322, -pi)
 
-        self.log("APPROVAL","robot placé : {}", .format(self.wheeledbase.get_position()))
+        # self.log("APPROVAL","robot placé : {}".format(self.wheeledbase.get_position()))
 
-        self.daughter_cards['armFront'].go_home()
-        self.daughter_cards['armBack'].go_home()
-        while not (self.daughter_cards['armFront'].is_arrived() and self.daughter_cards['armBack'].is_arrived):
-                time.sleep(0.1)
+        # self.daughter_cards['armFront'].go_home()
+        # self.daughter_cards['armBack'].go_home()
+        # while not (self.daughter_cards['armFront'].is_arrived() and self.daughter_cards['armBack'].is_arrived):
+        #         time.sleep(0.1)
 
-        ssd.set_message("ready")
+        # ssd.set_message("ready")
 
-        self.log("APPROVAL","Ready For the match")
+        # self.log("APPROVAL","Ready For the match")
 
-        while(buttons.state!="running"):
-            time.sleep(0.1)
-        ssd.clear_messages()
+        # while(buttons.state!="running"):
+        #     time.sleep(0.1)
+        # ssd.clear_messages()
 
     def set_side(self, side):
         self.side = side
@@ -71,7 +73,41 @@ class R128:
         self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
 
         # Specific Actions initialisation
+        self.balance         = Balance(self.geogebra, self.daughter_cards, self.side, self.log)
+        self.balanceAct      = self.balance.getAction()
 
+        self.TakeSyncPos1    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_1, self.log)
+        self.TakeSyncPos1Act = self.TakeSyncPos1.getAction()
+
+        self.TakeSyncPos2    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_2, self.log)
+        self.TakeSyncPos2Act = self.TakeSyncPos2.getAction()
+
+        self.TakeSyncPos3    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_3, self.log)
+        self.TakeSyncPos3Act = self.TakeSyncPos3.getAction()
+
+        self.putRedZone      = PutRedZone(self.geogebra, self.daughter_cards, self.side, self.log)
+        self.PutRedZoneAct   = self.putRedZone.getAction()
+
+        # self.daughter_cards['armFront'].tank.put_puck(RedPuck)
+        # self.daughter_cards['armFront'].tank.put_puck(RedPuck)
+        # self.daughter_cards['armFront'].tank.put_puck(RedPuck)
+        self.action_list = [
+            self.TakeSyncPos1Act,
+            self.TakeSyncPos2Act,
+            self.TakeSyncPos3Act,
+            self.balanceAct,
+            self.balanceAct,
+            self.balanceAct,
+            self.PutRedZoneAct,
+            self.PutRedZoneAct,
+            self.PutRedZoneAct
+        ]
+
+        # self.action_list = [
+        #     self.PutRedZoneAct,
+        #     self.PutRedZoneAct,
+        #     self.PutRedZoneAct
+        # ]
 
     def run(self):
         self.log("MAIN : ", "RUN...")
@@ -84,13 +120,13 @@ class R128:
 
             self.log("MAIN : ", "Launch Before Action")
             self.tam.putAction(act.getBefore())
-
+            self.log("MAIN : ", "{}".format(act.actionPoint))
             self.daughter_cards['wheeledbase'].goto(*act.actionPoint.point, theta=act.actionPoint.theta)
 
             while not self.tam.end():
                 time.sleep(0.1)
 
-            self.log("MAIN ; ", "Arrived on action point ! Go execute {} =)".format(action.name))
+            self.log("MAIN ; ", "Arrived on action point ! Go execute {} =)".format(act.name))
 
             act()
             act.done.set()
@@ -98,11 +134,11 @@ class R128:
             self.log("MAIN ; ", "Action End !")
             self.log("MAIN : ", "Launch After Action")
 
-            self.atm.putAction(act.getAfter())
+            self.tam.putAction(act.getAfter())
             
-            self.log("MAIN : ", "Let's go to the next action !)
+            self.log("MAIN : ", "Let's go to the next action !")
 
-        # stop thread action manager
+        #stop thread action manager
         self.tam.stop()
 
 if __name__ == '__main__':
@@ -114,6 +150,7 @@ if __name__ == '__main__':
 
     auto = R128(R128.PURPLE,geo, wheeledbase, armFront,  armBack, log)
     auto.set_side(R128.PURPLE)
+    wheeledbase.set_position(755, 3000-322, -pi)
     auto.run()
 
 
