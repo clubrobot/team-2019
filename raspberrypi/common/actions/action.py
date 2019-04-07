@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
 from threading import Thread, Event
-from Queue import Queue
+from queue import Queue
 from collections import namedtuple
 import time
 
@@ -65,7 +65,7 @@ class ThreadActionManager(Thread):
             self.ActionEnd.set()
     
     def end(self):
-        if self.ActionEnd.is_set():
+        if self.ActionEnd.is_set() and self.queueFunc.empty():
             self.ActionEnd.clear()
             return True
         else:
