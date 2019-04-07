@@ -24,8 +24,8 @@ class PutRedZone(Actionnable):
         
         self.wheeledbase    = daughter_cards['wheeledbase']
         # action Points
-        self.point          = self.geogebra.get('Balance{}'.format(self.side))
-        self.actionPoint    = ActPoint(self.point, pi/2)
+        self.point          = self.geogebra.get('Start{}'.format(self.side))
+        self.actionPoint    = ActPoint(self.point, -pi/2)
 
         #armPos
         self.beforeTankPos  = [BEFORE_TAKE_TANK_PUCK1, BEFORE_TAKE_TANK_PUCK2, BEFORE_TAKE_TANK_PUCK3]
@@ -41,6 +41,7 @@ class PutRedZone(Actionnable):
             time.sleep(0.1)
 
         self.arm.stop_pump()
+        time.sleep(1)
     
     def before(self):
         self.arm.start_pump()
@@ -49,23 +50,21 @@ class PutRedZone(Actionnable):
         while not self.arm.is_arrived():
             time.sleep(0.1)
 
+        time.sleep(0.5)
+
         self.arm.move(self.TankPos[self.arm.tank.index()-1])
 
         while not self.arm.is_arrived():
             time.sleep(0.1)
         
+        time.sleep(1)
+        
         try:   
-            self.handeledPuck = self.arm.tank.get_puck()
-
             self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
-
+            self.handeledPuck = self.arm.tank.get_puck()
             while not self.arm.is_arrived():
                 time.sleep(0.1)
 
-            self.arm.move(TANK_POS_INTER)
-
-            while not self.arm.is_arrived():
-                time.sleep(0.1)
         except :
             pass
 
