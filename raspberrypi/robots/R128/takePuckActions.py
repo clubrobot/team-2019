@@ -33,6 +33,7 @@ class TakePuckSync(Actionnable):
         self.TankPos        = [TAKE_TANK_PUCK1, TAKE_TANK_PUCK2, TAKE_TANK_PUCK3]
 
         self.handeledPuck   = None
+        self.takeError      = False
 
     def realize(self):
         self.arm1.move(PREPARE_TAKING_POS_STATIC)
@@ -45,12 +46,13 @@ class TakePuckSync(Actionnable):
         while not (self.arm1.is_arrived() and self.arm2.is_arrived):
             time.sleep(0.1)
     
-        time.sleep(1)
-
-        self.arm1.move(TAKE_PUCK_INTER_AFTER_STATIC)
-        self.arm2.move(TAKE_PUCK_INTER_AFTER_STATIC)
-        while not (self.arm1.is_arrived() and self.arm2.is_arrived):
-            time.sleep(0.1)
+        if(self.arm.check_pressure()):
+            self.arm1.move(TAKE_PUCK_INTER_AFTER_STATIC)
+            self.arm2.move(TAKE_PUCK_INTER_AFTER_STATIC)
+            while not (self.arm1.is_arrived() and self.arm2.is_arrived):
+                time.sleep(0.1)
+        else:
+            self.takeError = True
 
     def before(self):
         self.arm1.start_pump()
@@ -62,27 +64,33 @@ class TakePuckSync(Actionnable):
             time.sleep(0.1)
 
     def after(self):
-        self.arm1.move(TANK_POS_INTER)
-        self.arm2.move(TANK_POS_INTER)
-        while not (self.arm1.is_arrived() and self.arm2.is_arrived):
-            time.sleep(0.1)
+        if not self.takeError:
+            self.arm1.move(TANK_POS_INTER)
+            self.arm2.move(TANK_POS_INTER)
+            while not (self.arm1.is_arrived() and self.arm2.is_arrived):
+                time.sleep(0.1)
 
-        self.arm1.move(self.TankPos[self.arm1.tank.index()])
-        self.arm2.move(self.TankPos[self.arm2.tank.index()])
-        while not (self.arm1.is_arrived() and self.arm2.is_arrived):
-            time.sleep(0.1)
+            self.arm1.move(self.TankPos[self.arm1.tank.index()])
+            self.arm2.move(self.TankPos[self.arm2.tank.index()])
+            while not (self.arm1.is_arrived() and self.arm2.is_arrived):
+                time.sleep(0.1)
 
-        self.arm1.tank.put_puck(GreenPuck)
-        self.arm2.tank.put_puck(GreenPuck)
+            self.arm1.tank.put_puck(GreenPuck)
+            self.arm2.tank.put_puck(GreenPuck)
 
-        self.arm1.stop_pump()
-        self.arm2.stop_pump()
+            self.arm1.stop_pump()
+            self.arm2.stop_pump()
 
-        time.sleep(0.5)
-        self.arm1.go_home()
-        self.arm2.go_home()
-        while not (self.arm1.is_arrived() and self.arm2.is_arrived):
-            time.sleep(0.1)
+            time.sleep(0.5)
+            self.arm1.go_home()
+            self.arm2.go_home()
+            while not (self.arm1.is_arrived() and self.arm2.is_arrived):
+                time.sleep(0.1)
+        else:
+            self.arm1.go_home()
+            self.arm2.go_home()
+            while not (self.arm1.is_arrived() and self.arm2.is_arrived):
+                time.sleep(0.1)
 
     #override
     def getAction(self):
