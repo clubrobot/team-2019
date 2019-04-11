@@ -4,7 +4,7 @@ CHIP = esp32
 #Arduino file
 SKETCH = server.ino
 
-BOARD_UUID = esp32
+BOARD_UUID = expServ
 COMMON = ../common
 #Setup all libs used !
 LIBS = $(ESP_LIBS)/EEPROM \

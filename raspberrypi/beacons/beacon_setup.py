@@ -25,7 +25,7 @@ for directory in glob.iglob(os.path.join(home, '**/team-2018/raspberrypi'), recu
 hostname = ""
 if hostname=="":
 	print ("IP adress :  ")
-	hostname=input()	
+	hostname=input()
 	if(len(hostname.split("."))==1 and len(hostname)>0):
 		hostname="192.168.1."+hostname
 	print ("Try reaching raspberry at IP "+hostname+"...")
@@ -66,4 +66,7 @@ try:
 except:
 	print('\'Anchor\' not connected')
 
-
+try:
+	e = Electron()
+except:
+	print('\'Electron\' not connected')
