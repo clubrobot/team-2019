@@ -1,4 +1,4 @@
-#include <Arduino.h>
+ #include <Arduino.h>
 #include <EEPROM.h>
 
 #include "Codewheel.h"
@@ -102,4 +102,14 @@ void Codewheel::save(int address) const
 	EEPROM.put(address, m_wheelRadius);  address += sizeof(m_wheelRadius);
 	EEPROM.put(address, m_countsPerRev); address += sizeof(m_countsPerRev);
 	EEPROM.commit();
+}
+
+void Codewheel::setCountsPerRev(long countsPerRev)
+{
+        m_countsPerRev = countsPerRev;
+}
+
+void Codewheel::setWheelRadius (float wheelRadius)
+{
+        m_wheelRadius = wheelRadius;
 }

@@ -5,7 +5,7 @@
 #ifndef IPDISPLAY_H
 #define IPDISPLAY_H
 
-#define IP_MAX_NB 3
+#define IP_MAX_NB 10
 #define IP_MAX_SIZE 20
 #define IP_CHANGE_TIME 2
 

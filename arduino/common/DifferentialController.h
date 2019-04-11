@@ -77,7 +77,7 @@ public:
 	 * 
 	 * @param axleTrack
 	 */
-	void setAxleTrack(float axleTrack){m_axleTrack = axleTrack;}
+	void setAxleTrack(float axleTrack);
 
 	/**
 	 * @brief Charge les moteurs

@@ -71,6 +71,8 @@ void setup()
 	talks.bind(RESET_PARAMETERS_OPCODE, RESET_PARAMETERS);
 	talks.bind(GET_VELOCITIES_WANTED_OPCODE, GET_VELOCITIES_WANTED);
 	talks.bind(GOTO_DELTA_OPCODE,GOTO_DELTA);
+	talks.bind(RESET_PARAMETERS_OPCODE, RESET_PARAMETERS);
+	talks.bind(SAVE_PARAMETERS_OPCODE, SAVE_PARAMETERS);
 
 	// DC motors wheels
 	
@@ -110,7 +112,7 @@ void setup()
 
 	linVelPID.load(LINVELPID_ADDRESS);
 	angVelPID.load(ANGVELPID_ADDRESS);
-	
+
 #if ENABLE_VELOCITYCONTROLLER_LOGS
 	controllerLogs.setController(velocityControl);
 	controllerLogs.setTimestep(VELOCITYCONTROLLER_LOGS_TIMESTEP);
@@ -160,8 +162,7 @@ void loop_aux(void * aux)
     #else
         velocityControl.update();
     #endif // ENABLE_VELOCITYCONTROLLER_LOGS /
-
-	}
+   }
 }   
 
 

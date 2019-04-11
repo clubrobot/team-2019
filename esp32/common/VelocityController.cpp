@@ -5,17 +5,32 @@
 #include "SerialTalks.h"
 #include "mathutils.h"
 
-void VelocityController::setMaxAcc(float maxLinAcc, float maxAngAcc)
+
+void VelocityController::setMaxAngAcc   (float maxAngAcc)
 {
 	m_mutex.acquire();
-	m_maxLinAcc = maxLinAcc;
 	m_maxAngAcc = maxAngAcc;
 	m_mutex.release();
 }
-void VelocityController::setMaxDec(float maxLinDec, float maxAngDec)
+
+void VelocityController::setMaxLinAcc   (float maxLinAcc)
+{
+	m_mutex.acquire();
+	m_maxLinAcc = maxLinAcc;
+	m_mutex.release();
+}
+
+
+void VelocityController::setMaxLinDec   (float maxLinDec)
 {
 	m_mutex.acquire();
 	m_maxLinDec = maxLinDec;
+	m_mutex.release();
+}
+
+void VelocityController::setMaxAngDec   (float maxAngDec)
+{
+	m_mutex.acquire();
 	m_maxAngDec = maxAngDec;
 	m_mutex.release();
 }
@@ -173,6 +188,7 @@ void VelocityController::save(int address) const
 
 	m_mutex.release();
 }
+
 
 #if ENABLE_VELOCITYCONTROLLER_LOGS
 void VelocityControllerLogs::process(float timestep)

@@ -97,3 +97,4 @@ wheeledbase.set_parameter_value(POSITIONCONTROL_LINPOSTHRESHOLD_ID  , POSITIONCO
 wheeledbase.set_parameter_value(POSITIONCONTROL_ANGPOSTHRESHOLD_ID  , POSITIONCONTROL_ANGPOSTHRESHOLD_VALUE    , FLOAT)
 wheeledbase.set_parameter_value(PUREPURSUIT_LOOKAHEAD_ID        , PUREPURSUIT_LOOKAHEAD_VALUE                     , FLOAT)
 wheeledbase.set_parameter_value(PUREPURSUIT_LOOKAHEADBIS_ID     , PUREPURSUIT_LOOKAHEADBIS_VALUE                      , FLOAT)
+wheeledbase.save_parameters()
