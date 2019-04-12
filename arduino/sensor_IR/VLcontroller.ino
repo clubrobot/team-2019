@@ -9,7 +9,10 @@ VLSensors sensors_IR = VLSensors(SHUT_VL53_1, SHUT_VL61_1);
 void setup(){
   Serial.begin(SERIALTALKS_BAUDRATE);
   talks.begin(Serial);
-  talks.bind(GET_ROBOT_ACC_OPCODE, GET_ROBOT_ACC);
+  talks.bind(GET_DIST_OPCODE, GET_DIST);
+  talks.bind(GET_STATE_OPCODE, GET_STATE);
+  talks.bind(GET_VL61_OPCODE, GET_VL61);
+  talks.bind(GET_VL53_OPCODE, GET_VL53);
   Wire.begin();
   sensors_IR.setVL53Address(53);
   sensors_IR.setVL61Address(61);

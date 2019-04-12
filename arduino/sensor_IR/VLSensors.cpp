@@ -5,11 +5,15 @@ VLSensors::VLSensors(int EN_VL53_PIN, int EN_VL61_PIN){
     _EN_VL53 = EN_VL53_PIN;
     _EN_VL61 = EN_VL61_PIN;
     for(int i = 0; i< 2; i++){_useSensors[i] = true;}
-    _state = REQUEST_VL53;
-    _range[0] = 0;
-    _range[1] = 0;
+    _state = REQUEST_VL61;
+    _range[VL53] = 0;
+    _range[VL61] = 0;
     pinMode(_EN_VL53, OUTPUT);
     pinMode(_EN_VL61, OUTPUT);
+    digitalWrite(_EN_VL53, LOW);
+    digitalWrite(_EN_VL61, LOW);
+    _addressVL53 = 0x00;
+    _addressVL61 = 0x00;
 }
 
 void VLSensors::whatToDoNext(){ 
@@ -130,7 +134,7 @@ bool VLSensors::readLen(uint8_t * buff, uint8_t len){
   // Wait around until enough data is available
   if( (Wire.available() < len)){
     return false;
-  };
+  }
   for (uint8_t i = 0; i < len; i++)
   {
     buff[i] = Wire.read();
@@ -375,24 +379,24 @@ void VLSensors::init(){
 
 void VLSensors::setVL61Address(uint8_t new_addr)
 {
-  pinMode(_EN_VL61, INPUT);
-  pinMode(_EN_VL53, OUTPUT);
+  digitalWrite(_EN_VL53, LOW);
+  digitalWrite(_EN_VL61, HIGH);
   delay(5);
   write8VL61(I2C_SLAVE__DEVICE_ADDRESS, new_addr & 0x7F);
   _addressVL61 = new_addr;
-  pinMode(_EN_VL53, INPUT);
+  digitalWrite(_EN_VL53, HIGH);
   delay(5);
   
 }
 
 void VLSensors::setVL53Address(uint8_t new_addr)
 {
-  pinMode(_EN_VL53, INPUT);
-  pinMode(_EN_VL61, OUTPUT);
+  digitalWrite(_EN_VL53, HIGH);
+  digitalWrite(_EN_VL61, LOW);
   delay(5);
   write8VL53(I2C_SLAVE_DEVICE_ADDRESS, new_addr & 0x7F);
   _addressVL53 = new_addr;
-  pinMode(_EN_VL61, INPUT);
+  digitalWrite(_EN_VL61, HIGH);
   delay(5);
 }
 
