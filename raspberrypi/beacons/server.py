@@ -13,7 +13,8 @@ from common.gpiodevices import *
 PORT_BALISE = 26657
 GET_POSITION_OPCODE = 0x14
 SET_COLOR_OPCODE = 0x15
-GET_PANEL_STATUS_OPCODE = 0x17
+ISONTOP_OPCODE = 0x17
+START_EXPERIENCE_OPCODE = 0x19
 BIG_ROBOT = 0
 LITTLE_ROBOT = 1
 
@@ -22,9 +23,12 @@ class Server(TCPTalksServer):
         TCPTalksServer.__init__(self, PORT_BALISE)
         self.bind(GET_POSITION_OPCODE, self.getPosition)
         self.bind(SET_COLOR_OPCODE, self.setSide)
-        self.bind(GET_PANEL_STATUS_OPCODE, self.get_panel_status)
+        self.bind(ISONTOP_OPCODE, self.isElectronOnTop)
+        self.bind(START_EXPERIENCE_OPCODE, self.startElectron)
         self.beacon = Anchor()
+        self.expServ = Electron()
         self.beacon.connect()
+        self.expServ.connect()
         Switch(5, self.changeChannel)
 
     def run(self):
@@ -54,8 +58,11 @@ class Server(TCPTalksServer):
 
         return (-1000, -1000)
 
-    def get_panel_status(self):
-        return bool(self.beacon.is_panel_on())
+    def isElectronOnTop(self):
+        return bool(self.expServ.isOnTop())
+
+    def startElectron(self):
+        self.expServ.start()
 
     def changeChannel(self):
         try:

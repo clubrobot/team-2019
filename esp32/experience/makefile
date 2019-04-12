@@ -9,21 +9,9 @@ COMMON = ../common
 #Setup all libs used !
 LIBS = $(ESP_LIBS)/EEPROM \
 	   $(ESP_LIBS)/BLE \
-	   $(COMMON)/SerialTalks.cpp \
 	   $(COMMON)/CRC16.cpp \
-	   $(COMMON)/WiFi/src/WiFi.cpp \
-	   $(COMMON)/WiFi/src/ETH.cpp \
-	   $(COMMON)/WiFi/src/WiFiClient.cpp \
-	   $(COMMON)/WiFi/src/WiFiGeneric.cpp \
-	   $(COMMON)/WiFi/src/WiFiMulti.cpp \
-	   $(COMMON)/WiFi/src/WiFiSTA.cpp \
-	   $(COMMON)/WiFi/src/WiFiScan.cpp \
-	   $(COMMON)/WiFi/src/WiFiServer.cpp \
-	   $(COMMON)/WiFi/src/WiFiUdp.cpp \
 	   $(COMMON)/ExperienceEffects.cpp \
 		 $(COMMON)/ESP32-Arduino-Servo-Library/src/Servo.cpp \
-		 $(COMMON)/Pickle.cpp \
-	   $(COMMON)/tcptalks.cpp \
 		 $(COMMON)/fastLED/FastLED.cpp \
 		 $(COMMON)/fastLED/bitswap.cpp \
 		 $(COMMON)/fastLED/colorpalettes.cpp \
@@ -35,7 +23,6 @@ LIBS = $(ESP_LIBS)/EEPROM \
 		 $(COMMON)/fastLED/wiring.cpp \
 	   $(COMMON)/NeoPixel/Adafruit_NeoPixel.cpp\
 		 $(COMMON)/DCMotor.cpp\
-	   instructions.cpp\
 
 
 CPPFLAGS = -fexceptions
