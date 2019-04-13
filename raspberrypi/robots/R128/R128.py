@@ -88,9 +88,6 @@ class R128:
         self.putRedZone      = PutRedZone(self.geogebra, self.daughter_cards, self.side, self.log)
         self.PutRedZoneAct   = self.putRedZone.getAction()
 
-        # self.daughter_cards['armFront'].tank.put_puck(RedPuck)
-        # self.daughter_cards['armFront'].tank.put_puck(RedPuck)
-        # self.daughter_cards['armFront'].tank.put_puck(RedPuck)
         self.action_list = [
             self.TakeSyncPos1Act,
             self.TakeSyncPos2Act,
@@ -103,12 +100,6 @@ class R128:
             self.PutRedZoneAct
         ]
 
-        # self.action_list = [
-        #     self.PutRedZoneAct,
-        #     self.PutRedZoneAct,
-        #     self.PutRedZoneAct
-        # ]
-
     def run(self):
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
@@ -117,10 +108,10 @@ class R128:
         self.tam.start()
         
         for act in self.action_list:
-
             self.log("MAIN : ", "Launch Before Action")
             self.tam.putAction(act.getBefore())
             self.log("MAIN : ", "{}".format(act.actionPoint))
+            
             self.daughter_cards['wheeledbase'].goto(*act.actionPoint.point, theta=act.actionPoint.theta)
 
             while not self.tam.end():
