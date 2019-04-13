@@ -36,6 +36,8 @@ class TakePuckSync(Actionnable):
         self.takeError      = False
 
     def realize(self):
+        self.arm1.start_pump()
+        self.arm2.start_pump()
         self.arm1.move(PREPARE_TAKING_POS_STATIC)
         self.arm2.move(PREPARE_TAKING_POS_STATIC)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived):
@@ -45,19 +47,16 @@ class TakePuckSync(Actionnable):
         self.arm2.move(TAKE_PUCK_STATIC)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived):
             time.sleep(0.1)
+
+        time.sleep(0.5)
     
-        if(self.arm.check_pressure()):
-            self.arm1.move(TAKE_PUCK_INTER_AFTER_STATIC)
-            self.arm2.move(TAKE_PUCK_INTER_AFTER_STATIC)
-            while not (self.arm1.is_arrived() and self.arm2.is_arrived):
-                time.sleep(0.1)
-        else:
-            self.takeError = True
+        self.arm1.move(TAKE_PUCK_INTER_AFTER_STATIC)
+        self.arm2.move(TAKE_PUCK_INTER_AFTER_STATIC)
+        
+        while not (self.arm1.is_arrived() and self.arm2.is_arrived):
+            time.sleep(0.1)
 
     def before(self):
-        self.arm1.start_pump()
-        self.arm2.start_pump()
-
         self.arm1.move(PREPARE_TAKING_POS_ROAD)
         self.arm2.move(PREPARE_TAKING_POS_ROAD)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived):
@@ -82,10 +81,12 @@ class TakePuckSync(Actionnable):
             self.arm2.stop_pump()
 
             time.sleep(0.5)
-            self.arm1.go_home()
-            self.arm2.go_home()
+            self.arm1.move(PUT_TANK_AFTER)
+            self.arm2.move(PUT_TANK_AFTER)
+
             while not (self.arm1.is_arrived() and self.arm2.is_arrived):
                 time.sleep(0.1)
+
         else:
             self.arm1.go_home()
             self.arm2.go_home()
