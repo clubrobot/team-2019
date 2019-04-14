@@ -35,6 +35,7 @@ class Balance(Actionnable):
         self.handeledPuck   = None
 
     def realize(self):
+        # put the first handled puck
         self.arm.move(BALANCE)
         
         while not self.arm.is_arrived():
@@ -42,6 +43,42 @@ class Balance(Actionnable):
 
         self.arm.stop_pump()
         time.sleep(1)
+
+        self.arm.move(TANK_POS_INTER)
+        while not self.arm.is_arrived():
+            time.sleep(0.1)
+
+        self.remainingPuck = self.arm.tank.index()
+
+        for i in range(0,self.remainingPuck):
+            self.arm.start_pump()
+            self.arm.move(self.beforeTankPos[self.arm.tank.index()-1])
+
+            while not self.arm.is_arrived():
+                time.sleep(0.1)
+
+            self.arm.move(self.TankPos[self.arm.tank.index()-1])
+
+            while not self.arm.is_arrived():
+                time.sleep(0.1)
+    
+            self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
+            self.handeledPuck = self.arm.tank.get_puck()
+            while not self.arm.is_arrived():
+                time.sleep(0.1)
+
+            # put the remaning pucks
+            self.arm.move(BALANCE)
+        
+            while not self.arm.is_arrived():
+                time.sleep(0.1)
+
+            self.arm.stop_pump()
+            time.sleep(1)
+
+            self.arm.move(TANK_POS_INTER)
+            while not self.arm.is_arrived():
+                time.sleep(0.1)
     
     def before(self):
         self.arm.start_pump()
@@ -50,26 +87,18 @@ class Balance(Actionnable):
         while not self.arm.is_arrived():
             time.sleep(0.1)
 
-        #time.sleep(0.5)
-
         self.arm.move(self.TankPos[self.arm.tank.index()-1])
 
         while not self.arm.is_arrived():
             time.sleep(0.1)
-        
     
-        try:   
-            self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
-            self.handeledPuck = self.arm.tank.get_puck()
-            while not self.arm.is_arrived():
-                time.sleep(0.1)
-
-        except :
-            pass
+        self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
+        self.handeledPuck = self.arm.tank.get_puck()
+        while not self.arm.is_arrived():
+            time.sleep(0.1)
 
     def after(self):
-        self.arm.move(TANK_POS_INTER)
-
+        self.arm.move(GLOBAL_POS_INTER)
         while not self.arm.is_arrived():
             time.sleep(0.1)
 
