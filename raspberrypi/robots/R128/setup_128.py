@@ -30,7 +30,7 @@ def init_robot():
 
         armFront.go_home()
         armBack.go_home()
-        while not (armFront.is_arrived() and armBack.is_arrived):
+        while not (armFront.is_arrived() and armBack.is_arrived()):
                 time.sleep(0.1)
 
 if __name__ == "__main__":
