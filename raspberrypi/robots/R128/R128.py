@@ -4,6 +4,7 @@
 from robots.R128.balanceAction import *
 from robots.R128.takePuckActions import *
 from robots.R128.PutRedZoneAction import *
+from robots.R128.movingAction import *
 from common.actions.action import ThreadActionManager
 from common.geogebra import Geogebra
 
@@ -14,6 +15,9 @@ class R128:
     DISTRIB6_1 = 1
     DISTRIB6_2 = 2
     DISTRIB6_3 = 3
+    DISTRIB3_1 = 4
+    DISTRIB3_2 = 5
+
     def __init__(self, side, geogebra, wheeledbase, arm1, arm2, log):
         # Save daughter_cards
         self.daughter_cards = dict(wheeledbase = wheeledbase, armFront = arm1,armBack = arm2)
@@ -73,27 +77,30 @@ class R128:
         self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
 
         # Specific Actions initialisation
-        self.balance         = Balance(self.geogebra, self.daughter_cards, self.side, self.log)
-        self.balanceAct      = self.balance.getAction()
+        self.balanceAct         = Balance(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
-        self.TakeSyncPos1    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_1, self.log)
-        self.TakeSyncPos1Act = self.TakeSyncPos1.getAction()
+        self.takeSyncPos1Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_1, self.log).getAction()
 
-        self.TakeSyncPos2    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_2, self.log)
-        self.TakeSyncPos2Act = self.TakeSyncPos2.getAction()
+        self.takeSyncPos2Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_2, self.log).getAction()
 
-        self.TakeSyncPos3    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_3, self.log)
-        self.TakeSyncPos3Act = self.TakeSyncPos3.getAction()
+        self.takeSyncPos3Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_3, self.log).getAction()
+    
+        self.takeSyncPos4Act    = TakePuckSyncMaintain(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_2, self.log).getAction()
 
-        self.putRedZone      = PutRedZone(self.geogebra, self.daughter_cards, self.side, self.log)
-        self.PutRedZoneAct   = self.putRedZone.getAction()
+        self.putRedZoneAct      = PutRedZone(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+
+        self.movingAct            = MovingToLittle(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+
+        self.takeSingleAct      = TakePuckSingle(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_1, self.log).getAction()
 
         self.action_list = [
-            self.TakeSyncPos1Act,
-            self.TakeSyncPos2Act,
-            self.TakeSyncPos3Act,
+            self.takeSyncPos1Act,
+            self.takeSyncPos2Act,
+            self.takeSyncPos3Act,
             self.balanceAct,
-            self.PutRedZoneAct,
+            self.movingAct,
+            self.takeSingleAct,
+            self.takeSyncPos4Act
         ]
 
     def run(self):
@@ -104,23 +111,24 @@ class R128:
         self.tam.start()
         
         for act in self.action_list:
+
             self.log("MAIN : ", "Launch Before Action")
             self.tam.putAction(act.getBefore())
-            self.log("MAIN : ", "{}".format(act.actionPoint))
-            
-            self.daughter_cards['wheeledbase'].goto(*act.actionPoint.point, theta=act.actionPoint.theta)
+
+            if act.actionPoint is not None:
+                self.log("MAIN : ", "{}".format(act.actionPoint))
+                self.daughter_cards['wheeledbase'].goto(*act.actionPoint.point, theta=act.actionPoint.theta)
 
             while not self.tam.end():
                 time.sleep(0.1)
 
             self.log("MAIN ; ", "Arrived on action point ! Go execute {} =)".format(act.name))
-
             act()
             act.done.set()
 
             self.log("MAIN ; ", "Action End !")
-            self.log("MAIN : ", "Launch After Action")
 
+            self.log("MAIN : ", "Launch After Action")
             self.tam.putAction(act.getAfter())
             
             self.log("MAIN : ", "Let's go to the next action !")
