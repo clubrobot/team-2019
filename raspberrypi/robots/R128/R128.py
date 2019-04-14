@@ -146,29 +146,3 @@ if __name__ == '__main__':
     auto.set_side(R128.PURPLE)
     wheeledbase.set_position(755, 3000-322, -pi)
     auto.run()
-
-
-
-
- # self.TakeSync1  = TakeSyncDistrib(self.geogebra, self.daughter_cards, self.side, R128.DISTRIB6_1, self.log)
-        # self.TakeSync2  = TakeSyncDistrib(self.geogebra, self.daughter_cards, self.side, R128.DISTRIB6_2, self.log)
-        # self.TakeSync3  = TakeSyncDistrib(self.geogebra, self.daughter_cards, self.side, R128.DISTRIB6_3, self.log)
-
-        # self.TakeSync1Act = self.TakeSync1.getAction()
-        # self.TakeSync2Act = self.TakeSync2.getAction()
-        # self.TakeSync3Act = self.TakeSync3.getAction()
-
-        # self.Balance    = PutBalance(self.geogebra, self.daughter_cards, self.side, self.log)
-        # self.BalanceAct = self.Balance.getAction()[0]
-
-        # self.Red    = PutRed(self.geogebra, self.daughter_cards, self.side, self.log)
-        # self.RedAct = self.Red.getAction()[0]
-
-        # self.action_list = 
-        # [
-        #     self.TakeSync1Act,
-        #     self.TakeSync2Act,
-        #     self.TakeSync3Act,
-        #     self.BalanceAct,
-        #     self.RedAct
-        # ]
