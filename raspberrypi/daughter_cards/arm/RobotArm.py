@@ -70,13 +70,7 @@ class RobotArm(SecureSerialTalksProxy):
 
 	def is_arrived(self):
 		out = self.execute(_IS_ARRIVED_OPCODE)
-		ret, err = out.read(BYTE, BYTE)
-		if bool(err):
-			err = self.get_motors_state()
-			if bool(err[1]) or bool(err[4]) or bool(err[7]):
-				raise RuntimeError('Timeout error on AX12')
-			else:
-				raise RuntimeError('Error on AX12 motors')
+		ret = out.read(BYTE)
 		return bool(ret)
 
 	def start_pump(self):

@@ -55,7 +55,6 @@ void IS_ARRIVED(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
     byte ret = traj_manager.is_arrived();
     output.write<byte>(ret);
-    output.write<byte>(0);
 }
 
 void START_PUMP(SerialTalks& talks, Deserializer& input, Serializer& output)
