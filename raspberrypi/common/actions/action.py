@@ -61,6 +61,7 @@ class ThreadActionManager(Thread):
     def run(self):
         while not self.stopped.is_set():
             while not self.queueFunc.empty():
+                self.ActionEnd.clear()
                 self.queueFunc.get()()
             self.ActionEnd.set()
     
