@@ -93,11 +93,7 @@ class R128:
             self.TakeSyncPos2Act,
             self.TakeSyncPos3Act,
             self.balanceAct,
-            self.balanceAct,
-            self.balanceAct,
             self.PutRedZoneAct,
-            self.PutRedZoneAct,
-            self.PutRedZoneAct
         ]
 
     def run(self):
@@ -128,7 +124,6 @@ class R128:
             self.tam.putAction(act.getAfter())
             
             self.log("MAIN : ", "Let's go to the next action !")
-
         #stop thread action manager
         self.tam.stop()
 
