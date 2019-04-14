@@ -34,7 +34,7 @@ class TrajectoryManager : public PeriodicProcess
         bool is_arrived() const {return _arrived;}
 
         void load(int address);
-	    void save(int address) const;
+        void save(int address) const;
 
     private :
         virtual void process(float timestep);
