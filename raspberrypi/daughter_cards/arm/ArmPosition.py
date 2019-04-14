@@ -13,7 +13,7 @@ PREPARE_TAKING_POS_STATIC       = ArmPos(12.5,   3.5,    5)
 
 # Take Puck
 TAKE_PUCK_STATIC                = ArmPos(14.8,   4,    5)
-TAKE_PUCK_INTER_AFTER_STATIC    = ArmPos(9.0,    10.0,   110.0)
+TAKE_PUCK_INTER_AFTER_STATIC    = ArmPos(9.0,    10.0,   90.0)
 
 # Tank Inter
 TANK_POS_INTER                  = ArmPos(-5.0,   8.0,   190)
