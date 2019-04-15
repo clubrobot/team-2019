@@ -12,7 +12,7 @@ class TakePuckSync(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
 
-    def __init__(self, geogebra, daughter_cards, side, distrib_pos, log):
+    def __init__(self, geogebra, daughter_cards, side, distrib_pos, puckFront, puckBack, log):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
@@ -34,6 +34,9 @@ class TakePuckSync(Actionnable):
 
         self.handeledPuck   = None
         self.takeError      = False
+
+        self.puck1      = puckFront
+        self.puck2      = puckBack
 
     def realize(self):
         self.arm1.start_pump()
@@ -74,8 +77,8 @@ class TakePuckSync(Actionnable):
             while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
                 time.sleep(0.1)
 
-            self.arm1.tank.put_puck(GreenPuck)
-            self.arm2.tank.put_puck(GreenPuck)
+            self.arm1.tank.put_puck(self.puck1)
+            self.arm2.tank.put_puck(self.puck2)
 
             self.arm1.stop_pump()
             self.arm2.stop_pump()
@@ -101,7 +104,7 @@ class TakePuckSingle(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
 
-    def __init__(self, geogebra, daughter_cards, side, distrib_pos, log):
+    def __init__(self, geogebra, daughter_cards, side, distrib_pos, puck, log):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
@@ -121,6 +124,8 @@ class TakePuckSingle(Actionnable):
 
         self.handeledPuck   = None
         self.takeError      = False
+
+        self.puck = puck
 
     def realize(self):
         self.arm.start_pump()
@@ -154,7 +159,7 @@ class TakePuckSingle(Actionnable):
             while not (self.arm.is_arrived()):
                 time.sleep(0.1)
 
-            self.arm.tank.put_puck(GreenPuck)
+            self.arm.tank.put_puck(self.puck)
 
             self.arm.stop_pump()
 

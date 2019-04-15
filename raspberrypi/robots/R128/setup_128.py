@@ -16,11 +16,11 @@ armB = RobotArm(manager, uuid='arm_back')
 armFront = ArmController(armF, 'ARM FRONT', log)
 armBack  = ArmController(armB, 'ARM BACK' , log)
 
-# led1 = LEDMatrix(manager, 1)
-# led2 = LEDMatrix(manager, 2)
-# ssd = SevenSegments(manager)
+led1 = LEDMatrix(manager, 1)
+led2 = LEDMatrix(manager, 2)
+ssd = SevenSegments(manager)
 
-# disp = DisplayPoints(ssd, led1, led2)
+disp = DisplayPoints(ssd, led1, led2)
 
 # buttons = ButtonsManager()
 

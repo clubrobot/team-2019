@@ -18,9 +18,9 @@ class R128:
     DISTRIB3_1 = 4
     DISTRIB3_2 = 5
 
-    def __init__(self, side, geogebra, wheeledbase, arm1, arm2, log):
+    def __init__(self, side, geogebra, wheeledbase, arm1, arm2, display, ssd, log):
         # Save daughter_cards
-        self.daughter_cards = dict(wheeledbase = wheeledbase, armFront = arm1,armBack = arm2)
+        self.daughter_cards = dict(wheeledbase = wheeledbase, armFront = arm1, armBack = arm2, display = display, ssd = ssd)
 
         # Save annexes inf
         self.side       = side
@@ -32,19 +32,19 @@ class R128:
 
         # Wheeledbase
         self.wheeledbase = self.daughter_cards['wheeledbase']
-
+        self.ssd         = self.daughter_cards['ssd']
         # Action thread manager
         self.tam = ThreadActionManager()
 
     def approval(self):
         self.log("APPROVAL","wait for team")
-        # ssd.set_message("set team")
+        # self.ssd.set_message("set team")
         # while(buttons.state!="team selected"):
         #     time.sleep(0.1)
 
         # self.log("APPROVAL","Selected team is : {}".format(buttons.team))
-        # ssd.set_message("T= {}, set pos".format(buttons.team))
-        # ssd.clear_messages()
+        # self.ssd.set_message("T= {}, set pos".format(buttons.team))
+        # self.ssd.clear_messages()
 
         # while(buttons.state!="position selected"):
         #     time.sleep(0.1)
@@ -70,6 +70,7 @@ class R128:
         # while(buttons.state!="running"):
         #     time.sleep(0.1)
         # ssd.clear_messages()
+        #self.daughter_cards['display'].start()
 
     def set_side(self, side):
         self.side = side
@@ -77,30 +78,28 @@ class R128:
         self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
 
         # Specific Actions initialisation
-        self.balanceAct         = Balance(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.balanceAct         = BalanceAfter6(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
-        self.takeSyncPos1Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_1, self.log).getAction()
+        self.takeSyncPos1Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_1, GreenPuck, RedPuck, self.log).getAction()
 
-        self.takeSyncPos2Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_2, self.log).getAction()
+        self.takeSyncPos2Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_2, BluePuck, RedPuck, self.log).getAction()
 
-        self.takeSyncPos3Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_3, self.log).getAction()
+        self.takeSyncPos3Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_3, GreenPuck, RedPuck, self.log).getAction()
     
         self.takeSyncPos4Act    = TakePuckSyncMaintain(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_2, self.log).getAction()
 
         self.putRedZoneAct      = PutRedZone(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
-        self.movingAct            = MovingToLittle(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.movingAct          = MovingToLittle(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
-        self.takeSingleAct      = TakePuckSingle(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_1, self.log).getAction()
+        self.takeSingleAct      = TakePuckSingle(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_1, RedPuck, self.log).getAction()
 
         self.action_list = [
             self.takeSyncPos1Act,
             self.takeSyncPos2Act,
             self.takeSyncPos3Act,
             self.balanceAct,
-            self.movingAct,
-            self.takeSingleAct,
-            self.takeSyncPos4Act
+            self.putRedZoneAct
         ]
 
     def run(self):

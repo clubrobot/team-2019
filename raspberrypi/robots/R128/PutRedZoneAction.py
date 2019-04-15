@@ -22,7 +22,7 @@ class PutRedZone(Actionnable):
         else:
             self.arm        = daughter_cards['armFront']
         
-        self.wheeledbase    = daughter_cards['wheeledbase']
+        self.display        = daughter_cards['display']
         # action Points
         self.point          = self.geogebra.get('Start{}'.format(self.side))
         self.actionPoint    = ActPoint(self.point, -pi/2)
@@ -63,6 +63,8 @@ class PutRedZone(Actionnable):
     
             self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
             self.handeledPuck = self.arm.tank.get_puck()
+            self.display.addPoints(self.handeledPuck.Point.Balance)
+            self.log("BALANCE6", "Add {} points".format(self.handeledPuck.Point.Balance))
             while not self.arm.is_arrived():
                 time.sleep(0.1)
 
