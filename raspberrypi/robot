@@ -18,6 +18,7 @@ MATCH_MODE = False
 arduino_list = ['sensors', 'wheeledbase', 'power', 'display', 'modulescollector', 'mineralscollector', 'watershooter', 'watersorter']
 
 def start(**args):
+    import robots.Bornibus as Bornibus
     Bornibus.start_match()
     pass
 
@@ -152,9 +153,11 @@ if sys.argv[1] not in no_server:
     manager = Manager("127.0.0.1")
     manager.connect()
     if ROBOT_ID == BORNIBUS_ID:
-        import Bornibus
+        from robots.setup_bornibus import init_robot
+        init_robot()
     if ROBOT_ID == R128_ID:
-        from robots.setup_128 import *
+        from robots.setup_128 import init_robot
+        init_robot()
 
 parser = ArgumentParser()
 subparsers = parser.add_subparsers()
