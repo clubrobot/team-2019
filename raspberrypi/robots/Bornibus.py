@@ -2,6 +2,7 @@ from robots.goldenium_bornibus import *
 from robots.buttons_manager import ButtonsManager
 
 def start_match():
+    init_robot()
     buttons = ButtonsManager()
     # couleur M ou O
     print("wait for team")
@@ -13,7 +14,6 @@ def start_match():
     couleur = buttons.team
 
     points = map_loading(couleur)
-
     ssd.clear_messages()
     ssd.set_message("set pos")
 

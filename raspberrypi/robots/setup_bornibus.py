@@ -30,6 +30,7 @@ def init_robot():
     gripper.open()
     pushers.up()
     arm.up()
+    wheeledbase.stop()
 
 if __name__ == "__main__":
     init_robot()
