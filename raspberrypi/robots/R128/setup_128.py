@@ -21,7 +21,7 @@ led2 = LEDMatrix(manager, 2)
 ssd = SevenSegments(manager)
 
 disp = DisplayPoints(ssd, led1, led2)
-
+disp.start()
 # buttons = ButtonsManager()
 
 def init_robot():

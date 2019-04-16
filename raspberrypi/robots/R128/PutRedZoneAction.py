@@ -63,8 +63,8 @@ class PutRedZone(Actionnable):
     
             self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
             self.handeledPuck = self.arm.tank.get_puck()
-            self.display.addPoints(self.handeledPuck.Point.Balance)
-            self.log("BALANCE6", "Add {} points".format(self.handeledPuck.Point.Balance))
+            self.display.addPoints(self.handeledPuck.Point.Tab)
+            self.log("REDZONE", "Add {} points".format(self.handeledPuck.Point.Tab))
             while not self.arm.is_arrived():
                 time.sleep(0.1)
 
