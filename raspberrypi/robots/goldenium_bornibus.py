@@ -4,8 +4,7 @@ from common.geogebra import Geogebra
 
 MAX_TIME_FOR_GOLDENIUM = 2
 
-
-def def_pos(color):
+def def_pos(color, points):
     print(color)
     if color == "M":
         wheeledbase.set_position(*points["IniM"], -pi/2)
