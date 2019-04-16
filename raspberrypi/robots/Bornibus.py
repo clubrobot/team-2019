@@ -14,7 +14,7 @@ def start_preparation():
 def start_robot(points):
     try:
         start(points)
-    except(...):
+    except RuntimeError:
         pass
     finally:
         disp.stop()
