@@ -19,6 +19,7 @@ arduino_list = ['sensors', 'wheeledbase', 'power', 'display', 'modulescollector'
 
 def start(**args):
     manager = Manager()
+    manager.connect()
     import robots.Bornibus as Bornibus
     Bornibus.start_match()
     pass
