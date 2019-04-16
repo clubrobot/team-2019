@@ -35,15 +35,15 @@ class ButtonsManager:
 
     def run_match(self):
         self.tirette_switch.close()
-        if not self.red_switch.closed():
+        if not self.red_switch.closed:
             print("red")
-        if not self.green_switch.closed():
+        if not self.green_switch.closed:
             print("green")
-        if not self.blue_switch.closed():
+        if not self.blue_switch.closed:
             print("blue")
-        if not self.orange_switch.closed():
+        if not self.orange_switch.closed:
             print("orange")
-        if not self.tirette_switch.closed():
+        if not self.tirette_switch.closed:
             print("tirette")
         self.start_funct(self.points, self.color)
 
