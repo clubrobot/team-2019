@@ -23,6 +23,7 @@ class ButtonsManager:
         self.orange_switch.close()
         self.blue_switch.close()
         self.green_switch.when_released = self.tirret
+        self.pos_funct(self.color)
         ssd.clear_messages()
         ssd.set_message("set pos")
 
@@ -52,6 +53,7 @@ class ButtonsManager:
 
         self.color_funct = color_funct
         self.start_funct = start_funct
+        self.pos_funct = pos_funct
         self.color_return = None
         self.team = None
 
