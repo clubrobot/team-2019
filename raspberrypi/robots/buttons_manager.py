@@ -22,7 +22,7 @@ class ButtonsManager:
     def odometry(self):
         self.orange_switch.close()
         self.blue_switch.close()
-        self.green_switch.when_realesed = self.tirret
+        self.green_switch.when_released = self.tirret
 
     def run_match(self):
         self.red_switch.close()
