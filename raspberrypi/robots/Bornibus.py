@@ -1,7 +1,6 @@
 from robots.goldenium_bornibus import *
 from robots.buttons_manager import ButtonsManager
 
-
 def start_match():
     buttons = ButtonsManager()
     # couleur M ou O
