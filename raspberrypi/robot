@@ -18,11 +18,10 @@ MATCH_MODE = False
 arduino_list = ['sensors', 'wheeledbase', 'power', 'display', 'modulescollector', 'mineralscollector', 'watershooter', 'watersorter']
 
 def start(**args):
-    start_match()
+    Bornibus.start_match()
     pass
 
 def start_approval(**args):
-    init_robot()
     pass
 
 def dev_mode(args):
@@ -153,7 +152,7 @@ if sys.argv[1] not in no_server:
     manager = Manager("127.0.0.1")
     manager.connect()
     if ROBOT_ID == BORNIBUS_ID:
-        from robots.Bornibus import *
+        import Bornibus
     if ROBOT_ID == R128_ID:
         from robots.setup_128 import *
 
