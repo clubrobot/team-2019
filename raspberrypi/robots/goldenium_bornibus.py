@@ -5,6 +5,16 @@ from common.geogebra import Geogebra
 MAX_TIME_FOR_GOLDENIUM = 2
 couleur = "M"
 
+
+def def_pos(color):
+    if color == "M":
+        wheeledbase.set_position(*points["IniM"], -pi/2)
+        print("robot placé : ", wheeledbase.get_position())
+
+    if color == "O":
+        wheeledbase.set_position(*points["IniO"], pi/2)
+        print("robot placé : ", wheeledbase.get_position())
+
 def map_loading(color):
     import os
     for root, dirs, files in os.walk("."):

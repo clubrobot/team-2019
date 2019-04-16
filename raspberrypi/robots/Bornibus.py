@@ -20,13 +20,3 @@ def start_robot(points):
         disp.stop()
 
 
-def def_pos(color):
-    if color == "M":
-        wheeledbase.set_position(*points["IniM"], pi/2)
-        print("robot placé : ", wheeledbase.get_position())
-
-    if color == "O":
-        wheeledbase.set_position(*points["IniO"], (3*pi)/2)
-        print("robot placé : ", wheeledbase.get_position())
-
-
