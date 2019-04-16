@@ -14,6 +14,9 @@ def start_match():
 
     points = map_loading(couleur)
 
+    ssd.clear_messages()
+    ssd.set_message("set pos")
+
     while(buttons.state!="position selected"):
         time.sleep(0.1)
 
