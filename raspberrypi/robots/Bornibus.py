@@ -6,11 +6,10 @@ def start_preparation():
     init_robot()
     ButtonsManager(map_loading, def_pos, start_robot).begin()
 
-
 def start_robot(points, couleur):
     try:
         start(points, couleur)
     except RuntimeError:
-        pass
+        print("error")
     finally:
         disp.stop()

@@ -6,14 +6,10 @@ MAX_TIME_FOR_GOLDENIUM = 2
 
 
 def def_pos(points, couleur):
-    print("def pos : ", couleur)
     if couleur == "M":
-        print("M")
         wheeledbase.set_position(*points["Ini"], -pi/2)
     if couleur == "O":
-        print("O")
         wheeledbase.set_position(*points["Ini"], pi/2)
-    print("robot placé : ", wheeledbase.get_position())
 
 
 def map_loading(couleur):
@@ -24,7 +20,6 @@ def map_loading(couleur):
             if file == "roadmap_bornibus.ggb":
                 roadmap = os.path.join(root, file)
     test_map = Geogebra(roadmap)
-    print("map loading : ", couleur)
 
     points = dict()
     points["Ini"] = test_map.get("Ini"+couleur)
@@ -55,8 +50,6 @@ def map_loading(couleur):
 
 
 def start(points, couleur):
-    print(couleur)
-    print(points)
     disp.start()
 
     wheeledbase.reset_parameters()
@@ -76,7 +69,6 @@ def start(points, couleur):
 
     wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Dep1"], points["Dep2"], points["Dep3"], points["Gold2"]],direction = "forward", lookahead = 150, lookaheadbis = 3)
     wheeledbase.wait()
-    print("Finis")
 
     wheeledbase.lookaheadbis.set(150)
 
@@ -219,3 +211,4 @@ if __name__ == "__main__":
     def_pos(points, couleur)
     input()
     start(points, couleur)
+    disp.stop()
