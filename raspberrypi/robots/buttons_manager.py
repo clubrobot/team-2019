@@ -38,7 +38,7 @@ class ButtonsManager:
         self.start_funct(self.color_return, self.color)
 
     def tirret(self):
-        self.pos_funct(self.color, self.points)
+        self.pos_funct(self.points, self.color)
         ssd.clear_messages()
         ssd.set_message("tirret")
         self.tirette_switch.when_pressed = self.ready

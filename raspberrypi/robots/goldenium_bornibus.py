@@ -4,7 +4,9 @@ from common.geogebra import Geogebra
 
 MAX_TIME_FOR_GOLDENIUM = 2
 
-def def_pos(couleur, points):
+
+def def_pos(points, couleur):
+    print("ksjdfgjhsgjsgj")
     print("def pos : ", couleur)
     if couleur == "M":
         print("M")
