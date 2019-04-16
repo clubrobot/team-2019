@@ -5,6 +5,8 @@ import time
 from threading import Thread, RLock, Event
 
 MATCH_DURATION = 100
+
+
 class DisplayPoints:
     def __init__(self, display ,right_eye, left_eye):
         self.display = display

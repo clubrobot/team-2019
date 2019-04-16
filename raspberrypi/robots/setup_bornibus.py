@@ -23,7 +23,6 @@ pushers = Pushers(manager)
 arm = Arm(manager)
 endstops = EndStops(manager)
 gripper = Gripper(manager, endstops)
-arm.up()
 
 
 def init_robot():
@@ -31,6 +30,7 @@ def init_robot():
     pushers.up()
     arm.up()
     wheeledbase.stop()
+
 
 if __name__ == "__main__":
     init_robot()

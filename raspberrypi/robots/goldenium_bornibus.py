@@ -4,6 +4,7 @@ from common.geogebra import Geogebra
 
 MAX_TIME_FOR_GOLDENIUM = 2
 
+
 def def_pos(color, points):
     print(color)
     if color == "M":
@@ -47,19 +48,21 @@ def map_loading(color):
     points["tmp2"] = test_map.get("tmp2"+couleur)
     points["tmp3"] = test_map.get("tmp3"+couleur)
     print("Map chargée")
+    print(points)
     return points
 
 
 def start(points, couleur):
     print(couleur)
-    ssd.set_message("ready")
+    print(points)
+    disp.start()
+
     wheeledbase.reset_parameters()
     wheeledbase.max_linvel.set(700)
     wheeledbase.max_angvel.set(10)
     wheeledbase.lookahead.set(150.0)
     wheeledbase.max_linacc.set(500.0)
     wheeledbase.max_lindec.set(700.0)
-    #avant 300
 
     pushers.up()
     gripper.open()
@@ -68,7 +71,6 @@ def start(points, couleur):
 
     print("Get position : ", wheeledbase.get_position())
     print("Dep1 : ", points["Dep1"])
-    disp.start()
 
     wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Dep1"], points["Dep2"], points["Dep3"], points["Gold2"]],direction = "forward", lookahead = 150, lookaheadbis = 3)
     wheeledbase.wait()
@@ -124,7 +126,7 @@ def start(points, couleur):
     wheeledbase.right_wheel_maxPWM.set(1)
     wheeledbase.left_wheel_maxPWM.set(1)
 
-    #while (goldenium!=1) and (attempt <=4) :
+    # while (goldenium!=1) and (attempt <=4) :
     #    try:
     #        wheeledbase.goto(*Gold4, theta=pi)
     #       counter_start_time = time.monotonic()
@@ -161,8 +163,6 @@ def start(points, couleur):
     #               print(wheeledbase.get_position())
     #               time.sleep(0.1)
     #           Gold4= (Gold4[0],Gold4[1]-2)
-
-    #wheeledbase.get_velocities_wanted(True)
 
     wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Gold3"], points["Gold5"]], direction= "backward", lookahead=150, lookaheadbis=100)
     wheeledbase.wait()
@@ -213,14 +213,7 @@ def start(points, couleur):
 if __name__ == "__main__":
     couleur = "M"
     init_robot()
-    points = map_loading()
-    if couleur == "O":
-        wheeledbase.set_position(*points["IniO"], pi / 2)
-        print("robot placé : ", wheeledbase.get_position())
-
-    if couleur == "M":
-        wheeledbase.set_position(*points["IniO"], (3 * pi) / 2)
-        print("robot placé : ", wheeledbase.get_position())
-
+    points = map_loading(couleur)
+    def_pos(points, couleur)
     input()
     start(points, couleur)

@@ -7,9 +7,9 @@ from common.serialtalks import *
 from common.components import Server, Manager
 from common.geogebra import *
 from common.roadmap import *
-#from robots.beacons_manager import BeaconsManagement
-#from daughter_cards.buttons import ButtonCard
-#from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
+# from robots.beacons_manager import BeaconsManagement
+# from daughter_cards.buttons import ButtonCard
+# from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
 
 
 DEV_MODE = True
@@ -17,24 +17,28 @@ MATCH_MODE = False
 
 arduino_list = ['sensors', 'wheeledbase', 'power', 'display', 'modulescollector', 'mineralscollector', 'watershooter', 'watersorter']
 
+
 def start(**args):
     manager = Manager()
     manager.connect()
     import robots.Bornibus as Bornibus
     Bornibus.start_preparation()
 
+
 def start_approval(**args):
     pass
 
+
 def dev_mode(args):
-    m = Manager()
-    m.connect()
-    button_card = ButtonCard(m)
-    screen = SevenSegments(m)
-    wheeledbase = WheeledBase(m)
-    button_gesture = ButtonGestureDemo(button_card, screen, m)
-    while not button_gesture.exiting: time.sleep(0.2)
-    m.disconnect()
+    # m = Manager()
+    # m.connect()
+    # button_card = ButtonCard(m)
+    # screen = SevenSegments(m)
+    # wheeledbase = WheeledBase(m)
+    # button_gesture = ButtonGestureDemo(button_card, screen, m)
+    # while not button_gesture.exiting: time.sleep(0.2)
+    # m.disconnect()
+    pass
 
 
 def getuuid(args):
