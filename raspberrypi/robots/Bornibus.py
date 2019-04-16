@@ -5,7 +5,7 @@ points = dict()
 
 def start_preparation():
     init_robot()
-    buttons = ButtonsManager()
+    buttons = ButtonsManager(def_color, start_robot)
     # couleur M ou O
     while buttons.state is not "OK":
         time.sleep(0.1)
