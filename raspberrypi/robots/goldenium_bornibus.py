@@ -6,7 +6,6 @@ MAX_TIME_FOR_GOLDENIUM = 2
 
 
 def def_pos(points, couleur):
-    print("ksjdfgjhsgjsgj")
     print("def pos : ", couleur)
     if couleur == "M":
         print("M")

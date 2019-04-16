@@ -21,7 +21,7 @@ class ButtonsManager:
         self.orange_switch.close()
         self.blue_switch.close()
 
-        self.points = self.color_funct(self.color)
+        self.points = self.map_load_funct(self.color)
         self.green_switch.when_released = self.tirret
         ssd.clear_messages()
         ssd.set_message("set pos")
@@ -35,7 +35,7 @@ class ButtonsManager:
 
     def run_match(self):
         self.tirette_switch.close()
-        self.start_funct(self.color_return, self.color)
+        self.start_funct(self.points, self.color)
 
     def tirret(self):
         self.pos_funct(self.points, self.color)
@@ -49,7 +49,7 @@ class ButtonsManager:
         ssd.clear_messages()
         ssd.set_message("set team")
 
-    def __init__(self, color_funct, pos_funct, start_funct):
+    def __init__(self, map_load_funct, pos_funct, start_funct):
         self.state = None
         self.red = 13
         self.green = 6
@@ -57,11 +57,11 @@ class ButtonsManager:
         self.orange = 5
         self.tirette = 26
 
-        self.color_funct = color_funct
+        self.map_load_funct = map_load_funct
         self.start_funct = start_funct
         self.pos_funct = pos_funct
-        self.color_return = None
-        self.team = None
+        self.points = None
+        self.color = None
 
         self.red_switch = Button(self.red, pull_up=True)
         self.green_switch = Button(self.green, pull_up=True)
