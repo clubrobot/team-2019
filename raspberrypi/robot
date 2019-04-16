@@ -18,7 +18,6 @@ MATCH_MODE = False
 arduino_list = ['sensors', 'wheeledbase', 'power', 'display', 'modulescollector', 'mineralscollector', 'watershooter', 'watersorter']
 
 def start(args):
-    init_robot()
     start_match()
     pass
 
@@ -92,7 +91,7 @@ def getlogs(args):
 
 
 def server(args):
-    srv = Server(password=args.password, size=args.size)
+    srv = Server(password=args.password, size=args.size, start_match=start)
     while True:
         try:
             while not srv.full():
