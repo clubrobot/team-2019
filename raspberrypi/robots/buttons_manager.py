@@ -36,7 +36,7 @@ class ButtonsManager:
         ssd.set_message("tirret")
         self.tirette_switch.when_pressed = self.run_match
 
-    def __init__(self, color_funct, start_funct):
+    def __init__(self, color_funct, pos_funct, start_funct):
         self.state = None
         self.red = 13
         self.green = 6
@@ -59,4 +59,4 @@ class ButtonsManager:
         self.orange_switch.when_pressed = self.set_team_orange
 
         ssd.clear_messages()
-        ssd.set_message("set pos")
+        ssd.set_message("set team")

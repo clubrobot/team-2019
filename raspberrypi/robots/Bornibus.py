@@ -5,7 +5,7 @@ points = dict()
 
 def start_preparation():
     init_robot()
-    buttons = ButtonsManager(def_color, start_robot)
+    buttons = ButtonsManager(map_loading, def_pos, start_robot)
     # couleur M ou O
     while buttons.state is not "OK":
         time.sleep(0.1)
@@ -15,7 +15,7 @@ def start_robot(points):
     start(points)
 
 
-def def_color(color):
+def def_pos(color):
     if couleur == color:
         wheeledbase.set_position(*points["IniO"], pi/2)
         print("robot placé : ", wheeledbase.get_position())
@@ -24,6 +24,4 @@ def def_color(color):
         wheeledbase.set_position(*points["IniM"], (3*pi)/2)
         print("robot placé : ", wheeledbase.get_position())
 
-    ssd.clear_messages()
-    ssd.set_message("Ready")
 
