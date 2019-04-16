@@ -7,14 +7,14 @@ from gpiozero import Button
 class ButtonsManager:
     def set_team_orange(self):
         self.color = "O"
-        self.color_return = self.color_funct("O")
+        self.points = self.color_funct("O")
         ssd.clear_messages()
         ssd.set_message("team : o")
         self.green_switch.when_released = self.odometry
 
     def set_team_purple(self):
-        self.color_return = self.color_funct("M")
         self.color = "M"
+        self.points = self.color_funct("M")
         ssd.clear_messages()
         ssd.set_message("team : m")
         self.green_switch.when_released = self.odometry
@@ -23,7 +23,7 @@ class ButtonsManager:
         self.orange_switch.close()
         self.blue_switch.close()
         self.green_switch.when_released = self.tirret
-        self.pos_funct(self.color)
+        self.pos_funct(self.color, self.points)
         ssd.clear_messages()
         ssd.set_message("set pos")
 
