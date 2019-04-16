@@ -35,15 +35,15 @@ class ButtonsManager:
 
     def run_match(self):
         self.tirette_switch.close()
-        if self.red_switch.is_active():
+        if not self.red_switch.closed():
             print("red")
-        if self.green_switch.is_active():
+        if not self.green_switch.closed():
             print("green")
-        if self.blue_switch.is_active():
+        if not self.blue_switch.closed():
             print("blue")
-        if self.orange_switch.is_active():
+        if not self.orange_switch.closed():
             print("orange")
-        if self.tirette_switch.is_active():
+        if not self.tirette_switch.closed():
             print("tirette")
         self.start_funct(self.points, self.color)
 
@@ -73,8 +73,8 @@ class ButtonsManager:
         self.points = None
         self.color = None
 
-        self.red_switch = Button(self.red, pull_up=True)
-        self.green_switch = Button(self.green, pull_up=True)
-        self.blue_switch = Button(self.blue, pull_up=True)
-        self.orange_switch = Button(self.orange, pull_up=True)
-        self.tirette_switch = Button(self.tirette, pull_up=True)
+        self.red_switch = Button(self.red)
+        self.green_switch = Button(self.green)
+        self.blue_switch = Button(self.blue)
+        self.orange_switch = Button(self.orange)
+        self.tirette_switch = Button(self.tirette)
