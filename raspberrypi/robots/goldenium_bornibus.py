@@ -7,7 +7,12 @@ COULEUR = "M"
 
 def map_loading():
     global couleur
-    test_map = Geogebra("roadmap_bornibus.ggb")
+    import os
+    for root, dirs, files in os.walk("."):
+        for file in files:
+            if file == "roadmap_bornibus.ggb":
+                roadmap = os.path.join(root, file)
+    test_map = Geogebra(roadmap)
     points = dict()
     points["IniO"] = test_map.get("Ini"+couleur)
     #Gold1 = test_map.get("Gold1"+couleur)
@@ -33,6 +38,7 @@ def map_loading():
     points["tmp3"] = test_map.get("tmp3"+couleur)
     print("Map chargée")
     return points
+
 
 def start(points):
     ssd.set_message("ready")
@@ -88,8 +94,7 @@ def start(points):
         print(wheeledbase.get_position())
         time.sleep(0.1)
 
-    goldenium = 0
-    #attempt = 0
+    gold = False
     wheeledbase.right_wheel_maxPWM.set(0.2)
     wheeledbase.left_wheel_maxPWM.set(0.2)
 
@@ -156,12 +161,6 @@ def start(points):
     wheeledbase.turnonthespot(0)
     wheeledbase.wait()
 
-    if gripper.get_goldsensor_state():
-        gold = True
-        disp.addPoints(20)
-    else:
-        gold = False
-
     try:
         wheeledbase.goto(*points["Gold6"], theta=0)
         wheeledbase.wait()
@@ -177,22 +176,22 @@ def start(points):
     if gold:
         disp.addPoints(24)
 
-    wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Gold5"], points["Pal1"], points["Pal2"], points["tmp"]], direction="backward" )
+    wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Gold5"], points["Pal1"], points["Pal2"], points["tmp"]], direction="backward")
     wheeledbase.wait()
 
     if couleur=="O":
         wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["tmp2"], points["Pal3"], points["Pal4"]], direction="forward", finalangle=-0.7936277389526367)
-        wheeledbase.wait()
-        pushers.down()
-        wheeledbase.turnonthespot(-5*pi/6)
-        wheeledbase.wait()
-
-    if couleur=="M":
+    if couleur == "M":
         wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["tmp2"], points["Pal3"], points["Pal4"]], direction="forward", finalangle=0.7936277389526367)
-        wheeledbase.wait()
-        pushers.down()
-        wheeledbase.turnonthespot(5*pi/6)
-        wheeledbase.wait()
+
+    wheeledbase.wait()
+    pushers.down()
+
+    if couleur=="O":
+        wheeledbase.turnonthespot(-5*pi/6)
+    if couleur == "M":
+        wheeledbase.turnonthespot(5 * pi / 6)
+    wheeledbase.wait()
 
     wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Pal5"], points["Pal6"]], direction="forward")
     wheeledbase.wait()
@@ -203,6 +202,7 @@ def start(points):
 
 if __name__ == "__main__":
     couleur = COULEUR
+    init_robot()
     points = map_loading()
     if couleur == "O":
         wheeledbase.set_position(*points["IniO"], pi / 2)
