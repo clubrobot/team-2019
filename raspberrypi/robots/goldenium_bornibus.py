@@ -44,8 +44,6 @@ def map_loading(couleur):
     points["tmp"] = test_map.get("tmp"+couleur)
     points["tmp2"] = test_map.get("tmp2"+couleur)
     points["tmp3"] = test_map.get("tmp3"+couleur)
-    print("Map chargée")
-    print(points)
     return points
 
 

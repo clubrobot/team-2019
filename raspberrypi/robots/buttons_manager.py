@@ -45,6 +45,7 @@ class ButtonsManager:
             print("orange")
         if not self.tirette_switch.closed:
             print("tirette")
+        print("fin test close")
         self.start_funct(self.points, self.color)
 
     def tirret(self):
