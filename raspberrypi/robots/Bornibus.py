@@ -12,8 +12,12 @@ def start_preparation():
 
 
 def start_robot(points):
-    start(points)
-    disp.stop()
+    try:
+        start(points)
+    except(...):
+        pass
+    finally:
+        disp.stop()
 
 
 def def_pos(color):
