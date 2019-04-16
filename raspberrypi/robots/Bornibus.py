@@ -12,7 +12,7 @@ def start_match():
     wheeledbase.set_velocities(0, 0)
     couleur = buttons.team
 
-    points = map_loading()
+    points = map_loading(couleur)
 
     while(buttons.state!="position selected"):
         time.sleep(0.1)

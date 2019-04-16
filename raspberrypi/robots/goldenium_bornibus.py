@@ -5,8 +5,7 @@ from common.geogebra import Geogebra
 MAX_TIME_FOR_GOLDENIUM = 2
 COULEUR = "M"
 
-def map_loading():
-    global couleur
+def map_loading(couleur):
     import os
     for root, dirs, files in os.walk("."):
         for file in files:
