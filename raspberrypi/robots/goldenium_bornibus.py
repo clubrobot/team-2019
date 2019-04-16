@@ -7,12 +7,10 @@ MAX_TIME_FOR_GOLDENIUM = 2
 def def_pos(color, points):
     print(color)
     if color == "M":
-        wheeledbase.set_position(*points["IniM"], -pi/2)
-        print("robot placé : ", wheeledbase.get_position())
-
+        wheeledbase.set_position(*points["Ini"], -pi/2)
     if color == "O":
-        wheeledbase.set_position(*points["IniO"], pi/2)
-        print("robot placé : ", wheeledbase.get_position())
+        wheeledbase.set_position(*points["Ini"], pi/2)
+    print("robot placé : ", wheeledbase.get_position())
 
 
 def map_loading(color):
@@ -26,7 +24,7 @@ def map_loading(color):
     couleur = color
     print(color)
     points = dict()
-    points["IniO"] = test_map.get("Ini"+couleur)
+    points["Ini"] = test_map.get("Ini"+couleur)
     # Gold1 = test_map.get("Gold1"+couleur)
     points["Gold2"] = test_map.get("Gold2"+couleur)
     points["Gold3"] = test_map.get("Gold3"+couleur)
