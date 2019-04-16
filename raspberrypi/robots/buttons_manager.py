@@ -40,7 +40,7 @@ class ButtonsManager:
     def tirret(self):
         ssd.clear_messages()
         ssd.set_message("tirret")
-        self.tirette_switch.when_pressed = self.ready()
+        self.tirette_switch.when_pressed = self.ready
 
     def __init__(self, color_funct, pos_funct, start_funct):
         self.state = None
