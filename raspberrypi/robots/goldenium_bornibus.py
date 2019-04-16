@@ -5,13 +5,14 @@ from common.geogebra import Geogebra
 MAX_TIME_FOR_GOLDENIUM = 2
 couleur = "M"
 
-def map_loading(couleur):
+def map_loading(color):
     import os
     for root, dirs, files in os.walk("."):
         for file in files:
             if file == "roadmap_bornibus.ggb":
                 roadmap = os.path.join(root, file)
     test_map = Geogebra(roadmap)
+    couleur = color
     points = dict()
     points["IniO"] = test_map.get("Ini"+couleur)
     #Gold1 = test_map.get("Gold1"+couleur)
