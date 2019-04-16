@@ -10,17 +10,6 @@ def start_match():
         time.sleep(0.1)
     print(buttons.team)
     wheeledbase.set_velocities(0, 0)
-
-
-    buttons = ButtonsManager()
-    # couleur M ou O
-    print("wait for team")
-    ssd.set_message("set team")
-    while(buttons.state!="team selected"):
-        time.sleep(0.1)
-    print(buttons.team)
-    wheeledbase.set_velocities(0, 0)
-
     couleur = buttons.team
 
     points = map_loading()
