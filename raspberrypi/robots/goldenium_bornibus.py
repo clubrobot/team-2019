@@ -3,7 +3,7 @@ from robots.setup_bornibus import *
 from common.geogebra import Geogebra
 
 MAX_TIME_FOR_GOLDENIUM = 2
-COULEUR = "M"
+couleur = "M"
 
 def map_loading(couleur):
     import os
@@ -200,7 +200,6 @@ def start(points):
 
 
 if __name__ == "__main__":
-    couleur = COULEUR
     init_robot()
     points = map_loading()
     if couleur == "O":

@@ -26,9 +26,7 @@ def start_match():
         print("robot placé : ", wheeledbase.get_position())
 
     ssd.clear_messages()
-    ssd.set_message("T=" + couleur + ", set pos")
-
-    ssd.clear_messages()
+    ssd.set_message("Ready")
     while (buttons.state != "running"):
         time.sleep(0.1)
 
