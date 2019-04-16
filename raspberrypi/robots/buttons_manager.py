@@ -9,20 +9,22 @@ class ButtonsManager:
         self.team = "O"
         self.color_return = self.color_funct(self.team)
         ssd.clear_messages()
-        ssd.set_message("team : "+self.team)
+        ssd.set_message("team : o")
         self.green_switch.when_released = self.odometry
 
     def set_team_purple(self):
         self.team = "M"
         self.color_return = self.color_funct(self.team)
         ssd.clear_messages()
-        ssd.set_message("team : "+self.team)
+        ssd.set_message("team : m")
         self.green_switch.when_released = self.odometry
 
     def odometry(self):
         self.orange_switch.close()
         self.blue_switch.close()
         self.green_switch.when_released = self.tirret
+        ssd.clear_messages()
+        ssd.set_message("set pos")
 
     def run_match(self):
         self.red_switch.close()
