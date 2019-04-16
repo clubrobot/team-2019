@@ -22,7 +22,6 @@ def start(**args):
     manager.connect()
     import robots.Bornibus as Bornibus
     Bornibus.start_preparation()
-    pass
 
 def start_approval(**args):
     pass
