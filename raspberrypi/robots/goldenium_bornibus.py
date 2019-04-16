@@ -4,17 +4,18 @@ from common.geogebra import Geogebra
 
 MAX_TIME_FOR_GOLDENIUM = 2
 
-
-def def_pos(color, points):
-    print(color)
-    if color == "M":
+def def_pos(couleur, points):
+    print("def pos : ", couleur)
+    if couleur == "M":
+        print("M")
         wheeledbase.set_position(*points["Ini"], -pi/2)
-    if color == "O":
+    if couleur == "O":
+        print("O")
         wheeledbase.set_position(*points["Ini"], pi/2)
     print("robot placé : ", wheeledbase.get_position())
 
 
-def map_loading(color):
+def map_loading(couleur):
     import os
     roadmap = None
     for root, dirs, files in os.walk("."):
@@ -22,8 +23,8 @@ def map_loading(color):
             if file == "roadmap_bornibus.ggb":
                 roadmap = os.path.join(root, file)
     test_map = Geogebra(roadmap)
-    couleur = color
-    print(color)
+    print("map loading : ", couleur)
+
     points = dict()
     points["Ini"] = test_map.get("Ini"+couleur)
     # Gold1 = test_map.get("Gold1"+couleur)
