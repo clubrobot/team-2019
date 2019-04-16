@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 
 import time
-from threading import Thread, RLock
+from threading import Thread, RLock, Event
 
 MATCH_DURATION = 100
 class DisplayPoints:
@@ -14,10 +14,15 @@ class DisplayPoints:
         self.locker = RLock()
         self.eyes_locker = RLock()
         self.normal()
+        self.display_stop = Event()
 
     def start(self):
         self.start_time = time.time()
-        Thread(target=self.run).start()
+        self.display_thread = Thread(target=self.run)
+        self.display_thread.start()
+
+    def stop(self):
+        self.display_stop.set()
 
     def addPoints(self, points):
         self.locker.acquire()
@@ -85,7 +90,7 @@ class DisplayPoints:
             self.display.set_message("P:" + str(self.points))
 
     def run(self):
-        while True:
+        while not self.display_stop.is_set():
             self.locker.acquire()
             self.updateDisplay()
             self.locker.release()

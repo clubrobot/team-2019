@@ -13,6 +13,7 @@ def start_preparation():
 
 def start_robot(points):
     start(points)
+    disp.stop()
 
 
 def def_pos(color):
