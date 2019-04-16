@@ -3,10 +3,10 @@ from robots.setup_bornibus import *
 from common.geogebra import Geogebra
 
 MAX_TIME_FOR_GOLDENIUM = 2
-couleur = "M"
 
 
 def def_pos(color):
+    print(color)
     if color == "M":
         wheeledbase.set_position(*points["IniM"], -pi/2)
         print("robot placé : ", wheeledbase.get_position())
@@ -15,17 +15,20 @@ def def_pos(color):
         wheeledbase.set_position(*points["IniO"], pi/2)
         print("robot placé : ", wheeledbase.get_position())
 
+
 def map_loading(color):
     import os
+    roadmap = None
     for root, dirs, files in os.walk("."):
         for file in files:
             if file == "roadmap_bornibus.ggb":
                 roadmap = os.path.join(root, file)
     test_map = Geogebra(roadmap)
     couleur = color
+    print(color)
     points = dict()
     points["IniO"] = test_map.get("Ini"+couleur)
-    #Gold1 = test_map.get("Gold1"+couleur)
+    # Gold1 = test_map.get("Gold1"+couleur)
     points["Gold2"] = test_map.get("Gold2"+couleur)
     points["Gold3"] = test_map.get("Gold3"+couleur)
     points["Gold4"] = test_map.get("Gold4"+couleur)
@@ -50,7 +53,8 @@ def map_loading(color):
     return points
 
 
-def start(points):
+def start(points, couleur):
+    print(couleur)
     ssd.set_message("ready")
     wheeledbase.reset_parameters()
     wheeledbase.max_linvel.set(700)
@@ -75,17 +79,16 @@ def start(points):
 
     wheeledbase.lookaheadbis.set(150)
 
-    if couleur=="O" :
+    if couleur == "O":
         wheeledbase.turnonthespot(-pi/4)
         while not wheeledbase.isarrived():
             print(wheeledbase.get_position())
             time.sleep(0.1)
-    if couleur=="M" :
+    if couleur == "M":
         wheeledbase.turnonthespot(-(3*pi)/4)
         while not wheeledbase.isarrived():
             print(wheeledbase.get_position())
             time.sleep(0.1)
-
 
     time.sleep(0.5)
     arm.deploy()
@@ -189,7 +192,7 @@ def start(points):
     wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Gold5"], points["Pal1"], points["Pal2"], points["tmp"]], direction="backward")
     wheeledbase.wait()
 
-    if couleur=="O":
+    if couleur == "O":
         wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["tmp2"], points["Pal3"], points["Pal4"]], direction="forward", finalangle=-0.7936277389526367)
     if couleur == "M":
         wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["tmp2"], points["Pal3"], points["Pal4"]], direction="forward", finalangle=0.7936277389526367)
@@ -197,7 +200,7 @@ def start(points):
     wheeledbase.wait()
     pushers.down()
 
-    if couleur=="O":
+    if couleur == "O":
         wheeledbase.turnonthespot(-5*pi/6)
     if couleur == "M":
         wheeledbase.turnonthespot(5 * pi / 6)
@@ -211,6 +214,7 @@ def start(points):
 
 
 if __name__ == "__main__":
+    couleur = "M"
     init_robot()
     points = map_loading()
     if couleur == "O":
@@ -222,4 +226,4 @@ if __name__ == "__main__":
         print("robot placé : ", wheeledbase.get_position())
 
     input()
-    start(points)
+    start(points, couleur)

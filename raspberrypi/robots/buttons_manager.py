@@ -6,15 +6,15 @@ from gpiozero import Button
 
 class ButtonsManager:
     def set_team_orange(self):
-        self.team = "O"
-        self.color_return = self.color_funct(self.team)
+        self.color = "O"
+        self.color_return = self.color_funct("O")
         ssd.clear_messages()
         ssd.set_message("team : o")
         self.green_switch.when_released = self.odometry
 
     def set_team_purple(self):
-        self.team = "M"
-        self.color_return = self.color_funct(self.team)
+        self.color_return = self.color_funct("M")
+        self.color = "M"
         ssd.clear_messages()
         ssd.set_message("team : m")
         self.green_switch.when_released = self.odometry
@@ -26,17 +26,21 @@ class ButtonsManager:
         ssd.clear_messages()
         ssd.set_message("set pos")
 
-    def run_match(self):
+    def ready(self):
         self.red_switch.close()
         self.green_switch.close()
         ssd.clear_messages()
         ssd.set_message("ready")
-        self.tirette_switch.when_released = lambda: self.start_funct(self.color_return)
+        self.tirette_switch.when_released = self.run_match
+
+    def run_match(self):
+        self.tirette_switch.close()
+        self.start_funct(self.color_return, self.color)
 
     def tirret(self):
         ssd.clear_messages()
         ssd.set_message("tirret")
-        self.tirette_switch.when_pressed = self.run_match
+        self.tirette_switch.when_pressed = self.ready()
 
     def __init__(self, color_funct, pos_funct, start_funct):
         self.state = None
