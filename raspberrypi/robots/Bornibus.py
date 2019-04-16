@@ -12,4 +12,6 @@ def start_robot(points, couleur):
     except RuntimeError:
         print("error")
     finally:
+        print("test disp stop")
         disp.stop()
+        print("fin test disp")
