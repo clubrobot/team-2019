@@ -11,9 +11,9 @@ def start_preparation():
         time.sleep(0.1)
 
 
-def start_robot(points):
+def start_robot(points, couleur):
     try:
-        start(points)
+        start(points, couleur)
     except RuntimeError:
         pass
     finally:
