@@ -108,11 +108,12 @@ def start(points, couleur):
     except:
         pass
 
+    gripper.close()
+
     if gripper.get_goldsensor_state():
         gold = True
         disp.addPoints(20)
 
-    gripper.close()
     time.sleep(0.8)
 
     wheeledbase.right_wheel_maxPWM.set(1)
