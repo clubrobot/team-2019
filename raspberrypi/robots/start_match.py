@@ -4,6 +4,8 @@ def start_preparation():
     manager.connect()
     import robots.goldenium_bornibus as Bornibus
     from robots.buttons_manager import ButtonsManager
+    import os
+    os.chdir("/home/pi/git/clubrobot/team-2019")
     Bornibus.init_robot()
     ButtonsManager(Bornibus.map_loading, Bornibus.def_pos, start_robot).begin()
 
