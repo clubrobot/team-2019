@@ -23,7 +23,8 @@ def start_preparation():
         print("Init 128")
         R128 = robot.R128(robot.R128.PURPLE, robot.geo, robot.wheeledbase, robot.armFront, robot.armBack, robot.disp, robot.log)
         print("Button manager 128")
-        ButtonsManager(R128.set_side, R128.def_pos, lambda x, y: R128.run())
+        ButtonsManager(R128.set_side, R128.def_pos, lambda x, y: R128.run()).begin()
+
 
 
 def start_robot(points, couleur):
