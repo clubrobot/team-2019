@@ -1,8 +1,6 @@
-from robots.buttons_manager import ButtonsManager
-
-
 def start_preparation():
     import robots.goldenium_bornibus as Bornibus
+    from robots.buttons_manager import ButtonsManager
     manager = Bornibus.Manager()
     manager.connect()
     Bornibus.init_robot()
