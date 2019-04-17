@@ -8,7 +8,7 @@ BOARD_UUID = expServ
 COMMON = ../common
 #Setup all libs used !
 LIBS = $(ESP_LIBS)/EEPROM \
-	   $(ESP_LIBS)/BLE \
+	   $(COMMON)/BLE \
 	   $(COMMON)/SerialTalks.cpp \
 	   $(COMMON)/CRC16.cpp \
 	   instructions.cpp
