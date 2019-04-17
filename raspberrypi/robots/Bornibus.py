@@ -1,18 +1,19 @@
-from robots.goldenium_bornibus import *
 from robots.buttons_manager import ButtonsManager
 
 
 def start_preparation():
-    manager = Manager()
+    import robots.goldenium_bornibus as Bornibus
+    manager = Bornibus.Manager()
     manager.connect()
-    init_robot()
-    ButtonsManager(map_loading, def_pos, start_robot).begin()
+    Bornibus.init_robot()
+    ButtonsManager(Bornibus.map_loading, Bornibus.def_pos, start_robot).begin()
 
 
 def start_robot(points, couleur):
+    import robots.goldenium_bornibus as Bornibus
     try:
-        start(points, couleur)
+        Bornibus.start(points, couleur)
     except RuntimeError as e:
         print("error : ", e)
     finally:
-        disp.stop()
+        Bornibus.disp.stop()
