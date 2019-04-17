@@ -49,6 +49,7 @@ def map_loading(couleur):
 
 def start(points, couleur):
     disp.start()
+    disp.points = 0
 
     wheeledbase.reset_parameters()
     wheeledbase.max_linvel.set(700)
@@ -108,12 +109,13 @@ def start(points, couleur):
     except:
         pass
 
+    gripper.close()
+    time.sleep(1.5)
+
     if gripper.get_goldsensor_state():
         gold = True
         disp.addPoints(20)
 
-    gripper.close()
-    time.sleep(0.8)
 
     wheeledbase.right_wheel_maxPWM.set(1)
     wheeledbase.left_wheel_maxPWM.set(1)
@@ -174,9 +176,10 @@ def start(points, couleur):
     wheeledbase.max_lindec.set(500.0)
 
     time.sleep(0.5)
-    gripper.open()
-    if gold:
+
+    if gripper.get_goldsensor_state():
         disp.addPoints(24)
+    gripper.open()
 
     wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Gold5"], points["Pal1"], points["Pal2"], points["tmp"]], direction="backward")
     wheeledbase.wait()
@@ -200,6 +203,7 @@ def start(points, couleur):
 
     disp.addPoints(13)
     pushers.up()
+    wheeledbase.stop()
 
 
 if __name__ == "__main__":
