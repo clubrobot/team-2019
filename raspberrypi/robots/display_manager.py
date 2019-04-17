@@ -21,6 +21,7 @@ class DisplayPoints:
     def start(self):
         self.start_time = time.time()
         self.display_stop.clear()
+        self.points = 0
         self.display_thread = Thread(target=self.run)
         self.display_thread.start()
 
