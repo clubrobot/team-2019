@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "../common/FastLED/FastLED.h"
+#include "../common/fastLED/FastLED.h"
 #include "../common/ESP32-Arduino-Servo-Library/src/Servo.h"
 #include "../common/DCMotor.h"
 
