@@ -5,8 +5,10 @@ from daughter_cards.arm.ArmController import *
 from daughter_cards.display import *
 from robots.display_manager import *
 from common.funcutils import *
+from common.geogebra import *
 from common.logger import *
 import time
+import os
 
 log = Logger(Logger.SHOW)
 
@@ -22,7 +24,15 @@ ssd = SevenSegments(manager)
 
 disp = DisplayPoints(ssd, led1, led2)
 disp.start()
-# buttons = ButtonsManager()
+
+os.chdir("/home/pi/git/clubrobot/team-2019")
+roadmap = None
+for root, dirs, files in os.walk("."):
+        for file in files:
+                if file == "128.ggb":
+                        roadmap = os.path.join(root, file)
+test_map = Geogebra(roadmap)
+
 
 def init_robot():
         armFront.stop_pump()
