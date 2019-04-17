@@ -2,11 +2,12 @@ from robots.setup_wheeledbase import *
 from robots.setup_serialtalks import *
 from daughter_cards.arm.RobotArm import *
 from daughter_cards.arm.ArmController import *
-from daughter_cards.display import *
-from robots.display_manager import *
+from robots.setup_display import *
 from common.funcutils import *
+from common.geogebra import *
 from common.logger import *
 import time
+import os
 
 log = Logger(Logger.SHOW)
 
@@ -16,13 +17,14 @@ armB = RobotArm(manager, uuid='arm_back')
 armFront = ArmController(armF, 'ARM FRONT', log)
 armBack  = ArmController(armB, 'ARM BACK' , log)
 
-led1 = LEDMatrix(manager, 1)
-led2 = LEDMatrix(manager, 2)
-ssd = SevenSegments(manager)
+os.chdir("/home/pi/git/clubrobot/team-2019")
+roadmap = None
+for root, dirs, files in os.walk("."):
+        for file in files:
+                if file == "128.ggb":
+                        roadmap = os.path.join(root, file)
+geo = Geogebra(roadmap)
 
-disp = DisplayPoints(ssd, led1, led2)
-disp.start()
-# buttons = ButtonsManager()
 
 def init_robot():
         armFront.stop_pump()
@@ -35,3 +37,4 @@ def init_robot():
 
 if __name__ == "__main__":
         init_robot()
+        pass

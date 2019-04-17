@@ -23,8 +23,9 @@ UP_ARM = 8
 class Gripper(SecureSerialTalksProxy):
     _DEFAULT = {}
 
-    def __init__(self, parent, uuid='actuators'):
+    def __init__(self, parent, endstops, uuid='actuators'):
         SecureSerialTalksProxy.__init__(self, parent, uuid, Gripper._DEFAULT)
+        self.goldsensor = endstops
 
     def open(self):
         self.send(_SET_POSITION_GRIPPER_OPCODE, INT(OPEN_GRIPPER))
@@ -34,6 +35,9 @@ class Gripper(SecureSerialTalksProxy):
 
     def write_position(self, position):
         self.send(_SET_POSITION_GRIPPER_OPCODE, INT(position))
+
+    def get_goldsensor_state(self):
+        return self.goldsensor.get_ES2()
 
 
 class Pushers(SecureSerialTalksProxy):

@@ -252,6 +252,7 @@ class Geogebra():
     
     def get(self, element):
         if type(element) is str:
+            label = element
             element = self.root.find("./construction/element[@label='{}']".format(element))
         if element is None:
             raise KeyError(label)
