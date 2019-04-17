@@ -10,7 +10,7 @@ class PressureSensor
         int getPressurekPa();
         bool currentlyAtmospherePressure();
         void change_pressure_threshold(float threshold) {_threshold = threshold;}
-        void get_pressure_threshold() {return _threshold;}
+        float get_pressure_threshold() {return _threshold;}
     private:
         int _pin;
         float _threshold;
