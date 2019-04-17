@@ -1,4 +1,4 @@
-from robots.setup_bornibus import *
+from robots.setup_display import *
 from gpiozero import Button
 
 # GPIO: BTN_1=13 marche pas, BTN_2=12, BTN_3=6, BTN_4=5, TIR=26

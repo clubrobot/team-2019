@@ -7,8 +7,8 @@ def start_preparation():
     manager.connect()
     import os
     os.chdir("/home/pi/git/clubrobot/team-2019")
-
     from robots.buttons_manager import ButtonsManager
+
     if ROBOT_ID == BORNIBUS_ID:
         print("Launch match Bornibus")
         import robots.goldenium_bornibus as robot
@@ -16,6 +16,7 @@ def start_preparation():
         robot.init_robot()
         print("Button manager Bornibus")
         ButtonsManager(robot.map_loading, robot.def_pos, start_robot).begin()
+
     else:
         print("Launch match 128")
         import robots.R128.R128 as robot
