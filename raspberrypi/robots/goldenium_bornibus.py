@@ -49,6 +49,7 @@ def map_loading(couleur):
 
 def start(points, couleur):
     disp.start()
+    disp.points = 0
 
     wheeledbase.reset_parameters()
     wheeledbase.max_linvel.set(700)
