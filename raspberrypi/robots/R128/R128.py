@@ -22,7 +22,7 @@ class R128:
 
     def __init__(self, side, geogebra, wheeledbase, arm1, arm2, display, log):
         # Save daughter_cards
-        self.daughter_cards = dict(wheeledbase = wheeledbase, armFront = arm1, armBack = arm2, display = display, ssd = display.ssd)
+        self.daughter_cards = dict(wheeledbase = wheeledbase, armFront=arm1, armBack = arm2, display = display, ssd = display.display)
 
         # Save annexes inf
         self.side       = side
