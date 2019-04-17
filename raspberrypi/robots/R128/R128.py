@@ -20,9 +20,9 @@ class R128:
     DISTRIB3_1 = 4
     DISTRIB3_2 = 5
 
-    def __init__(self, side, geogebra, wheeledbase, arm1, arm2, display, ssd, log):
+    def __init__(self, side, geogebra, wheeledbase, arm1, arm2, display, log):
         # Save daughter_cards
-        self.daughter_cards = dict(wheeledbase = wheeledbase, armFront = arm1, armBack = arm2, display = display, ssd = ssd)
+        self.daughter_cards = dict(wheeledbase = wheeledbase, armFront = arm1, armBack = arm2, display = display, ssd = display.ssd)
 
         # Save annexes inf
         self.side       = side
