@@ -19,8 +19,6 @@ arduino_list = ['sensors', 'wheeledbase', 'power', 'display', 'modulescollector'
 
 
 def start(args):
-    man = Manager()
-    man.connect()
     man.send(START_MATCH_OPCODE)
 
 

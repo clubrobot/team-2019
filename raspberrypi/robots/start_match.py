@@ -1,8 +1,9 @@
 def start_preparation():
+    from common.components import Manager
+    manager = Manager()
+    manager.connect()
     import robots.goldenium_bornibus as Bornibus
     from robots.buttons_manager import ButtonsManager
-    manager = Bornibus.Manager()
-    manager.connect()
     Bornibus.init_robot()
     ButtonsManager(Bornibus.map_loading, Bornibus.def_pos, start_robot).begin()
 
