@@ -111,10 +111,8 @@ class R128:
 
     def def_pos(self, point, side):
         if side == "O":
-            self.set_side(R128.YELLOW)
             self.wheeledbase.set_position(755, 322, 0)
         else:
-            self.set_side(R128.PURPLE)
             self.wheeledbase.set_position(755, 3000-322, -pi)
 
     def run(self):
