@@ -3,6 +3,8 @@ from robots.buttons_manager import ButtonsManager
 
 
 def start_preparation():
+    manager = Manager()
+    manager.connect()
     init_robot()
     ButtonsManager(map_loading, def_pos, start_robot).begin()
 

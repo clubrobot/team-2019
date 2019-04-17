@@ -10,7 +10,7 @@ from common.roadmap import *
 # from robots.beacons_manager import BeaconsManagement
 # from daughter_cards.buttons import ButtonCard
 # from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
-
+from robots.Bornibus import *
 
 DEV_MODE = True
 MATCH_MODE = False
@@ -19,10 +19,9 @@ arduino_list = ['sensors', 'wheeledbase', 'power', 'display', 'modulescollector'
 
 
 def start(args):
-    manager = Manager()
-    manager.connect()
-    import robots.Bornibus as Bornibus
-    Bornibus.start_preparation()
+    man = Manager()
+    man.connect()
+    man.send(START_MATCH_OPCODE)
 
 
 def start_approval(**args):
@@ -96,7 +95,7 @@ def getlogs(args):
 
 
 def server(args):
-    srv = Server(password=args.password, size=args.size, start_match=start)
+    srv = Server(password=args.password, size=args.size, start_match=start_preparation)
     while True:
         try:
             while not srv.full():
@@ -161,7 +160,7 @@ if sys.argv[1] not in no_server:
         from robots.setup_bornibus import *
         init_robot()
     if ROBOT_ID == R128_ID:
-        from robots.setup_128 import init_robot
+        from robots.setup_128 import *
         init_robot()
 
 parser = ArgumentParser()
