@@ -22,7 +22,7 @@
 
 #define INTERRUPT			4
 
-#define TEMPS_MIN			5
+#define TEMPS_MIN			80
 
 #define GO_BACK				32
 
