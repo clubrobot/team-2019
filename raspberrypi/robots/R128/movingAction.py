@@ -66,7 +66,7 @@ class MovingAfterStart(Actionnable):
         
         self.wheeledbase    = daughter_cards['wheeledbase']
         # action Points
-        self.point          = self.geogebra.getall('Inter{}'.format(self.side))
+        self.point          = self.geogebra.get('Inter{}'.format(self.side))
         self.actionPoint    = None
 
         self.handeledPuck   = None
