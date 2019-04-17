@@ -6,7 +6,7 @@
 class PressureSensor 
 {
     public:
-        PressureSensor(int analogPin) : _pin(analogPin){},  _threshold(100.0);
+        PressureSensor(int analogPin) : _pin(analogPin), _threshold(100.0);
         int getPressurekPa();
         bool currentlyAtmospherePressure();
         void change_pressure_threshold(float threshold) {_threshold = threshold;}
