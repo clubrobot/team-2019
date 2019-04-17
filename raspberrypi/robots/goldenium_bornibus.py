@@ -110,7 +110,7 @@ def start(points, couleur):
         pass
 
     gripper.close()
-    time.sleep(1)
+    time.sleep(1.5)
 
     if gripper.get_goldsensor_state():
         gold = True
