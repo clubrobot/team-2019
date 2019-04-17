@@ -19,17 +19,18 @@ ssd = SevenSegments(manager)
 
 disp = DisplayPoints(ssd, led1, led2)
 
-gripper = Gripper(manager)
 pushers = Pushers(manager)
 arm = Arm(manager)
 endstops = EndStops(manager)
-arm.up()
+gripper = Gripper(manager, endstops)
 
 
 def init_robot():
     gripper.open()
     pushers.up()
     arm.up()
+    wheeledbase.stop()
+
 
 if __name__ == "__main__":
     init_robot()
