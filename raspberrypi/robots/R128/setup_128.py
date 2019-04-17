@@ -1,6 +1,7 @@
 from robots.setup_wheeledbase import *
 from robots.setup_serialtalks import *
 from daughter_cards.arm.RobotArm import *
+from robots.get_robot_name import *
 from daughter_cards.arm.ArmController import *
 from robots.setup_display import *
 from common.funcutils import *
@@ -17,7 +18,8 @@ armB = RobotArm(manager, uuid='arm_back')
 armFront = ArmController(armF, 'ARM FRONT', log)
 armBack  = ArmController(armB, 'ARM BACK' , log)
 
-os.chdir("/home/pi/git/clubrobot/team-2019")
+if ROBOT_ID == R128_ID:
+        os.chdir("/home/pi/git/clubrobot/team-2019")
 roadmap = None
 for root, dirs, files in os.walk("."):
         for file in files:

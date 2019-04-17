@@ -26,12 +26,25 @@ def start_preparation():
         ButtonsManager(R128.set_side, R128.def_pos, lambda x, y: R128.run()).begin()
 
 
-
 def start_robot(points, couleur):
     import robots.goldenium_bornibus as Bornibus
+    from threading import Thread
+    Thread(target=stop_match).start()
     try:
         Bornibus.start(points, couleur)
     except RuntimeError as e:
         print("error : ", e)
     finally:
         Bornibus.disp.stop()
+
+
+def stop_match():
+    import robots.goldenium_bornibus as Bornibus
+    import time
+    time.sleep(20)
+    Bornibus.wheeledbase.stop()
+    Bornibus.gripper.open()
+    Bornibus.pushers.up()
+    Bornibus.arm.up()
+    Bornibus.manager.disconnect()
+

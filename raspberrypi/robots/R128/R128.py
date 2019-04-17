@@ -81,6 +81,16 @@ class R128:
         else:
             self.wheeledbase.set_position(755, 3000-322, -pi)
 
+    def stop_match(self):
+        time.sleep(99)
+        self.wheeledbase.stop()
+        armFront.stop_pump()
+        armBack.stop_pump()
+        armF.stop()
+        armB.stop()
+        manager.disconnect()
+
+
     def run(self):
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
@@ -115,6 +125,7 @@ class R128:
         #stop thread action manager
         self.tam.stop()
         self.display.stop()
+        self.wheeledbase.stop()
 
 if __name__ == '__main__':
     from robots.R128.setup_128 import *
