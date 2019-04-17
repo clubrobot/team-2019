@@ -10,6 +10,15 @@ from common.geogebra import Geogebra
 from robots.R128.setup_128 import *
 
 
+def stop_match():
+    time.sleep(20)
+    wheeledbase.stop()
+    armFront.stop_pump()
+    armBack.stop_pump()
+    armF.stop()
+    armB.stop()
+    manager.disconnect()
+
 class R128:
     YELLOW  = 0
     PURPLE  = 1
@@ -81,20 +90,10 @@ class R128:
         else:
             self.wheeledbase.set_position(755, 3000-322, -pi)
 
-    def stop_match(self):
-        time.sleep(20)
-        self.wheeledbase.stop()
-        armFront.stop_pump()
-        armBack.stop_pump()
-        armF.stop()
-        armB.stop()
-        manager.disconnect()
-
-
     def run(self):
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
-        Thread(target=self.stop_match()).start()
+        Thread(target=stop_match()).start()
         self.display.start()
 
         # starting thread action manager
