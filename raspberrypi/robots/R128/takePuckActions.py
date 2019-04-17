@@ -51,7 +51,11 @@ class TakePuckSync(Actionnable):
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
 
-        time.sleep(0.5)
+        while self.arm1.get_atmosphere_pressure():
+            time.sleep(0.2)
+
+        while self.arm2.get_atmosphere_pressure():
+            time.sleep(0.2)
     
         self.arm1.move(TAKE_PUCK_INTER_AFTER_STATIC)
         self.arm2.move(TAKE_PUCK_INTER_AFTER_STATIC)
