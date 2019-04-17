@@ -69,7 +69,7 @@ class R128:
             self.takeSyncPos1Act,
             self.takeSyncPos2Act,
             self.takeSyncPos3Act,
-            self.self.moveToRed,
+            self.moveToRed,
             self.putRedZoneAct,
             self.movingAfterStart,
             self.balanceAct,
