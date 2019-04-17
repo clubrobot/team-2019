@@ -72,7 +72,7 @@ class MovingAfterStart(Actionnable):
         self.handeledPuck   = None
 
     def realize(self):
-        self.wheeledbase.goto(*self.point, pi/2)
+        self.wheeledbase.goto(*self.point, pi/2, direction = 'backward')
     
     def before(self):
         pass
