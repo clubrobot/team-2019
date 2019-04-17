@@ -37,3 +37,4 @@ def init_robot():
 
 if __name__ == "__main__":
         init_robot()
+        pass
