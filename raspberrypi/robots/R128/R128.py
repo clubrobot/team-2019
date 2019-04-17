@@ -59,21 +59,17 @@ class R128:
         self.takeSyncPos2Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_2, BluePuck, RedPuck, self.log).getAction()
 
         self.takeSyncPos3Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_3, GreenPuck, RedPuck, self.log).getAction()
-    
-        #self.takeSyncPos4Act    = TakePuckSyncMaintain(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_2, self.log).getAction()
 
         self.putRedZoneAct      = PutRedZone(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
-        # self.movingAct          = MovingToLittle(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
-
-        #self.takeSingleAct      = TakePuckSingle(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_1, RedPuck, self.log).getAction()
+        self.moveToRed          = MovingToRed(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
         self.action_list = [
             self.movingAfterStart,
             self.takeSyncPos1Act,
             self.takeSyncPos2Act,
             self.takeSyncPos3Act,
-            self.movingAfterStart,
+            self.self.moveToRed,
             self.putRedZoneAct,
             self.movingAfterStart,
             self.balanceAct,
