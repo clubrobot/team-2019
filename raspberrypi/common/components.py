@@ -166,7 +166,7 @@ class Server(TCPTalksServer):
         self.bind(SET_COMPONENT_ATTRIBUTE_OPCODE, self.SET_COMPONENT_ATTRIBUTE)
         self.bind(START_MATCH_OPCODE, self.START_MATCH)
         self.components = {}
-        self.start_match = lambda: start_match(None)
+        self.start_match = start_match
 
     def disconnect(self, id=None):
         TCPTalksServer.disconnect(self, id=id)
