@@ -4,7 +4,7 @@ import time
 import math
 
 from common.serialtalks import *
-from common.components import SerialTalks
+from common.components import SerialTalksProxy
 
 
 
@@ -14,10 +14,10 @@ ISONTOP_OPCODE 				= 0x11
 START_EXPERIENCE_OPCODE		= 0x10
 
 
-class Electron(SerialTalks):
+class Electron(SerialTalksProxy):
 
-	def __init__(self, uuid='expServ'):
-		SerialTalks.__init__(self, "/dev/arduino/{}".format(uuid))
+	def __init__(self, parent, uuid='expServ'):
+		SerialTalksProxy.__init__(self, parent, uuid)
 
 	def isOnTop(self):
 		output = self.execute(ISONTOP_OPCODE)
