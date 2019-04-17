@@ -27,7 +27,7 @@ PUT_TANK_PUCK2                 = ArmPos(-10.5,   3,   200)
 PUT_TANK_PUCK3                 = ArmPos(-8.5,  2.0,   200)
 
 #put tank after()
-PUT_TANK_AFTER                 = ArmPos(-5.5,  8.0,   90)
+PUT_TANK_AFTER                 = ArmPos(-5.5,  8.0,   120)
 
 # Tank Take Puck1
 BEFORE_TAKE_TANK_PUCK1          = ArmPos(-10.5,   2,   200)
