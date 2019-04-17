@@ -16,8 +16,8 @@ START_EXPERIENCE_OPCODE		= 0x10
 
 class Electron(SerialTalks):
 
-	def __init__(self, parent, uuid='expServ'):
-		SerialTalks.__init__(self, parent, "/dev/arduino/{}".format(uuid))
+	def __init__(self, uuid='expServ'):
+		SerialTalks.__init__(self, "/dev/arduino/{}".format(uuid))
 
 	def isOnTop(self):
 		output = self.execute(ISONTOP_OPCODE)
