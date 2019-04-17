@@ -181,22 +181,20 @@ def start(points, couleur):
         disp.addPoints(24)
     gripper.open()
 
-    wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Gold5"], points["Pal1"], points["Pal2"], points["tmp"]], direction="backward")
-    wheeledbase.wait()
-
     if couleur == "O":
-        wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["tmp2"], points["Pal3"], points["Pal4"]], direction="forward", finalangle=-0.7936277389526367)
+        wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Gold5"], points["Pal1"], points["Pal4"]], direction="backward", finalangle=-pi/4)
     if couleur == "M":
-        wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["tmp2"], points["Pal3"], points["Pal4"]], direction="forward", finalangle=0.7936277389526367)
+        wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Gold5"], points["Pal1"], points["Pal4"]], direction="backward", finalangle=pi/4)
 
     wheeledbase.wait()
-    pushers.down()
 
     if couleur == "O":
         wheeledbase.turnonthespot(-5*pi/6)
     if couleur == "M":
         wheeledbase.turnonthespot(5 * pi / 6)
     wheeledbase.wait()
+
+    pushers.down()
 
     wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Pal5"], points["Pal6"]], direction="forward")
     wheeledbase.wait()
