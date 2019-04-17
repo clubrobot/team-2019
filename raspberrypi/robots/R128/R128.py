@@ -121,6 +121,8 @@ class R128:
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
 
+        self.display.start()
+
         # starting thread action manager
         self.tam.start()
         
