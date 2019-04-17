@@ -29,6 +29,7 @@ _SET_PARAMETERS_OPCODE       = 0X19
 _GET_PARAMETERS_OPCODE       = 0x1A
 _GET_PRESSURE_OPCODE 		 = 0X1B
 _ATMOSPHERE_PRESSURE_OPCODE	 = 0X1C
+_UPDATE_THRESHOLD_OPCODE	 = 0X1D
 
 # EEPROM INDEX
 MOTOR1_ID_ID                 = 0x10
@@ -98,6 +99,9 @@ class RobotArm(SecureSerialTalksProxy):
 		out = self.execute(_ATMOSPHERE_PRESSURE_OPCODE)
 		ret = out.read(BYTE)
 		return bool(ret)
+
+	def update_pressure_threshold(self, value):
+		self.send(_UPDATE_THRESHOLD_OPCODE, FLOAT(value))
 
 	def set_parameter_value(self, id, value, valuetype):
 		self.send(_SET_PARAMETERS_OPCODE, BYTE(id), valuetype(value))

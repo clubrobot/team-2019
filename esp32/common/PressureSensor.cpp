@@ -1,14 +1,19 @@
 #include "PressureSensor.h"
 
-int PressureSensor::getPressurekPa(){
+int PressureSensor::getPressurekPa()
+{
     int sensorValue = analogRead(_pin);
-    int pressure = sensorValue*2;//map(sensorValue, 0, 255, 0, 500); //Pressure in kPa
+    int pressure = sensorValue * 2;
     return pressure;
 }
-bool PressureSensor::currentlyAtmospherePressure(){
-    if(getPressurekPa()<50){
+bool PressureSensor::currentlyAtmospherePressure()
+{
+    if(getPressurekPa() < _threshold)
+    {
         return true;
-    } else {
+    } 
+    else 
+    {
         return false;
     }
 }
