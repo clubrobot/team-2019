@@ -11,7 +11,7 @@ from robots.R128.setup_128 import *
 
 
 def stop_match():
-    time.sleep(20)
+    time.sleep(100)
     wheeledbase.stop()
     armFront.stop_pump()
     armBack.stop_pump()
