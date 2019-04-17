@@ -7,6 +7,8 @@ from robots.R128.PutRedZoneAction import *
 from robots.R128.movingAction import *
 from common.actions.action import ThreadActionManager
 from common.geogebra import Geogebra
+from robots.R128.setup_128 import *
+
 
 class R128:
     YELLOW  = 0
@@ -18,9 +20,9 @@ class R128:
     DISTRIB3_1 = 4
     DISTRIB3_2 = 5
 
-    def __init__(self, side, geogebra, wheeledbase, arm1, arm2, display, ssd, log):
+    def __init__(self, side, geogebra, wheeledbase, arm1, arm2, display, log):
         # Save daughter_cards
-        self.daughter_cards = dict(wheeledbase = wheeledbase, armFront = arm1, armBack = arm2, display = display, ssd = ssd)
+        self.daughter_cards = dict(wheeledbase = wheeledbase, armFront=arm1, armBack = arm2, display = display, ssd = display.display)
 
         # Save annexes inf
         self.side       = side
@@ -33,6 +35,7 @@ class R128:
         # Wheeledbase
         self.wheeledbase = self.daughter_cards['wheeledbase']
         self.ssd         = self.daughter_cards['ssd']
+        self.display     = self.daughter_cards['display']
         # Action thread manager
         self.tam = ThreadActionManager()
 
@@ -73,7 +76,11 @@ class R128:
         #self.daughter_cards['display'].start()
 
     def set_side(self, side):
-        self.side = side
+        if side == "O":
+            self.side = R128.YELLOW
+        else:
+            self.side = R128.PURPLE
+
         # Apply cube obstacle
         self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
 
@@ -102,9 +109,17 @@ class R128:
             self.putRedZoneAct
         ]
 
+    def def_pos(self, point, side):
+        if side == "O":
+            self.wheeledbase.set_position(755, 322, 0)
+        else:
+            self.wheeledbase.set_position(755, 3000-322, -pi)
+
     def run(self):
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
+
+        self.display.start()
 
         # starting thread action manager
         self.tam.start()
@@ -133,6 +148,7 @@ class R128:
             self.log("MAIN : ", "Let's go to the next action !")
         #stop thread action manager
         self.tam.stop()
+        self.display.stop()
 
 if __name__ == '__main__':
     from robots.R128.setup_128 import *
