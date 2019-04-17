@@ -110,7 +110,7 @@ def start(points, couleur):
         pass
 
     gripper.close()
-    time.sleep(0.8)
+    time.sleep(1)
 
     if gripper.get_goldsensor_state():
         gold = True
@@ -176,9 +176,10 @@ def start(points, couleur):
     wheeledbase.max_lindec.set(500.0)
 
     time.sleep(0.5)
-    gripper.open()
-    if gold:
+
+    if gripper.get_goldsensor_state():
         disp.addPoints(24)
+    gripper.open()
 
     wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Gold5"], points["Pal1"], points["Pal2"], points["tmp"]], direction="backward")
     wheeledbase.wait()
@@ -202,6 +203,7 @@ def start(points, couleur):
 
     disp.addPoints(13)
     pushers.up()
+    wheeledbase.stop()
 
 
 if __name__ == "__main__":
