@@ -35,6 +35,7 @@ class R128:
         self.ssd         = self.daughter_cards['ssd']
         # Action thread manager
         self.tam = ThreadActionManager()
+        init_robot()
 
     def approval(self):
         self.log("APPROVAL","wait for team")
