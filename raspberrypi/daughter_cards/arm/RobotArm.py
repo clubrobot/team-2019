@@ -58,9 +58,10 @@ class RobotArm(SecureSerialTalksProxy):
 
 	def move(self, x, y, phi):
 		out = self.execute(_ADD_MOVE_OPCODE, FLOAT(x), FLOAT(y), FLOAT(math.radians(phi)))
-		ret = out.read(BYTE)
-		if bool(ret):
-			raise RuntimeError('Error on move command : Position unreachable')
+		if out is not None:
+			ret = out.read(BYTE)
+			if bool(ret):
+				raise RuntimeError('Error on move command : Position unreachable')
 
 	def run(self):
 		self.send(_RUN_BATCH_OPCODE)
@@ -70,8 +71,11 @@ class RobotArm(SecureSerialTalksProxy):
 
 	def is_arrived(self):
 		out = self.execute(_IS_ARRIVED_OPCODE)
-		ret = out.read(BYTE)
-		return bool(ret)
+		if out is not None:
+			ret = out.read(BYTE)
+			return bool(ret)
+		else:
+			return False
 
 	def start_pump(self):
 		self.send(_START_PUMP_OPCODE)
