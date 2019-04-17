@@ -1,13 +1,22 @@
+from robots.get_robot_name import *
+
+
 def start_preparation():
     from common.components import Manager
     manager = Manager()
     manager.connect()
-    import robots.goldenium_bornibus as Bornibus
-    from robots.buttons_manager import ButtonsManager
     import os
     os.chdir("/home/pi/git/clubrobot/team-2019")
-    Bornibus.init_robot()
-    ButtonsManager(Bornibus.map_loading, Bornibus.def_pos, start_robot).begin()
+
+    from robots.buttons_manager import ButtonsManager
+    if ROBOT_ID == BORNIBUS_ID:
+        import robots.goldenium_bornibus as robot
+        robot.init_robot()
+        ButtonsManager(robot.map_loading, robot.def_pos, start_robot).begin()
+    else:
+        import robots.R128.R128 as robot
+        R128 = robot.R128(robot.R128.PURPLE, robot.geo, robot.wheeledbase, robot.armFront, robot.armBack, robot.log)
+        ButtonsManager(R128.set_side, R128.def_pos, lambda x, y: R128.run())
 
 
 def start_robot(points, couleur):

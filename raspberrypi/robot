@@ -160,7 +160,7 @@ if sys.argv[1] not in no_server:
         from robots.setup_bornibus import *
         init_robot()
     if ROBOT_ID == R128_ID:
-        from robots.setup_128 import *
+        from robots.R128.setup_128 import *
         init_robot()
 
 parser = ArgumentParser()
