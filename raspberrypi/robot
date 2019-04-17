@@ -158,9 +158,11 @@ if sys.argv[1] not in no_server:
     manager.connect()
     if ROBOT_ID == BORNIBUS_ID:
         from robots.setup_bornibus import *
+        print("Init robot Bornibus")
         init_robot()
-    if ROBOT_ID == R128_ID:
+    else:
         from robots.R128.setup_128 import *
+        print("Init robot 128")
         init_robot()
 
 parser = ArgumentParser()
