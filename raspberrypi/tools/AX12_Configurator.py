@@ -128,3 +128,8 @@ class AX12Configurator(SerialTalks):
     def readTorque(self):
         output = self.execute(_READ_TORQUE_OPCODE)
         return output.read(INT)
+
+
+if __name__ == "__main__":
+    arm = AX12Configurator()
+    arm.connect()

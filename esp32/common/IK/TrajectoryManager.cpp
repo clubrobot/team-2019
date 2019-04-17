@@ -45,6 +45,17 @@ void TrajectoryManager::init()
     _mutex.release();
 }
 
+float TrajectoryManager::get_timestep() const 
+{
+    float ret;
+
+    _mutex.acquire();
+    ret =  _timestep;
+    _mutex.release();
+
+    return ret;
+}
+
 void TrajectoryManager::move_directly(Coords pos)
 {
     _mutex.acquire();
@@ -68,6 +79,17 @@ void TrajectoryManager::move_directly(Coords pos)
         cout << e << endl;
     }
     _mutex.release();
+}
+
+bool TrajectoryManager::is_arrived() const
+{
+    bool ret;
+
+    _mutex.acquire();
+    ret = _arrived;
+    _mutex.release();
+    
+    return ret;
 }
 
 void TrajectoryManager::addMoveBatch(MoveBatch mb)
