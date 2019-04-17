@@ -25,7 +25,7 @@ class PutRedZone(Actionnable):
         self.display        = daughter_cards['display']
         # action Points
         self.point          = self.geogebra.get('Start{}'.format(self.side))
-        self.actionPoint    = ActPoint(self.point, -pi/2)
+        self.actionPoint    = None#ActPoint(self.point, -pi/2)
 
         #armPos
         self.beforeTankPos  = [BEFORE_TAKE_TANK_PUCK1, BEFORE_TAKE_TANK_PUCK2, BEFORE_TAKE_TANK_PUCK3]
