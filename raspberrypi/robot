@@ -10,7 +10,7 @@ from common.roadmap import *
 # from robots.beacons_manager import BeaconsManagement
 # from daughter_cards.buttons import ButtonCard
 # from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
-
+from robots.start_match import *
 
 DEV_MODE = True
 MATCH_MODE = False
