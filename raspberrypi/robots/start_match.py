@@ -41,7 +41,7 @@ def start_robot(points, couleur):
 def stop_match():
     import robots.goldenium_bornibus as Bornibus
     import time
-    time.sleep(20)
+    time.sleep(100)
     Bornibus.wheeledbase.stop()
     Bornibus.gripper.open()
     Bornibus.pushers.up()

@@ -82,7 +82,7 @@ class R128:
             self.wheeledbase.set_position(755, 3000-322, -pi)
 
     def stop_match(self):
-        time.sleep(99)
+        time.sleep(20)
         self.wheeledbase.stop()
         armFront.stop_pump()
         armBack.stop_pump()
