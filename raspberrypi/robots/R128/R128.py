@@ -38,6 +38,7 @@ class R128:
         self.display     = self.daughter_cards['display']
         # Action thread manager
         self.tam = ThreadActionManager()
+        init_robot()
 
     def set_side(self, side):
         if side == "O":
