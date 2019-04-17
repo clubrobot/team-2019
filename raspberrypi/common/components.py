@@ -21,7 +21,7 @@ SET_COMPONENT_ATTRIBUTE_OPCODE = 0x22
 UPDATE_MANAGER_PICAMERA_OPCODE = 0x30
 MAKE_MANAGER_REPLY_OPCODE = 0x40
 MAKE_MANAGER_EXECUTE_OPCODE = 0x50
-MAKE_MATCH_TIMER_OPCODE = 0x60
+START_MATCH_OPCODE = 0x60
 
 
 class Component():
@@ -155,7 +155,7 @@ except ImportError:
 
 class Server(TCPTalksServer):
 
-    def __init__(self, port=COMPONENTS_SERVER_DEFAULT_PORT, password=None, size=4):
+    def __init__(self, port=COMPONENTS_SERVER_DEFAULT_PORT, password=None, size=4, start_match=None):
         TCPTalksServer.__init__(self, port=port, password=password, NbClients=size)
         self.bind(CREATE_SERIALTALKS_COMPONENT_OPCODE, self.CREATE_SERIALTALKS_COMPONENT)
         self.bind(CREATE_SWITCH_COMPONENT_OPCODE, self.CREATE_SWITCH_COMPONENT)
@@ -164,8 +164,9 @@ class Server(TCPTalksServer):
         self.bind(MAKE_COMPONENT_EXECUTE_OPCODE, self.MAKE_COMPONENT_EXECUTE)
         self.bind(GET_COMPONENT_ATTRIBUTE_OPCODE, self.GET_COMPONENT_ATTRIBUTE)
         self.bind(SET_COMPONENT_ATTRIBUTE_OPCODE, self.SET_COMPONENT_ATTRIBUTE)
-        self.bind(MAKE_MATCH_TIMER_OPCODE, self.START_MATCH)
+        self.bind(START_MATCH_OPCODE, self.START_MATCH)
         self.components = {}
+        self.start_match = start_match
 
     def disconnect(self, id=None):
         TCPTalksServer.disconnect(self, id=id)
@@ -178,9 +179,7 @@ class Server(TCPTalksServer):
 
     def START_MATCH(self, *args):
         def core():
-            time.sleep(98)
-            self.disconnect()
-            self.cleanup()
+            self.start_match()
 
         Thread(target=core).start()
 

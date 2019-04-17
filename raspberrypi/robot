@@ -7,10 +7,10 @@ from common.serialtalks import *
 from common.components import Server, Manager
 from common.geogebra import *
 from common.roadmap import *
-#from robots.beacons_manager import BeaconsManagement
-#from daughter_cards.buttons import ButtonCard
-#from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
-
+# from robots.beacons_manager import BeaconsManagement
+# from daughter_cards.buttons import ButtonCard
+# from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
+from robots.start_match import *
 
 DEV_MODE = True
 MATCH_MODE = False
@@ -19,24 +19,25 @@ arduino_list = ['sensors', 'wheeledbase', 'power', 'display', 'modulescollector'
 
 
 def start(args):
-    init_robot()
-    m.disconnect()
+    man = Manager()
+    man.connect()
+    man.send(START_MATCH_OPCODE)
+
+
+def start_approval(**args):
     pass
 
-def start_approval(args):
-    init_robot()
-    m.disconnect()
-    pass
 
 def dev_mode(args):
-    m = Manager()
-    m.connect()
-    button_card = ButtonCard(m)
-    screen = SevenSegments(m)
-    wheeledbase = WheeledBase(m)
-    button_gesture = ButtonGestureDemo(button_card, screen, m)
-    while not button_gesture.exiting: time.sleep(0.2)
-    m.disconnect()
+    # m = Manager()
+    # m.connect()
+    # button_card = ButtonCard(m)
+    # screen = SevenSegments(m)
+    # wheeledbase = WheeledBase(m)
+    # button_gesture = ButtonGestureDemo(button_card, screen, m)
+    # while not button_gesture.exiting: time.sleep(0.2)
+    # m.disconnect()
+    pass
 
 
 def getuuid(args):
@@ -76,8 +77,8 @@ def showip(args):
             [ssd.set_message(ip) for ip in ips]
         else:
             ssd.set_message("No Ip found ")
-    except:
-        pass
+    except RuntimeError as e:
+        print(e)
 
 
 def getlogs(args):
@@ -94,7 +95,7 @@ def getlogs(args):
 
 
 def server(args):
-    srv = Server(password=args.password, size=args.size)
+    srv = Server(password=args.password, size=args.size, start_match=start_preparation)
     while True:
         try:
             while not srv.full():
@@ -157,8 +158,10 @@ if sys.argv[1] not in no_server:
     manager.connect()
     if ROBOT_ID == BORNIBUS_ID:
         from robots.setup_bornibus import *
+        init_robot()
     if ROBOT_ID == R128_ID:
         from robots.setup_128 import *
+        init_robot()
 
 parser = ArgumentParser()
 subparsers = parser.add_subparsers()

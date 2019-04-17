@@ -164,7 +164,6 @@ void LedMatrix::initMatrix()
 
 void LedMatrix::computeBuffer(char buffer[])
 {
-	talks.out << "nouveau message : " << buffer;
 	_pattern.clearPatterns();
 	int i;
 	for (i = 0; buffer[i]!='\0' && i < NB_PATTERNS_MAX; i++) {
