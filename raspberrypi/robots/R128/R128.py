@@ -94,7 +94,7 @@ class R128:
     def run(self):
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
-
+        Thread(target=self.stop_match()).start()
         self.display.start()
 
         # starting thread action manager
