@@ -18,7 +18,7 @@ MATCH_MODE = False
 arduino_list = ['sensors', 'wheeledbase', 'power', 'display', 'modulescollector', 'mineralscollector', 'watershooter', 'watersorter']
 
 
-def start(**args):
+def start(args):
     manager = Manager()
     manager.connect()
     import robots.Bornibus as Bornibus
