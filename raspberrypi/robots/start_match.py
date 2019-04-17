@@ -10,12 +10,18 @@ def start_preparation():
 
     from robots.buttons_manager import ButtonsManager
     if ROBOT_ID == BORNIBUS_ID:
+        print("Launch match Bornibus")
         import robots.goldenium_bornibus as robot
+        print("Init Bornibus")
         robot.init_robot()
+        print("Button manager Bornibus")
         ButtonsManager(robot.map_loading, robot.def_pos, start_robot).begin()
     else:
+        print("Launch match 128")
         import robots.R128.R128 as robot
+        print("Init 128")
         R128 = robot.R128(robot.R128.PURPLE, robot.geo, robot.wheeledbase, robot.armFront, robot.armBack, robot.log)
+        print("Button manager 128")
         ButtonsManager(R128.set_side, R128.def_pos, lambda x, y: R128.run())
 
 
