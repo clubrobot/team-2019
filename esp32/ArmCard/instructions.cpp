@@ -23,6 +23,11 @@ void UPDATE_THRESHOLD(SerialTalks& talks, Deserializer& input, Serializer& outpu
 	pSensor.change_pressure_threshold(input.read<float>());
 }
 
+void READ_THRESHOLD(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+    output.write<float>(pSensor.get_pressure_threshold());
+}
+
 extern ArmManager        arm_manager;
 extern TrajectoryManager traj_manager;
 
