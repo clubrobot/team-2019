@@ -22,7 +22,7 @@ class BalanceAfter6(Actionnable):
         else:
             self.arm        = daughter_cards['armBack']
 
-        #self.display        = daughter_cards['display']
+        self.display        = daughter_cards['display']
         # action Points
         self.point          = self.geogebra.get('Balance{}'.format(self.side))
         self.actionPoint    = ActPoint(self.point, pi/2)
@@ -40,6 +40,7 @@ class BalanceAfter6(Actionnable):
         
         while not self.arm.is_arrived():
             time.sleep(0.1)
+        self.display.addPoints(self.handeledPuck.getPoints().Balance)
         self.log("BALANCE6", "Add {} points".format(self.handeledPuck.getPoints().Balance))
         time.sleep(0.5)
         self.arm.stop_pump()
@@ -64,7 +65,7 @@ class BalanceAfter6(Actionnable):
     
             self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
             self.handeledPuck = self.arm.tank.get_puck()
-            #self.display.addPoints(self.handeledPuck.getPoints().Balance)
+            self.display.addPoints(self.handeledPuck.getPoints().Balance)
             self.log("BALANCE6", "Add {} points".format(self.handeledPuck.getPoints().Balance))
             while not self.arm.is_arrived():
                 time.sleep(0.1)
