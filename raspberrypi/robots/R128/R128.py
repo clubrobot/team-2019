@@ -76,7 +76,11 @@ class R128:
         #self.daughter_cards['display'].start()
 
     def set_side(self, side):
-        self.side = side
+        if side == "O":
+            self.side = R128.YELLOW
+        else:
+            self.side = R128.PURPLE
+
         # Apply cube obstacle
         self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
 
