@@ -57,6 +57,8 @@ def start(points, couleur):
     except:
         pass
 
+    sens_manager.start()
+
     disp.start()
     disp.points = 0
 
