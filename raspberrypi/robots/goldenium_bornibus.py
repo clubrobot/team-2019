@@ -50,7 +50,7 @@ def map_loading(couleur):
 
 def start(points, couleur):
     wheeledbase.reset_parameters()
-    wheeledbase.max_linvel.set(300)
+    wheeledbase.max_linvel.set(700)
     wheeledbase.max_angvel.set(10)
     wheeledbase.lookahead.set(150.0)
     wheeledbase.max_linacc.set(500.0)
@@ -63,7 +63,7 @@ def start(points, couleur):
     sens_manager.disable_back()
     sens_manager.set_thresold(150)
     print("sens_manager start")
-    sens_manager.start()
+    #sens_manager.start()
     # time.sleep(2)
     print("max ang vel : ", wheeledbase.max_angvel.get())
     print("max lin vel : ", wheeledbase.max_linvel.get())
