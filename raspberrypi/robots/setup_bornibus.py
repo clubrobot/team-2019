@@ -30,7 +30,6 @@ sensor_front = Sensors(manager, uuid='sensors_avant')
 sensor_back  = Sensors(manager, uuid='sensors_arriere')
 
 sens_manager = SensorsManager(wheeledbase, sensor_front, sensor_back)
-sens_manager.start()
 
 def init_robot():
     gripper.open()
