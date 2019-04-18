@@ -50,8 +50,8 @@ def map_loading(couleur):
 
 def start(points, couleur):
     sens_manager.disable_back()
-    sens_manager.start()
     sens_manager.set_thresold(150)
+    sens_manager.start()
     disp.start()
     disp.points = 0
 
