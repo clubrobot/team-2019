@@ -64,6 +64,7 @@ def start(points, couleur):
     sens_manager.set_thresold(150)
     print("sens_manager start")
     sens_manager.start()
+    time.sleep(2)
     print("max ang vel : ", wheeledbase.max_angvel.get())
     print("max lin vel : ", wheeledbase.max_linvel.get())
 
