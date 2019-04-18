@@ -26,6 +26,7 @@ class TakePuckSync(Actionnable):
             self.arm2       = daughter_cards['armFront']
             
         self.wheeledbase    = daughter_cards['wheeledbase']
+        self.sensor_manager = daughter_cards['sensor_manager']
         # action Points
         self.point          = self.geogebra.get('Distrib{}_{}'.format(self.side,self.distrib_pos))
         self.actionPoint    = ActPoint(self.point, pi/2)
@@ -37,6 +38,13 @@ class TakePuckSync(Actionnable):
 
         self.puck1      = puckFront
         self.puck2      = puckBack
+
+        if self.side == self.YELLOW:
+            self.sensor_manager.disable_front()
+            self.sensor_manager.enable_back()
+        else:
+            self.sensor_manager.enable_front()
+            self.sensor_manager.disable_back()
 
     def realize(self):
         self.arm1.start_pump()
