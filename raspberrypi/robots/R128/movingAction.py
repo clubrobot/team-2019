@@ -84,7 +84,7 @@ class MovingAfterStart(Actionnable):
         if self.side == self.YELLOW:
             self.wheeledbase.goto(*self.point, pi/2, direction = 'backward')
         else:
-            self.wheeledbase.goto(*self.point, pi/2, direction = 'forward')
+            self.wheeledbase.goto(*self.point, pi/2)
     def before(self):
         pass
 
