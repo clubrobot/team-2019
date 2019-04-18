@@ -192,15 +192,15 @@ def start(points, couleur):
 
     if couleur == "O":
         wheeledbase.turnonthespot(-5*pi/6)
-    if couleur == "M":
+    else:
         wheeledbase.turnonthespot(5 * pi / 6)
     wheeledbase.wait()
 
 
     # Vers zone
     print("Vers Zone")
-    sens_manager.back_disable()
-    sens_manager.front_enable()
+    # sens_manager.back_disable()
+    # sens_manager.front_enable()
     pushers.down()
 
     wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Pal5"], points["Pal6"]], direction="forward")
