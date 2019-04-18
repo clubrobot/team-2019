@@ -8,11 +8,11 @@ HOME                            = ArmPos(1.5,    7.0,    0)
 GLOBAL_POS_INTER                = ArmPos(3.8,    13.0,   0)
 
 # Prepare Taking
-PREPARE_TAKING_POS_ROAD         = ArmPos(11.5,   3.0,    5)
-PREPARE_TAKING_POS_STATIC       = ArmPos(12.5,   3.5,    5)
+PREPARE_TAKING_POS_ROAD         = ArmPos(11.5,   3.0,    10)
+PREPARE_TAKING_POS_STATIC       = ArmPos(13,   4,    10)
 
 # Take Puck
-TAKE_PUCK_STATIC                = ArmPos(14.8,   4,    5)
+TAKE_PUCK_STATIC                = ArmPos(14.8,   5,    10)
 TAKE_PUCK_INTER_AFTER_STATIC    = ArmPos(9.0,    10.0,   90.0)
 
 # Tank Inter
