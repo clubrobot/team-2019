@@ -30,7 +30,7 @@ class R128:
     DISTRIB3_1 = 4
     DISTRIB3_2 = 5
 
-    def __init__(self, side, geogebra, wheeledbase, arm1, arm2, display, sensor_manager, log):
+    def __init__(self, side, geogebra, wheeledbase, arm1, arm2, display, sensor_manager, electron, log):
         # Save daughter_cards
         self.daughter_cards = dict(wheeledbase = wheeledbase, armFront=arm1, armBack = arm2, display = display, ssd = display.display, sensor_manager = sens_manager)
 
@@ -41,7 +41,7 @@ class R128:
 
         # action List
         self.action_list = []
-
+        self.electron = electron
         # Wheeledbase
         self.wheeledbase    = self.daughter_cards['wheeledbase']
         self.ssd            = self.daughter_cards['ssd']
@@ -96,6 +96,7 @@ class R128:
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
         #self.sensor_manager.start()
+        self.electron.start()
         Thread(target=stop_match).start()
         self.display.start()
 
