@@ -75,9 +75,9 @@ class MovingAfterStart(Actionnable):
 
         if self.side == self.YELLOW:
             self.sensor_manager.disable_front()
-            self.sensor_manager.enable_back()
+            self.sensor_manager.disable_front()
         else:
-            self.sensor_manager.enable_front()
+            self.sensor_manager.disable_front()
             self.sensor_manager.disable_back()
 
     def realize(self):
