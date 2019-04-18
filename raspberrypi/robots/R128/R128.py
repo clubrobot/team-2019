@@ -95,7 +95,7 @@ class R128:
     def run(self):
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
-        self.sensor_manager.start()
+        #self.sensor_manager.start()
         Thread(target=stop_match).start()
         self.display.start()
 
