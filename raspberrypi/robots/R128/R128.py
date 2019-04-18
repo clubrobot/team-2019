@@ -97,6 +97,7 @@ class R128:
         self.log.reset_time()
         #self.sensor_manager.start()
         self.electron.start()
+        self.display.addPoints(40)
         Thread(target=stop_match).start()
         self.display.start()
 
