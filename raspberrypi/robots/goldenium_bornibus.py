@@ -49,12 +49,6 @@ def map_loading(couleur):
 
 
 def start(points, couleur):
-    sens_manager.start()
-    sens_manager.disable_back()
-    sens_manager.set_thresold(150)
-    disp.start()
-    disp.points = 0
-
     wheeledbase.reset_parameters()
     wheeledbase.max_linvel.set(700)
     wheeledbase.max_angvel.set(10)
@@ -62,13 +56,14 @@ def start(points, couleur):
     wheeledbase.max_linacc.set(500.0)
     wheeledbase.max_lindec.set(700.0)
 
+    sens_manager.disable_back()
+    sens_manager.set_thresold(150)
+    sens_manager.start()
+    disp.start()
+    disp.points = 0
+
     pushers.up()
     gripper.open()
-
-    wheeledbase.stop()
-
-    print("Get position : ", wheeledbase.get_position())
-    print("Dep1 : ", points["Dep1"])
 
     # Vers l'accélérateur
     wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Dep1"], points["Dep2"], points["Dep3"], points["Gold2"]],direction = "forward", lookahead = 150, lookaheadbis = 3)
