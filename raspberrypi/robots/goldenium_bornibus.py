@@ -60,8 +60,8 @@ def start(points, couleur):
     print("max ang vel : ", wheeledbase.max_angvel.get())
 
     print("disable back")
-    sens_manager.disable_back()
-    sens_manager.set_thresold(150)
+    # sens_manager.disable_back()
+    # sens_manager.set_thresold(150)
     print("sens_manager start")
     #sens_manager.start()
     # time.sleep(2)
@@ -83,7 +83,7 @@ def start(points, couleur):
 
     # Prépare le bras
     print("Prépare le bras")
-    sens_manager.disable_front()
+    # sens_manager.disable_front()
     if couleur == "O":
         wheeledbase.turnonthespot(-pi/4)
         while not wheeledbase.isarrived():
@@ -111,13 +111,13 @@ def start(points, couleur):
 
     # Vers préparation Goldenium
     print("Vers préparation Goldenium")
-    sens_manager.enable_front()
+    # sens_manager.enable_front()
     wheeledbase.goto(*points["Gold3"], theta=pi )
     while not wheeledbase.isarrived():
         print(wheeledbase.get_position())
         time.sleep(0.1)
 
-    sens_manager.disable_front()
+    # sens_manager.disable_front()
 
     # Vers Goldenium
     print("Vers Goldenium")
@@ -146,23 +146,26 @@ def start(points, couleur):
 
     # Vers balance
     print("Vers Balance")
-    sens_manager.enable_back()
+    # sens_manager.enable_back()
     wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Gold3"], points["Gold5"]], direction= "backward", lookahead=150, lookaheadbis=100)
     wheeledbase.wait()
     wheeledbase.max_linacc.set(300.0)
     wheeledbase.max_lindec.set(300.0)
+    wheeledbase.max_linvel.set(400)
     wheeledbase.turnonthespot(0)
     wheeledbase.wait()
 
     # Dépose balance
     print("Dépose Balance")
-    sens_manager.disable_back()
+    # sens_manager.disable_back()
 
     try:
         wheeledbase.goto(*points["Gold6"], theta=0)
         wheeledbase.wait()
     except:
         gripper.open()
+        print("error")
+
 
     wheeledbase.reset_parameters()
     wheeledbase.max_linacc.set(500.0)
@@ -182,7 +185,7 @@ def start(points, couleur):
     # Vers palets
 
     print("Vers Palets")
-    sens_manager.enable_back()
+    # sens_manager.enable_back()
     if couleur == "O":
         wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Gold5"], points["Pal1"], points["Pal4"]], direction="backward", finalangle=-pi/4)
     if couleur == "M":
