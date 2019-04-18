@@ -63,8 +63,8 @@ def start(points, couleur):
     sens_manager.disable_back()
     sens_manager.set_thresold(150)
     print("sens_manager start")
-    sens_manager.start()
-    time.sleep(2)
+    # sens_manager.start()
+    # time.sleep(2)
     print("max ang vel : ", wheeledbase.max_angvel.get())
     print("max lin vel : ", wheeledbase.max_linvel.get())
 
@@ -112,13 +112,12 @@ def start(points, couleur):
     # Vers préparation Goldenium
     print("Vers préparation Goldenium")
     sens_manager.enable_front()
-    wheeledbase.goto(*points["Gold3"])
+    wheeledbase.goto(*points["Gold3"], theta=pi )
     while not wheeledbase.isarrived():
         print(wheeledbase.get_position())
         time.sleep(0.1)
 
     sens_manager.disable_front()
-    wheeledbase.turnonthespot(pi)
 
 
     # Vers Goldenium
@@ -256,10 +255,11 @@ def start(points, couleur):
 
 
 if __name__ == "__main__":
-    couleur = "M"
+    couleur = "O"
     init_robot()
     points = map_loading(couleur)
     def_pos(points, couleur)
+    print("ready")
     input()
     start(points, couleur)
     disp.stop()
