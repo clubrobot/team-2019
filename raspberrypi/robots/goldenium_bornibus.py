@@ -49,18 +49,18 @@ def map_loading(couleur):
 
 
 def start(points, couleur):
-    sens_manager.disable_back()
-    sens_manager.set_thresold(150)
-    sens_manager.start()
-    disp.start()
-    disp.points = 0
-
     wheeledbase.reset_parameters()
     wheeledbase.max_linvel.set(700)
     wheeledbase.max_angvel.set(10)
     wheeledbase.lookahead.set(150.0)
     wheeledbase.max_linacc.set(500.0)
     wheeledbase.max_lindec.set(700.0)
+
+    sens_manager.disable_back()
+    sens_manager.set_thresold(150)
+    sens_manager.start()
+    disp.start()
+    disp.points = 0
 
     pushers.up()
     gripper.open()
