@@ -28,19 +28,20 @@ class SensorsManager(Thread):
 
     def run(self):
         while True:
-            stop = False
+            obstacle = False
             self.lock.acquire()
             if not self.front_disable.is_set():
                 if(self.sensor_front.get_single_mesure()[0] < self.threshold):
-                    stop = True
+                    obstacle = True
 
             if not self.back_disable.is_set():
                 if(self.sensor_front.get_single_mesure()[0] < self.threshold):
-                    stop = True
+                    obstacle = True
             self.lock.release()
 
-            if stop:
-                if not self.stopped:  
+            if obstacle:
+                if not self.stopped:
+                    print("nouvel obstacle")
                     self.max_linvel     = self.wheeledbase.max_linvel.get()
                     self.max_angvel     = self.wheeledbase.max_angvel.get()
                 self.wheeledbase.max_linvel.set(0)
