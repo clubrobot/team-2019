@@ -36,24 +36,3 @@ class Sensors(SerialTalksProxy):
         output = self.execute(_GET_SINGLE_MESURE_OPCODE)
         dist = output.read(STRING)
         return list(map(int,dist.split(';')[:-1]))
-
-    def get_continuous_mesure(self):
-        """
-            Si le mode est continu, récupère une distance (ou une MG des distances)
-        """
-        output = self.execute(_GET_CONTINUOUS_MESURE_OPCODE)
-        dist = output.read(STRING)
-        return list(map(float,dist.split(';')[:-1]))
-
-    def start_continuous(self, MG_nb_echantillons = 0):
-        """
-            Active le mode continu
-            MG_nb_echantillons : si 0 alors MG désactivé, sinon on effectue la moyenne glissante sur ce nombre d'échantillons
-        """
-        self.send(_START_CONTINUOUS_OPCODE, INT(MG_nb_echantillons))
-
-    def stop_continuous(self):
-        """
-            Désactive le mode continu
-        """
-        self.send(_STOP_CONTINUOUS_OPCODE)
