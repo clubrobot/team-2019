@@ -81,8 +81,10 @@ class MovingAfterStart(Actionnable):
             self.sensor_manager.disable_back()
 
     def realize(self):
-        self.wheeledbase.goto(*self.point, pi/2, direction = 'backward')
-    
+        if self.side == self.YELLOW:
+            self.wheeledbase.goto(*self.point, pi/2, direction = 'backward')
+        else:
+            self.wheeledbase.goto(*self.point, pi/2, direction = 'forward')
     def before(self):
         pass
 
