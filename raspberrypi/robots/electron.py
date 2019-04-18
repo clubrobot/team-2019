@@ -4,7 +4,7 @@ import time
 import math
 
 from common.serialtalks import *
-from common.components import SerialTalksProxy
+from common.components import SecureSerialTalksProxy
 
 
 
@@ -14,10 +14,10 @@ ISONTOP_OPCODE 				= 0x11
 START_EXPERIENCE_OPCODE		= 0x10
 
 
-class Electron(SerialTalksProxy):
+class Electron(SecureSerialTalksProxy):
 
 	def __init__(self, parent, uuid='expServ'):
-		SerialTalksProxy.__init__(self, parent, uuid)
+		SecureSerialTalksProxy.__init__(self, parent, uuid, dict)
 
 	def isOnTop(self):
 		output = self.execute(ISONTOP_OPCODE)
