@@ -7,6 +7,7 @@ from robots.setup_display import *
 from common.funcutils import *
 from common.geogebra import *
 from common.logger import *
+from robots.electron import *
 import time
 import os
 
@@ -14,6 +15,8 @@ log = Logger(Logger.SHOW)
 
 armF = RobotArm(manager, uuid='arm_front')
 armB = RobotArm(manager, uuid='arm_back')
+
+electron = Electron(manager)
 
 armFront = ArmController(armF, 'ARM FRONT', log)
 armBack  = ArmController(armB, 'ARM BACK' , log)
