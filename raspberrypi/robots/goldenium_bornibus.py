@@ -50,7 +50,7 @@ def map_loading(couleur):
 
 def start(points, couleur):
     wheeledbase.reset_parameters()
-    wheeledbase.max_linvel.set(700)
+    wheeledbase.max_linvel.set(300)
     wheeledbase.max_angvel.set(10)
     wheeledbase.lookahead.set(150.0)
     wheeledbase.max_linacc.set(500.0)
@@ -63,7 +63,7 @@ def start(points, couleur):
     sens_manager.disable_back()
     sens_manager.set_thresold(150)
     print("sens_manager start")
-    # sens_manager.start()
+    sens_manager.start()
     # time.sleep(2)
     print("max ang vel : ", wheeledbase.max_angvel.get())
     print("max lin vel : ", wheeledbase.max_linvel.get())
@@ -119,7 +119,6 @@ def start(points, couleur):
 
     sens_manager.disable_front()
 
-
     # Vers Goldenium
     print("Vers Goldenium")
     gold = False
@@ -144,45 +143,6 @@ def start(points, couleur):
 
     wheeledbase.right_wheel_maxPWM.set(1)
     wheeledbase.left_wheel_maxPWM.set(1)
-
-    # while (goldenium!=1) and (attempt <=4) :
-    #    try:
-    #        wheeledbase.goto(*Gold4, theta=pi)
-    #       counter_start_time = time.monotonic()
-    #       while not wheeledbase.isarrived():
-    #           if time.monotonic() - counter_star_time < MAX_TIME_FOR_GOLDENIUM :
-    #               print(wheeledbase.get_position())
-    #               time.sleep(0.1)
-    #           else :
-    #                raise RuntimeError('time-out')
-    #       gripper.close()
-    #       time.sleep(0.5)
-    #       disp.addPoints(20)
-    #       goldenium=1
-    #   except:
-    #       print("Erreur")
-    #       time.sleep(0.5)
-    #       error_theta = wheeledbase.get_position()[2]
-    #       print("error_theta=", error_theta)
-    #       attempt+=1
-    #       if abs(-pi - error_theta) <= 0.1 : # Lol
-    #           print("rentré dans abs")
-    #           gripper.close()
-    #           time.sleep(5)
-    #           goldenium=1
-    #       if pi - error_theta > 0.1:
-    #           wheeledbase.goto(*Gold3, theta=pi)
-    #           while not wheeledbase.isarrived() :
-    #               print(wheeledbase.get_position())
-    #               time.sleep(0.1)
-    #           Gold4 = (Gold4[0],Gold4[1]+2)
-    #       else :
-    #           wheeledbase.goto(*Gold3, theta=pi)
-    #           while not wheeledbase.isarrived() :
-    #               print(wheeledbase.get_position())
-    #               time.sleep(0.1)
-    #           Gold4= (Gold4[0],Gold4[1]-2)
-
 
     # Vers balance
     print("Vers Balance")
