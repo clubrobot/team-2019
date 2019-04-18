@@ -19,6 +19,7 @@ def stop_match():
     armB.stop()
     manager.disconnect()
 
+
 class R128:
     YELLOW  = 0
     PURPLE  = 1
