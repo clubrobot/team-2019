@@ -23,6 +23,7 @@ class PutRedZone(Actionnable):
             self.arm        = daughter_cards['armFront']
         
         self.display        = daughter_cards['display']
+        self.sensor_manager = daughter_cards['sensor_manager']
         # action Points
         self.point          = self.geogebra.get('Start{}'.format(self.side))
         self.actionPoint    = None#ActPoint(self.point, -pi/2)

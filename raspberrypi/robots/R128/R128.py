@@ -30,9 +30,9 @@ class R128:
     DISTRIB3_1 = 4
     DISTRIB3_2 = 5
 
-    def __init__(self, side, geogebra, wheeledbase, arm1, arm2, display, log):
+    def __init__(self, side, geogebra, wheeledbase, arm1, arm2, display, sensor_manager, log):
         # Save daughter_cards
-        self.daughter_cards = dict(wheeledbase = wheeledbase, armFront=arm1, armBack = arm2, display = display, ssd = display.display)
+        self.daughter_cards = dict(wheeledbase = wheeledbase, armFront=arm1, armBack = arm2, display = display, ssd = display.display, sensor_manager = sens_manager)
 
         # Save annexes inf
         self.side       = side
@@ -43,9 +43,10 @@ class R128:
         self.action_list = []
 
         # Wheeledbase
-        self.wheeledbase = self.daughter_cards['wheeledbase']
-        self.ssd         = self.daughter_cards['ssd']
-        self.display     = self.daughter_cards['display']
+        self.wheeledbase    = self.daughter_cards['wheeledbase']
+        self.ssd            = self.daughter_cards['ssd']
+        self.display        = self.daughter_cards['display']
+        self.sensor_manager = self.daughter_cards['sensor_manager']
         # Action thread manager
         self.tam = ThreadActionManager()
         init_robot()
@@ -94,6 +95,7 @@ class R128:
     def run(self):
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
+        self.sensor_manager.start()
         Thread(target=stop_match).start()
         self.display.start()
 

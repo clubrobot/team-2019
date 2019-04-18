@@ -3,6 +3,8 @@ from robots.setup_serialtalks import *
 from daughter_cards.arm.RobotArm import *
 from robots.get_robot_name import *
 from daughter_cards.arm.ArmController import *
+from daughter_cards.Sensor_IR import *
+from robots.sensors_manager import *
 from robots.setup_display import *
 from common.funcutils import *
 from common.geogebra import *
@@ -20,6 +22,11 @@ electron = Electron(manager)
 
 armFront = ArmController(armF, 'ARM FRONT', log)
 armBack  = ArmController(armB, 'ARM BACK' , log)
+
+sensor_front = Sensors(manager, uuid='sensors_avant')
+sensor_back  = Sensors(manager, uuid='sensors_arriere')
+
+sens_manager = SensorsManager(wheeledbase, sensor_front, sensor_back)
 
 if ROBOT_ID == R128_ID:
         os.chdir("/home/pi/git/clubrobot/team-2019")
