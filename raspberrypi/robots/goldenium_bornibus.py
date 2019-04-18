@@ -49,16 +49,9 @@ def map_loading(couleur):
 
 
 def start(points, couleur):
-    try:
-        m = Manager()
-        m.connect()
-        e = Electron(m)
-        e.start()
-    except:
-        pass
-
     sens_manager.start()
-
+    sens_manager.disable_back()
+    sens_manager.set_thresold(150)
     disp.start()
     disp.points = 0
 
@@ -77,11 +70,14 @@ def start(points, couleur):
     print("Get position : ", wheeledbase.get_position())
     print("Dep1 : ", points["Dep1"])
 
+    # Vers l'accélérateur
     wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Dep1"], points["Dep2"], points["Dep3"], points["Gold2"]],direction = "forward", lookahead = 150, lookaheadbis = 3)
     wheeledbase.wait()
 
     wheeledbase.lookaheadbis.set(150)
 
+    # Prépare le brase
+    sens_manager.disable_front()
     if couleur == "O":
         wheeledbase.turnonthespot(-pi/4)
         while not wheeledbase.isarrived():
@@ -96,6 +92,7 @@ def start(points, couleur):
     time.sleep(0.5)
     arm.deploy()
 
+    # Pousse
     wheeledbase.turnonthespot(-pi/2)
     while not wheeledbase.isarrived():
         print(wheeledbase.get_position())
@@ -105,11 +102,18 @@ def start(points, couleur):
     disp.addPoints(20)
     gripper.open()
 
-    wheeledbase.goto(*points["Gold3"], theta=pi)
+    # Vers préparation Goldenium
+    sens_manager.enable_front()
+    wheeledbase.goto(*points["Gold3"])
     while not wheeledbase.isarrived():
         print(wheeledbase.get_position())
         time.sleep(0.1)
 
+    sens_manager.disable_front()
+    wheeledbase.turnonthespot(pi)
+
+
+    # Vers Goldenium
     gold = False
     wheeledbase.right_wheel_maxPWM.set(0.2)
     wheeledbase.left_wheel_maxPWM.set(0.2)
@@ -120,6 +124,7 @@ def start(points, couleur):
     except:
         pass
 
+    # Prise goldenium
     gripper.close()
     time.sleep(1.5)
 
@@ -169,12 +174,18 @@ def start(points, couleur):
     #               time.sleep(0.1)
     #           Gold4= (Gold4[0],Gold4[1]-2)
 
+
+    # Vers balance
+    sens_manager.enable_back()
     wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Gold3"], points["Gold5"]], direction= "backward", lookahead=150, lookaheadbis=100)
     wheeledbase.wait()
     wheeledbase.max_linacc.set(300.0)
     wheeledbase.max_lindec.set(300.0)
     wheeledbase.turnonthespot(0)
     wheeledbase.wait()
+
+    # Dépose balance
+    sens_manager.disable_back()
 
     try:
         wheeledbase.goto(*points["Gold6"], theta=0)
@@ -186,12 +197,18 @@ def start(points, couleur):
     wheeledbase.max_linacc.set(500.0)
     wheeledbase.max_lindec.set(500.0)
 
+    # Depose
     time.sleep(0.5)
 
     if gripper.get_goldsensor_state():
         disp.addPoints(24)
     gripper.open()
 
+    time.sleep(0.5)
+
+
+    # Vers palets
+    sens_manager.enable_back()
     if couleur == "O":
         wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Gold5"], points["Pal1"], points["Pal4"]], direction="backward", finalangle=-pi/4)
     if couleur == "M":
@@ -205,6 +222,10 @@ def start(points, couleur):
         wheeledbase.turnonthespot(5 * pi / 6)
     wheeledbase.wait()
 
+
+    # Vers zone
+    sens_manager.back_disable()
+    sens_manager.front_enable()
     pushers.down()
 
     wheeledbase.purepursuit([wheeledbase.get_position()[:2], points["Pal5"], points["Pal6"]], direction="forward")
