@@ -10,7 +10,6 @@ class SensorsManager(Thread):
         Thread.__init__(self)
         self.daemon         = False
 
-
         self.wheeledbase    = wheeledbase
         self.max_linvel     = self.wheeledbase.max_linvel.get()
         self.max_angvel     = self.wheeledbase.max_angvel.get()
@@ -52,7 +51,7 @@ class SensorsManager(Thread):
                 self.wheeledbase.max_linvel.set(self.max_linvel)
                 self.wheeledbase.max_angvel.set(self.max_angvel)
                 self.stopped = False
-            time.sleep(0.1)
+            time.sleep(0.4)
 
     def disable_front(self):
         self.front_disable.set()

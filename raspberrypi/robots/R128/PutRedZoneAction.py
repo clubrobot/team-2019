@@ -104,8 +104,7 @@ class PutRedZone(Actionnable):
 
 
     def after(self):
-        self.arm.go_home()
-
+        self.arm.move(TANK_POS_INTER)
         while not self.arm.is_arrived():
             time.sleep(0.1)
 
