@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "/Users/apegne/Documents/Arduino/libraries/FastLED/FastLED.h"
+#include "../common/fastLED/FastLED.h"
 #include "../common/ESP32-Arduino-Servo-Library/src/Servo.h"
 #include "../common/DCMotor.h"
 
@@ -22,7 +22,7 @@
 
 #define INTERRUPT			4
 
-#define TEMPS_MIN			5
+#define TEMPS_MIN			80
 
 #define GO_BACK				32
 
