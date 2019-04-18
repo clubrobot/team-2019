@@ -17,7 +17,7 @@ static boolean connected = false;
 static BLERemoteCharacteristic *pStartCharacteristic;
 static BLERemoteCharacteristic *pIsOnTopCharacteristic;
 
-ExperienceEffects experience(false);
+ExperienceEffects experience(true);
 
 long current_time = 0;
 long last_time = 0;

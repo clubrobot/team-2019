@@ -1,6 +1,7 @@
 from math import pi
 from robots.setup_bornibus import *
 from common.geogebra import Geogebra
+from robots.electron import *
 
 MAX_TIME_FOR_GOLDENIUM = 2
 
@@ -48,6 +49,14 @@ def map_loading(couleur):
 
 
 def start(points, couleur):
+    try:
+        m = Manager()
+        m.connect()
+        e = Electron(m)
+        e.start()
+    except:
+        pass
+
     disp.start()
     disp.points = 0
 

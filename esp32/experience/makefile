@@ -8,7 +8,7 @@ BOARD_UUID = electron
 COMMON = ../common
 #Setup all libs used !
 LIBS = $(ESP_LIBS)/EEPROM \
-	   $(ESP_LIBS)/BLE \
+	   $(COMMON)/BLE \
 	   $(COMMON)/CRC16.cpp \
 	   $(COMMON)/ExperienceEffects.cpp \
 		 $(COMMON)/ESP32-Arduino-Servo-Library/src/Servo.cpp \
