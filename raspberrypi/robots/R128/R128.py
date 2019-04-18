@@ -88,14 +88,14 @@ class R128:
 
     def def_pos(self, point, side):
         if side == "O":
-            self.wheeledbase.set_position(755, 322, 0)
+            self.wheeledbase.set_position(725, 312, 0)
         else:
-            self.wheeledbase.set_position(755, 3000-322, -pi)
+            self.wheeledbase.set_position(725, 3000-312, -pi)
 
     def run(self):
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
-        self.sensor_manager.start()
+        #self.sensor_manager.start()
         Thread(target=stop_match).start()
         self.display.start()
 
