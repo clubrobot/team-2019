@@ -30,25 +30,32 @@ class R128:
     DISTRIB3_1 = 4
     DISTRIB3_2 = 5
 
-    def __init__(self, side, geogebra, wheeledbase, arm1, arm2, display, sensor_manager, electron, log):
+    def __init__(self, side, geogebra, wheeledbase, arm1, arm2, display, electron, log):
         # Save daughter_cards
-        self.daughter_cards = dict(wheeledbase = wheeledbase, armFront=arm1, armBack = arm2, display = display, ssd = display.display, sensor_manager = sens_manager)
+        self.daughter_cards = dict( wheeledbase = wheeledbase, 
+                                    armFront=arm1, 
+                                    armBack = arm2, 
+                                    display = display,
+                                    sensor_manager = sens_manager)
 
         # Save annexes inf
-        self.side       = side
-        self.geogebra   = geogebra
-        self.log        = log
+        self.side           = side
+        self.geogebra       = geogebra
+        self.log            = log
 
         # action List
-        self.action_list = []
-        self.electron = electron
+        self.action_list    = []
+
+        #electron control
+        self.electron       = electron
         # Wheeledbase
         self.wheeledbase    = self.daughter_cards['wheeledbase']
-        self.ssd            = self.daughter_cards['ssd']
+        # Display screen
         self.display        = self.daughter_cards['display']
-        self.sensor_manager = self.daughter_cards['sensor_manager']
+
         # Action thread manager
         self.tam = ThreadActionManager()
+
         init_robot()
 
     def set_side(self, side):
@@ -95,11 +102,12 @@ class R128:
     def run(self):
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
-        #self.sensor_manager.start()
-        self.electron.start()
-        self.display.addPoints(40)
         Thread(target=stop_match).start()
         self.display.start()
+
+        self.log("MAIN : ", "Launch Electron")
+        self.electron.start()
+        self.display.addPoints(40)
 
         # starting thread action manager
         self.tam.start()
@@ -126,20 +134,22 @@ class R128:
             self.tam.putAction(act.getAfter())
             
             self.log("MAIN : ", "Let's go to the next action !")
+        
         #stop thread action manager
         self.tam.stop()
         self.display.stop()
         self.wheeledbase.stop()
 
 if __name__ == '__main__':
-    from robots.R128.setup_128 import *
-    init_robot()
-    log("MAIN : ", "DEBUT CHARGEMENT ROADMAP")
+    # from robots.R128.setup_128 import *
+    # init_robot()
+    # log("MAIN : ", "DEBUT CHARGEMENT ROADMAP")
 
-    geo = Geogebra('128.ggb')
+    # geo = Geogebra('128.ggb')
 
-    auto = R128(R128.YELLOW,geo, wheeledbase, armFront,  armBack, log)
-    auto.set_side(R128.YELLOW)
-    wheeledbase.set_position(755, 322, 0)
-    #wheeledbase.set_position(755, 3000-322, -pi)
-    auto.run()
+    # auto = R128(R128.YELLOW,geo, wheeledbase, armFront,  armBack, log)
+    # auto.set_side(R128.YELLOW)
+    # wheeledbase.set_position(755, 322, 0)
+    # #wheeledbase.set_position(755, 3000-322, -pi)
+    # auto.run()
+    pass
