@@ -35,8 +35,7 @@ class R128:
         self.daughter_cards = dict( wheeledbase = wheeledbase, 
                                     armFront=arm1, 
                                     armBack = arm2, 
-                                    display = display,
-                                    sensor_manager = sens_manager)
+                                    display = display)
 
         # Save annexes inf
         self.side           = side
