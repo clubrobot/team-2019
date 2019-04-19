@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
 
-from robots.R128.balanceAction import *
-from robots.R128.takePuckActions import *
-from robots.R128.PutRedZoneAction import *
-from robots.R128.movingAction import *
+from robots.R128.actions.balanceAction import *
+from robots.R128.actions.takePuckActions import *
+from robots.R128.actions.PutRedZoneAction import *
+from robots.R128.actions.movingAction import *
 from common.actions.action import ThreadActionManager
 from common.geogebra import Geogebra
 from robots.R128.setup_128 import *
