@@ -21,7 +21,7 @@ def start_preparation():
         print("Launch match 128")
         import robots.R128.R128 as robot
         print("Init 128")
-        R128 = robot.R128(robot.R128.PURPLE, robot.geo, robot.wheeledbase, robot.armFront, robot.armBack, robot.disp, robot.sens_manager, robot.electron, robot.log)
+        R128 = robot.R128(robot.R128.PURPLE, robot.geo, robot.wheeledbase, robot.armFront, robot.armBack, robot.disp, robot.electron, robot.log)
         print("Button manager 128")
         ButtonsManager(R128.set_side, R128.def_pos, lambda x, y: R128.run()).begin()
 
