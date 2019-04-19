@@ -66,19 +66,12 @@ class MovingAfterStart(Actionnable):
             self.arm        = daughter_cards['armBack']
         
         self.wheeledbase    = daughter_cards['wheeledbase']
-        self.sensor_manager = daughter_cards['sensor_manager']
+
         # action Points
         self.point          = self.geogebra.get('Inter{}'.format(self.side))
         self.actionPoint    = None
 
         self.handeledPuck   = None
-
-        if self.side == self.YELLOW:
-            self.sensor_manager.disable_front()
-            self.sensor_manager.disable_front()
-        else:
-            self.sensor_manager.disable_front()
-            self.sensor_manager.disable_back()
 
     def realize(self):
         if self.side == self.YELLOW:
@@ -111,19 +104,11 @@ class MovingToRed(Actionnable):
             self.arm        = daughter_cards['armBack']
         
         self.wheeledbase    = daughter_cards['wheeledbase']
-        self.sensor_manager = daughter_cards['sensor_manager']
         # action Points
         self.path           = self.geogebra.getall('Red{}_*'.format(self.side))
         self.actionPoint    = None
 
         self.handeledPuck   = None
-
-        if self.side == self.YELLOW:
-            self.sensor_manager.enable_front()
-            self.sensor_manager.disable_back()
-        else:
-            self.sensor_manager.disable_front()
-            self.sensor_manager.enable_back()
 
     def realize(self):
         self.wheeledbase.purepursuit(self.path)

@@ -23,17 +23,10 @@ class BalanceAfter6(Actionnable):
             self.arm        = daughter_cards['armBack']
 
         self.display        = daughter_cards['display']
-        self.sensor_manager = daughter_cards['sensor_manager']
+
         # action Points
         self.point          = self.geogebra.get('Balance{}'.format(self.side))
         self.actionPoint    = ActPoint(self.point, pi/2)
-
-        if self.side == self.YELLOW:
-            self.sensor_manager.enable_front()
-            self.sensor_manager.disable_back()
-        else:
-            self.sensor_manager.disable_front()
-            self.sensor_manager.enable_back()
 
         #armPos
         self.beforeTankPos  = [BEFORE_TAKE_TANK_PUCK1, BEFORE_TAKE_TANK_PUCK2, BEFORE_TAKE_TANK_PUCK3]
