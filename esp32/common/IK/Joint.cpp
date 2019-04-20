@@ -105,7 +105,7 @@ vector_t Joint::get_path(float initial_pos, float initial_vel , float final_pos,
         final_vel - final velocity
         tf_sync - duration of the trajectory (synchronisation time)
     */
-     
+
     vector_t ret ;
 
     // Compute limit time
@@ -134,13 +134,13 @@ vector_t Joint::get_path(float initial_pos, float initial_vel , float final_pos,
     //Determine shape of trajectory
     if( (tf_sync < tf_lim) || (initial_vel == 0 && final_vel == 0))
     {
-    	ret = trapezoidal_profile(initial_pos, initial_vel, final_pos, final_vel, tf_sync, tf_lim, delta_t);
+        ret = trapezoidal_profile(initial_pos, initial_vel, final_pos, final_vel, tf_sync, tf_lim, delta_t);
     }
     else
     {
         ret = floatramp_profile(initial_pos, initial_vel, final_pos, final_vel, tf_sync, tf_lim, delta_t);
     }
-     
+
     return ret;
 }
 
@@ -189,7 +189,7 @@ vector_t Joint::floatramp_profile(float initial_pos, float initial_vel , float f
     // Avoid division by 0
     if( sign_traj == 0)
     {
-    	sign_traj = 1;
+        sign_traj = 1;
     }   
 
    	float vel_c = (sign_traj * delta_p - 0.5 * (pow((initial_vel - final_vel),2) / _constraints.acc.max)) / (tf_sync - ((initial_vel  - final_vel) / (sign_traj * _constraints.acc.max)));
@@ -202,7 +202,7 @@ vector_t Joint::floatramp_profile(float initial_pos, float initial_vel , float f
 
 vector_t Joint::generic_profile(float initial_pos, float initial_vel, float final_pos, float final_vel, float tf_sync, float tf_lim,float delta_t, int sign_traj, int sign_sync, float vel_c) throw()
 {
- 	/*
+    /*
         Generate a generic profile (valid for trapezoidal and float ramp)
     */
 
@@ -316,7 +316,7 @@ TrajectoryTime Joint::time_to_destination(float initial_pos, float initial_vel, 
         time_traj.t1 = 0;
         time_traj.t2 = 0;
         time_traj.tf = 0;
-         
+
         return time_traj;
     }
 
@@ -343,30 +343,30 @@ int Joint::trajectory_sign(float initial_pos, float initial_vel, float final_pos
     int sign = 0;
     if(delta_v == 0)
     {
-    	sign = 0;
+        sign = 0;
     }
     else if(delta_v < 0)
     {
-    	sign = -1; 
+        sign = -1; 
     }
     else if (delta_v > 0)
     {
-    	sign = 1;
+        sign = 1;
     }
 
     float delta_p_crit = 0.5 * sign * (pow(final_vel,2) - pow(initial_vel,2))/ _constraints.acc.max;
 
     if(delta_p - delta_p_crit == 0)
     {
-    	return 0;
+        return 0;
     }
     else if(delta_p - delta_p_crit < 0)
     {
-    	return -1; 
+        return -1; 
     }
     else if (delta_p - delta_p_crit > 0)
     {
-    	return 1;
+        return 1;
     }
 }
 

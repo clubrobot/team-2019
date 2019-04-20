@@ -129,7 +129,7 @@ private:
 	unsigned char Speed_Low_Byte;
 	unsigned char Load_High_Byte;
 	unsigned char Load_Low_Byte;
-	  
+
 	int readDatafromAX(unsigned char id, int offset);
 	
 public:
