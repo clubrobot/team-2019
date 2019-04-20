@@ -5,7 +5,6 @@ import time
 from math import pi
 from common.actions.action import *
 from common.funcutils      import *
-from daughter_cards.wheeledbase import *
 from daughter_cards.arm.ArmPosition import *
 from daughter_cards.arm.puckUtils import *
 class TakePuckSync(Actionnable):
@@ -24,9 +23,7 @@ class TakePuckSync(Actionnable):
         else:
             self.arm1       = daughter_cards['armBack']
             self.arm2       = daughter_cards['armFront']
-            
-        self.wheeledbase    = daughter_cards['wheeledbase']
-        self.sensor_manager = daughter_cards['sensor_manager']
+
         # action Points
         self.point          = self.geogebra.get('Distrib{}_{}'.format(self.side,self.distrib_pos))
         self.actionPoint    = ActPoint(self.point, pi/2)
@@ -38,13 +35,6 @@ class TakePuckSync(Actionnable):
 
         self.puck1      = puckFront
         self.puck2      = puckBack
-
-        if self.side == self.YELLOW:
-            self.sensor_manager.disable_front()
-            self.sensor_manager.enable_back()
-        else:
-            self.sensor_manager.enable_front()
-            self.sensor_manager.disable_back()
 
     def realize(self):
         self.arm1.start_pump()
@@ -126,8 +116,7 @@ class TakePuckSingle(Actionnable):
             self.arm        = daughter_cards['armFront']
         else:
             self.arm        = daughter_cards['armBack']
-        
-        self.wheeledbase    = daughter_cards['wheeledbase']
+
         # action Points
         self.point          = self.geogebra.get('Distrib{}_{}'.format(self.side,self.distrib_pos))
         self.actionPoint    = ActPoint(self.point, pi/2)
@@ -208,8 +197,7 @@ class TakePuckSyncMaintain(Actionnable):
         else:
             self.arm1       = daughter_cards['armBack']
             self.arm2       = daughter_cards['armFront']
-            
-        self.wheeledbase    = daughter_cards['wheeledbase']
+
         # action Points
         self.point          = self.geogebra.get('Distrib{}_{}'.format(self.side,self.distrib_pos))
         self.actionPoint    = ActPoint(self.point, pi/2)
