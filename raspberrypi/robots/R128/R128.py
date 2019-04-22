@@ -8,6 +8,7 @@ from robots.R128.movingAction import *
 from common.actions.action import ThreadActionManager
 from common.geogebra import Geogebra
 from robots.R128.setup_128 import *
+from robots.automaton import Automaton
 
 
 def stop_match():
@@ -20,27 +21,26 @@ def stop_match():
     manager.disconnect()
 
 
-class R128:
-    YELLOW  = 0
-    PURPLE  = 1
-
+class R128(Automaton):
     DISTRIB6_1 = 1
     DISTRIB6_2 = 2
     DISTRIB6_3 = 3
     DISTRIB3_1 = 4
     DISTRIB3_2 = 5
 
-    def __init__(self, side, geogebra, wheeledbase, arm1, arm2, display, electron, log):
+
+    def __init__(self):
+        Automaton.__init__(self)
         # Save daughter_cards
         self.daughter_cards = dict( wheeledbase = wheeledbase, 
-                                    armFront=arm1, 
-                                    armBack = arm2, 
-                                    display = display,
+                                    armFront=armFront,
+                                    armBack = armBack,
+                                    display = disp,
                                     sensor_manager = sens_manager)
 
         # Save annexes inf
-        self.side           = side
-        self.geogebra       = geogebra
+        self.side           = Automaton.UNDEFINED
+        self.geogebra       = geo
         self.log            = log
 
         # action List

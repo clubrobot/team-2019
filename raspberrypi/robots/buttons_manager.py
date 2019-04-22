@@ -1,5 +1,6 @@
 from robots.setup_display import *
 from gpiozero import Button
+from robots.automaton import Automaton
 
 # GPIO: BTN_1=13 marche pas, BTN_2=12, BTN_3=6, BTN_4=5, TIR=26
 
@@ -7,14 +8,14 @@ from gpiozero import Button
 class ButtonsManager:
     def set_team_orange(self):
         print("team jaune")
-        self.color = "O"
+        self.side = Automaton.YELLOW
         ssd.clear_messages()
         ssd.set_message("team : o")
         self.green_switch.when_released = self.odometry
 
     def set_team_purple(self):
         print("team mauve")
-        self.color = "M"
+        self.side = Automaton.PURPLE
         ssd.clear_messages()
         ssd.set_message("team : m")
         self.green_switch.when_released = self.odometry
@@ -24,7 +25,7 @@ class ButtonsManager:
         self.orange_switch.close()
         self.blue_switch.close()
 
-        self.points = self.map_load_funct(self.color)
+        self.points = self.auto.set_side(self.side)
         self.green_switch.when_released = self.tirret
         ssd.clear_messages()
         ssd.set_message("set pos")
@@ -39,12 +40,12 @@ class ButtonsManager:
 
     def run_match(self):
         print("lancement match")
-        self.start_funct(self.points, self.color)
+        self.auto.run(self.points, self.side)
         self.tirette_switch.close()
 
     def tirret(self):
         print("validation odometry")
-        self.pos_funct(self.points, self.color)
+        self.auto.set_position(self.points, self.side)
         ssd.clear_messages()
         ssd.set_message("tirette")
         self.tirette_switch.when_pressed = self.ready
@@ -56,7 +57,7 @@ class ButtonsManager:
         ssd.clear_messages()
         ssd.set_message("set team")
 
-    def __init__(self, map_load_funct, pos_funct, start_funct):
+    def __init__(self, auto):
         self.state = None
         self.red = 18  # 1
         self.blue = 12  # 2
@@ -64,11 +65,9 @@ class ButtonsManager:
         self.orange = 5  # 4
         self.tirette = 26
 
-        self.map_load_funct = map_load_funct
-        self.start_funct = start_funct
-        self.pos_funct = pos_funct
+        self.auto = auto
         self.points = None
-        self.color = None
+        self.side = None
 
         self.red_switch = Button(self.red)
         self.green_switch = Button(self.green)

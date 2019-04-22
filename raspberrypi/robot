@@ -4,10 +4,8 @@
 from argparse import ArgumentParser
 
 from common.serialtalks import *
-from common.components import Server, Manager
-from common.geogebra import *
-from common.roadmap import *
-from robots.start_match import *
+from common.components import Manager
+from robots.match_manager import *
 
 DEV_MODE = True
 MATCH_MODE = False
@@ -139,7 +137,7 @@ if sys.argv[1] not in no_server:
     manager = Manager("127.0.0.1")
     manager.connect()
     if ROBOT_ID == BORNIBUS_ID:
-        from robots.setup_bornibus import *
+        from robots.Bornibus.setup_bornibus import *
         print("Init robot Bornibus")
         init_robot()
     else:

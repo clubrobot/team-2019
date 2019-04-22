@@ -31,12 +31,22 @@ sensor_back  = Sensors(manager, uuid='sensors_arriere')
 
 sens_manager = SensorsManager(wheeledbase, sensor_front, sensor_back)
 
+
 def init_robot():
     gripper.open()
     pushers.up()
     arm.up()
     wheeledbase.stop()
 
+
+def stop_match():
+    import time
+    time.sleep(100)
+    wheeledbase.stop()
+    gripper.open()
+    pushers.up()
+    arm.up()
+    manager.disconnect()
 
 if __name__ == "__main__":
     init_robot()
