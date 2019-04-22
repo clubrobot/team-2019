@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 
 from common.serialtalks import *
 from common.components import Manager
-from robots.match_manager import *
+from robots.automaton import *
 
 DEV_MODE = True
 MATCH_MODE = False
@@ -80,7 +80,7 @@ def getlogs(args):
 
 
 def server(args):
-    srv = Server(password=args.password, size=args.size, start_match=start_preparation)
+    srv = Server(password=args.password, size=args.size, start_match=Automaton.start_preparation)
     while True:
         try:
             while not srv.full():
