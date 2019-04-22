@@ -59,8 +59,6 @@ class MotorWrapper : public PeriodicProcess
         int _step_counter;
         bool _arrived;
 
-        bool _error_occur;
-
         Motor_state_t _state;
 
         vector<float> _vel_profile;
