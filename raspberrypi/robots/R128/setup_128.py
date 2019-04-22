@@ -28,8 +28,10 @@ sensor_back  = Sensors(manager, uuid='sensors_arriere')
 
 sens_manager = SensorsManager(wheeledbase, sensor_front, sensor_back)
 
+import os
 if ROBOT_ID == R128_ID:
         os.chdir("/home/pi/git/clubrobot/team-2019")
+
 roadmap = None
 for root, dirs, files in os.walk("."):
         for file in files:

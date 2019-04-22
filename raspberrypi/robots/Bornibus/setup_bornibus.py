@@ -13,7 +13,7 @@ from robots.display_manager import *
 #from robots.buttons_manager import *
 from math import pi
 from common.geogebra import Geogebra
-
+from robots.get_robot_name import *
 
 led1 = LEDMatrix(manager, 1)
 led2 = LEDMatrix(manager, 2)
@@ -31,6 +31,17 @@ sensor_back  = Sensors(manager, uuid='sensors_arriere')
 
 sens_manager = SensorsManager(wheeledbase, sensor_front, sensor_back)
 
+import os
+if ROBOT_ID == BORNIBUS_ID:
+    os.chdir("/home/pi/git/clubrobot/team-2019")
+
+roadmap = None
+for root, dirs, files in os.walk("."):
+    for file in files:
+        if file == "Bornibus.ggb":
+            roadmap = os.path.join(root, file)
+geo = Geogebra(roadmap)
+
 
 def init_robot():
     gripper.open()
@@ -47,6 +58,7 @@ def stop_match():
     pushers.up()
     arm.up()
     manager.disconnect()
+
 
 if __name__ == "__main__":
     init_robot()

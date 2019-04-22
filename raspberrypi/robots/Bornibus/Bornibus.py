@@ -19,35 +19,27 @@ class Bornibus(Automaton):
             wheeledbase.set_position(*self.points["Ini"], pi/2)
 
     def set_side(self, side):
-        import os
-        roadmap = None
-        for root, dirs, files in os.walk("."):
-            for file in files:
-                if file == "roadmap_bornibus.ggb":
-                    roadmap = os.path.join(root, file)
-        test_map = Geogebra(roadmap)
+        self.points["Ini"] = geo.get("Ini"+self.side)
+        self.points["Gold3"] = geo.get("Gold3"+self.side)
+        self.points["Gold2"] = geo.get("Gold2"+self.side)
+        self.points["Gold4"] = geo.get("Gold4"+self.side)
+        self.points["Gold5"] = geo.get("Gold5"+self.side)
+        self.points["Gold6"] = geo.get("Gold6"+self.side)
 
-        self.points["Ini"] = test_map.get("Ini"+self.side)
-        self.points["Gold3"] = test_map.get("Gold3"+self.side)
-        self.points["Gold2"] = test_map.get("Gold2"+self.side)
-        self.points["Gold4"] = test_map.get("Gold4"+self.side)
-        self.points["Gold5"] = test_map.get("Gold5"+self.side)
-        self.points["Gold6"] = test_map.get("Gold6"+self.side)
+        self.points["Dep1"] = geo.get("Dep1"+self.side)
+        self.points["Dep2"] = geo.get("Dep2"+self.side)
+        self.points["Dep3"] = geo.get("Dep3"+self.side)
 
-        self.points["Dep1"] = test_map.get("Dep1"+self.side)
-        self.points["Dep2"] = test_map.get("Dep2"+self.side)
-        self.points["Dep3"] = test_map.get("Dep3"+self.side)
-
-        self.points["Pal1"] = test_map.get("Pal1"+self.side)
-        self.points["Pal2"] = test_map.get("Pal2"+self.side)
-        self.points["Pal3"] = test_map.get("Pal3"+self.side)
-        self.points["Pal4"] = test_map.get("Pal4"+self.side)
-        self.points["Pal5"] = test_map.get("Pal5"+self.side)
-        self.points["Pal6"] = test_map.get("Pal6"+self.side)
+        self.points["Pal1"] = geo.get("Pal1"+self.side)
+        self.points["Pal2"] = geo.get("Pal2"+self.side)
+        self.points["Pal3"] = geo.get("Pal3"+self.side)
+        self.points["Pal4"] = geo.get("Pal4"+self.side)
+        self.points["Pal5"] = geo.get("Pal5"+self.side)
+        self.points["Pal6"] = geo.get("Pal6"+self.side)
         
-        self.points["tmp"] = test_map.get("tmp"+self.side)
-        self.points["tmp2"] = test_map.get("tmp2"+self.side)
-        self.points["tmp3"] = test_map.get("tmp3"+self.side)
+        self.points["tmp"] = geo.get("tmp"+self.side)
+        self.points["tmp2"] = geo.get("tmp2"+self.side)
+        self.points["tmp3"] = geo.get("tmp3"+self.side)
         self.side = side
 
     def run(self):

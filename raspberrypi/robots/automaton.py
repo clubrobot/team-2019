@@ -23,9 +23,7 @@ class Automaton:
         manager = Manager()
         manager.connect()
         import os
-        os.chdir("/home/pi/git/clubrobot/team-2019")
-        from robots.buttons_manager import ButtonsManager
-
+    
         if ROBOT_ID == BORNIBUS_ID:
             print("Launch match Bornibus")
             from robots.Bornibus.Bornibus import Bornibus
@@ -37,5 +35,6 @@ class Automaton:
             print("Init 128")
             auto = R128()
         print("Button manager")
+        from robots.buttons_manager import ButtonsManager
         ButtonsManager(auto).begin()
 
