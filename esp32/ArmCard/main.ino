@@ -26,6 +26,8 @@ MotorWrapper AX1;
 MotorWrapper AX2;
 MotorWrapper AX3;
 
+TickType_t xDelay = 10 / portTICK_PERIOD_MS; // 10 ms task Delay
+
 static void secondary_loop(void * parameters);
 
 void setup()
@@ -83,6 +85,7 @@ void setup()
 void loop()
 {
     talks.execute();
+    vTaskDelay( xDelay );       /* include 10 ms delay for better task management by ordonnancer */
 }
 
 static void secondary_loop(void * parameters)
@@ -90,5 +93,6 @@ static void secondary_loop(void * parameters)
     while(1)
     {
         traj_manager.update();
+        vTaskDelay( xDelay );   /* include 10 ms delay for better task management by ordonnancer */
     }
 }
