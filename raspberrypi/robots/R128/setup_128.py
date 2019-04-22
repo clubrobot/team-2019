@@ -11,7 +11,6 @@ from common.geogebra import *
 from common.logger import *
 from robots.electron import *
 import time
-import os
 
 log = Logger(Logger.SHOW)
 

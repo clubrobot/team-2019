@@ -42,8 +42,17 @@ class Bornibus(Automaton):
         self.points["tmp3"] = geo.get("tmp3"+self.side)
         self.side = side
 
+    def stop_match(self):
+        import time
+        time.sleep(100)
+        wheeledbase.stop()
+        gripper.open()
+        pushers.up()
+        arm.up()
+        manager.disconnect()
+
     def run(self):
-        Thread(target=stop_match).start()
+        Thread(target=self.stop_match).start()
 
         wheeledbase.reset_parameters()
         wheeledbase.max_linvel.set(700)

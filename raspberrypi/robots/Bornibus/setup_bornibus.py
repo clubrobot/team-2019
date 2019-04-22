@@ -7,10 +7,7 @@ from daughter_cards.bornibus_actuators import *
 from daughter_cards.display import *
 from daughter_cards.Sensor_IR import *
 from robots.sensors_manager import *
-#from daughter_cards.buttons import *
-#from robots.bornibus_buttons import *
 from robots.display_manager import *
-#from robots.buttons_manager import *
 from math import pi
 from common.geogebra import Geogebra
 from robots.get_robot_name import *
@@ -48,16 +45,6 @@ def init_robot():
     pushers.up()
     arm.up()
     wheeledbase.stop()
-
-
-def stop_match():
-    import time
-    time.sleep(100)
-    wheeledbase.stop()
-    gripper.open()
-    pushers.up()
-    arm.up()
-    manager.disconnect()
 
 
 if __name__ == "__main__":
