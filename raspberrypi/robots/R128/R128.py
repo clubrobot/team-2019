@@ -10,17 +10,6 @@ from common.geogebra import Geogebra
 from robots.R128.setup_128 import *
 from robots.automaton import Automaton
 
-
-def stop_match():
-    time.sleep(100)
-    wheeledbase.stop()
-    armFront.stop_pump()
-    armBack.stop_pump()
-    armF.stop()
-    armB.stop()
-    manager.disconnect()
-
-
 class R128(Automaton):
     DISTRIB6_1 = 1
     DISTRIB6_2 = 2
@@ -61,6 +50,7 @@ class R128(Automaton):
         self.side = side
         # Apply cube obstacle
         self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
+        print("TEST SIDE")
 
         # Specific Actions initialisation
         self.balanceAct         = BalanceAfter6(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
@@ -94,10 +84,19 @@ class R128(Automaton):
         else:
             self.wheeledbase.set_position(785, 3000-312, -pi)
 
+    def stop_match(self):
+        time.sleep(100)
+        wheeledbase.stop()
+        armFront.stop_pump()
+        armBack.stop_pump()
+        armF.stop()
+        armB.stop()
+        manager.disconnect()
+
     def run(self):
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
-        Thread(target=stop_match).start()
+        Thread(target=self.stop_match).start()
         self.display.start()
 
         self.log("MAIN : ", "Launch Electron")
