@@ -91,7 +91,7 @@ class R128(Automaton):
             self.balanceAct,
         ]
 
-    def def_pos(self, point, side):
+    def set_position(self, point, side):
         if side == self.YELLOW:
             self.wheeledbase.set_position(785, 312, 0)
         else:
@@ -139,15 +139,11 @@ class R128(Automaton):
         self.wheeledbase.stop()
 
 if __name__ == '__main__':
-    # from robots.R128.setup_128 import *
-    # init_robot()
-    # log("MAIN : ", "DEBUT CHARGEMENT ROADMAP")
-
-    # geo = Geogebra('128.ggb')
-
-    # auto = R128(R128.YELLOW,geo, wheeledbase, armFront,  armBack, log)
-    # auto.set_side(R128.YELLOW)
-    # wheeledbase.set_position(755, 322, 0)
-    # #wheeledbase.set_position(755, 3000-322, -pi)
-    # auto.run()
+    auto = R128()
+    auto.set_side(R128.PURPLE)
+    init_robot()
+    auto.set_position()
+    print("ready")
+    input()
+    auto.run()
     pass
