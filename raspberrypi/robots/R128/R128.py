@@ -58,11 +58,7 @@ class R128(Automaton):
 
 
     def set_side(self, side):
-        if side == "O":
-            self.side = R128.YELLOW
-        else:
-            self.side = R128.PURPLE
-
+        self.side = side
         # Apply cube obstacle
         self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
 
@@ -93,7 +89,7 @@ class R128(Automaton):
         ]
 
     def def_pos(self):
-        if self.side == "O":
+        if self.side == self.YELLOW:
             self.wheeledbase.set_position(785, 312, 0)
         else:
             self.wheeledbase.set_position(785, 3000-312, -pi)
