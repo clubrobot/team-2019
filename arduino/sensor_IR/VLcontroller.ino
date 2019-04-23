@@ -14,17 +14,20 @@ void setup(){
   talks.bind(GET_VL61_OPCODE, GET_VL61);
   talks.bind(GET_VL53_OPCODE, GET_VL53);
   Wire.begin();
-  sensors_IR.setVL53Address(53);
-  sensors_IR.setVL61Address(61);
+  sensors_IR.shutBothVL();
+  //sensors_IR.setVL53Address(53);
+  //sensors_IR.setVL61Address(61);
   sensors_IR.init();
   sensors_IR.setTimestep(0.01);
-  sensors_IR.startContinuous();
   sensors_IR.enable();
+  
+
+  pinMode(SHUT_VL61_1, OUTPUT);
+  digitalWrite(SHUT_VL61_1, LOW);
 
 }
 
 void loop() {
   talks.execute();
   sensors_IR.update();
-
 }
