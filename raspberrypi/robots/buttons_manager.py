@@ -45,7 +45,7 @@ class ButtonsManager:
 
     def tirret(self):
         print("validation odometry")
-        self.auto.set_position(self.points, self.side)
+        self.auto.set_position()
         ssd.clear_messages()
         ssd.set_message("tirette")
         self.tirette_switch.when_pressed = self.ready

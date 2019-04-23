@@ -93,8 +93,8 @@ class R128(Automaton):
             self.balanceAct,
         ]
 
-    def def_pos(self, point, side):
-        if side == "O":
+    def def_pos(self):
+        if self.side == "O":
             self.wheeledbase.set_position(785, 312, 0)
         else:
             self.wheeledbase.set_position(785, 3000-312, -pi)
