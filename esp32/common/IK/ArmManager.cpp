@@ -182,7 +182,7 @@ MoveBatch ArmManager::goto_workspace(Coords start_pos, Coords target_pos, Worksp
         LOG_ARM("Target position not within new workspace boundaries, target may be out of defined workspaces");
         throw string("Target position not within new workspace boundaries, target may be out of defined workspaces");
     }
-     
+
     _workspace = new_workspace;
 
     new_batch.addDuration(estimated_time_of_arrival(start_pos, NULL_VEL, target_pos, NULL_VEL));

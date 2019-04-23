@@ -20,6 +20,8 @@
 
 #define GET_PRESSURE_OPCODE	        0X1B
 #define ATMOSPHERE_PRESSURE_OPCODE	0X1C
+#define UPDATE_THRESHOLD_OPCODE	    0X1D
+#define READ_THRESHOLD_OPCODE	    0X1E
 
 #define MOTOR1_ID_ID                0x10
 #define MOTOR1_OFFSET_ID            0x11
@@ -41,6 +43,10 @@
 void GET_PRESSURE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void ATMOSPHERE_PRESSURE(SerialTalks& talks, Deserializer& input, Serializer& output);
+
+void UPDATE_THRESHOLD(SerialTalks& talks, Deserializer& input, Serializer& output);
+
+void READ_THRESHOLD(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void ADD_MOVE(SerialTalks& talks, Deserializer& input, Serializer& output);
 

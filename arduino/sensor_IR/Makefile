@@ -1,26 +1,25 @@
-BOARD_UUID = sensors_IR
+BOARD_UUID = sensors
 BOARD_TAG  = nano
 BOARD_SUB  = atmega328
 
 # Sketch sources
 COMMON = ../common
-LOCAL_INO_SRCS = VLcontroller.ino
+LOCAL_INO_SRCS = Sensor_IR.ino
 LOCAL_CPP_SRCS = \
 	instructions.cpp \
-	VLSensors.cpp \
+	Sensor_IR.cpp \
+	Traitements.cpp \
+	$(COMMON)/VL53L0X.cpp \
+	$(COMMON)/VL6180X.cpp \
 	$(COMMON)/SerialTalks.cpp \
-	$(COMMON)/CRC16.cpp \
-	$(COMMON)/Clock.cpp \
-	$(COMMON)/Wire.cpp \
-	$(COMMON)/PeriodicProcess.cpp
-
-LOCAL_C_SRCS = \
-	$(COMMON)/twi.c
+	$(COMMON)/CRC16.cpp
 
 
 
 # Sketch libraries
-ARDUINO_LIBS = EEPROM
+ARDUINO_LIBS = \
+	EEPROM \
+	Wire
 
 # Congratulations! You made a pretty Makefile :)
 # Now let the grown-ups do the hard work :D

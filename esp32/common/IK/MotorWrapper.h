@@ -47,7 +47,7 @@ class MotorWrapper : public PeriodicProcess
         virtual void process(float timestep);
 
         void load(int address);
-	    void save(int address) const;
+        void save(int address) const;
 
     private:
 

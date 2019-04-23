@@ -92,13 +92,13 @@ void MotorWrapper::process(float timestep)
 		{
 			_motor.moveSpeed(_pos + _offset, vel);
 		}
-        catch(const AX12Timeout& e)
+        catch(AX12Timeout const& e)
         {
             _state.id      = e.get_id();
 			_state.timeout = 1;
 			//_error_occur   = true;
         }
-        catch(const AX12error& e)
+        catch(AX12error const& e)
         {
 			_state.id       = e.get_id();
 			_state.err_code = e.get_error_code();

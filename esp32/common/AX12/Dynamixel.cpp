@@ -36,7 +36,11 @@ int DynamixelClass::readDatafromAX(unsigned char id, int offset)
             if(Time_Counter < TIME_OUT)
                 Time_Counter++;
             else
-                throw AX12Timeout(id);
+                #ifdef ENABLE_AX_EXEPTIONS
+                    throw AX12Timeout(id);
+                #else
+                    return -1;
+                #endif
             delayus(1000);
         }
 
@@ -67,7 +71,11 @@ int DynamixelClass::readDatafromAX(unsigned char id, int offset)
         length -= 2;
         if(Error_Byte != 0)
         {
-            throw AX12error(id, Error_Byte);
+            #ifdef ENABLE_AX_EXEPTIONS
+                throw AX12error(id, Error_Byte);
+            #else
+                return -1;
+            #endif
         }
         else if(length == 0)
         {
@@ -206,7 +214,7 @@ int DynamixelClass::moveSpeed(unsigned char ID, int Position, int Speed)
     Speed_H = Speed >> 8;
     Speed_L = Speed;                      // 16 bits - 2 x 8 bits variables
 	Checksum = (~(ID + AX_GOAL_SP_LENGTH + AX_WRITE_DATA + AX_GOAL_POSITION_L + Position_L + Position_H + Speed_L + Speed_H))&0xFF;
- 
+
 	switchCom(Direction_Pin,Tx_MODE);
     sendData(AX_START);                // Send Instructions over Serial
     sendData(AX_START);

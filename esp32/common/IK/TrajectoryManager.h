@@ -26,15 +26,15 @@ class TrajectoryManager : public PeriodicProcess
         void set_Motors(MotorWrapper& motor1, MotorWrapper& motor2, MotorWrapper& motor3);
         void set_timestep(float timestep);
 
-        float get_timestep() const {return _timestep;}
+        float get_timestep() const;
 
         void init();
 
         void move_directly(Coords pos);
-        bool is_arrived() const {return _arrived;}
+        bool is_arrived() const;
 
         void load(int address);
-	    void save(int address) const;
+        void save(int address) const;
 
     private :
         virtual void process(float timestep);
