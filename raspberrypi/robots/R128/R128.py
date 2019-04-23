@@ -56,7 +56,6 @@ class R128(Automaton):
         # Action thread manager
         self.tam = ThreadActionManager()
 
-        init_robot()
 
     def set_side(self, side):
         if side == "O":
