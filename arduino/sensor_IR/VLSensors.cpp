@@ -5,20 +5,17 @@ VLSensors::VLSensors(int EN_VL53_PIN, int EN_VL61_PIN){
     _EN_VL53 = EN_VL53_PIN;
     _EN_VL61 = EN_VL61_PIN;
     for(int i = 0; i< 2; i++){_useSensors[i] = true;}
-    _state = REQUEST_VL61;
+    _state = REQUEST_VL53;
     _range[VL53] = 0;
     _range[VL61] = 0;
-    pinMode(_EN_VL53, OUTPUT);
-    pinMode(_EN_VL61, OUTPUT);
-    digitalWrite(_EN_VL53, LOW);
-    digitalWrite(_EN_VL61, LOW);
-    _addressVL53 = 0x00;
-    _addressVL61 = 0x00;
+    shutBothVL();
+    _addressVL53 = 0x29;
+    _addressVL61 = 0x29;
 }
 
 void VLSensors::whatToDoNext(){ 
   int j = 0;
-  int i = _state - 2;
+  int i = (_state - 3) % 2 ;
   while(!_useSensors[i] && j<2){
     j++;
     i = (i + 1) % 2;
@@ -31,21 +28,58 @@ void VLSensors::whatToDoNext(){
 
 void VLSensors::process(float timestep){
   uint8_t buf[2];
+  
   switch(_state){
     case REQUEST_VL53 :
-      requestDataVL53(RESULT_RANGE_STATUS + 10, 2);
+      _timeoutchecker.restart();
+      startRangingVL53();
       _i2cused = true;
-      _state = WAITING_VL53;
+      _state = MESURING_VL53;
+      Serial.println("Ranging");
+      while (read8VL53(SYSRANGE_START) & 0x01){
+        if(timeout()){
+          _state = WAITING_VL53;
+          break;
+        }
+      }
+      requestDataVL53(RESULT_INTERRUPT_STATUS, 1);
+      break;
+    
+    case MESURING_VL53 : 
+      Serial.println("New iteration");
+      if(timeout()){
+        _state = WAITING_VL53;
+      }
+      else if(readLen(buf, 1)){
+        Serial.println("Received");
+        if((buf[0] & 0x07) == 0){                            //Attente que le flag indiquant la fin de mesure soit à 1
+          requestDataVL53(RESULT_INTERRUPT_STATUS, 1);
+          Serial.println("New request");
+          Serial.print("buf = "); Serial.println(buf[0]);
+        }
+        else{
+          Serial.println("mesure............");
+          requestDataVL53(RESULT_RANGE_STATUS + 10, 2);     //Lecture du registre contenant la mesure
+          _state = WAITING_VL53;
+        }
+      }
+
       break;
 
-    case WAITING_VL53 :
-      
-      if(readLen(buf, 2)){
+    case WAITING_VL53 :      
+      if(timeout()){
+        _VL53Error = true;
+        whatToDoNext();
+      }
+      else if(readLen(buf, 2)){
         _range[0] = ((uint16_t) buf[0]) | (((uint16_t) buf[1]) << 8);
+        Serial.print("range = "); Serial.println(_range[0]);
         write8VL53(SYSTEM_INTERRUPT_CLEAR, 0x01);
         whatToDoNext();
         _i2cused = false;
+        _VL53Error = false;
       }
+
       break;
 
     case REQUEST_VL61:
@@ -65,6 +99,19 @@ void VLSensors::process(float timestep){
   }
 }
 
+void VLSensors::startRangingVL53(){
+  
+  write8VL53(0x80, 0x01);
+  write8VL53(0xFF, 0x01);
+  write8VL53(0x00, 0x00);
+  write8VL53(0x91, stop_variable);
+  write8VL53(0x00, 0x01);
+  write8VL53(0xFF, 0x00);
+  write8VL53(0x80, 0x00);
+
+  write8VL53(SYSRANGE_START, 0x01);
+}
+
 uint16_t VLSensors::readRangeMillimeters(){
   if((_range[1] <= _threshold) && ( _range[0] < _threshold)){
     return _range[1];
@@ -79,47 +126,6 @@ uint16_t VLSensors::readRangeMillimeters(){
   return 0xFFFF;
 }
 
-
-void VLSensors::startContinuous()
-{
-  if(_useSensors[0]){
-    write8VL53(0x80, 0x01);
-    write8VL53(0xFF, 0x01);
-    write8VL53(0x00, 0x00);
-    write8VL53(0x91, stop_variable);
-    write8VL53(0x00, 0x01);
-    write8VL53(0xFF, 0x00);
-    write8VL53(0x80, 0x00);
-    // continuous back-to-back mode
-    write8VL53(SYSRANGE_START, 0x02); // VL53L0X_REG_SYSRANGE_MODE_BACKTOBACK
-  }
-  if(_useSensors[1]){
-    uint16_t period = 100; //ms
-    int16_t period_reg = (int16_t)(period / 10) - 1;
-    period_reg = constrain(period_reg, 0, 254);
-
-    write8VL61(SYSRANGE__INTERMEASUREMENT_PERIOD, period_reg);
-    write8VL61(SYSRANGE__START, 0x03);
-    }
-}
-
-void VLSensors::stopContinuous()
-{
-  if(_useSensors[0]){
-    write8VL53(SYSRANGE_START, 0x01); // VL53L0X_REG_SYSRANGE_MODE_SINGLESHOT
-
-    write8VL53(0xFF, 0x01);
-    write8VL53(0x00, 0x00);
-    write8VL53(0x91, 0x00);
-    write8VL53(0x00, 0x01);
-    write8VL53(0xFF, 0x00);
-  }
-  if(_useSensors[1]){
-    write8VL61(SYSRANGE__START, 0x01);
-    write8VL61(SYSALS__START, 0x01);
-    write8VL61(INTERLEAVED_MODE__ENABLE, 0);
-    }
-}
 
 void VLSensors::requestDataVL53(uint8_t reg, uint8_t len)
 {
@@ -373,30 +379,33 @@ void VLSensors::init(){
   write8VL53(0x80, 0x00);
 
   // -- VL53L0X_load_tuning_settings() end
-
+  write8VL53(SYSTEM_INTERRUPT_CONFIG_GPIO, 0x04);
+  write8VL53(GPIO_HV_MUX_ACTIVE_HIGH, read8VL53(GPIO_HV_MUX_ACTIVE_HIGH) & ~0x10); // active low
+  write8VL53(SYSTEM_INTERRUPT_CLEAR, 0x01);
   // -- VL53L0X_SetGpioConfig() end
+   write8VL53(SYSTEM_SEQUENCE_CONFIG, 0xE8);
 }
 
 void VLSensors::setVL61Address(uint8_t new_addr)
 {
-  digitalWrite(_EN_VL53, LOW);
-  digitalWrite(_EN_VL61, HIGH);
+  pinMode(_EN_VL61, INPUT);
   delay(5);
   write8VL61(I2C_SLAVE__DEVICE_ADDRESS, new_addr & 0x7F);
   _addressVL61 = new_addr;
-  digitalWrite(_EN_VL53, HIGH);
+  pinMode(_EN_VL61, OUTPUT);
+  digitalWrite(_EN_VL61, LOW);
   delay(5);
   
 }
 
 void VLSensors::setVL53Address(uint8_t new_addr)
 {
-  digitalWrite(_EN_VL53, HIGH);
-  digitalWrite(_EN_VL61, LOW);
+  pinMode(_EN_VL53, INPUT);
   delay(5);
   write8VL53(I2C_SLAVE_DEVICE_ADDRESS, new_addr & 0x7F);
   _addressVL53 = new_addr;
-  digitalWrite(_EN_VL61, HIGH);
+  pinMode(_EN_VL53, OUTPUT);
+  digitalWrite(_EN_VL53, LOW);
   delay(5);
 }
 
@@ -412,4 +421,23 @@ uint8_t VLSensors::read8VL53(uint8_t reg)
   value = Wire.read();
 
   return value;
+}
+
+void VLSensors::shutBothVL(){
+  pinMode(_EN_VL53, OUTPUT);
+  digitalWrite(_EN_VL53, LOW);
+  pinMode(_EN_VL61, OUTPUT);
+  digitalWrite(_EN_VL61, LOW);
+}
+
+void VLSensors::startBothVL(){
+  pinMode(_EN_VL53, INPUT);
+  pinMode(_EN_VL61, INPUT);
+}
+
+bool VLSensors::timeout(){
+  if(_timeoutchecker.getElapsedTime() >= 0.4){
+    return true;
+  }
+  return false;
 }
