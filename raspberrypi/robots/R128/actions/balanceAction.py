@@ -93,7 +93,6 @@ class BalanceAfter6(Actionnable):
             time.sleep(0.1)
 
         self.arm.move(self.TankPos[self.arm.tank.index()-1])
-
         while not self.arm.is_arrived():
             time.sleep(0.1)
     

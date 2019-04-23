@@ -14,9 +14,9 @@ class Puck():
         return self.points
 
 #Puck definition
-RedPuck     = Puck('red',Point(4,5+1,10))
-GreenPuck   = Puck('green',Point(8,5+1,10))
-BluePuck    = Puck('blue',Point(12,5+1,10))
+RedPuck     = Puck('red'    ,Point(4    ,5+1,10))
+GreenPuck   = Puck('green'  ,Point(8    ,5+1,10))
+BluePuck    = Puck('blue'   ,Point(12   ,5+1,10))
 
 class PuckTank():
     def __init__(self, name, size, logger):

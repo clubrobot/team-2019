@@ -5,6 +5,7 @@ from robots.R128.actions.balanceAction import *
 from robots.R128.actions.takePuckActions import *
 from robots.R128.actions.PutRedZoneAction import *
 from robots.R128.actions.movingAction import *
+from robots.R128.actions.acceleratorAction import *
 from common.actions.action import ThreadActionManager
 from common.geogebra import Geogebra
 from robots.R128.setup_128 import *
@@ -80,22 +81,30 @@ class R128(Automaton):
 
         self.moveToRed          = MovingToRed(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
-        self.action_list = [
+        self.accel              = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        # self.action_list = [
+        #     self.movingAfterStart,
+        #     self.takeSyncPos1Act,
+        #     self.takeSyncPos2Act,
+        #     self.takeSyncPos3Act,
+        #     self.moveToRed,
+        #     self.putRedZoneAct,
+        #     self.movingAfterStart,
+        #     self.balanceAct,
+        # ]
+
+        self.action_list = [ 
             self.movingAfterStart,
             self.takeSyncPos1Act,
             self.takeSyncPos2Act,
             self.takeSyncPos3Act,
-            self.moveToRed,
-            self.putRedZoneAct,
-            self.movingAfterStart,
-            self.balanceAct,
-        ]
+            self.accel]
 
     def set_position(self):
         if self.side == R128.YELLOW:
-            self.wheeledbase.set_position(785, 312, 0)
+            self.wheeledbase.set_position(755, 322, 0)
         else:
-            self.wheeledbase.set_position(785, 3000-312, -pi)
+            self.wheeledbase.set_position(755, 3000-322, -pi)
 
     def run(self):
         self.log("MAIN : ", "RUN...")
@@ -139,6 +148,7 @@ class R128(Automaton):
         self.wheeledbase.stop()
 
 if __name__ == '__main__':
+<<<<<<< Updated upstream
     auto = R128()
     auto.set_side(R128.PURPLE)
     init_robot()
@@ -147,3 +157,16 @@ if __name__ == '__main__':
     input()
     auto.run()
     pass
+=======
+    from robots.R128.setup_128 import *
+    init_robot()
+    log("MAIN : ", "DEBUT CHARGEMENT ROADMAP")
+
+    geo = Geogebra('128.ggb')
+
+    auto = R128(R128.PURPLE, geo, wheeledbase, armFront, armBack, disp, electron, log)
+    auto.set_side(R128.PURPLE)
+    auto.def_pos(None,R128.PURPLE)
+
+    auto.run()
+>>>>>>> Stashed changes
