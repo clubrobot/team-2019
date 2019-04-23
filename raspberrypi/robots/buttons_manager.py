@@ -40,7 +40,7 @@ class ButtonsManager:
 
     def run_match(self):
         print("lancement match")
-        self.auto.run(self.points, self.side)
+        self.auto.run()
         self.tirette_switch.close()
 
     def tirret(self):
