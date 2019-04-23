@@ -9,7 +9,6 @@ from common.geogebra import *
 from common.logger import *
 from robots.electron import *
 import time
-import os
 
 log = Logger(Logger.SHOW)
 
@@ -22,8 +21,10 @@ armFront = ArmController(armF, 'ARM FRONT', log)
 armBack  = ArmController(armB, 'ARM BACK' , log)
 
 
+import os
 if ROBOT_ID == R128_ID:
         os.chdir("/home/pi/git/clubrobot/team-2019")
+
 roadmap = None
 for root, dirs, files in os.walk("."):
         for file in files:
