@@ -4,7 +4,7 @@
 import math
 from common.serialutils import Deserializer
 from common.serialtalks import BYTE, INT, LONG, FLOAT, STRING, SerialTalks
-from common.components import SerialTalksProxy
+from common.components import SecureSerialTalksProxy
 # Instructions
 
 _GET_SINGLE_MESURE_OPCODE     = 0x10
@@ -13,14 +13,14 @@ _START_CONTINUOUS_OPCODE      = 0x12
 _STOP_CONTINUOUS_OPCODE       = 0x13
 
 
-class Sensors(SerialTalksProxy):
+class Sensors(SecureSerialTalksProxy):
     # Default execute result
     def __init__(self, parent, uuid='sensors'):
         """
             Passe en paramètre le numéro du sensor à utiliser ou une liste de sensors à utiliser
             Si numero_Sensor est laissé par défaut, tous les sensors sur Arduino sont conserné
         """
-        SerialTalksProxy.__init__(self, parent, uuid)
+        SecureSerialTalksProxy.__init__(self, parent, uuid, dict())
         #self.get_info()
 
     def get_info(self):

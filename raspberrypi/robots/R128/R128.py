@@ -45,7 +45,6 @@ class R128(Automaton):
         # Action thread manager
         self.tam = ThreadActionManager()
 
-
     def set_side(self, side):
         self.side = side
         # Apply cube obstacle

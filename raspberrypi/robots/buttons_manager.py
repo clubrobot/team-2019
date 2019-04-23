@@ -24,11 +24,11 @@ class ButtonsManager:
         print("validation team")
         self.orange_switch.close()
         self.blue_switch.close()
-
         self.points = self.auto.set_side(self.side)
-        self.green_switch.when_released = self.tirret
+
         ssd.clear_messages()
         ssd.set_message("set pos")
+        self.green_switch.when_released = self.tirret
 
     def ready(self):
         print("validation tirette")
