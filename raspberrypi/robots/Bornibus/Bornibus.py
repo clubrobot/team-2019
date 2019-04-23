@@ -75,8 +75,8 @@ class Bornibus(Automaton):
         print("max ang vel : ", wheeledbase.max_angvel.get())
         print("max lin vel : ", wheeledbase.max_linvel.get())
 
+        disp.points = 0
         disp.start()
-        disp.self.points = 0
 
         pushers.up()
         gripper.open()
