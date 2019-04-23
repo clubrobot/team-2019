@@ -1,32 +1,37 @@
-from robots.setup_bornibus import *
+from robots.setup_display import *
 from gpiozero import Button
+from robots.automaton import Automaton
 
 # GPIO: BTN_1=13 marche pas, BTN_2=12, BTN_3=6, BTN_4=5, TIR=26
 
 
 class ButtonsManager:
     def set_team_orange(self):
-        self.color = "O"
+        print("team jaune")
+        self.side = Automaton.YELLOW
         ssd.clear_messages()
         ssd.set_message("team : o")
         self.green_switch.when_released = self.odometry
 
     def set_team_purple(self):
-        self.color = "M"
+        print("team mauve")
+        self.side = Automaton.PURPLE
         ssd.clear_messages()
         ssd.set_message("team : m")
         self.green_switch.when_released = self.odometry
 
     def odometry(self):
+        print("validation team")
         self.orange_switch.close()
         self.blue_switch.close()
 
-        self.points = self.map_load_funct(self.color)
+        self.points = self.auto.set_side(self.side)
         self.green_switch.when_released = self.tirret
         ssd.clear_messages()
         ssd.set_message("set pos")
 
     def ready(self):
+        print("validation tirette")
         self.red_switch.close()
         self.green_switch.close()
         ssd.clear_messages()
@@ -34,34 +39,35 @@ class ButtonsManager:
         self.tirette_switch.when_released = self.run_match
 
     def run_match(self):
-        self.start_funct(self.points, self.color)
+        print("lancement match")
+        self.auto.run()
         self.tirette_switch.close()
 
     def tirret(self):
-        self.pos_funct(self.points, self.color)
+        print("validation odometry")
+        self.auto.set_position()
         ssd.clear_messages()
         ssd.set_message("tirette")
         self.tirette_switch.when_pressed = self.ready
 
     def begin(self):
+        print("debut Button Manager")
         self.blue_switch.when_pressed = self.set_team_purple
         self.orange_switch.when_pressed = self.set_team_orange
         ssd.clear_messages()
         ssd.set_message("set team")
 
-    def __init__(self, map_load_funct, pos_funct, start_funct):
+    def __init__(self, auto):
         self.state = None
-        self.red = 13
-        self.green = 6
-        self.blue = 12
-        self.orange = 5
+        self.red = 18  # 1
+        self.blue = 12  # 2
+        self.green = 6  # 3
+        self.orange = 5  # 4
         self.tirette = 26
 
-        self.map_load_funct = map_load_funct
-        self.start_funct = start_funct
-        self.pos_funct = pos_funct
+        self.auto = auto
         self.points = None
-        self.color = None
+        self.side = None
 
         self.red_switch = Button(self.red)
         self.green_switch = Button(self.green)

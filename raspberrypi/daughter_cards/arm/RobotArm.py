@@ -29,6 +29,8 @@ _SET_PARAMETERS_OPCODE       = 0X19
 _GET_PARAMETERS_OPCODE       = 0x1A
 _GET_PRESSURE_OPCODE 		 = 0X1B
 _ATMOSPHERE_PRESSURE_OPCODE	 = 0X1C
+_UPDATE_THRESHOLD_OPCODE	 = 0X1D
+_GET_THRESHOLD_OPCODE	   	 = 0X1E
 
 # EEPROM INDEX
 MOTOR1_ID_ID                 = 0x10
@@ -58,9 +60,10 @@ class RobotArm(SecureSerialTalksProxy):
 
 	def move(self, x, y, phi):
 		out = self.execute(_ADD_MOVE_OPCODE, FLOAT(x), FLOAT(y), FLOAT(math.radians(phi)))
-		ret = out.read(BYTE)
-		if bool(ret):
-			raise RuntimeError('Error on move command : Position unreachable')
+		if out is not None:
+			ret = out.read(BYTE)
+			if bool(ret):
+				raise RuntimeError('Error on move command : Position unreachable')
 
 	def run(self):
 		self.send(_RUN_BATCH_OPCODE)
@@ -70,14 +73,11 @@ class RobotArm(SecureSerialTalksProxy):
 
 	def is_arrived(self):
 		out = self.execute(_IS_ARRIVED_OPCODE)
-		ret, err = out.read(BYTE, BYTE)
-		if bool(err):
-			err = self.get_motors_state()
-			if bool(err[1]) or bool(err[4]) or bool(err[7]):
-				raise RuntimeError('Timeout error on AX12')
-			else:
-				raise RuntimeError('Error on AX12 motors')
-		return bool(ret)
+		if out is not None:
+			ret = out.read(BYTE)
+			return bool(ret)
+		else:
+			return False
 
 	def start_pump(self):
 		self.send(_START_PUMP_OPCODE)
@@ -100,6 +100,14 @@ class RobotArm(SecureSerialTalksProxy):
 		out = self.execute(_ATMOSPHERE_PRESSURE_OPCODE)
 		ret = out.read(BYTE)
 		return bool(ret)
+
+	def update_pressure_threshold(self, value):
+		self.send(_UPDATE_THRESHOLD_OPCODE, FLOAT(value))
+
+	def get_pressure_threshold(self):
+		out = self.execute(_GET_THRESHOLD_OPCODE)
+		ret = out.read(FLOAT)
+		return float(ret)
 
 	def set_parameter_value(self, id, value, valuetype):
 		self.send(_SET_PARAMETERS_OPCODE, BYTE(id), valuetype(value))

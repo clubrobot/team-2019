@@ -1,5 +1,5 @@
 from robots.demo.demo_wheeledbase import *
-from robots.setup_bornibus   import *
+from robots.Bornibus.setup_bornibus import *
 
 controller_keys.update({
     K_x: {KEYDOWN: lambda: gripper.close(),    KEYUP: lambda: gripper.open()},

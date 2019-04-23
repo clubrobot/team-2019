@@ -5,12 +5,18 @@ import time
 from daughter_cards.arm.RobotArm import *
 from daughter_cards.arm.ArmPosition import *
 from daughter_cards.arm.puckUtils import *
+from daughter_cards.arm.puckUtils import *
+
+
 
 class ArmController():
+    TANK_SIZE = 3
     def __init__(self, arm, name, log):
         self.name           = name
         self.log            = log
         self.arm            = arm
+        # Puck Management
+        self.tank           = PuckTank('TANK '+self.name, self.TANK_SIZE, log)
 
     # private func
     def move(self, PosID):
@@ -67,18 +73,18 @@ class ArmController():
         self.log(self.name, "Go Home")
         self.movePath(HomePath)
 
-    def prepare_to_take(self):
-        self.log(self.name, "Prepare to take")
-        self.move(PREPARE_TAKING_POS)
+    # def prepare_to_take_road(self):
+    #     self.log(self.name, "Prepare to take")
+    #     self.move(PREPARE_TAKING_POS_ROAD)
 
-    def prepare_to_take_1(self):
-        self.log(self.name, "Prepare to take")
-        self.move(PREPARE_TAKING_POS_1)
+    # def prepare_to_take(self):
+    #     self.log(self.name, "Prepare to take")
+    #     self.move(PREPARE_TAKING_POS_STATIC)
 
-    def take(self):
-        self.log(self.name, "Take")
-        self.move(TAKE_PUCK)
+    # def take(self, puck):
+    #     self.log(self.name, "Take")
+    #     self.move(TAKE_PUCK_STATIC)
 
-    def after_take(self):
-        self.log(self.name, "Take")
-        self.move(TAKE_PUCK_INTER_AFTER)
+    # def after_take(self):
+    #     self.log(self.name, "after Take")
+    #     self.move(TAKE_PUCK_INTER_AFTER_STATIC)

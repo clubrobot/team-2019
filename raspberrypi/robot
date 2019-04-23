@@ -4,13 +4,8 @@
 from argparse import ArgumentParser
 
 from common.serialtalks import *
-from common.components import Server, Manager
-from common.geogebra import *
-from common.roadmap import *
-# from robots.beacons_manager import BeaconsManagement
-# from daughter_cards.buttons import ButtonCard
-# from robots.buttons_manager import ButtonGestureDemo, ButtonGestureMatch
-from robots.start_match import *
+from common.components import Manager, Server
+from robots.automaton import *
 
 DEV_MODE = True
 MATCH_MODE = False
@@ -24,21 +19,11 @@ def start(args):
     man.send(START_MATCH_OPCODE)
 
 
-def start_approval(**args):
-    pass
-
-
 def dev_mode(args):
-    # m = Manager()
-    # m.connect()
-    # button_card = ButtonCard(m)
-    # screen = SevenSegments(m)
-    # wheeledbase = WheeledBase(m)
-    # button_gesture = ButtonGestureDemo(button_card, screen, m)
-    # while not button_gesture.exiting: time.sleep(0.2)
-    # m.disconnect()
     pass
 
+def start_approval(args):
+    pass
 
 def getuuid(args):
     talks = SerialTalks(args.port)
@@ -95,7 +80,7 @@ def getlogs(args):
 
 
 def server(args):
-    srv = Server(password=args.password, size=args.size, start_match=start_preparation)
+    srv = Server(password=args.password, size=args.size, start_match=Automaton.start_preparation)
     while True:
         try:
             while not srv.full():
@@ -147,20 +132,17 @@ def update(args):
         print("updating " + arduino)
         subprocess.run(['/usr/bin/make', 'upload_safe', '-C', arduino_path])
 
-
-from robots.get_robot_name import *
-import sys
-
 no_server = ["server", "getuuid"]
-
 if sys.argv[1] not in no_server:
     manager = Manager("127.0.0.1")
     manager.connect()
     if ROBOT_ID == BORNIBUS_ID:
-        from robots.setup_bornibus import *
+        from robots.Bornibus.setup_bornibus import *
+        print("Init robot Bornibus")
         init_robot()
-    if ROBOT_ID == R128_ID:
-        from robots.setup_128 import *
+    else:
+        from robots.R128.setup_128 import *
+        print("Init robot 128")
         init_robot()
 
 parser = ArgumentParser()
