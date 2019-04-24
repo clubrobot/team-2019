@@ -30,6 +30,7 @@ sens_manager = SensorsManager(wheeledbase, sensor_front, sensor_back)
 
 import os
 if ROBOT_ID == BORNIBUS_ID:
+    print("Bornibus")
     os.chdir("/home/pi/git/clubrobot/team-2019")
 
 roadmap = None

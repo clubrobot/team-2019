@@ -1,8 +1,8 @@
 from robots.get_robot_name import *
 
 class Automaton:
-    PURPLE = 0
-    YELLOW = 1
+    YELLOW = 0
+    PURPLE = 1
     UNDEFINED = -1
 
     def __init__(self):

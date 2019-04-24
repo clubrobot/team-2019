@@ -11,7 +11,6 @@ from common.geogebra import Geogebra
 from robots.R128.setup_128 import *
 from robots.automaton import Automaton
 
-
 class R128(Automaton):
     DISTRIB6_1 = 1
     DISTRIB6_2 = 2
@@ -26,8 +25,7 @@ class R128(Automaton):
         self.daughter_cards = dict( wheeledbase     = wheeledbase, 
                                     armFront        = armFront,
                                     armBack         = armBack,
-                                    display         = disp,
-                                    sensor_manager  = sens_manager)
+                                    display         = disp)
 
         # Save annexes inf
         self.side           = Automaton.UNDEFINED
@@ -49,7 +47,7 @@ class R128(Automaton):
 
         init_robot()
         
-    def stop_match():
+    def stop_match(self):
         import time
         time.sleep(100)
         wheeledbase.stop()
@@ -65,9 +63,12 @@ class R128(Automaton):
 
         # Apply cube obstacle
         self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
+        print("TEST SIDE")
 
         # Specific Actions initialisation
-        self.balanceAct         = BalanceAfter6(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.balanceAct6        = BalanceAfter6(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+
+        self.balanceAct3        = BalanceAfter3(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
         self.movingAfterStart   = MovingAfterStart(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
@@ -81,30 +82,50 @@ class R128(Automaton):
 
         self.moveToRed          = MovingToRed(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
-        self.accel              = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.movingTolittle     = MovingToLittle(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+
+        self.takesingle         = TakePuckSingle(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_1, RedPuck, self.log).getAction()
+
+        self.takemaintain       = TakePuckSyncMaintain(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_2, GreenPuck, BluePuck, self.log).getAction()
+
+        self.movingAfterlittle  = MovingAfterLittle(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+
+        #self.accel              = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
         # self.action_list = [
         #     self.movingAfterStart,
         #     self.takeSyncPos1Act,
         #     self.takeSyncPos2Act,
         #     self.takeSyncPos3Act,
-        #     self.moveToRed,
-        #     self.putRedZoneAct,
-        #     self.movingAfterStart,
         #     self.balanceAct,
         # ]
 
-        self.action_list = [ 
+        self.action_list = [
             self.movingAfterStart,
             self.takeSyncPos1Act,
             self.takeSyncPos2Act,
             self.takeSyncPos3Act,
-            self.accel]
+            self.balanceAct6,
+            self.movingTolittle,
+            self.takesingle,
+            self.takemaintain,
+            self.movingAfterlittle,
+            self.balanceAct3,
+        ]
 
     def set_position(self):
         if self.side == R128.YELLOW:
             self.wheeledbase.set_position(755, 322, 0)
         else:
             self.wheeledbase.set_position(755, 3000-322, -pi)
+
+    def stop_match(self):
+        time.sleep(100)
+        wheeledbase.stop()
+        armFront.stop_pump()
+        armBack.stop_pump()
+        armF.stop()
+        armB.stop()
+        manager.disconnect()
 
     def run(self):
         self.log("MAIN : ", "RUN...")
@@ -148,7 +169,6 @@ class R128(Automaton):
         self.wheeledbase.stop()
 
 if __name__ == '__main__':
-<<<<<<< Updated upstream
     auto = R128()
     auto.set_side(R128.PURPLE)
     init_robot()
@@ -157,16 +177,3 @@ if __name__ == '__main__':
     input()
     auto.run()
     pass
-=======
-    from robots.R128.setup_128 import *
-    init_robot()
-    log("MAIN : ", "DEBUT CHARGEMENT ROADMAP")
-
-    geo = Geogebra('128.ggb')
-
-    auto = R128(R128.PURPLE, geo, wheeledbase, armFront, armBack, disp, electron, log)
-    auto.set_side(R128.PURPLE)
-    auto.def_pos(None,R128.PURPLE)
-
-    auto.run()
->>>>>>> Stashed changes

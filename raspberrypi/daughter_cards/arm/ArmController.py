@@ -15,8 +15,10 @@ class ArmController():
         self.name           = name
         self.log            = log
         self.arm            = arm
+
         # Puck Management
-        self.tank           = PuckTank('TANK '+self.name, self.TANK_SIZE, log)
+        self.sucker         = Sucker('SUCKER ' + self.name, log)
+        self.tank           = PuckTank('TANK ' +self.name, self.TANK_SIZE, log)
 
     # private func
     def move(self, PosID):

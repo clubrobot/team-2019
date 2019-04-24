@@ -25,9 +25,6 @@ class VLSensors : public PeriodicProcess
 
     bool useI2C(){return _i2cused;}
 
-    void startContinuous();
-    void stopContinuous();
-
     void setVL53Address(uint8_t add);
     void setVL61Address(uint8_t add);
 
@@ -35,13 +32,20 @@ class VLSensors : public PeriodicProcess
     uint16_t getVL61range(){return _range[VL61];}
 
     uint16_t readRangeMillimeters(void);
+
+    void shutBothVL();
+    void startBothVL();
+
   protected:
 	
     void process(float timestep);
+    void onProcessEnabling(){startBothVL();}
   
   private: 
     void requestDataVL53(uint8_t reg, uint8_t len);
     void requestDataVL61(uint16_t reg, uint8_t len);
+
+    void startRangingVL53();
 
     bool readLen(uint8_t *buffer, uint8_t len);
     uint8_t read8VL53(uint8_t reg);
@@ -55,12 +59,14 @@ class VLSensors : public PeriodicProcess
     void write16VL61(uint16_t reg, uint16_t value);
     void write32VL61(uint16_t reg, uint32_t value);    
     
+    bool timeout();
 
     void whatToDoNext();
       
     bool _useSensors[2];             
     typedef enum{ REQUEST_VL53 = 0, WAITING_VL53 = 2,
                   REQUEST_VL61 = 1, WAITING_VL61 = 3,
+                  MESURING_VL53 = 4
                 }State_t;
     
     State_t _state;
@@ -81,6 +87,9 @@ class VLSensors : public PeriodicProcess
     bool _i2cused;
 
     uint8_t stop_variable;
+
+  Clock _timeoutchecker;
+    
 
 };
 

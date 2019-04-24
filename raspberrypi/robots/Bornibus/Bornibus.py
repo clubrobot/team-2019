@@ -15,32 +15,37 @@ class Bornibus(Automaton):
     def set_position(self):
         if self.side == Bornibus.PURPLE:
             wheeledbase.set_position(*self.points["Ini"], -pi/2)
+            print(*self.points["Ini"])
         if self.side == Bornibus.YELLOW:
             wheeledbase.set_position(*self.points["Ini"], pi/2)
+            print(*self.points["Ini"])
 
     def set_side(self, side):
-        self.points["Ini"] = geo.get("Ini"+self.side)
-        self.points["Gold3"] = geo.get("Gold3"+self.side)
-        self.points["Gold2"] = geo.get("Gold2"+self.side)
-        self.points["Gold4"] = geo.get("Gold4"+self.side)
-        self.points["Gold5"] = geo.get("Gold5"+self.side)
-        self.points["Gold6"] = geo.get("Gold6"+self.side)
-
-        self.points["Dep1"] = geo.get("Dep1"+self.side)
-        self.points["Dep2"] = geo.get("Dep2"+self.side)
-        self.points["Dep3"] = geo.get("Dep3"+self.side)
-
-        self.points["Pal1"] = geo.get("Pal1"+self.side)
-        self.points["Pal2"] = geo.get("Pal2"+self.side)
-        self.points["Pal3"] = geo.get("Pal3"+self.side)
-        self.points["Pal4"] = geo.get("Pal4"+self.side)
-        self.points["Pal5"] = geo.get("Pal5"+self.side)
-        self.points["Pal6"] = geo.get("Pal6"+self.side)
-        
-        self.points["tmp"] = geo.get("tmp"+self.side)
-        self.points["tmp2"] = geo.get("tmp2"+self.side)
-        self.points["tmp3"] = geo.get("tmp3"+self.side)
         self.side = side
+        color = "M" if side == self.PURPLE else "O"
+        
+        self.points["Ini"] = geo.get("Ini"+color)
+        self.points["Gold3"] = geo.get("Gold3"+color)
+        self.points["Gold2"] = geo.get("Gold2"+color)
+        self.points["Gold4"] = geo.get("Gold4"+color)
+        self.points["Gold5"] = geo.get("Gold5"+color)
+        self.points["Gold6"] = geo.get("Gold6"+color)
+
+        self.points["Dep1"] = geo.get("Dep1"+color)
+        self.points["Dep2"] = geo.get("Dep2"+color)
+        self.points["Dep3"] = geo.get("Dep3"+color)
+
+        self.points["Pal1"] = geo.get("Pal1"+color)
+        self.points["Pal2"] = geo.get("Pal2"+color)
+        self.points["Pal3"] = geo.get("Pal3"+color)
+        self.points["Pal4"] = geo.get("Pal4"+color)
+        self.points["Pal5"] = geo.get("Pal5"+color)
+        self.points["Pal6"] = geo.get("Pal6"+color)
+        
+        self.points["tmp"] = geo.get("tmp"+color)
+        self.points["tmp2"] = geo.get("tmp2"+color)
+        self.points["tmp3"] = geo.get("tmp3"+color)
+        
 
     def stop_match(self):
         import time
@@ -73,8 +78,8 @@ class Bornibus(Automaton):
         print("max ang vel : ", wheeledbase.max_angvel.get())
         print("max lin vel : ", wheeledbase.max_linvel.get())
 
+        disp.points = 0
         disp.start()
-        disp.self.points = 0
 
         pushers.up()
         gripper.open()
@@ -82,22 +87,34 @@ class Bornibus(Automaton):
         # Vers l'accélérateur
         print("Vers l'accélérateur")
         wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Dep1"], self.points["Dep2"],
-                                 self.points["Dep3"], self.points["Gold2"]], direction="forward", lookahead=150,
-                                lookaheadbis=3)
+                                 self.points["Dep3"], self.points["Gold2"]], direction="forward", lookahead=150, lookaheadbis=3)
         wheeledbase.wait()
-
+        print(wheeledbase.get_position())
+        wheeledbase.turnonthespot(0)
+        wheeledbase.wait()
+        wheeledbase.set_velocities(-200, 0)
+        time.sleep(2)
+        wheeledbase.set_velocities(0, 0)
+        wheeledbase.goto_delta(100, 0)
+        wheeledbase.wait()
+        arm.deploy()
+        #wheeledbase.turnonthespot(-2*pi/3)
+        #wheeledbase.wait()
+        #arm.up()
         wheeledbase.lookaheadbis.set(150)
 
         # Prépare le bras
         print("Prépare le bras")
         # sens_manager.disable_front()
         if self.side == Bornibus.YELLOW:
-            wheeledbase.turnonthespot(-pi/4)
+            wheeledbase.turnonthespot(-2*pi/3)
             while not wheeledbase.isarrived():
                 print(wheeledbase.get_position())
                 time.sleep(0.1)
         if self.side == Bornibus.PURPLE:
-            wheeledbase.turnonthespot(-(3*pi)/4)
+            wheeledbase.turnonthespot(3*pi/4)
+            wheeledbase.wait()
+            wheeledbase.turnonthespot(-pi/3)
             while not wheeledbase.isarrived():
                 print(wheeledbase.get_position())
                 time.sleep(0.1)
@@ -134,7 +151,7 @@ class Bornibus(Automaton):
         try:
             wheeledbase.goto(*self.points["Gold4"], theta=pi)
             wheeledbase.wait()
-        except ...:
+        except:
             pass
 
         # Prise goldenium
@@ -167,7 +184,7 @@ class Bornibus(Automaton):
         try:
             wheeledbase.goto(*self.points["Gold6"], theta=0)
             wheeledbase.wait()
-        except ...:
+        except:
             gripper.open()
             print("error")
 
@@ -224,7 +241,7 @@ class Bornibus(Automaton):
 
 if __name__ == "__main__":
     auto = Bornibus()
-    auto.set_side(Bornibus.YELLOW)
+    auto.set_side(Bornibus.PURPLE)
     init_robot()
     auto.set_position()
     print("ready")

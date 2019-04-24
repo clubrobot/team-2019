@@ -10,7 +10,7 @@ from common.logger import *
 from robots.electron import *
 import time
 
-log = Logger(Logger.SHOW)
+log = Logger(Logger.WRITE)
 
 armF = RobotArm(manager, uuid='arm_front')
 armB = RobotArm(manager, uuid='arm_back')

@@ -24,11 +24,11 @@ class ButtonsManager:
         print("validation team")
         self.orange_switch.close()
         self.blue_switch.close()
-
         self.points = self.auto.set_side(self.side)
-        self.green_switch.when_released = self.tirret
+
         ssd.clear_messages()
         ssd.set_message("set pos")
+        self.green_switch.when_released = self.tirret
 
     def ready(self):
         print("validation tirette")
@@ -40,12 +40,12 @@ class ButtonsManager:
 
     def run_match(self):
         print("lancement match")
-        self.auto.run(self.points, self.side)
+        self.auto.run()
         self.tirette_switch.close()
 
     def tirret(self):
         print("validation odometry")
-        self.auto.set_position(self.points, self.side)
+        self.auto.set_position()
         ssd.clear_messages()
         ssd.set_message("tirette")
         self.tirette_switch.when_pressed = self.ready

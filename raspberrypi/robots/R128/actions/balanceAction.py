@@ -33,7 +33,8 @@ class BalanceAfter6(Actionnable):
         self.TankPos        = [TAKE_TANK_PUCK1, TAKE_TANK_PUCK2, TAKE_TANK_PUCK3]
         self.afterTankPos   = [AFTER_TAKE_TANK_PUCK1, AFTER_TAKE_TANK_PUCK2, AFTER_TAKE_TANK_PUCK3]
 
-        self.handeledPuck   = None
+        self.handeledPuck1   = None
+        self.handeledPuck2   = None
 
     def realize(self):
         # put the first handled puck
@@ -41,6 +42,7 @@ class BalanceAfter6(Actionnable):
         
         while not self.arm.is_arrived():
             time.sleep(0.1)
+
         self.display.addPoints(self.handeledPuck.getPoints().Balance)
         self.log("BALANCE6", "Add {} points".format(self.handeledPuck.getPoints().Balance))
         time.sleep(0.5)
@@ -77,29 +79,38 @@ class BalanceAfter6(Actionnable):
             while not self.arm.is_arrived():
                 time.sleep(0.1)
 
-            time.sleep(0.5)
             self.arm.stop_pump()
-            
+            time.sleep(0.5)
+            if(self.arm.tank.index() > 0):
+                self.arm.move(TANK_POS_INTER)
+                while not self.arm.is_arrived():
+                    time.sleep(0.1)
 
-            self.arm.move(TANK_POS_INTER)
+    def before(self):
+        self.arm.start_pump()
+        if(self.arm.sucker.index() > 0):
+            self.arm.move(GLOBAL_POS_INTER)
+
+            while not self.arm.is_arrived():
+                time.sleep(0.1)
+            
+            self.handeledPuck = self.arm.sucker.get_puck()
+            
+            
+        elif (self.arm.tank.index() > 0):
+            self.arm.move(self.beforeTankPos[self.arm.tank.index()-1])
+
+            while not self.arm.is_arrived():
+                time.sleep(0.1)
+
+            self.arm.move(self.TankPos[self.arm.tank.index()-1])
             while not self.arm.is_arrived():
                 time.sleep(0.1)
     
-    def before(self):
-        self.arm.start_pump()
-        self.arm.move(self.beforeTankPos[self.arm.tank.index()-1])
-
-        while not self.arm.is_arrived():
-            time.sleep(0.1)
-
-        self.arm.move(self.TankPos[self.arm.tank.index()-1])
-        while not self.arm.is_arrived():
-            time.sleep(0.1)
-    
-        self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
-        self.handeledPuck = self.arm.tank.get_puck()
-        while not self.arm.is_arrived():
-            time.sleep(0.1)
+            self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
+            self.handeledPuck = self.arm.tank.get_puck()
+            while not self.arm.is_arrived():
+                time.sleep(0.1)
         
     def after(self):
         self.arm.move(GLOBAL_POS_INTER)
@@ -132,7 +143,7 @@ class BalanceAfter3(Actionnable):
         if self.side == self.YELLOW:
             self.actionPoint    = ActPoint(self.point, pi/2)
         else:
-            self.actionPoint    = ActPoint(self.point, -pi/2)
+            self.actionPoint    = ActPoint(self.point, pi/2)
 
         #armPos
         self.beforeTankPos  = [BEFORE_TAKE_TANK_PUCK1, BEFORE_TAKE_TANK_PUCK2, BEFORE_TAKE_TANK_PUCK3]
@@ -154,7 +165,7 @@ class BalanceAfter3(Actionnable):
         while not self.arm1.is_arrived():
             time.sleep(0.1)
 
-        self.wheeledbase.turnonthespot(pi/6)
+        self.wheeledbase.turnonthespot(pi/3)
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
 
@@ -171,7 +182,21 @@ class BalanceAfter3(Actionnable):
             time.sleep(0.1)
     
     def before(self):
-        pass
+        if(self.arm1.sucker.index() > 0):
+            self.arm1.move(GLOBAL_POS_INTER)
+
+            while not self.arm1.is_arrived():
+                time.sleep(0.1)
+            
+            self.handeledPuck1 = self.arm1.sucker.get_puck()
+
+        if(self.arm2.sucker.index() > 0):
+            self.arm2.move(GLOBAL_POS_INTER)
+
+            while not self.arm2.is_arrived():
+                time.sleep(0.1)
+            
+            self.handeledPuck2 = self.arm2.sucker.get_puck()
         
     def after(self):
         pass

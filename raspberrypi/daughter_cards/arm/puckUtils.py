@@ -43,6 +43,33 @@ class PuckTank():
     def index(self):
         return len(self.tank)
 
+class Sucker():
+    def __init__(self, name, logger):
+        self.name   = name
+        self.logger = logger
+        self.tank   = []
+        self.full   = False
+
+    def put_puck(self, puck):
+        if not self.full:
+            self.logger(self.name, "Put : {} Puck".format(puck.name))
+            self.tank.append(puck)
+            self.full = True
+        else :
+            raise RuntimeError('Sucker Full')
+
+    def get_puck(self):
+        if self.full:
+            self.full = False
+            puck = self.tank.pop()
+            self.logger(self.name, "Get : {} Puck".format(puck.name))
+            return puck
+        else :
+            raise RuntimeError('Sucker empty')
+
+    def index(self):
+        return len(self.tank)
+
 if __name__ == '__main__':
     from common.logger      import Logger
     # Configure wheeledbase

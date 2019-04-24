@@ -32,13 +32,60 @@ class MovingToLittle(Actionnable):
         
 
     def realize(self):
+        if self.side == self.YELLOW:
+            self.wheeledbase.purepursuit(self.path, direction = 'backward')
+        else:
+            self.wheeledbase.purepursuit(self.path, direction = 'forward')
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
+
+        self.wheeledbase.turnonthespot(0)
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
+    
+    def before(self):
+        pass
+
+    def after(self):
+        pass
+
+    #override
+    def getAction(self):
+        return Action(self.actionPoint, lambda : self.realize(), self.before, self.after, 'MovingToLittle')
+
+class MovingAfterLittle(Actionnable):
+    YELLOW  = 0
+    PURPLE  = 1
+
+    def __init__(self, geogebra, daughter_cards, side, log):
+        self.geogebra       = geogebra
+        self.log            = log
+        self.side           = side
+
+        if self.side == self.YELLOW:
+            self.arm        = daughter_cards['armFront']
+        else:
+            self.arm        = daughter_cards['armBack']
+        
+        self.wheeledbase    = daughter_cards['wheeledbase']
+        # action Points
+        self.path           = self.geogebra.getall('PathDistrib{}_*'.format(self.side))
+        self.path.reverse()
+        self.actionPoint    = None
+
+        self.handeledPuck   = None
+        
+
+    def realize(self):
+        self.wheeledbase.turnonthespot(-pi)
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
+
         self.wheeledbase.purepursuit(self.path)
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
 
-        self.wheeledbase.turnonthespot(pi/2)
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
+        
     
     def before(self):
         pass
