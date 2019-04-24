@@ -45,8 +45,9 @@ class BalanceAfter6(Actionnable):
 
         self.display.addPoints(self.handeledPuck.getPoints().Balance)
         self.log("BALANCE6", "Add {} points".format(self.handeledPuck.getPoints().Balance))
-        time.sleep(0.5)
+
         self.arm.stop_pump()
+        time.sleep(0.5)
 
         self.arm.move(TANK_POS_INTER)
         while not self.arm.is_arrived():
@@ -81,6 +82,7 @@ class BalanceAfter6(Actionnable):
 
             self.arm.stop_pump()
             time.sleep(0.5)
+            
             if(self.arm.tank.index() > 0):
                 self.arm.move(TANK_POS_INTER)
                 while not self.arm.is_arrived():
@@ -139,7 +141,7 @@ class BalanceAfter3(Actionnable):
         
         self.wheeledbase    = daughter_cards['wheeledbase']
         self.display        = daughter_cards['display']
-        
+
         # action Points
         self.point          = self.geogebra.get('Balance{}'.format(self.side))
         if self.side == self.YELLOW:
@@ -180,8 +182,8 @@ class BalanceAfter3(Actionnable):
         while not self.arm2.is_arrived():
             time.sleep(0.1)
 
-        time.sleep(0.5)
         self.arm2.stop_pump()
+        time.sleep(0.5)
 
         self.display.addPoints(self.handeledPuck2.getPoints().Balance)
         self.log("BALANCE3", "Add {} points".format(self.handeledPuck2.getPoints().Balance))
