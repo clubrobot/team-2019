@@ -138,6 +138,8 @@ class BalanceAfter3(Actionnable):
             self.arm2       = daughter_cards['armFront']
         
         self.wheeledbase    = daughter_cards['wheeledbase']
+        self.display        = daughter_cards['display']
+        
         # action Points
         self.point          = self.geogebra.get('Balance{}'.format(self.side))
         if self.side == self.YELLOW:
@@ -150,7 +152,8 @@ class BalanceAfter3(Actionnable):
         self.TankPos        = [TAKE_TANK_PUCK1, TAKE_TANK_PUCK2, TAKE_TANK_PUCK3]
         self.afterTankPos   = [AFTER_TAKE_TANK_PUCK1, AFTER_TAKE_TANK_PUCK2, AFTER_TAKE_TANK_PUCK3]
 
-        self.handeledPuck   = None
+        self.handeledPuck1   = None
+        self.handeledPuck2   = None
 
     def realize(self):
         # put the first handled puck
@@ -158,8 +161,11 @@ class BalanceAfter3(Actionnable):
         while not self.arm1.is_arrived():
             time.sleep(0.1)
 
-        time.sleep(0.5)
         self.arm1.stop_pump()
+        time.sleep(0.5)
+
+        self.display.addPoints(self.handeledPuck1.getPoints().Balance)
+        self.log("BALANCE3", "Add {} points".format(self.handeledPuck1.getPoints().Balance))
 
         self.arm1.move(TANK_POS_INTER)
         while not self.arm1.is_arrived():
@@ -176,6 +182,9 @@ class BalanceAfter3(Actionnable):
 
         time.sleep(0.5)
         self.arm2.stop_pump()
+
+        self.display.addPoints(self.handeledPuck2.getPoints().Balance)
+        self.log("BALANCE3", "Add {} points".format(self.handeledPuck2.getPoints().Balance))
 
         self.arm2.move(TANK_POS_INTER)
         while not self.arm2.is_arrived():
