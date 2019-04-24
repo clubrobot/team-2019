@@ -46,17 +46,6 @@ class R128(Automaton):
         self.tam = ThreadActionManager()
 
         init_robot()
-        
-    def stop_match(self):
-        import time
-        time.sleep(100)
-        wheeledbase.stop()
-        armFront.stop_pump()
-        armBack.stop_pump()
-        armF.stop()
-        armB.stop()
-        manager.disconnect()
-
 
     def set_side(self, side):
         self.side = side
