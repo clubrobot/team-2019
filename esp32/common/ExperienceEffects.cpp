@@ -9,6 +9,7 @@ ExperienceEffects::ExperienceEffects(boolean electron){
 	FastLED.addLeds<NEOPIXEL, PINPIXEL>(leds, NUMPIXEL);
 	pinMode(BUILTIN_LED, OUTPUT);
 	pinMode(GO_BACK, INPUT_PULLUP);
+	pinMode(GO_FORWARD, INPUT_PULLUP);
 	digitalWrite(BUILTIN_LED, LOW);
 	pinMode(INTERRUPT, INPUT_PULLUP);
 }
@@ -30,8 +31,14 @@ void ExperienceEffects::goBack(){
 	motor.enable();
 }
 
+void ExperienceEffects::goForward(){
+	motor.setVelocity(-1);
+	motor.enable();
+}
+
 void ExperienceEffects::motorStop(){
-	motor.disable();
+	motor.setVelocity(0);
+	motor.enable();
 }
 
 void ExperienceEffects::connected(){
