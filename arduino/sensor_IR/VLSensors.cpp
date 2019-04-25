@@ -392,9 +392,6 @@ void VLSensors::setVL61Address(uint8_t new_addr)
   delay(5);
   write8VL61(I2C_SLAVE__DEVICE_ADDRESS, new_addr & 0x7F);
   _addressVL61 = new_addr;
-  pinMode(_EN_VL61, OUTPUT);
-  digitalWrite(_EN_VL61, LOW);
-  delay(5);
   
 }
 
@@ -404,9 +401,6 @@ void VLSensors::setVL53Address(uint8_t new_addr)
   delay(5);
   write8VL53(I2C_SLAVE_DEVICE_ADDRESS, new_addr & 0x7F);
   _addressVL53 = new_addr;
-  pinMode(_EN_VL53, OUTPUT);
-  digitalWrite(_EN_VL53, LOW);
-  delay(5);
 }
 
 uint8_t VLSensors::read8VL53(uint8_t reg)
