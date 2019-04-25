@@ -1,14 +1,36 @@
 /*
-    This sketch shows the Ethernet event usage
-
+    This sketch shows how to configure different external or internal clock sources for the Ethernet PHY
 */
 
 #include <ETH.h>
 
+/* 
+   * ETH_CLOCK_GPIO0_IN   - default: external clock from crystal oscillator
+   * ETH_CLOCK_GPIO0_OUT  - 50MHz clock from internal APLL output on GPIO0 - possibly an inverter is needed for LAN8720
+   * ETH_CLOCK_GPIO16_OUT - 50MHz clock from internal APLL output on GPIO16 - possibly an inverter is needed for LAN8720
+   * ETH_CLOCK_GPIO17_OUT - 50MHz clock from internal APLL inverted output on GPIO17 - tested with LAN8720
+*/
+#define ETH_CLK_MODE    ETH_CLOCK_GPIO17_OUT
+
+// Pin# of the enable signal for the external crystal oscillator (-1 to disable for internal APLL source)
+#define ETH_POWER_PIN   -1
+
+// Type of the Ethernet PHY (LAN8720 or TLK110)
+#define ETH_TYPE        ETH_PHY_LAN8720
+
+// I²C-address of Ethernet PHY (0 or 1 for LAN8720, 31 for TLK110)
+#define ETH_ADDR        0
+
+// Pin# of the I²C clock signal for the Ethernet PHY
+#define ETH_MDC_PIN     15
+
+// Pin# of the I²C IO signal for the Ethernet PHY
+#define ETH_MDIO_PIN    2
+
+
 static bool eth_connected = false;
 
-void WiFiEvent(WiFiEvent_t event)
-{
+void WiFiEvent(WiFiEvent_t event) {
   switch (event) {
     case SYSTEM_EVENT_ETH_START:
       Serial.println("ETH Started");
@@ -44,8 +66,7 @@ void WiFiEvent(WiFiEvent_t event)
   }
 }
 
-void testClient(const char * host, uint16_t port)
-{
+void testClient(const char * host, uint16_t port) {
   Serial.print("\nconnecting to ");
   Serial.println(host);
 
@@ -64,16 +85,14 @@ void testClient(const char * host, uint16_t port)
   client.stop();
 }
 
-void setup()
-{
+void setup() {
   Serial.begin(115200);
   WiFi.onEvent(WiFiEvent);
-  ETH.begin();
+  ETH.begin(ETH_ADDR, ETH_POWER_PIN, ETH_MDC_PIN, ETH_MDIO_PIN, ETH_TYPE, ETH_CLK_MODE);
 }
 
 
-void loop()
-{
+void loop() {
   if (eth_connected) {
     testClient("google.com", 80);
   }

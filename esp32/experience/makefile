@@ -9,6 +9,7 @@ COMMON = ../common
 #Setup all libs used !
 LIBS = $(ESP_LIBS)/EEPROM \
 	   $(ESP_LIBS)/BLE \
+		 $(COMMON)/WiFi/src\
 	   $(COMMON)/CRC16.cpp \
 	   $(COMMON)/ExperienceEffects.cpp \
 		 $(COMMON)/ESP32-Arduino-Servo-Library/src/Servo.cpp \
@@ -22,6 +23,8 @@ LIBS = $(ESP_LIBS)/EEPROM \
 		 $(COMMON)/fastLED/power_mgt.cpp \
 		 $(COMMON)/fastLED/wiring.cpp \
 	   $(COMMON)/NeoPixel/Adafruit_NeoPixel.cpp\
+		 $(COMMON)/mqtt/Adafruit_MQTT.cpp\
+		 $(COMMON)/mqtt/Adafruit_MQTT_Client.cpp\
 		 $(COMMON)/DCMotor.cpp\
 
 

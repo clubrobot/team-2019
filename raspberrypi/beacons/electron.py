@@ -2,25 +2,23 @@
 #-*- coding: utf-8 -*-
 import time
 import math
+import paho.mqtt.client as mqtt
+import time
 
-from common.serialtalks import *
+# Create client instance and connect to localhost
+client = mqtt.Client()
+client.connect("localhost",1883,60)
 
-
-# Instructions
-
-ISONTOP_OPCODE 				= 0x17
-START_EXPERIENCE_OPCODE		= 0x19
+# Publish message to topic/iopi and set pin 1 on bus 1 to on
 
 
 class Electron(SerialTalks):
 
 	def __init__(self, uuid='expServ'):
-		SerialTalks.__init__(self, "/dev/arduino/{}".format(uuid))
+		#SerialTalks.__init__(self, "/dev/arduino/{}".format(uuid))
 
 	def isOnTop(self):
-		output = self.execute(ISONTOP_OPCODE)
-		ret = output.read(BYTE)
-		return ret
+		return 0
 
 	def start(self):
-		self.send(START_EXPERIENCE_OPCODE)
+		client.publish("topic/start", "2");
