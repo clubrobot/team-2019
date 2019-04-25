@@ -1,88 +1,166 @@
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
 
-from robots.R128.R128Actions import TakeSyncDistrib, PutBalance, PutRed
+from robots.R128.actions.balanceAction import *
+from robots.R128.actions.takePuckActions import *
+from robots.R128.actions.PutRedZoneAction import *
+from robots.R128.actions.movingAction import *
+from robots.R128.actions.acceleratorAction import *
+from common.actions.action import ThreadActionManager
 from common.geogebra import Geogebra
+from robots.R128.setup_128 import *
+from robots.automaton import Automaton
 
-class R128:
-    YELLOW  = 0
-    PURPLE  = 1
-
+class R128(Automaton):
     DISTRIB6_1 = 1
     DISTRIB6_2 = 2
     DISTRIB6_3 = 3
-    def __init__(self, side, geogebra, wheeledbase, arm1, arm2, log):
+    DISTRIB3_1 = 4
+    DISTRIB3_2 = 5
+
+
+    def __init__(self):
+        Automaton.__init__(self)
         # Save daughter_cards
-        self.daughter_cards = dict(wheeledbase  = wheeledbase, 
-                                    armFront    = arm1,
-                                    armBack     = arm2
-                                    )
+        self.daughter_cards = dict( wheeledbase     = wheeledbase, 
+                                    armFront        = armFront,
+                                    armBack         = armBack,
+                                    display         = disp)
 
         # Save annexes inf
-        self.side       = side
-        self.geogebra   = geogebra
-        self.log        = log
+        self.side           = Automaton.UNDEFINED
+        self.geogebra       = geo
+        self.log            = log
 
-        self.action_list = []
+        # action List
+        self.action_list    = []
+
+        #electron control
+        self.electron       = electron
+        # Wheeledbase
+        self.wheeledbase    = self.daughter_cards['wheeledbase']
+        # Display screen
+        self.display        = self.daughter_cards['display']
+
+        # Action thread manager
+        self.tam = ThreadActionManager()
 
     def set_side(self, side):
         self.side = side
+
         # Apply cube obstacle
-        self.log("MAIN : ", "Set Side : {}".format(self.side))
+        self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
+        print("TEST SIDE")
 
-        self.TakeSync1  = TakeSyncDistrib(self.geogebra, self.daughter_cards, self.side, R128.DISTRIB6_1, self.log)
-        self.TakeSync2  = TakeSyncDistrib(self.geogebra, self.daughter_cards, self.side, R128.DISTRIB6_2, self.log)
-        self.TakeSync3  = TakeSyncDistrib(self.geogebra, self.daughter_cards, self.side, R128.DISTRIB6_3, self.log)
+        # Specific Actions initialisation
+        self.balanceAct6        = BalanceAfter6(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
-        self.TakeSync1Act = self.TakeSync1.getAction()[0]
-        self.TakeSync2Act = self.TakeSync2.getAction()[0]
-        self.TakeSync3Act = self.TakeSync3.getAction()[0]
+        self.balanceAct3        = BalanceAfter3(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
-        self.Balance    = PutBalance(self.geogebra, self.daughter_cards, self.side, self.log)
-        self.BalanceAct = self.Balance.getAction()[0]
+        self.movingAfterStart   = MovingAfterStart(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
-        self.Red    = PutRed(self.geogebra, self.daughter_cards, self.side, self.log)
-        self.RedAct = self.Red.getAction()[0]
+        self.takeSyncPos1Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_1, GreenPuck, RedPuck, self.log).getAction()
+
+        self.takeSyncPos2Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_2, BluePuck, RedPuck, self.log).getAction()
+
+        self.takeSyncPos3Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_3, GreenPuck, RedPuck, self.log).getAction()
+
+        self.putRedZoneAct      = PutRedZone(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+
+        self.moveToRed          = MovingToRed(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+
+        self.movingTolittle     = MovingToLittle(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+
+        self.takesingle         = TakePuckSingle(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_1, RedPuck, self.log).getAction()
+
+        self.takemaintain       = TakePuckSyncMaintain(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_2, GreenPuck, BluePuck, self.log).getAction()
+
+        self.movingAfterlittle  = MovingAfterLittle(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+
+        #self.accel              = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        # self.action_list = [
+        #     self.movingAfterStart,
+        #     self.takeSyncPos1Act,
+        #     self.takeSyncPos2Act,
+        #     self.takeSyncPos3Act,
+        #     self.balanceAct,
+        # ]
 
         self.action_list = [
-            self.TakeSync1Act,
-            self.TakeSync2Act,
-            self.TakeSync3Act,
-            self.BalanceAct,
-            self.RedAct
+            self.movingAfterStart,
+            self.takeSyncPos1Act,
+            self.takeSyncPos2Act,
+            self.takeSyncPos3Act,
+            self.balanceAct6,
+            self.movingTolittle,
+            self.takesingle,
+            self.takemaintain,
+            self.movingAfterlittle,
+            self.balanceAct3,
         ]
 
+    def set_position(self):
         if self.side == R128.YELLOW:
-            self.daughter_cards['wheeledbase'].set_position(755, 322, pi)
+            self.wheeledbase.set_position(755, 322, 0)
         else:
-            self.daughter_cards['wheeledbase'].set_position(755, 3000-322, -pi)
+            self.wheeledbase.set_position(755, 3000-322, -pi)
+
+    def stop_match(self):
+        time.sleep(100)
+        wheeledbase.stop()
+        armFront.stop_pump()
+        armBack.stop_pump()
+        armF.stop()
+        armB.stop()
+        manager.disconnect()
 
     def run(self):
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
+        Thread(target=self.stop_match).start()
+        self.display.start()
+
+        self.log("MAIN : ", "Launch Electron")
+        self.electron.start()
+        self.display.addPoints(40)
+
+        # starting thread action manager
+        self.tam.start()
         
         for act in self.action_list:
-                self.log("MAIN : ", "Let's go to the next action : {}".format(act.name))
-                act.prepare()
+
+            self.log("MAIN : ", "Launch Before Action")
+            self.tam.putAction(act.getBefore())
+
+            if act.actionPoint is not None:
+                self.log("MAIN : ", "{}".format(act.actionPoint))
                 self.daughter_cards['wheeledbase'].goto(*act.actionPoint.point, theta=act.actionPoint.theta)
-                while not act.prepareEnd():
-                    time.sleep(0.1)
-                self.log("MAIN ; ", "Arrived on action point ! Go execute it =)")
-                act()
-                act.done.set()
-                act.complete()
 
-                while not act.completeEnd():
-                    time.sleep(0.1)
+            while not self.tam.end():
+                time.sleep(0.1)
 
+            self.log("MAIN ; ", "Arrived on action point ! Go execute {} =)".format(act.name))
+            act()
+            act.done.set()
+
+            self.log("MAIN ; ", "Action End !")
+
+            self.log("MAIN : ", "Launch After Action")
+            self.tam.putAction(act.getAfter())
+            
+            self.log("MAIN : ", "Let's go to the next action !")
+        
+        #stop thread action manager
+        self.tam.stop()
+        self.display.stop()
+        self.wheeledbase.stop()
 
 if __name__ == '__main__':
-    from robots.R128.setup_128 import *
-    init_robot()
-    log("MAIN : ", "DEBUT CHARGEMENT ROADMAP")
-
-    geo = Geogebra('128.ggb')
-
-    auto = R128(R128.PURPLE,geo, wheeledbase, armFront,  armBack, log)
+    auto = R128()
     auto.set_side(R128.PURPLE)
+    init_robot()
+    auto.set_position()
+    print("ready")
+    input()
     auto.run()
+    pass

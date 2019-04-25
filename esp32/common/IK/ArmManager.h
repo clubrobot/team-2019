@@ -45,7 +45,7 @@ class ArmManager : public Picker
         float      estimated_time_of_arrival(Coords start_pos, Coords start_vel, Coords target_pos, Coords target_vel);
 
         void load(int address);
-	    void save(int address) const;
+        void save(int address) const;
         
     private:
 

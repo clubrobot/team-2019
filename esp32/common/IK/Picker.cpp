@@ -22,7 +22,7 @@ void Picker::init(float l1, float l2, float l3, Joints joints, Coords origin, in
 {
     _joints 	= joints;
 	_origin	= origin;
-     
+
 	_tool	 	= get_tool();
 
 	_l1		= l1;
@@ -68,9 +68,9 @@ Joints Picker::inverse_kinematics(Coords tool)
     else
     {
         _tool = tool;
-         
+
         _joints = get_joints();
-         
+
         ret = _joints;
     }      
     return ret;
@@ -87,7 +87,7 @@ Coords Picker::get_tool(void) const throw()
     new_cords.x     += _origin.x;
     new_cords.y     += _origin.y;
     new_cords.phi   += _origin.phi;
-     
+
     return new_cords;
 }
 
@@ -133,7 +133,7 @@ DetailedPos Picker::get_detailed_pos(void) const throw()
 
     new_pos.origin  = _origin;
     new_pos.tool    = _tool;
-     
+
     return new_pos;
 }
 
@@ -157,7 +157,7 @@ matrix_t Picker::compute_jacobian(void) throw()
     float dy_dth3 = _l3 * cos(_joints.th1 + _joints.th2 + _joints.th3);
 
     ret = _matrix.createMatrix33(dx_dth1, dx_dth2, dx_dth3, dy_dth1, dy_dth2, dy_dth3, 1.0, 1.0, 1.0);
-     
+
     return ret;
 }
 
@@ -171,7 +171,7 @@ Coords Picker::get_tool_vel(Joints joints_vel) throw()
     matrix_t jt_vel = _matrix.createMatrix31(joints_vel.th1, joints_vel.th2, joints_vel.th3);
 
     matrix_t jacobian = compute_jacobian();
-     
+
     matrix_t tl_vel = _matrix.multMatrix33x13(jacobian , jt_vel);
 
     new_vel.x   = tl_vel[0][0];
@@ -181,7 +181,7 @@ Coords Picker::get_tool_vel(Joints joints_vel) throw()
     _matrix.free(jt_vel);
     _matrix.free(jacobian);
     _matrix.free(tl_vel);
-     
+
     return new_vel;
 }
 
@@ -196,9 +196,9 @@ Joints Picker::get_joints_vel(Coords tool_vel)
     vel.th3 = 0;
 
     matrix_t tool_v = _matrix.createMatrix31(tool_vel.x, tool_vel.y, tool_vel.phi);
-     
+
     matrix_t jacobian = compute_jacobian();
-     
+
     if (_matrix.norm(tool_v) < EPSILON)
     {
         return vel;
@@ -218,7 +218,7 @@ Joints Picker::get_joints_vel(Coords tool_vel)
     _matrix.free(tool_v);
     _matrix.free(jacobian);
     _matrix.free(joints_vel);
-     
+
     return vel;
 }
 
@@ -235,7 +235,7 @@ path_t Picker::get_path(Coords start_pos, Coords start_vel, Coords target_pos, C
                                             start_joints_vel,
                                             target_joints_pos,
                                             target_joints_vel);
-     
+
     //get_path
     path_t new_path;
 
@@ -259,7 +259,7 @@ path_t Picker::get_path(Coords start_pos, Coords start_vel, Coords target_pos, C
                                                 target_joints_vel.th3,
                                                 tf_sync,
                                                 delta_t);
-     
+
     return new_path;
 }
 
@@ -277,7 +277,7 @@ float Picker::synchronisation_time(Joints start_pos, Joints start_vel, Joints ta
     TrajectoryTime t_theta3 = Theta3_joint.time_to_destination(start_pos.th3, start_vel.th3, target_pos.th3, target_vel.th3);
 
     float maxi = max(t_theta1.tf, t_theta2.tf);
-     
+
     return max(maxi, t_theta3.tf);
 }
 

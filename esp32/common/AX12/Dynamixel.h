@@ -129,7 +129,7 @@ private:
 	unsigned char Speed_Low_Byte;
 	unsigned char Load_High_Byte;
 	unsigned char Load_Low_Byte;
-	  
+
 	int readDatafromAX(unsigned char id, int offset);
 	
 public:
@@ -196,7 +196,7 @@ typedef enum
 class AX12Timeout
 {
 	public:
-    	AX12Timeout(int id):m_id(id){}
+		AX12Timeout(int id):m_id(id){}
 		int get_id() const {return m_id;}
 	private:
 		int m_id;

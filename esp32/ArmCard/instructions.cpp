@@ -19,6 +19,15 @@ void ATMOSPHERE_PRESSURE(SerialTalks& talks, Deserializer& input, Serializer& ou
 	output.write<bool>(pSensor.currentlyAtmospherePressure());
 }
 
+void UPDATE_THRESHOLD(SerialTalks& talks, Deserializer& input, Serializer& output){
+	pSensor.change_pressure_threshold(input.read<float>());
+}
+
+void READ_THRESHOLD(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+    output.write<float>(pSensor.get_pressure_threshold());
+}
+
 extern ArmManager        arm_manager;
 extern TrajectoryManager traj_manager;
 
@@ -55,7 +64,6 @@ void IS_ARRIVED(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
     byte ret = traj_manager.is_arrived();
     output.write<byte>(ret);
-    output.write<byte>(0);
 }
 
 void START_PUMP(SerialTalks& talks, Deserializer& input, Serializer& output)

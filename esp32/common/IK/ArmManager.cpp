@@ -77,7 +77,6 @@ Workspace ArmManager::workspace_containing_position(Coords position) throw()
     }
     else
     {
-         
         Joints joints;
         Picker::forward_kinematics(joints);
         return _ws_front;  
@@ -110,7 +109,7 @@ Workspace ArmManager::clip_Workspaceo_constraints(Workspace workspace) throw()
     Workspace new_ws;
     new_ws.x_min = max(workspace.x_min, Picker::x_axis.pos.min);
     new_ws.x_max = min(workspace.x_max, Picker::x_axis.pos.max);
-        
+
     new_ws.y_min = max(workspace.y_min, Picker::y_axis.pos.min);
     new_ws.y_max = min(workspace.y_max, Picker::y_axis.pos.max);
 
@@ -182,7 +181,7 @@ MoveBatch ArmManager::goto_workspace(Coords start_pos, Coords target_pos, Worksp
         LOG_ARM("Target position not within new workspace boundaries, target may be out of defined workspaces");
         throw string("Target position not within new workspace boundaries, target may be out of defined workspaces");
     }
-     
+
     _workspace = new_workspace;
 
     new_batch.addDuration(estimated_time_of_arrival(start_pos, NULL_VEL, target_pos, NULL_VEL));

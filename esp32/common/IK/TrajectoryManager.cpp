@@ -45,6 +45,17 @@ void TrajectoryManager::init()
     _mutex.release();
 }
 
+float TrajectoryManager::get_timestep() const 
+{
+    float ret;
+
+    _mutex.acquire();
+    ret =  _timestep;
+    _mutex.release();
+
+    return ret;
+}
+
 void TrajectoryManager::move_directly(Coords pos)
 {
     _mutex.acquire();
@@ -68,6 +79,17 @@ void TrajectoryManager::move_directly(Coords pos)
         cout << e << endl;
     }
     _mutex.release();
+}
+
+bool TrajectoryManager::is_arrived() const
+{
+    bool ret;
+
+    _mutex.acquire();
+    ret = _arrived;
+    _mutex.release();
+    
+    return ret;
 }
 
 void TrajectoryManager::addMoveBatch(MoveBatch mb)
@@ -107,13 +129,14 @@ void TrajectoryManager::process(float timestep)
                 th2 = convert_deg(mb.batch[1].position);
                 th3 = convert_deg(mb.batch[2].position);
 
+                _motor1->setVelocityProfile(mb.batch[0].vel);
+                _motor2->setVelocityProfile(mb.batch[1].vel);
+                _motor3->setVelocityProfile(mb.batch[2].vel);
+
                 _motor1->setGoalPos(th1);
                 _motor2->setGoalPos(th2);
                 _motor3->setGoalPos(th3);
 
-                _motor1->setVelocityProfile(mb.batch[0].vel);
-                _motor2->setVelocityProfile(mb.batch[1].vel);
-                _motor3->setVelocityProfile(mb.batch[2].vel);
             }
             _isExecutingBatch = true;
             _arrived          = false;
@@ -132,7 +155,7 @@ void TrajectoryManager::process(float timestep)
 
         if(_motor1->arrived() && _motor2->arrived() && _motor3->arrived())
         {
-            //_arrived          = true;
+            _arrived          = true;
             _isExecutingBatch = false;
         }
     }

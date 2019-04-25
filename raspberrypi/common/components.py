@@ -181,7 +181,7 @@ class Server(TCPTalksServer):
         def core():
             self.start_match()
 
-        Thread(target=core).start()
+        Thread(target=core).run()
 
     def addcomponent(self, comp, compid):
         if not compid in self.components:
