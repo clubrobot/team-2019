@@ -16,7 +16,7 @@ EndStop endStop3;
 void setup(){
   endStop1.attach(SWITCH1);
   endStop2.attach(SWITCH2);
-  endStop3.attach(DRIVER_RESET);
+  endStop3.attach(DRIVER_RESET); // NO motor was needed so we used this PIN to add a new switch
   Serial.begin(SERIALTALKS_BAUDRATE);
   talks.begin(Serial);
 	talks.bind(_SET_POSITION_PUSHERS_OPCODE, SET_POSITION_PUSHERS);
