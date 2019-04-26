@@ -6,6 +6,13 @@
 extern BLECharacteristic *pStartCharacteristic;
 extern BLECharacteristic *pIsOnTopCharacteristic;
 
+extern boolean deviceConnected;
+
+void IS_CONNECTED(SerialTalks &inst, Deserializer &input, Serializer &output)
+{
+    output.write<bool>(deviceConnected);
+}
+
 void START(SerialTalks &inst, Deserializer &input, Serializer &output)
 {
     pStartCharacteristic->setValue("start\0");
@@ -13,6 +20,12 @@ void START(SerialTalks &inst, Deserializer &input, Serializer &output)
 
 void ISONTOP(SerialTalks &inst, Deserializer &input, Serializer &output)
 {
-    if(pIsOnTopCharacteristic->getValue().c_str()=="top"){output.write<bool>(1);}
-		else{output.write<bool>(0);}
+    if(pIsOnTopCharacteristic->getValue().c_str()=="top")
+    {
+        output.write<bool>(1);
+    }
+	else
+    {
+        output.write<bool>(0);
+    }
 }
