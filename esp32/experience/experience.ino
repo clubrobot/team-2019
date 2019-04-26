@@ -23,10 +23,9 @@ Adafruit_MQTT_Subscribe start = Adafruit_MQTT_Subscribe(&mqtt, "topic/start");
 Adafruit_MQTT_Publish start_publish = Adafruit_MQTT_Publish(&mqtt, "topic/start");
 Adafruit_MQTT_Publish isOnTop = Adafruit_MQTT_Publish(&mqtt, "topic/isOnTop");
 
-void MQTT_connect();
+bool MQTT_connect();
 
-long current_time = 0;
-long last_time = 0;
+bool mqtt_connected = false;
 
 void setup()
 {
@@ -58,10 +57,41 @@ void setup()
   Serial.println("IP address: "); Serial.println(WiFi.localIP());
   digitalWrite(16, LOW);
   mqtt.subscribe(&start);
+
+  if(MQTT_connect())
+  {
+    mqtt_connected = true;
+    experience.connected();
+  }
+  else
+  {
+    mqtt_connected = false;
+  }
+  
 }
 
 void loop()
 {
+  static long starttime = millis();
+  static long currenttime = 0;
+
+  if(!mqtt_connected)
+  {
+    currenttime = millis();  
+    if (currenttime - starttime >= 5000)
+    {
+      if(MQTT_connect())
+      {
+        mqtt_connected = true;
+        experience.connected();
+      }
+      else
+      {
+        mqtt_connected = false;
+      }
+      starttime = currenttime;
+    }
+  }
 
   if (digitalRead(GO_BACK)==LOW && experience.getStart() == 0){
     experience.goBack();
@@ -75,50 +105,56 @@ void loop()
     experience.motorStop();
   }
 
-  MQTT_connect();
-
-  Adafruit_MQTT_Subscribe *subscription;
-  while ((subscription = mqtt.readSubscription(100))) {
-    if (subscription == &start) {
-      Serial.print(F("Got: "));
-      Serial.println((char *)start.lastread);
-      char *value = (char *)start.lastread;
-      int current = atoi(value);
-      if (current == 2){
-        Serial.println("starting");
-        experience.start();
+  
+  if(mqtt_connected)
+  {
+    Adafruit_MQTT_Subscribe *subscription;
+    while ((subscription = mqtt.readSubscription(100))) {
+      if (subscription == &start) {
+        Serial.print(F("Got: "));
+        Serial.println((char *)start.lastread);
+        char *value = (char *)start.lastread;
+        int current = atoi(value);
+        if (current == 2){
+          Serial.println("starting");
+          experience.start();
+        }
       }
+    }
+
+    if (experience.getTimer()+TEMPS_MONTEE < millis() && experience.isElectron && experience.getStart() == 1){
+      experience.stayOnTop();
+      isOnTop.publish("1");
     }
   }
 
-  if (experience.getTimer()+TEMPS_MONTEE < millis() && experience.isElectron && experience.getStart() == 1){
-    experience.stayOnTop();
-    isOnTop.publish("1");
-  }
-
-  delay(500);
+  delay(100);
 }
 
-void MQTT_connect() {
+bool MQTT_connect() 
+{
   int8_t ret;
 
-  if (mqtt.connected()) {
+  if (mqtt.connected()) 
+  {
     experience.connected();
-    return;
+    return true;
   }
 
   Serial.print("Connecting to MQTT... ");
 
-  uint8_t retries = 3;
-  while ((ret = mqtt.connect()) != 0) {
+  if((ret = mqtt.connect()) != 0) 
+  {
     Serial.println(mqtt.connectErrorString(ret));
     Serial.println("Retrying MQTT connection in 5 seconds...");
     mqtt.disconnect();
-    delay(5000);
-    retries--;
-    if (retries == 0) {
-      while (1);
-    }
+    return false;
   }
+  else
+  {
+    return true;
+  }
+  
+
   Serial.println("MQTT Connected!");
 }
