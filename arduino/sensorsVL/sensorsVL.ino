@@ -1,173 +1,88 @@
-#include "Adafruit_VL53L0X.h"
-#include "Adafruit_VL6180X.h"
+#include "../common/Wire.h"
+#include "lib/Adafruit_VL53L0X.h"
+#include <Arduino.h>
+#include "PIN.h"
+#include "instructions.h"
 
-#define XSHUT_VL53_2 3 //A7
-#define XSHUT_VL53_1 10
-#define XSHUT_VL61_2 4 //A6
-#define XSHUT_VL61_1 11
+#include "../common/SerialTalks.h"
 
-Adafruit_VL53L0X lox = Adafruit_VL53L0X();
-Adafruit_VL53L0X lox2 = Adafruit_VL53L0X();
-Adafruit_VL6180X vl = Adafruit_VL6180X();
-Adafruit_VL6180X vl2 = Adafruit_VL6180X();
+Adafruit_VL53L0X s1 = Adafruit_VL53L0X();
+Adafruit_VL53L0X s2 = Adafruit_VL53L0X();
 
-long current,old = 0;
+VL53L0X_RangingMeasurementData_t measure;
+VL53L0X_RangingMeasurementData_t measure2;
+
+int16_t range_1 = 3000;
+int16_t range_2 = 3000;
+bool failedToBoot[] = {true, true};
+
+void enableSensor(uint8_t shutpin, bool mode);
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(SERIALTALKS_BAUDRATE);
+  talks.begin(Serial);
+  talks.bind(GET_RANGE_1_OPCODE, GET_RANGE_1);
+  talks.bind(GET_RANGE_2_OPCODE, GET_RANGE_2);
+  talks.bind(CHECK_ERROR_OPCODE, CHECK_ERROR);
 
-  // wait until serial port opens for native USB devices
-  while (! Serial) {
-    delay(1);
-  }
-
-  pinMode(XSHUT_VL61_2, OUTPUT);
-  digitalWrite(XSHUT_VL61_2, LOW);
-  pinMode(XSHUT_VL61_1, OUTPUT);
-  digitalWrite(XSHUT_VL61_1, LOW);
-
-  //pinMode(XSHUT_VL53_1,OUTPUT);
-  //digitalWrite(XSHUT_VL53_1, LOW);
-  pinMode(XSHUT_VL53_2,OUTPUT);
-  digitalWrite(XSHUT_VL53_2, LOW);
+  //Shutdown both VL61 as they are not used yet
+  enableSensor(XSHUT_VL61_1, false);
+  enableSensor(XSHUT_VL61_2, false);
   
-  delay(5);
-
-  Serial.println(F("Adafruit VL53L0X"));
-  if (!lox.begin(0x44, true)) {
-    Serial.println(F("Failed to boot VL53L0X 1"));
-    //while(1);
-  }
-  pinMode(XSHUT_VL53_2,INPUT);
-
-  delay(5);
-
-  if (!lox2.begin(0x46, true)) {
-    Serial.println(F("Failed to boot VL53L0X 2"));
-    //while(1);
-  }
-
-  /*pinMode(XSHUT_VL61_1,INPUT);
-
-  delay(5);
-
-  Serial.println(F("Adafruit VL6180X"));
-  if (! vl.begin()) {
-    Serial.println(F("Failed to boot VL6180X 1"));
-    //while (1);
-  }
-  vl.setAddress(0x48);
-
-  pinMode(XSHUT_VL61_2,INPUT);*/
+  //Wake VL53 one at a time in order to change theirs addresses
+  enableSensor(XSHUT_VL53_1, true);
+  enableSensor(XSHUT_VL53_2, false);
   
-  /*delay(5);
-
-  if (! vl2.begin()) {
-    Serial.println(F("Failed to boot VL6180X 2"));
-    //while (1);
+  failedToBoot[0] = false;
+  //Serial.println(F("Adafruit VL53L0X"));
+  if (!s1.begin(0x44, false)) {
+    //Serial.println(F("Failed to boot VL53L0X 1"));
+    failedToBoot[0] = true;
   }
-  vl2.setAddress(0x49);*/
 
+  //Same for the 2nd VL53
+  enableSensor(XSHUT_VL53_2, true);
+  
+  failedToBoot[1] = false;
+  if (!s2.begin(0x46, false)) {
+    //Serial.println(F("Failed to boot VL53L0X 2"));
+    failedToBoot[1] = true;
+  }
 }
 
 
 void loop() {
-  VL53L0X_RangingMeasurementData_t measure;
-  VL53L0X_RangingMeasurementData_t measure2;
-
-    
-  lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
-  //delay(100);
-  lox2.rangingTest(&measure2, false); // pass in 'true' to get debug data printout!
-  current = millis();
-  Serial.print("Time : ");Serial.println(current-old);Serial.println();
-  old = current;
+  talks.execute();
+     
+  s1.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
   
   if (measure.RangeStatus != 4) {  // phase failures have incorrect data
-    Serial.print(F("VL53L0X 1 - Distance (mm): ")); Serial.println(measure.RangeMilliMeter);
+    //Serial.print(F("VL53L0X 1 - Distance (mm): ")); Serial.println(measure.RangeMilliMeter);
+    range_1 = measure.RangeMilliMeter;
   } else {
-    Serial.println(F("VL53L0X 1 - out of range "));
+    //Serial.println(F("VL53L0X 1 - out of range "));
+    range_1 = 3000;
   }
 
+  
+  s2.rangingTest(&measure2, false); // pass in 'true' to get debug data printout!
   if (measure2.RangeStatus != 4) {  // phase failures have incorrect data
-    Serial.print(F("VL53L0X 2 - Distance (mm): ")); Serial.println(measure2.RangeMilliMeter);
+    //Serial.print(F("VL53L0X 2 - Distance (mm): ")); Serial.println(measure2.RangeMilliMeter);
+    range_2 = measure2.RangeMilliMeter;
   } else {
-    Serial.println(F("VL53L0X 2 - out of range "));
+    //Serial.println(F("VL53L0X 2 - out of range "));
+    range_2 = 3000;
   }
-  /*delay(100);
+}
 
-  uint8_t range = vl.readRange();
-  uint8_t status = vl.readRangeStatus();
-
-  if (status == VL6180X_ERROR_NONE) {
-    Serial.print(F("VL6180X 1 - Range : ")); Serial.println(range);
+void enableSensor(uint8_t shutpin, bool mode)
+{
+  if(mode){
+    pinMode(shutpin, INPUT);
+    delay(2);               // Not ideal but we need to wait for the sensors to boot
   }
-  delay(100);
-
-  // Some error occurred, print it out!
-  
-  if  ((status >= VL6180X_ERROR_SYSERR_1) && (status <= VL6180X_ERROR_SYSERR_5)) {
-    Serial.println(F("VL6180X 1 - System error"));
+  else{
+    pinMode(shutpin, OUTPUT);
+    digitalWrite(shutpin, LOW);
   }
-  else if (status == VL6180X_ERROR_ECEFAIL) {
-    Serial.println(F("VL6180X 1 - ECE failure"));
-  }
-  else if (status == VL6180X_ERROR_NOCONVERGE) {
-    Serial.println(F("VL6180X 1 - No convergence"));
-  }
-  else if (status == VL6180X_ERROR_RANGEIGNORE) {
-    Serial.println(F("VL6180X 1 - Ignoring range"));
-  }
-  else if (status == VL6180X_ERROR_SNR) {
-    Serial.println(F("VL6180X 1 - Signal/Noise error"));
-  }
-  else if (status == VL6180X_ERROR_RAWUFLOW) {
-    Serial.println(F("VL6180X 1 - Raw reading underflow"));
-  }
-  else if (status == VL6180X_ERROR_RAWOFLOW) {
-    Serial.println(F("VL6180X 1 - Raw reading overflow"));
-  }
-  else if (status == VL6180X_ERROR_RANGEUFLOW) {
-    Serial.println(F("VL6180X 1 - Range reading underflow"));
-  }
-  else if (status == VL6180X_ERROR_RANGEOFLOW) {
-    Serial.println(F("VL6180X 1 - Range reading overflow"));
-  }*/
-  /*range = vl2.readRange();
-  status = vl2.readRangeStatus();
-
-  if (status == VL6180X_ERROR_NONE) {
-    Serial.print(F("VL6180X 2 - Range : ")); Serial.println(range);
-  }
-
-  // Some error occurred, print it out!
-  
-  if  ((status >= VL6180X_ERROR_SYSERR_1) && (status <= VL6180X_ERROR_SYSERR_5)) {
-    Serial.println(F("VL6180X 2 - System error"));
-  }
-  else if (status == VL6180X_ERROR_ECEFAIL) {
-    Serial.println(F("VL6180X 2 - ECE failure"));
-  }
-  else if (status == VL6180X_ERROR_NOCONVERGE) {
-    Serial.println(F("VL6180X 2 - No convergence"));
-  }
-  else if (status == VL6180X_ERROR_RANGEIGNORE) {
-    Serial.println(F("VL6180X 2 - Ignoring range"));
-  }
-  else if (status == VL6180X_ERROR_SNR) {
-    Serial.println(F("VL6180X 2 - Signal/Noise error"));
-  }
-  else if (status == VL6180X_ERROR_RAWUFLOW) {
-    Serial.println(F("VL6180X 2 - Raw reading underflow"));
-  }
-  else if (status == VL6180X_ERROR_RAWOFLOW) {
-    Serial.println(F("VL6180X 2 - Raw reading overflow"));
-  }
-  else if (status == VL6180X_ERROR_RANGEUFLOW) {
-    Serial.println(F("VL6180X 2 - Range reading underflow"));
-  }
-  else if (status == VL6180X_ERROR_RANGEOFLOW) {
-    Serial.println(F("VL6180X 2 - Range reading overflow"));
-  }*/
-  //delay(100);
 }

@@ -1,48 +1,20 @@
 #include "instructions.h"
-#include "../common/UltrasonicSensor.h"
-#include "../common/EndStop.h"
-#include "../common/SensorListener.h"
 
 // Global variables
-extern UltrasonicSensor SensorAr;
-extern UltrasonicSensor SensorAv;
-extern SensorListener   ListenerAv;
-extern SensorListener   ListenerAr;
-extern EndStop          LeftSwitch;
-extern EndStop          RightSwitch;
-extern bool activated; 
+extern int16_t range_1;
+extern int16_t range_2;
+extern bool failedToBoot[2];
 
-void GET_NORMAL(SerialTalks& inst, Deserializer& input, Serializer& output)
-{
-    int delta = input.read<int>();
-    output.write(ListenerAv.getStd(delta));
-    output.write(ListenerAv.getVar(delta));
-    output.write(ListenerAr.getStd(delta));
-    output.write(ListenerAr.getVar(delta));
+void GET_RANGE_1(SerialTalks& inst, Deserializer& input, Serializer& output){
+    output.write<int16_t>(range_1);
 }
 
-
-void GET_MESURE(SerialTalks& inst, Deserializer& input, Serializer& output)
-{
-    output.write<int>(SensorAr.getMesure());
-    output.write<int>(SensorAv.getMesure());
+void GET_RANGE_2(SerialTalks& inst, Deserializer& input, Serializer& output){
+    output.write<int16_t>(range_2);
 }
 
-void ACTIVATE_SENSORS(SerialTalks& inst, Deserializer& input, Serializer& output){
-    activated = true;
+void CHECK_ERROR(SerialTalks& inst, Deserializer& input, Serializer& output){
+    output.write<bool>(failedToBoot[0]);
+    output.write<bool>(failedToBoot[1]);
 }
 
-void DESACTIVATE_SENSORS(SerialTalks& inst, Deserializer& input, Serializer& output){
-    activated = false;
-}
-
-
-void GET_LEFT_SWITCH(SerialTalks& inst, Deserializer& input, Serializer& output)
-{
-    output.write<byte>(LeftSwitch.getState());
-}
-
-void GET_RIGHT_SWITCH(SerialTalks& inst, Deserializer& input, Serializer& output)
-{
-    output.write<byte>(RightSwitch.getState());
-}

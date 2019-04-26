@@ -6,26 +6,17 @@
 
 
 // Opcodes declaration
-#define GET_MESURE_OPCODE			0x10
-#define ACTIVATE_SENSORS_OPCODE 	0x11
-#define DESACTIVATE_SENSORS_OPCODE  0x12
-#define GET_NORMAL_OPCODE           0x13
-#define GET_LEFT_SWITCH_OPCODE   	0X14
-#define GET_RIGHT_SWITCH_OPCODE	    0X15
+#define GET_RANGE_1_OPCODE			0x10
+#define GET_RANGE_2_OPCODE       	0x11
+#define CHECK_ERROR_OPCODE          0x12
 
 
 // Instructions prototypes
-void GET_NORMAL(SerialTalks& inst, Deserializer& input, Serializer& output);
+void GET_RANGE_1(SerialTalks& inst, Deserializer& input, Serializer& output);
 
-void GET_MESURE(SerialTalks& inst, Deserializer& input, Serializer& output);
+void GET_RANGE_2(SerialTalks& inst, Deserializer& input, Serializer& output);
 
-void ACTIVATE_SENSORS(SerialTalks& inst, Deserializer& input, Serializer& output);
-
-void DESACTIVATE_SENSORS(SerialTalks& inst, Deserializer& input, Serializer& output);
-
-void GET_LEFT_SWITCH(SerialTalks& inst, Deserializer& input, Serializer& output);
-
-void GET_RIGHT_SWITCH(SerialTalks& inst, Deserializer& input, Serializer& output);
+void CHECK_ERROR(SerialTalks& inst, Deserializer& input, Serializer& output);
 
 #endif
 

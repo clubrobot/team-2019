@@ -19,12 +19,12 @@
   Modified 2012 by Todd Krein (todd@krein.org) to implement repeated starts
 */
 
-extern "C" {
+//extern "C" {
   #include <stdlib.h>
   #include <string.h>
   #include <inttypes.h>
   #include "twi.h"
-}
+//}
 
 #include "Wire.h"
 
