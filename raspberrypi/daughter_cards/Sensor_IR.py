@@ -3,36 +3,22 @@
 
 import math
 from common.serialutils import Deserializer
-from common.serialtalks import BYTE, INT, LONG, FLOAT, STRING, SerialTalks
+from common.serialtalks import SHORT
 from common.components import SecureSerialTalksProxy
 # Instructions
 
-_GET_SINGLE_MESURE_OPCODE     = 0x10
-_GET_CONTINUOUS_MESURE_OPCODE = 0x11
-_START_CONTINUOUS_OPCODE      = 0x12
-_STOP_CONTINUOUS_OPCODE       = 0x13
+GET_RANGE1_OPCODE     = 0x10
+GET_RANGE2_OPCODE     = 0x11
+CHECK_ERROR_OPCODE    = 0x12
 
 
 class Sensors(SecureSerialTalksProxy):
     # Default execute result
     def __init__(self, parent, uuid='sensors'):
-        """
-            Passe en paramètre le numéro du sensor à utiliser ou une liste de sensors à utiliser
-            Si numero_Sensor est laissé par défaut, tous les sensors sur Arduino sont conserné
-        """
         SecureSerialTalksProxy.__init__(self, parent, uuid, dict())
-        #self.get_info()
 
-    def get_info(self):
-        pass
-        #output = self.execute()
-        #info = output.read()
-        #return info
+    def get_range1(self):
+        return self.execute(GET_RANGE1_OPCODE).read(SHORT)
 
-    def get_single_mesure(self):
-        """
-            Permet de récupérer une distance sans passé par le mode continu
-        """
-        output = self.execute(_GET_SINGLE_MESURE_OPCODE)
-        dist = output.read(STRING)
-        return list(map(int,dist.split(';')[:-1]))
+    def get_range2(self):
+        return self.execute(GET_RANGE2_OPCODE).read(SHORT)
