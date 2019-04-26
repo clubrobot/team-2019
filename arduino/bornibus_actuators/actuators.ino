@@ -11,10 +11,12 @@ Servo pusher2;
 Servo arm;
 EndStop endStop1;
 EndStop endStop2;
+EndStop endStop3;
 
 void setup(){
   endStop1.attach(SWITCH1);
   endStop2.attach(SWITCH2);
+  endStop3.attach(DRIVER_RESET);
   Serial.begin(SERIALTALKS_BAUDRATE);
   talks.begin(Serial);
 	talks.bind(_SET_POSITION_PUSHERS_OPCODE, SET_POSITION_PUSHERS);
@@ -22,6 +24,7 @@ void setup(){
   talks.bind(_SET_POSITION_ARM_OPCODE, SET_POSITION_ARM);
   talks.bind(_GET_ENDSTOP1_STATE_OPCODE, GET_ENDSTOP1_STATE);
   talks.bind(_GET_ENDSTOP2_STATE_OPCODE, GET_ENDSTOP2_STATE);
+  talks.bind(_GET_ENDSTOP3_STATE_OPCODE, GET_ENDSTOP3_STATE);
 
 }
 

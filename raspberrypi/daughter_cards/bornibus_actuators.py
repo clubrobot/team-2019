@@ -9,6 +9,7 @@ _SET_POSITION_PUSHERS_OPCODE    = 0x11
 _SET_POSITION_ARM_OPCODE        = 0x12
 _GET_ENDSTOP1_STATE_OPCODE      = 0x13
 _GET_ENDSTOP2_STATE_OPCODE      = 0x14
+_GET_ENDSTOP3_STATE_OPCODE      = 0x15
 
 OPEN_GRIPPER = 90
 CLOSED_GRIPPER = 128
@@ -82,4 +83,7 @@ class EndStops(SecureSerialTalksProxy):
         return out.read(INT)==0
     def get_ES2(self):
         out = self.execute(_GET_ENDSTOP2_STATE_OPCODE)
+        return out.read(INT)==0
+    def get_ES3(self):
+        out = self.execute(_GET_ENDSTOP3_STATE_OPCODE)
         return out.read(INT)==0

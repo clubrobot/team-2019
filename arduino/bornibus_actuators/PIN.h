@@ -100,7 +100,7 @@ TOR_2 		8
 #define SWITCH2		4
 #define BRUSHLESS  11
 //Driver : 
-//#define DRIVER_RESET	12
+#define DRIVER_RESET	12
 
 /*
 //Moteur: 

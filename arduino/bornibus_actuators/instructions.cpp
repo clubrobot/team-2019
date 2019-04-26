@@ -10,6 +10,7 @@ extern Servo pusher2;
 extern Servo arm;
 extern EndStop endStop1;
 extern EndStop endStop2;
+extern EndStop endStop3;
 
 void SET_POSITION_GRIPPER(SerialTalks &inst, Deserializer &input, Serializer &output){
 	if(!gripper.attached()){gripper.attach(SERVO1);}
@@ -37,6 +38,14 @@ void GET_ENDSTOP1_STATE(SerialTalks &inst, Deserializer &input, Serializer &outp
 }
 void GET_ENDSTOP2_STATE(SerialTalks &inst, Deserializer &input, Serializer &output){
 	if(endStop2.getState()){
+		output.write<int>(0);
+	}else{
+		output.write<int>(1);
+	}
+}
+
+void GET_ENDSTOP3_STATE(SerialTalks &inst, Deserializer &input, Serializer &output){
+	if(endStop3.getState()){
 		output.write<int>(0);
 	}else{
 		output.write<int>(1);
