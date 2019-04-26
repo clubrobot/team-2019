@@ -22,9 +22,13 @@
 
 #define INTERRUPT			4
 
+<<<<<<< HEAD
+=======
 #define TEMPS_MIN			80
 
+>>>>>>> 18901e37063db032ed2bf8874ff69ea1cba8e4f7
 #define GO_BACK				32
+#define GO_FORWARD		25
 
 
 class ExperienceEffects
@@ -43,6 +47,7 @@ class ExperienceEffects
 		long getStart();
 		bool isElectron;
 		void goBack();
+		void goForward();
 		void motorStop();
 
 	private:
