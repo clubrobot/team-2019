@@ -63,6 +63,7 @@ void setup()
     Serial.begin(SERIALTALKS_BAUDRATE);
     talks.begin(Serial);
 
+    talks.bind(IS_CONNECTED_OPCODE, IS_CONNECTED);
     talks.bind(START_OPCODE, START);
     talks.bind(ISONTOP_OPCODE, ISONTOP);
 }
