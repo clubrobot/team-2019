@@ -38,7 +38,8 @@ for root, dirs, files in os.walk("."):
     for file in files:
         if file == "Bornibus.ggb":
             roadmap = os.path.join(root, file)
-geo = Geogebra(roadmap)
+if roadmap:
+    geo = Geogebra(roadmap)
 
 
 def init_robot():
