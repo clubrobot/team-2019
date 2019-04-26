@@ -12,7 +12,7 @@ _IS_CONNECTED_OPCODE    =  0X11
 _START_OPCODE           =  0x10
 _ISONTOP_OPCODE         =  0X12
 
-class Pince(SerialTalksProxy):
+class Electron(SerialTalksProxy):
     def __init__(self,parent, uuid='electronServer'):
         SerialTalksProxy.__init__(self,parent, uuid)
 
