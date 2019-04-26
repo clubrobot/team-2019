@@ -114,15 +114,23 @@ class R128(Automaton):
         armB.stop()
         manager.disconnect()
 
+    def check_electron(self):
+        while not self.electron.connected():
+            time.sleep(5)
+        self.log("MAIN : ", "Launch Electron")
+        self.electron.start()
+        while not self.electron.is_on_top():
+            time.sleep(1)
+        self.display.addPoints(40)
+
     def run(self):
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
         Thread(target=self.stop_match).start()
+        Thread(target=self.check_electron).start()
         self.display.start()
 
-        self.log("MAIN : ", "Launch Electron")
-        self.electron.start()
-        self.display.addPoints(40)
+        
 
         # starting thread action manager
         self.tam.start()

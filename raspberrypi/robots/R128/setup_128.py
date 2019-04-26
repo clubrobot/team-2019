@@ -7,7 +7,7 @@ from robots.setup_display import *
 from common.funcutils import *
 from common.geogebra import *
 from common.logger import *
-from robots.electron import *
+from daughter_cards.electron import *
 import time
 
 log = Logger(Logger.WRITE)
