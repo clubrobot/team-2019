@@ -21,7 +21,9 @@ LOCAL_CPP_SRCS = 				\
 	lib/core/src/vl53l0x_api.cpp						\
 	lib/platform/src/vl53l0x_i2c_comms.cpp				\
 	lib/platform/src/vl53l0x_platform.cpp
-	
+
+LOCAL_C_SRCS = \
+	$(COMMON)/twi.c
 
 
 # Sketch libraries
