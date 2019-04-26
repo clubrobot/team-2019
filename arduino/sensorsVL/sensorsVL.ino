@@ -19,11 +19,7 @@ bool failedToBoot[] = {true, true};
 void enableSensor(uint8_t shutpin, bool mode);
 
 void setup() {
-  Serial.begin(SERIALTALKS_BAUDRATE);
-  talks.begin(Serial);
-  talks.bind(GET_RANGE_1_OPCODE, GET_RANGE_1);
-  talks.bind(GET_RANGE_2_OPCODE, GET_RANGE_2);
-  talks.bind(CHECK_ERROR_OPCODE, CHECK_ERROR);
+
 
   //Shutdown both VL61 as they are not used yet
   enableSensor(XSHUT_VL61_1, false);
@@ -48,6 +44,11 @@ void setup() {
     //Serial.println(F("Failed to boot VL53L0X 2"));
     failedToBoot[1] = true;
   }
+  Serial.begin(SERIALTALKS_BAUDRATE);
+  talks.begin(Serial);
+  talks.bind(GET_RANGE_1_OPCODE, GET_RANGE_1);
+  talks.bind(GET_RANGE_2_OPCODE, GET_RANGE_2);
+  talks.bind(CHECK_ERROR_OPCODE, CHECK_ERROR);
 }
 
 
