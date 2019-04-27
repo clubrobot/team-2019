@@ -195,7 +195,7 @@ class Bornibus(Automaton):
         gripper.close()
         time.sleep(1)
 
-        if gripper.get_goldsensor_state():
+        if endstops.get_ES3():
             disp.addPoints(20)
 
         wheeledbase.right_wheel_maxPWM.set(1)
@@ -240,7 +240,7 @@ class Bornibus(Automaton):
         print("Dépose")
         time.sleep(0.5)
 
-        if gripper.get_goldsensor_state():
+        if endstops.get_ES3():
             disp.addPoints(24)
         gripper.open()
 
@@ -253,7 +253,7 @@ class Bornibus(Automaton):
         # sens_manager.enable_back()
         if self.side == Bornibus.YELLOW:
             wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Gold5"], self.points["Pal1"],
-                                     self.points["Pal4"]], direction="backward", finalangle=-pi/4, lookahead=100)
+                                     self.points["Pal4"]], direction="backward", finalangle=-pi/4, lookahead=100, lookaheadbis=150)
         if self.side == Bornibus.PURPLE:
             wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Gold5"], self.points["Pal1"],
                                      self.points["Pal4"]], direction="backward", finalangle=pi/4, lookahead=100)
