@@ -19,8 +19,10 @@ class PutRedZone(Actionnable):
 
         if self.side == self.YELLOW:
             self.arm        = daughter_cards['armBack']
+            self.arm2        = daughter_cards['armFront']
         else:
             self.arm        = daughter_cards['armFront']
+            self.arm2        = daughter_cards['armBack']
         
         self.display        = daughter_cards['display']
         # action Points
@@ -36,14 +38,16 @@ class PutRedZone(Actionnable):
 
     def realize(self):
         self.arm.move(RED_ZONE)
-        
-        while not self.arm.is_arrived():
+        self.arm2.move(RED_ZONE)
+        while not (self.arm.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
+        self.display.addPoints(self.handeledPuck.getPoints().Tab)
         self.display.addPoints(self.handeledPuck.getPoints().Tab)
         self.log("REDZONE", "Add {} points".format(self.handeledPuck.getPoints().Tab))
 
         time.sleep(0.2)
         self.arm.stop_pump()
+        self.arm2.stop_pump()
         time.sleep(0.5)
 
         self.arm.move(TANK_POS_INTER)
@@ -87,21 +91,26 @@ class PutRedZone(Actionnable):
     
     def before(self):
         self.arm.start_pump()
+        self.arm2.start_pump()
         self.arm.move(self.beforeTankPos[self.arm.tank.index()-1])
+        self.arm2.move(self.beforeTankPos[self.arm2.tank.index()-1])
 
-        while not self.arm.is_arrived():
+        while not (self.arm.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
 
         time.sleep(0.5)
 
         self.arm.move(self.TankPos[self.arm.tank.index()-1])
+        self.arm2.move(self.TankPos[self.arm2.tank.index()-1])
 
-        while not self.arm.is_arrived():
+        while not (self.arm.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
         
         self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
+        self.arm2.move(self.afterTankPos[self.arm2.tank.index()-1])
+
         self.handeledPuck = self.arm.tank.get_puck()
-        while not self.arm.is_arrived():
+        while not (self.arm.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
 
 
