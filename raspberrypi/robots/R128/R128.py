@@ -10,6 +10,8 @@ from common.actions.action import ThreadActionManager
 from common.geogebra import Geogebra
 from robots.R128.setup_128 import *
 from robots.automaton import Automaton
+from robots.sensors_manager import *
+
 
 class R128(Automaton):
     DISTRIB6_1 = 1
@@ -130,8 +132,10 @@ class R128(Automaton):
         Thread(target=self.check_electron).start()
         self.display.start()
 
-        
 
+
+        s = SensorsManager(wheeledbase, sensorsFront, sensorsBack)
+        s.start()
         # starting thread action manager
         self.tam.start()
         

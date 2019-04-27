@@ -4,7 +4,7 @@
 import time
 import math
 
-from common.serialtalks import BYTE, INT, LONG, FLOAT
+from common.serialtalks import BYTE, LONG, FLOAT
 from common.components import SecureSerialTalksProxy
 from common.serialutils import Deserializer
 
@@ -84,6 +84,10 @@ class WheeledBase(SecureSerialTalksProxy):
         GET_PARAMETER_VALUE_OPCODE : Deserializer(LONG(0) + LONG(0))
 
     }
+
+    FORWARD = 1
+    BACKWARD = 2
+    NO_DIR = 0
     class Parameter():
         def __init__(self, parent, id, type):
             self.parent = parent
@@ -140,6 +144,7 @@ class WheeledBase(SecureSerialTalksProxy):
         self.y                              = 0
         self.theta                          = 0
         self.previous_measure               = 0
+        self.direction = self.NO_DIR
 
     def set_openloop_velocities(self, left, right):
         self.send(SET_OPENLOOP_VELOCITIES_OPCODE, FLOAT(left), FLOAT(right))
@@ -168,6 +173,7 @@ class WheeledBase(SecureSerialTalksProxy):
             self.set_parameter_value(POSITIONCONTROL_ANGVELMAX_ID, angvelmax, FLOAT)
         if finalangle is None:
             finalangle = math.atan2(waypoints[-1][1] - waypoints[-2][1], waypoints[-1][0] - waypoints[-2][0])
+        self.direction = {'forward':self.FORWARD, 'backward':self.BACKWARD}[direction]
         self.send(START_PUREPURSUIT_OPCODE, BYTE({'forward':0, 'backward':1}[direction]), FLOAT(finalangle))
 
     def turnonthespot(self, theta, direction='forward'):

@@ -63,6 +63,7 @@ class Bornibus(Automaton):
     def run(self):
         Thread(target=self.stop_match).start()
 
+        sens_manager.start()
         wheeledbase.reset_parameters()
         wheeledbase.max_linvel.set(700)
         wheeledbase.max_angvel.set(10)
@@ -107,7 +108,7 @@ class Bornibus(Automaton):
             wheeledbase.goto_delta(100, -30)
             
         wheeledbase.wait()
-        arm.deploy()
+
         # wheeledbase.turnonthespot(-2*pi/3)
         # wheeledbase.wait()
         # arm.up()
@@ -117,16 +118,16 @@ class Bornibus(Automaton):
         print("Prépare le bras")
         # sens_manager.disable_front()
         if self.side == Bornibus.YELLOW:
+            arm.deploy()
             wheeledbase.turnonthespot(-2*pi/3)
             while not wheeledbase.isarrived():
-                print(wheeledbase.get_position())
                 time.sleep(0.1)
         if self.side == Bornibus.PURPLE:
             wheeledbase.turnonthespot(3*pi/4)
             wheeledbase.wait()
+            arm.deploy()
             wheeledbase.turnonthespot(-pi/3)
             while not wheeledbase.isarrived():
-                print(wheeledbase.get_position())
                 time.sleep(0.1)
 
         time.sleep(0.5)
@@ -286,7 +287,7 @@ class Bornibus(Automaton):
 
 if __name__ == "__main__":
     auto = Bornibus()
-    auto.set_side(Bornibus.YELLOW)
+    auto.set_side(Bornibus.PURPLE)
     init_robot()
     auto.set_position()
     print("ready")
