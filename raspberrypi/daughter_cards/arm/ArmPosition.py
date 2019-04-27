@@ -6,6 +6,7 @@ ArmPos = namedtuple('ArmPos', ['x', 'y', 'phi'])
 # Home
 HOME                            = ArmPos(1.5,    7.0,    0)
 GLOBAL_POS_INTER                = ArmPos(0 ,    17.8,   90)
+GLOBAL_POS_INTER2               = ArmPos(3.8 ,   14,   0)
 
 # Prepare Taking
 PREPARE_TAKING_POS_ROAD         = ArmPos(11.5,   3.0,    10)

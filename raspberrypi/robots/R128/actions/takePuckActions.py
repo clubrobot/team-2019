@@ -183,7 +183,7 @@ class TakePuckSingle(Actionnable):
         self.puck = puck
 
     def realize(self):
-        self.arm.move(PREPARE_TAKING_POS_ROAD)
+        self.arm.go_home()
         while not (self.arm.is_arrived()):
             time.sleep(0.1)
         

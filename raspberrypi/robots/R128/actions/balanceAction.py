@@ -117,7 +117,7 @@ class BalanceAfter6(Actionnable):
                 time.sleep(0.1)
         
     def after(self):
-        self.arm.move(GLOBAL_POS_INTER)
+        self.arm.go_home()
         while not self.arm.is_arrived():
             time.sleep(0.1)
 
