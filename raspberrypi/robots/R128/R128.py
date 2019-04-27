@@ -122,9 +122,7 @@ class R128(Automaton):
             time.sleep(5)
         self.log("MAIN : ", "Launch Electron")
         self.electron.start()
-        while not self.electron.is_on_top():
-            time.sleep(1)
-        self.display.addPoints(40)
+        self.display.addPoints(35)
 
     def run(self):
         self.log("MAIN : ", "RUN...")
@@ -132,6 +130,8 @@ class R128(Automaton):
         Thread(target=self.stop_match).start()
         Thread(target=self.check_electron).start()
         self.display.start()
+
+        self.display.addPoints(5) #pose electron
 
 
 
