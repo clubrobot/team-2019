@@ -81,12 +81,14 @@ class BalanceAfter6(Actionnable):
                 time.sleep(0.1)
 
             self.arm.stop_pump()
+
             time.sleep(0.5)
             
             if(self.arm.tank.index() > 0):
                 self.arm.move(TANK_POS_INTER)
                 while not self.arm.is_arrived():
                     time.sleep(0.1)
+        time.sleep(0.5)
 
     def before(self):
         self.arm.start_pump()
