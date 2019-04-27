@@ -135,7 +135,7 @@ class TakePuckSync(Actionnable):
                 self.arm1.tank.put_puck(self.arm1.sucker.get_puck())
             self.arm2.tank.put_puck(self.arm2.sucker.get_puck())
 
-            time.sleep(0.5)
+            time.sleep(0.7)
 
             if(self.arm1.tank.index() < 2):
                 self.arm1.move(PUT_TANK_AFTER)
