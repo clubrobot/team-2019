@@ -81,12 +81,14 @@ class BalanceAfter6(Actionnable):
                 time.sleep(0.1)
 
             self.arm.stop_pump()
+
             time.sleep(0.5)
             
             if(self.arm.tank.index() > 0):
                 self.arm.move(TANK_POS_INTER)
                 while not self.arm.is_arrived():
                     time.sleep(0.1)
+        time.sleep(0.5)
 
     def before(self):
         self.arm.start_pump()
@@ -173,7 +175,7 @@ class BalanceAfter3(Actionnable):
         while not self.arm1.is_arrived():
             time.sleep(0.1)
 
-        self.wheeledbase.turnonthespot(pi/3)
+        self.wheeledbase.turnonthespot(pi/4)
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
 
@@ -202,7 +204,7 @@ class BalanceAfter3(Actionnable):
             self.handeledPuck1 = self.arm1.sucker.get_puck()
 
         if(self.arm2.sucker.index() > 0):
-            self.arm2.move(GLOBAL_POS_INTER)
+            self.arm2.move(BALANCE3_POS_INTER)
 
             while not self.arm2.is_arrived():
                 time.sleep(0.1)

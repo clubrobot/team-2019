@@ -99,6 +99,7 @@ class R128(Automaton):
             self.takemaintain,
             self.movingAfterlittle,
             self.balanceAct3,
+            self.putRedZoneAct,
         ]
 
     def set_position(self):
