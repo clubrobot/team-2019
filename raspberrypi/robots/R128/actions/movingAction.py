@@ -81,9 +81,14 @@ class MovingAfterLittle(Actionnable):
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
 
-        self.wheeledbase.purepursuit(self.path)
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
+        if self.side == self.YELLOW:
+            self.wheeledbase.purepursuit(self.path, direction='backward')
+            while not self.wheeledbase.isarrived():
+                time.sleep(0.1)
+        else:
+            self.wheeledbase.purepursuit(self.path, direction='forward')
+            while not self.wheeledbase.isarrived():
+                time.sleep(0.1)
 
         
     

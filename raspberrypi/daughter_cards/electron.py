@@ -13,7 +13,7 @@ _START_OPCODE           =  0x11
 _ISONTOP_OPCODE         =  0X12
 
 class Electron(SecureSerialTalksProxy):
-    def __init__(self,parent, uuid='esp32'):
+    def __init__(self,parent, uuid='expServ'):
         SecureSerialTalksProxy.__init__(self, parent, uuid, dict())
 
     def connected(self):

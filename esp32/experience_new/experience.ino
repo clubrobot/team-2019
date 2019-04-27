@@ -131,11 +131,11 @@ void loop()
         }
     }
 
-    // if (digitalRead(INTERRUPT) && experience.getTimer()+TEMPS_MIN*1000 < millis() && experience.isElectron && connected)
-    // {
-    //     experience.stayOnTop();
-    //     pIsOnTopCharacteristic->writeValue("top");
-    // }
+    if ((experience.getStart() == 1)&& experience.getTimer()+TEMPS_MIN*1000 < millis() && experience.isElectron && connected)
+    {
+        experience.stayOnTop();
+        //pIsOnTopCharacteristic->writeValue("top");
+    }
     
     vTaskDelay( xDelay );   /* include 10 ms delay for better task management by ordonnancer */
 }
