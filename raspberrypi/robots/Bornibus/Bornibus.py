@@ -1,6 +1,4 @@
 from robots.Bornibus.setup_bornibus import *
-from common.geogebra import Geogebra
-from robots.electron import *
 from robots.automaton import Automaton
 
 MAX_TIME_FOR_GOLDENIUM = 2
@@ -8,7 +6,7 @@ MAX_TIME_FOR_GOLDENIUM = 2
 
 class gripperError(Exception) :
     def __init__(self,*args, **kwargs) :
-        Exception.__init__(self,*args, **kwargs)
+        Exception.__init__(self,*args, kwargs)
 
 class Bornibus(Automaton):
     def __init__(self):
