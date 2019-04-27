@@ -46,6 +46,7 @@ class BalanceAfter6(Actionnable):
         self.display.addPoints(self.handeledPuck.getPoints().Balance)
         self.log("BALANCE6", "Add {} points".format(self.handeledPuck.getPoints().Balance))
 
+        time.sleep(0.5)
         self.arm.stop_pump()
         time.sleep(0.5)
 
@@ -80,6 +81,7 @@ class BalanceAfter6(Actionnable):
             while not self.arm.is_arrived():
                 time.sleep(0.1)
 
+            time.sleep(0.5)
             self.arm.stop_pump()
 
             time.sleep(0.5)
@@ -165,6 +167,7 @@ class BalanceAfter3(Actionnable):
         while not self.arm1.is_arrived():
             time.sleep(0.1)
 
+        time.sleep(0.5)
         self.arm1.stop_pump()
         time.sleep(0.5)
 
@@ -184,6 +187,7 @@ class BalanceAfter3(Actionnable):
         while not self.arm2.is_arrived():
             time.sleep(0.1)
 
+        time.sleep(0.5)
         self.arm2.stop_pump()
         time.sleep(0.5)
 
