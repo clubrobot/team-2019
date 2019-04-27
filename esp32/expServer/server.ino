@@ -59,6 +59,7 @@ void setup()
     pAdvertising->setMinPreferred(0x12);
 
     BLEDevice::startAdvertising();
+    pStartCharacteristic->setValue("stop\0");
 
     Serial.begin(SERIALTALKS_BAUDRATE);
     talks.begin(Serial);
