@@ -126,16 +126,17 @@ class TakePuckSync(Actionnable):
             while not (self.arm2.is_arrived()):
                 time.sleep(0.1)
 
+            if(self.arm1.tank.index() < 2):
+                self.arm1.stop_pump()
+            self.arm2.stop_pump()
+
             # store puck on tank
             if(self.arm1.tank.index() < 2):
                 self.arm1.tank.put_puck(self.arm1.sucker.get_puck())
             self.arm2.tank.put_puck(self.arm2.sucker.get_puck())
 
-            if(self.arm1.tank.index() < 2):
-                self.arm1.stop_pump()
-            self.arm2.stop_pump()
-
             time.sleep(0.5)
+
             if(self.arm1.tank.index() < 2):
                 self.arm1.move(PUT_TANK_AFTER)
             self.arm2.move(PUT_TANK_AFTER)

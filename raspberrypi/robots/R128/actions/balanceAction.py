@@ -173,7 +173,7 @@ class BalanceAfter3(Actionnable):
         while not self.arm1.is_arrived():
             time.sleep(0.1)
 
-        self.wheeledbase.turnonthespot(pi/3)
+        self.wheeledbase.turnonthespot(pi/4)
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
 
