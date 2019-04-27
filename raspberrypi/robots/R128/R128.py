@@ -170,7 +170,7 @@ class R128(Automaton):
 
 if __name__ == '__main__':
     auto = R128()
-    auto.set_side(R128.PURPLE)
+    auto.set_side(R128.YELLOW)
     init_robot()
     auto.set_position()
     print("ready")

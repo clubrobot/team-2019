@@ -133,10 +133,11 @@ class BalanceAfter6(Actionnable):
                 time.sleep(0.1)
         
     def after(self):
-        self.arm.go_home()
-        self.arm2.go_home()
-        while not (self.arm.is_arrived() and self.arm2.is_arrived()):
-                time.sleep(0.1)
+        pass
+        # self.arm.go_home()
+        # self.arm2.go_home()
+        # while not (self.arm.is_arrived() and self.arm2.is_arrived()):
+        #         time.sleep(0.1)
 
     #override
     def getAction(self):
@@ -177,41 +178,54 @@ class BalanceAfter3(Actionnable):
         self.handeledPuck2   = None
 
     def realize(self):
+
+        if self.side == self.YELLOW:
+            self.wheeledbase.set_velocities(100,0)
+            time.sleep(1)
+            self.wheeledbase.set_velocities(0,0)
+        else:
+            self.wheeledbase.set_velocities(-100,0)
+            time.sleep(1)
+            self.wheeledbase.set_velocities(0,0)
         # put the first handled puck
         self.arm1.move(BALANCE)
+        self.arm2.move(BALANCE)
         while not self.arm1.is_arrived():
             time.sleep(0.1)
 
         time.sleep(0.5)
         self.arm1.stop_pump()
-        time.sleep(0.5)
-
-        self.display.addPoints(self.handeledPuck1.getPoints().Balance)
-        self.log("BALANCE3", "Add {} points".format(self.handeledPuck1.getPoints().Balance))
-
-        self.arm1.move(TANK_POS_INTER)
-        while not self.arm1.is_arrived():
-            time.sleep(0.1)
-
-        self.wheeledbase.turnonthespot(pi/3)
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
-
-        # put the first handled puck
-        self.arm2.move(BALANCE)
-        while not self.arm2.is_arrived():
-            time.sleep(0.1)
-
-        time.sleep(0.5)
         self.arm2.stop_pump()
         time.sleep(0.5)
 
+        self.display.addPoints(self.handeledPuck1.getPoints().Balance)
         self.display.addPoints(self.handeledPuck2.getPoints().Balance)
-        self.log("BALANCE3", "Add {} points".format(self.handeledPuck2.getPoints().Balance))
+        self.log("BALANCE3", "Add {} points".format(self.handeledPuck1.getPoints().Balance))
 
+        self.arm1.move(TANK_POS_INTER)
         self.arm2.move(TANK_POS_INTER)
-        while not self.arm2.is_arrived():
+        while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
+
+        # self.wheeledbase.turnonthespot(pi/3)
+        # while not self.wheeledbase.isarrived():
+        #     time.sleep(0.1)
+
+        # # put the first handled puck
+        # self.arm2.move(BALANCE)
+        # while not self.arm2.is_arrived():
+        #     time.sleep(0.1)
+
+        # time.sleep(0.5)
+        # self.arm2.stop_pump()
+        # time.sleep(0.5)
+
+        # self.display.addPoints(self.handeledPuck2.getPoints().Balance)
+        # self.log("BALANCE3", "Add {} points".format(self.handeledPuck2.getPoints().Balance))
+
+        # self.arm2.move(TANK_POS_INTER)
+        # while not self.arm2.is_arrived():
+        #     time.sleep(0.1)
     
     def before(self):
         if(self.arm1.sucker.index() > 0):
