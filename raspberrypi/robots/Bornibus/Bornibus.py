@@ -193,7 +193,7 @@ class Bornibus(Automaton):
         # Prise goldenium
         print("Prise Goldenium")
         gripper.close()
-        time.sleep(1.5)
+        time.sleep(1)
 
         if gripper.get_goldsensor_state():
             disp.addPoints(20)
@@ -216,6 +216,7 @@ class Bornibus(Automaton):
         # Dépose balance
         print("Dépose Balance")
         # sens_manager.disable_back()
+        wheeledbase.goto(*self.points["Gold6"], theta=0)
 
         wheeledbase.right_wheel_maxPWM.set(0.5)
         wheeledbase.left_wheel_maxPWM.set(0.5)
@@ -252,17 +253,17 @@ class Bornibus(Automaton):
         # sens_manager.enable_back()
         if self.side == Bornibus.YELLOW:
             wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Gold5"], self.points["Pal1"],
-                                     self.points["Pal4"]], direction="backward", finalangle=-pi/4)
+                                     self.points["Pal4"]], direction="backward", finalangle=-pi/4, lookahead=100)
         if self.side == Bornibus.PURPLE:
             wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Gold5"], self.points["Pal1"],
-                                     self.points["Pal4"]], direction="backward", finalangle=pi/4)
+                                     self.points["Pal4"]], direction="backward", finalangle=pi/4, lookahead=100)
 
         wheeledbase.wait()
 
         if self.side == Bornibus.YELLOW:
-            wheeledbase.turnonthespot(-5*pi/6)
+            wheeledbase.turnonthespot(-3*pi/4)
         else:
-            wheeledbase.turnonthespot(5 * pi / 6)
+            wheeledbase.turnonthespot(3 * pi / 4)
         wheeledbase.wait()
 
         # Vers zone
@@ -272,7 +273,7 @@ class Bornibus(Automaton):
         pushers.down()
 
         wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Pal5"], self.points["Pal6"]],
-                                direction="forward")
+                                direction="forward", lookahead=50, lookaheadbis=10)
         wheeledbase.wait()
 
         disp.addPoints(13)
