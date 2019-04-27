@@ -33,7 +33,10 @@ class ClientCallbacks : public BLEClientCallbacks
         ESP.restart(); // TODO : find a better way to handle disconnections
     }
 
-    void onConnect(BLEClient *pClient) {}
+    void onConnect(BLEClient *pClient) 
+    {
+        experience.connected();
+    }
 };
 
 bool connectToServer(BLEAddress pAddress)
@@ -103,7 +106,6 @@ void setup()
     pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
     pBLEScan->setActiveScan(true);
     pBLEScan->start(15);
-
 }
 
 void loop()
@@ -125,16 +127,15 @@ void loop()
         Serial.println(result);
         if (result=="start\0")
         {
-            Serial.println("ok");
             experience.start();
         }
     }
 
-    if (digitalRead(INTERRUPT) && experience.getTimer()+TEMPS_MIN*1000 < millis() && experience.isElectron && connected)
-    {
-        experience.stayOnTop();
-        pIsOnTopCharacteristic->writeValue("top");
-    }
+    // if (digitalRead(INTERRUPT) && experience.getTimer()+TEMPS_MIN*1000 < millis() && experience.isElectron && connected)
+    // {
+    //     experience.stayOnTop();
+    //     pIsOnTopCharacteristic->writeValue("top");
+    // }
     
     vTaskDelay( xDelay );   /* include 10 ms delay for better task management by ordonnancer */
 }
@@ -147,11 +148,11 @@ static void secondary_loop(void * parameters)
         {
             experience.goBack();
         }
-        else if (digitalRead(GO_FORWARD) == LOW) && (experience.getStart() == 0))
+        else if ((digitalRead(GO_FORWARD) == LOW) && (experience.getStart() == 0))
         {
             experience.goForward();
         }
-        else if (experience.getStart() == 0))
+        else if (experience.getStart() == 0)
         {
             experience.motorStop();
         }
