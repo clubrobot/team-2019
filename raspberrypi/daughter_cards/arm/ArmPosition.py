@@ -10,7 +10,7 @@ GLOBAL_POS_INTER2               = ArmPos(3.8 ,   14,   0)
 
 # Prepare Taking
 PREPARE_TAKING_POS_ROAD         = ArmPos(11.5,   3.1,    10)
-PREPARE_TAKING_POS_STATIC       = ArmPos(13,   4,    10)
+PREPARE_TAKING_POS_STATIC       = ArmPos(12.5,   3.5,    00)
 
 # Take Puck
 TAKE_PUCK_STATIC                = ArmPos(14.5,   3.0,    5)

@@ -19,8 +19,10 @@ class BalanceAfter6(Actionnable):
 
         if self.side == self.YELLOW:
             self.arm        = daughter_cards['armFront']
+            self.arm2        = daughter_cards['armBack']
         else:
             self.arm        = daughter_cards['armBack']
+            self.arm2        = daughter_cards['armFront']
 
         self.display        = daughter_cards['display']
         self.wheeledbase    = daughter_cards['wheeledbase']
@@ -132,8 +134,9 @@ class BalanceAfter6(Actionnable):
         
     def after(self):
         self.arm.go_home()
-        while not self.arm.is_arrived():
-            time.sleep(0.1)
+        self.arm2.go_home()
+        while not (self.arm.is_arrived() and self.arm2.is_arrived()):
+                time.sleep(0.1)
 
     #override
     def getAction(self):
@@ -190,7 +193,7 @@ class BalanceAfter3(Actionnable):
         while not self.arm1.is_arrived():
             time.sleep(0.1)
 
-        self.wheeledbase.turnonthespot(pi/4)
+        self.wheeledbase.turnonthespot(pi/3)
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
 

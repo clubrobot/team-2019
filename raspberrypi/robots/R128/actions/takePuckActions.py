@@ -80,10 +80,10 @@ class TakePuckSync(Actionnable):
             time.sleep(0.1)
 
         while self.arm1.get_atmosphere_pressure():
-            time.sleep(0.2)
+            time.sleep(0.1)
 
         while self.arm2.get_atmosphere_pressure():
-            time.sleep(0.2)
+            time.sleep(0.1)
 
         # handle puck by sucker
         self.arm1.sucker.put_puck(self.puck1)
@@ -126,12 +126,14 @@ class TakePuckSync(Actionnable):
                 self.arm1.stop_pump()
             self.arm2.stop_pump()
 
+            time.sleep(0.5)
+
             # store puck on tank
             if(self.arm1.tank.index() < 2):
                 self.arm1.tank.put_puck(self.arm1.sucker.get_puck())
             self.arm2.tank.put_puck(self.arm2.sucker.get_puck())
 
-            time.sleep(0.7)
+            time.sleep(0.5)
 
             if(self.arm1.tank.index() < 2):
                 self.arm1.move(PUT_TANK_AFTER)
@@ -176,10 +178,6 @@ class TakePuckSingle(Actionnable):
         self.puck = puck
 
     def realize(self):
-        # self.arm.go_home()
-        # while not (self.arm.is_arrived()):
-        #     time.sleep(0.1)
-        
         self.arm.start_pump()
         self.arm.move(PREPARE_TAKING_POS_STATIC)
         while not (self.arm.is_arrived()):
