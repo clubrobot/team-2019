@@ -5,7 +5,7 @@ ArmPos = namedtuple('ArmPos', ['x', 'y', 'phi'])
 #                                      | x(cm) | y(cm) | phi(deg)
 # Home
 HOME                            = ArmPos(1.5,    7.0,    0)
-GLOBAL_POS_INTER                = ArmPos(0 ,    17.0,   90)
+GLOBAL_POS_INTER                = ArmPos(0 ,    17.8,   90)
 
 # Prepare Taking
 PREPARE_TAKING_POS_ROAD         = ArmPos(11.5,   3.0,    10)
@@ -53,6 +53,8 @@ RED_ZONE                        = ArmPos(10.0,   2.0,   300)
 ACCELERATOR_BEFORE              = ArmPos(6.5,   6.0,   20)
 ACCELERATOR                     = ArmPos(6.0,   4.5,   15)
 ACCELERATOR_AFTER               = ArmPos(7.0,   10.0,   10)
+
+BALANCE3_POS_INTER              = ArmPos(-5 ,    14,   90)
 
 
 HomePath = [GLOBAL_POS_INTER, HOME]
