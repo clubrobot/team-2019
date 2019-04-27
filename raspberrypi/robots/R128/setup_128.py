@@ -13,7 +13,7 @@ from robots.sensors_manager import *
 import time
 
 
-log = Logger(Logger.WRITE)
+log = Logger(Logger.SHOW)
 
 armF = RobotArm(manager, uuid='arm_front')
 armB = RobotArm(manager, uuid='arm_back')
@@ -27,6 +27,7 @@ sensorsA = Sensors(manager, uuid="sensorsA")
 sensorsB = Sensors(manager, uuid="sensorsB")
 sensorsC = Sensors(manager, uuid="sensorsC")
 sensorsD = Sensors(manager, uuid="sensorsD")
+
 sensorsFront = [Sensor("Avant droit",   sensorsB.get_range1, (110, -110), -pi/4),
                 Sensor("Avant      ",   sensorsB.get_range2, (140, -50), 0),
                 Sensor("Avant gauche",  sensorsC.get_range1, (110, 110), pi/4)]

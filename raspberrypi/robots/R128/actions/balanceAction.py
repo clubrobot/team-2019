@@ -23,6 +23,7 @@ class BalanceAfter6(Actionnable):
             self.arm        = daughter_cards['armBack']
 
         self.display        = daughter_cards['display']
+        self.wheeledbase    = daughter_cards['wheeledbase']
 
         # action Points
         self.point          = self.geogebra.get('Balance{}'.format(self.side))
@@ -37,6 +38,17 @@ class BalanceAfter6(Actionnable):
         self.handeledPuck2   = None
 
     def realize(self):
+
+        if self.side == self.YELLOW:
+            self.wheeledbase.set_velocities(100,0)
+            time.sleep(1)
+            self.wheeledbase.set_velocities(0,0)
+        else:
+            self.wheeledbase.set_velocities(-100,0)
+            time.sleep(1)
+            self.wheeledbase.set_velocities(0,0)
+            
+
         # put the first handled puck
         self.arm.move(BALANCE)
         
@@ -46,7 +58,7 @@ class BalanceAfter6(Actionnable):
         self.display.addPoints(self.handeledPuck.getPoints().Balance)
         self.log("BALANCE6", "Add {} points".format(self.handeledPuck.getPoints().Balance))
 
-        time.sleep(0.5)
+        time.sleep(0.2)
         self.arm.stop_pump()
         time.sleep(0.5)
 
@@ -81,7 +93,7 @@ class BalanceAfter6(Actionnable):
             while not self.arm.is_arrived():
                 time.sleep(0.1)
 
-            time.sleep(0.5)
+            time.sleep(0.2)
             self.arm.stop_pump()
 
             time.sleep(0.5)

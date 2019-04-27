@@ -42,7 +42,7 @@ class PutRedZone(Actionnable):
         self.display.addPoints(self.handeledPuck.getPoints().Tab)
         self.log("REDZONE", "Add {} points".format(self.handeledPuck.getPoints().Tab))
 
-        time.sleep(0.5)
+        time.sleep(0.2)
         self.arm.stop_pump()
         time.sleep(0.5)
 
@@ -77,8 +77,9 @@ class PutRedZone(Actionnable):
             while not self.arm.is_arrived():
                 time.sleep(0.1)
             
-            time.sleep(0.5)
+            time.sleep(0.2)
             self.arm.stop_pump()
+            time.sleep(0.5)
 
             self.arm.move(TANK_POS_INTER)
             while not self.arm.is_arrived():
