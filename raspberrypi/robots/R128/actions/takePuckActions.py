@@ -54,7 +54,6 @@ class TakePuckSync(Actionnable):
         if self.distrib_pos == 1:
             self.wheeledbase.set_velocities(-100,0)
             time.sleep(1.5)
-            self.wheeledbase.set_velocities(0,0)
             self.correct_pos = self.wheeledbase.get_position()
 
             offset_x = self.RecalagePoint[0] - self.correct_pos[0]

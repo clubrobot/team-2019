@@ -135,8 +135,8 @@ class R128(Automaton):
         self.electron.start()
         self.display.addPoints(35)
 
-        s = SensorsManager(wheeledbase, sensorsFront, sensorsBack)
-        s.start()
+        # s = SensorsManager(wheeledbase, sensorsFront, sensorsBack)
+        # s.start()
         # starting thread action manager
         self.tam.start()
         
