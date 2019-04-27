@@ -121,7 +121,7 @@ class Bornibus(Automaton):
             while not wheeledbase.isarrived():
                 time.sleep(0.1)
         if self.side == Bornibus.PURPLE:
-            wheeledbase.turnonthespot(3*pi/4)
+            wheeledbase.turnonthespot(-3*pi/4)
             wheeledbase.wait()
             arm.deploy()
             wheeledbase.turnonthespot(-pi/3)
@@ -163,14 +163,14 @@ class Bornibus(Automaton):
             wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Gold4"]], direction="forward", lookaheadbis=1, finalangle=pi)
             try :
                 while not wheeledbase.isarrived() :
-                    if endstops.get_ES1():
+                    if endstops.get_ES2():
                         print("TOUCHED LEFT")
                         self.points["Gold4"] = (self.points["Gold4"][0], self.points["Gold4"][1]-10)
                         self.points["Gold3"] = (self.points["Gold3"][0], self.points["Gold3"][1]-10)
                         print(*self.points["Gold4"])
                         raise gripperError("Grripper left touched")
                     
-                    elif endstops.get_ES2():
+                    elif endstops.get_ES1():
                         print("TOUCHED RIGHT")
                         self.points["Gold4"] = (self.points["Gold4"][0], self.points["Gold4"][1]+10)
                         self.points["Gold3"] = (self.points["Gold3"][0], self.points["Gold3"][1]+10)
@@ -182,7 +182,6 @@ class Bornibus(Automaton):
             except gripperError as e :
                 print("gripperException : ", e)
                 wheeledbase.goto(*self.points["Gold3"], theta=pi, lookaheadbis=1)
-                wheeledbase.wait()
 
             except BaseException as e :
                 print("BaseException : ", e)
@@ -246,16 +245,24 @@ class Bornibus(Automaton):
 
         time.sleep(0.5)
 
+        # Premier palet
+        if self.side == Bornibus.YELLOW:
+            wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Gold5"], self.points["Pal1"],
+                                 self.points["Pal6"]], direction="backward", finalangle=-pi / 4, lookahead=150)
+        if self.side == Bornibus.PURPLE:
+            wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Gold5"], self.points["Pal1"],
+                                     self.points["Pal6"]], direction="backward", finalangle=pi / 4, lookahead=150)
+            wheeledbase.wait()
         # Vers palets
         print("Vers Palets")
         wheeledbase.right_wheel_maxPWM.set(1)
         wheeledbase.left_wheel_maxPWM.set(1)
         # sens_manager.enable_back()
         if self.side == Bornibus.YELLOW:
-            wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Gold5"], self.points["Pal1"],
+            wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Pal3"],
                                      self.points["Pal4"]], direction="backward", finalangle=-pi/4, lookahead=100, lookaheadbis=150)
         if self.side == Bornibus.PURPLE:
-            wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Gold5"], self.points["Pal1"],
+            wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Pal3"],
                                      self.points["Pal4"]], direction="backward", finalangle=pi/4, lookahead=100)
 
         wheeledbase.wait()
