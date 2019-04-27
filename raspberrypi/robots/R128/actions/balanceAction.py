@@ -202,7 +202,7 @@ class BalanceAfter3(Actionnable):
             self.handeledPuck1 = self.arm1.sucker.get_puck()
 
         if(self.arm2.sucker.index() > 0):
-            self.arm2.move(GLOBAL_POS_INTER)
+            self.arm2.move(BALANCE3_POS_INTER)
 
             while not self.arm2.is_arrived():
                 time.sleep(0.1)
