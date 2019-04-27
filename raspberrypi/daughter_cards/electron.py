@@ -14,7 +14,7 @@ _ISONTOP_OPCODE         =  0X12
 
 class Electron(SecureSerialTalksProxy):
     def __init__(self,parent, uuid='esp32'):
-        SerialTalksProxy.__init__(self,parent, uuid)
+        SecureSerialTalksProxy.__init__(self,parent, uuid)
 
     def connected(self):
         output = self.execute(_IS_CONNECTED_OPCODE)
