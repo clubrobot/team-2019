@@ -60,6 +60,7 @@ class Bornibus(Automaton):
 
     def run(self):
         Thread(target=self.stop_match).start()
+        begin = time.time()
 
         sens_manager.start()
         wheeledbase.reset_parameters()
@@ -194,8 +195,16 @@ class Bornibus(Automaton):
         gripper.close()
         time.sleep(1)
 
+        wheeledbase.goto_delta(-100, 0)
+        wheeledbase.wait()
+
         if endstops.get_ES3():
             disp.addPoints(20)
+
+        # Tempo
+        temp = 65 - (time.time() - begin)
+        if temp > 0:
+            time.sleep(temp)
 
         wheeledbase.right_wheel_maxPWM.set(1)
         wheeledbase.left_wheel_maxPWM.set(1)
@@ -252,7 +261,7 @@ class Bornibus(Automaton):
         if self.side == Bornibus.PURPLE:
             wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Gold5"], self.points["Pal1"],
                                      self.points["Pal6"]], direction="backward", finalangle=pi / 4, lookahead=150)
-            wheeledbase.wait()
+        wheeledbase.wait()
         # Vers palets
         print("Vers Palets")
         wheeledbase.right_wheel_maxPWM.set(1)
@@ -260,10 +269,10 @@ class Bornibus(Automaton):
         # sens_manager.enable_back()
         if self.side == Bornibus.YELLOW:
             wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Pal3"],
-                                     self.points["Pal4"]], direction="backward", finalangle=-pi/4, lookahead=100, lookaheadbis=150)
+                                     self.points["Pal4"]], direction="forward", finalangle=-pi/4, lookahead=150, lookaheadbis=150)
         if self.side == Bornibus.PURPLE:
             wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Pal3"],
-                                     self.points["Pal4"]], direction="backward", finalangle=pi/4, lookahead=100)
+                                     self.points["Pal4"]], direction="forward", finalangle=pi/4, lookahead=150)
 
         wheeledbase.wait()
 
@@ -279,8 +288,12 @@ class Bornibus(Automaton):
         # sens_manager.front_enable()
         pushers.down()
 
-        wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Pal5"], self.points["Pal6"]],
-                                direction="forward", lookahead=50, lookaheadbis=10)
+        if self.side == Bornibus.YELLOW:
+            wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Pal5"], self.points["Pal6"]],
+                                    direction="forward", lookahead=50, lookaheadbis=10, finalangle=-pi/2)
+        if self.side == Bornibus.PURPLE:
+            wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Pal5"], self.points["Pal6"]],
+                                direction="forward", lookahead=50, lookaheadbis=10, finalangle=pi/2)
         wheeledbase.wait()
 
         disp.addPoints(13)
@@ -293,7 +306,7 @@ class Bornibus(Automaton):
 
 if __name__ == "__main__":
     auto = Bornibus()
-    auto.set_side(Bornibus.PURPLE)
+    auto.set_side(Bornibus.YELLOW)
     init_robot()
     auto.set_position()
     print("ready")
