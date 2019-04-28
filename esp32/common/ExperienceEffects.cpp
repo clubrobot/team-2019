@@ -19,7 +19,14 @@ void ExperienceEffects::setup()
 {
     for (int i = 0; i < 60; i++)
     {
-		leds[i] = CRGB::Red;    /* red (Non Connected default status) */
+        if(isElectron)
+        {
+		    leds[i] = CRGB::Red;    /* red (Non Connected default status) */
+        }
+        else
+        {
+            leds[i] = CRGB::Black;    /* red (Non Connected default status) */
+        }
 	}
 	FastLED.show();
 
@@ -51,11 +58,14 @@ void ExperienceEffects::motorStop()
 
 void ExperienceEffects::connected()
 {
-    for (int i = 0; i < 60; i++)
+    if(isElectron)
     {
-		leds[i] = CRGB::Green;
-	}
-	FastLED.show();
+        for (int i = 0; i < 60; i++)
+        {
+            leds[i] = CRGB::Green;
+        }
+        FastLED.show();
+    }
 	digitalWrite(BUILTIN_LED, HIGH);
 }
 

@@ -2,11 +2,49 @@
 #-*- coding: utf-8 -*-
 
 import time
-from daughter_cards.Sensor_IR import *
 from threading import Thread, Event, Lock
+import math
+
+
+class Sensor:
+    def __init__(self, name, dist, pos, angle):
+        self.dist = dist
+        self.pos = pos
+        self.angle = angle
+        self.enable = True
+        self.name = name
+
+    def disable(self):
+        self.enable = False
+
+    def obstacle(self, wheeledbase):
+        dist = self.dist()
+        if dist > 200:
+            return False
+
+        x = wheeledbase[0] + self.pos[0]*math.cos(wheeledbase[2]) - self.pos[1]*math.sin(wheeledbase[2]) \
+            + math.cos(self.angle+wheeledbase[2])*dist
+        y = wheeledbase[1] + self.pos[0]*math.sin(wheeledbase[2]) + self.pos[1]*math.cos(wheeledbase[2]) \
+            + math.sin(self.angle+wheeledbase[2])*dist
+
+        # zone pente
+        if x < 300 or x > 1400 or y < 200 or y > 2800:
+            return False
+
+        # zone balance
+        if 1150 < x < 1600 and 1200 < y < 1800:
+            return False
+
+        print("obstacle en : ", round(x), round(y))
+        print("wheeledbase : ", wheeledbase)
+        print("capteur", self.name)
+        print("distance : ", dist)
+        print()
+        return True
+
 
 class SensorsManager(Thread):
-    def __init__(self, wheeledbase, sensor_front, sensor_back):
+    def __init__(self, wheeledbase, sensors_front, sensors_back):
         Thread.__init__(self)
         self.daemon         = False
 
@@ -14,8 +52,8 @@ class SensorsManager(Thread):
         self.max_linvel     = self.wheeledbase.max_linvel.get()
         self.max_angvel     = self.wheeledbase.max_angvel.get()
 
-        self.sensor_front   = sensor_front
-        self.sensor_back    = sensor_back
+        self.sensors_front = sensors_front
+        self.sensors_back  = sensors_back
 
         self.front_disable  = Event()
         self.back_disable   = Event()
@@ -29,13 +67,17 @@ class SensorsManager(Thread):
         while True:
             obstacle = False
             self.lock.acquire()
-            if not self.front_disable.is_set():
-                if(self.sensor_front.get_single_mesure()[0] < self.threshold):
-                    obstacle = True
+            wheeledbase_pos = self.wheeledbase.get_position()
+            if self.wheeledbase.direction == self.wheeledbase.FORWARD:
+                for sensor in self.sensors_front:
+                    if sensor.obstacle(wheeledbase_pos) and sensor.enable:
+                        obstacle = True
 
-            if not self.back_disable.is_set():
-                if(self.sensor_front.get_single_mesure()[0] < self.threshold):
-                    obstacle = True
+            if self.wheeledbase.direction == self.wheeledbase.BACKWARD:
+                for sensor in self.sensors_back:
+                    if sensor.obstacle(wheeledbase_pos) and sensor.enable:
+                        obstacle = True
+
             self.lock.release()
 
             if obstacle:
@@ -51,7 +93,6 @@ class SensorsManager(Thread):
                 self.wheeledbase.max_linvel.set(self.max_linvel)
                 self.wheeledbase.max_angvel.set(self.max_angvel)
                 self.stopped = False
-            time.sleep(0.4)
 
     def disable_front(self):
         self.front_disable.set()

@@ -20,8 +20,10 @@ class MovingToLittle(Actionnable):
 
         if self.side == self.YELLOW:
             self.arm        = daughter_cards['armFront']
+            self.arm2        = daughter_cards['armBack']
         else:
             self.arm        = daughter_cards['armBack']
+            self.arm2        = daughter_cards['armFront']
         
         self.wheeledbase    = daughter_cards['wheeledbase']
         # action Points
@@ -44,7 +46,10 @@ class MovingToLittle(Actionnable):
             time.sleep(0.1)
     
     def before(self):
-        pass
+        self.arm.go_home()
+        self.arm2.go_home()
+        while not (self.arm.is_arrived() and self.arm2.is_arrived()):
+                time.sleep(0.1)
 
     def after(self):
         pass
@@ -81,9 +86,14 @@ class MovingAfterLittle(Actionnable):
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
 
-        self.wheeledbase.purepursuit(self.path)
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
+        if self.side == self.YELLOW:
+            self.wheeledbase.purepursuit(self.path, direction='backward')
+            while not self.wheeledbase.isarrived():
+                time.sleep(0.1)
+        else:
+            self.wheeledbase.purepursuit(self.path, direction='forward')
+            while not self.wheeledbase.isarrived():
+                time.sleep(0.1)
 
         
     

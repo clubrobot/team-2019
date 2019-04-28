@@ -6,15 +6,15 @@ import math
 
 from common.serialutils import Deserializer
 from common.serialtalks import BYTE, INT, LONG, FLOAT, SerialTalks
-from common.components import SerialTalksProxy
+from common.components import SecureSerialTalksProxy
 
-_IS_CONNECTED_OPCODE    =  0X11
-_START_OPCODE           =  0x10
+_IS_CONNECTED_OPCODE    =  0X10
+_START_OPCODE           =  0x11
 _ISONTOP_OPCODE         =  0X12
 
-class Pince(SerialTalksProxy):
-    def __init__(self,parent, uuid='electronServer'):
-        SerialTalksProxy.__init__(self,parent, uuid)
+class Electron(SecureSerialTalksProxy):
+    def __init__(self,parent, uuid='expServ'):
+        SecureSerialTalksProxy.__init__(self, parent, uuid, dict())
 
     def connected(self):
         output = self.execute(_IS_CONNECTED_OPCODE)

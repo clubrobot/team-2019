@@ -53,12 +53,10 @@ class TakePuckSync(Actionnable):
     def realize(self):
         if self.distrib_pos == 1:
             self.wheeledbase.set_velocities(-100,0)
-            time.sleep(2)
+            time.sleep(1.5)
             self.correct_pos = self.wheeledbase.get_position()
-            print(self.correct_pos)
+
             offset_x = self.RecalagePoint[0] - self.correct_pos[0]
-            print('offset x ; {}'.format(offset_x))
-            print('offset y ; {}'.format(offset_y))
 
             self.point = (self.point[0] - offset_x, self.point[1] - offset_y)
 
@@ -82,10 +80,10 @@ class TakePuckSync(Actionnable):
             time.sleep(0.1)
 
         while self.arm1.get_atmosphere_pressure():
-            time.sleep(0.2)
+            time.sleep(0.1)
 
         while self.arm2.get_atmosphere_pressure():
-            time.sleep(0.2)
+            time.sleep(0.1)
 
         # handle puck by sucker
         self.arm1.sucker.put_puck(self.puck1)
@@ -121,30 +119,28 @@ class TakePuckSync(Actionnable):
                 self.arm1.move(self.TankPos[self.arm1.tank.index()])
             self.arm2.move(self.TankPos[self.arm2.tank.index()])
 
-            while not (self.arm1.is_arrived()):
+            while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
                 time.sleep(0.1)
-            while not (self.arm2.is_arrived()):
-                time.sleep(0.1)
-
-            # store puck on tank
-            if(self.arm1.tank.index() < 2):
-                self.arm1.tank.put_puck(self.arm1.sucker.get_puck())
-            self.arm2.tank.put_puck(self.arm2.sucker.get_puck())
 
             if(self.arm1.tank.index() < 2):
                 self.arm1.stop_pump()
             self.arm2.stop_pump()
 
             time.sleep(0.5)
+
+            # store puck on tank
+            if(self.arm1.tank.index() < 2):
+                self.arm1.tank.put_puck(self.arm1.sucker.get_puck())
+            self.arm2.tank.put_puck(self.arm2.sucker.get_puck())
+
+            time.sleep(0.5)
+
             if(self.arm1.tank.index() < 2):
                 self.arm1.move(PUT_TANK_AFTER)
             self.arm2.move(PUT_TANK_AFTER)
 
-            while not (self.arm1.is_arrived()):
+            while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
                 time.sleep(0.1)
-            while not (self.arm2.is_arrived()):
-                time.sleep(0.1)
-
         else:
             self.arm1.go_home()
             self.arm2.go_home()
@@ -182,10 +178,6 @@ class TakePuckSingle(Actionnable):
         self.puck = puck
 
     def realize(self):
-        self.arm.move(PREPARE_TAKING_POS_ROAD)
-        while not (self.arm.is_arrived()):
-            time.sleep(0.1)
-        
         self.arm.start_pump()
         self.arm.move(PREPARE_TAKING_POS_STATIC)
         while not (self.arm.is_arrived()):

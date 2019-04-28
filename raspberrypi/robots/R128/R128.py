@@ -10,6 +10,8 @@ from common.actions.action import ThreadActionManager
 from common.geogebra import Geogebra
 from robots.R128.setup_128 import *
 from robots.automaton import Automaton
+from robots.sensors_manager import *
+
 
 class R128(Automaton):
     DISTRIB6_1 = 1
@@ -97,6 +99,7 @@ class R128(Automaton):
             self.takemaintain,
             self.movingAfterlittle,
             self.balanceAct3,
+            self.putRedZoneAct,
         ]
 
     def set_position(self):
@@ -114,16 +117,26 @@ class R128(Automaton):
         armB.stop()
         manager.disconnect()
 
+    # def check_electron(self):
+    #     while not self.electron.connected():
+    #         time.sleep(5)
+    #     self.log("MAIN : ", "Launch Electron")
+    #     self.electron.start()
+    #     self.display.addPoints(35)
+
     def run(self):
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
         Thread(target=self.stop_match).start()
         self.display.start()
 
-        self.log("MAIN : ", "Launch Electron")
-        self.electron.start()
-        self.display.addPoints(40)
+        self.display.addPoints(5) #pose electron
 
+        self.electron.start()
+        self.display.addPoints(35)
+
+        # s = SensorsManager(wheeledbase, sensorsFront, sensorsBack)
+        # s.start()
         # starting thread action manager
         self.tam.start()
         
@@ -157,7 +170,7 @@ class R128(Automaton):
 
 if __name__ == '__main__':
     auto = R128()
-    auto.set_side(R128.PURPLE)
+    auto.set_side(R128.YELLOW)
     init_robot()
     auto.set_position()
     print("ready")

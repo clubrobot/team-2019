@@ -5,14 +5,15 @@ ArmPos = namedtuple('ArmPos', ['x', 'y', 'phi'])
 #                                      | x(cm) | y(cm) | phi(deg)
 # Home
 HOME                            = ArmPos(1.5,    7.0,    0)
-GLOBAL_POS_INTER                = ArmPos(3.8,    13.0,   0)
+GLOBAL_POS_INTER                = ArmPos(3.8 ,    14,  0)
+GLOBAL_POS_INTER2               = ArmPos(3.8 ,   14,   0)
 
 # Prepare Taking
-PREPARE_TAKING_POS_ROAD         = ArmPos(11.5,   3.0,    10)
-PREPARE_TAKING_POS_STATIC       = ArmPos(13,   4,    10)
+PREPARE_TAKING_POS_ROAD         = ArmPos(11.5,   3.1,    10)
+PREPARE_TAKING_POS_STATIC       = ArmPos(12.5,   3.5,    00)
 
 # Take Puck
-TAKE_PUCK_STATIC                = ArmPos(14.8,   3.5,    5)
+TAKE_PUCK_STATIC                = ArmPos(14.5,   3.0,    5)
 TAKE_PUCK_INTER_AFTER_STATIC    = ArmPos(9.0,    10.0,   90.0)
 
 # Tank Inter
@@ -53,6 +54,8 @@ RED_ZONE                        = ArmPos(10.0,   2.0,   300)
 ACCELERATOR_BEFORE              = ArmPos(6.5,   6.0,   20)
 ACCELERATOR                     = ArmPos(6.0,   4.5,   15)
 ACCELERATOR_AFTER               = ArmPos(7.0,   10.0,   10)
+
+BALANCE3_POS_INTER              = ArmPos(-5 ,    14,   90)
 
 
 HomePath = [GLOBAL_POS_INTER, HOME]

@@ -38,7 +38,7 @@ class Gripper(SecureSerialTalksProxy):
         self.send(_SET_POSITION_GRIPPER_OPCODE, INT(position))
 
     def get_goldsensor_state(self):
-        return self.goldsensor.get_ES2()
+        return self.goldsensor.get_ES3()
 
 
 class Pushers(SecureSerialTalksProxy):
