@@ -141,23 +141,26 @@ class R128(Automaton):
         self.tam.start()
         
         for act in self.action_list:
-
+            
+            # add before action to the parralel action queue
             self.log("MAIN : ", "Launch Before Action")
             self.tam.putAction(act.getBefore())
 
-            if act.actionPoint is not None:
-                self.log("MAIN : ", "{}".format(act.actionPoint))
-                self.daughter_cards['wheeledbase'].goto(*act.actionPoint.point, theta=act.actionPoint.theta)
+            # moving to action point
+            self.log("MAIN : ", "Moving ! ...")
+            act.moving()
 
+            # wait for parralels action end
             while not self.tam.end():
                 time.sleep(0.1)
-
+            
+            # execute the current action
             self.log("MAIN ; ", "Arrived on action point ! Go execute {} =)".format(act.name))
             act()
             act.done.set()
-
             self.log("MAIN ; ", "Action End !")
 
+            # add after action to the parrel action queue
             self.log("MAIN : ", "Launch After Action")
             self.tam.putAction(act.getAfter())
             
