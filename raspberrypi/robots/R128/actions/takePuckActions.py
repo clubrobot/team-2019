@@ -30,7 +30,7 @@ class TakePuckSync(Actionnable):
 
         # action Points
         self.point          = self.geogebra.get('Distrib{}_{}'.format(self.side,self.distrib_pos))
-        print(type(self.point))
+
         if self.distrib_pos == 1:
             self.RecalagePoint  = self.geogebra.get('Recal{}'.format(self.side))
             self.point = (self.point[0] + offset_x, self.point[1] + offset_y)
@@ -49,6 +49,9 @@ class TakePuckSync(Actionnable):
 
         self.puck1          = puckFront
         self.puck2          = puckBack
+
+    def moving(self):
+        self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
 
     def realize(self):
         if self.distrib_pos == 1:
@@ -149,7 +152,7 @@ class TakePuckSync(Actionnable):
 
     #override
     def getAction(self):
-        return Action(self.actionPoint, lambda : self.realize(), self.before, self.after, 'TakePuck_{}'.format(self.distrib_pos))
+        return Action(lambda : self.moving(), lambda : self.realize(), self.before, self.after, 'TakePuck_{}'.format(self.distrib_pos))
 
 class TakePuckSingle(Actionnable):
     YELLOW  = 0
@@ -166,6 +169,8 @@ class TakePuckSingle(Actionnable):
         else:
             self.arm        = daughter_cards['armBack']
 
+        self.wheeledbase    = daughter_cards['wheeledbase']
+
         # action Points
         self.point          = self.geogebra.get('Distrib{}_{}'.format(self.side,self.distrib_pos))
         self.actionPoint    = ActPoint(self.point, pi/2)
@@ -176,6 +181,9 @@ class TakePuckSingle(Actionnable):
         self.takeError      = False
 
         self.puck = puck
+
+    def moving(self):
+        self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
 
     def realize(self):
         self.arm.start_pump()
@@ -232,7 +240,7 @@ class TakePuckSingle(Actionnable):
 
     #override
     def getAction(self):
-        return Action(self.actionPoint, lambda : self.realize(), self.before, self.after, 'TakePuck')
+        return Action(lambda : self.moving(), lambda : self.realize(), self.before, self.after, 'TakePuck')
 
 
 class TakePuckSyncMaintain(Actionnable):
@@ -252,6 +260,8 @@ class TakePuckSyncMaintain(Actionnable):
             self.arm1       = daughter_cards['armBack']
             self.arm2       = daughter_cards['armFront']
 
+        self.wheeledbase    = daughter_cards['wheeledbase']
+
         # action Points
         self.point          = self.geogebra.get('Distrib{}_{}'.format(self.side,self.distrib_pos))
         self.actionPoint    = ActPoint(self.point, pi/2)
@@ -263,6 +273,9 @@ class TakePuckSyncMaintain(Actionnable):
 
         self.puck1      = puckFront
         self.puck2      = puckBack
+
+    def moving(self):
+        self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
 
     def realize(self):
         self.arm1.start_pump()
@@ -314,4 +327,4 @@ class TakePuckSyncMaintain(Actionnable):
 
     #override
     def getAction(self):
-        return Action(self.actionPoint, lambda : self.realize(), self.before, self.after, 'TakePuck_{}'.format(self.distrib_pos))
+        return Action(lambda : self.moving(), lambda : self.realize(), self.before, self.after, 'TakePuck_{}'.format(self.distrib_pos))
