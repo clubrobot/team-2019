@@ -21,6 +21,7 @@ class PutAccelerator(Actionnable):
         else:
             self.arm        = daughter_cards['armFront']
 
+        self.wheeledbase    = daughter_cards['wheeledbase']
         self.display        = daughter_cards['display']
 
         # action Points
@@ -33,6 +34,9 @@ class PutAccelerator(Actionnable):
         self.afterTankPos   = [AFTER_TAKE_TANK_PUCK1, AFTER_TAKE_TANK_PUCK2, AFTER_TAKE_TANK_PUCK3]
 
         self.handeledPuck   = None
+
+    def moving(self):
+        self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
 
     def realize(self):
         # put the first handled puck
@@ -129,4 +133,4 @@ class PutAccelerator(Actionnable):
 
     #override
     def getAction(self):
-        return Action(self.actionPoint, lambda : self.realize(), self.before, self.after, 'PutBalance6')
+        return Action(lambda : self.moving(), lambda : self.realize(), self.before, self.after, 'PutBalance6')
