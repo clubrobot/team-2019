@@ -28,12 +28,9 @@ class MovingToLittle(Actionnable):
         self.wheeledbase    = daughter_cards['wheeledbase']
         # action Points
         self.path           = self.geogebra.getall('PathDistrib{}_*'.format(self.side))
-        self.actionPoint    = None
 
-        self.handeledPuck   = None
-        
 
-    def realize(self):
+    def moving(self):
         if self.side == self.YELLOW:
             self.wheeledbase.purepursuit(self.path, direction = 'backward')
         else:
@@ -44,7 +41,10 @@ class MovingToLittle(Actionnable):
         self.wheeledbase.turnonthespot(0)
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
-    
+
+    def realize(self):
+        pass
+
     def before(self):
         self.arm.go_home()
         self.arm2.go_home()
@@ -56,7 +56,7 @@ class MovingToLittle(Actionnable):
 
     #override
     def getAction(self):
-        return Action(self.actionPoint, lambda : self.realize(), self.before, self.after, 'MovingToLittle')
+        return Action(lambda : self.moving(), lambda : self.realize(), self.before, self.after, 'MovingToLittle')
 
 class MovingAfterLittle(Actionnable):
     YELLOW  = 0
@@ -76,12 +76,8 @@ class MovingAfterLittle(Actionnable):
         # action Points
         self.path           = self.geogebra.getall('PathDistrib{}_*'.format(self.side))
         self.path.reverse()
-        self.actionPoint    = None
 
-        self.handeledPuck   = None
-        
-
-    def realize(self):
+    def moving(self):
         self.wheeledbase.turnonthespot(-pi)
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
@@ -94,9 +90,10 @@ class MovingAfterLittle(Actionnable):
             self.wheeledbase.purepursuit(self.path, direction='forward')
             while not self.wheeledbase.isarrived():
                 time.sleep(0.1)
-
-        
     
+    def realize(self):
+        pass
+
     def before(self):
         pass
 
@@ -105,7 +102,7 @@ class MovingAfterLittle(Actionnable):
 
     #override
     def getAction(self):
-        return Action(self.actionPoint, lambda : self.realize(), self.before, self.after, 'MovingToLittle')
+        return Action(lambda : self.moving(), lambda : self.realize(), self.before, self.after, 'MovingToLittle')
 
 
 class MovingAfterStart(Actionnable):
@@ -126,15 +123,16 @@ class MovingAfterStart(Actionnable):
 
         # action Points
         self.point          = self.geogebra.get('Inter{}'.format(self.side))
-        self.actionPoint    = None
 
-        self.handeledPuck   = None
-
-    def realize(self):
+    def moving(self):
         if self.side == self.YELLOW:
             self.wheeledbase.goto(*self.point, pi/2, direction = 'forward')
         else:
             self.wheeledbase.goto(*self.point, pi/2, direction = 'backward')
+
+    def realize(self):
+        pass
+
     def before(self):
         pass
 
@@ -143,7 +141,7 @@ class MovingAfterStart(Actionnable):
 
     #override
     def getAction(self):
-        return Action(self.actionPoint, lambda : self.realize(), self.before, self.after, 'MovingAfterStart')
+        return Action(lambda : self.moving(), lambda : self.realize(), self.before, self.after, 'MovingAfterStart')
 
 
 class MovingToRed(Actionnable):
@@ -163,11 +161,8 @@ class MovingToRed(Actionnable):
         self.wheeledbase    = daughter_cards['wheeledbase']
         # action Points
         self.path           = self.geogebra.getall('Red{}_*'.format(self.side))
-        self.actionPoint    = None
 
-        self.handeledPuck   = None
-
-    def realize(self):
+    def moving(self):
         self.wheeledbase.purepursuit(self.path)
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
@@ -175,6 +170,9 @@ class MovingToRed(Actionnable):
         self.wheeledbase.turnonthespot(-pi/2)
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
+    
+    def realize(self):
+        pass
     
     def before(self):
         pass
@@ -184,4 +182,4 @@ class MovingToRed(Actionnable):
 
     #override
     def getAction(self):
-        return Action(self.actionPoint, lambda : self.realize(), self.before, self.after, 'MovingToRed')
+        return Action(lambda : self.moving(), lambda : self.realize(), self.before, self.after, 'MovingToRed')
