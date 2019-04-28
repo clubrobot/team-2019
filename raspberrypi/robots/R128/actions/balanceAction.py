@@ -39,6 +39,9 @@ class BalanceAfter6(Actionnable):
         self.handeledPuck1   = None
         self.handeledPuck2   = None
 
+    def moving(self):
+        self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
+
     def realize(self):
 
         if self.side == self.YELLOW:
@@ -141,7 +144,7 @@ class BalanceAfter6(Actionnable):
 
     #override
     def getAction(self):
-        return Action(self.actionPoint, lambda : self.realize(), self.before, self.after, 'PutBalance6')
+        return Action(lambda : self.moving(), lambda : self.realize(), self.before, self.after, 'PutBalance6')
 
 class BalanceAfter3(Actionnable):
     YELLOW  = 0
@@ -176,6 +179,9 @@ class BalanceAfter3(Actionnable):
 
         self.handeledPuck1   = None
         self.handeledPuck2   = None
+
+    def moving(self):
+        self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
 
     def realize(self):
 
@@ -249,4 +255,4 @@ class BalanceAfter3(Actionnable):
 
     #override
     def getAction(self):
-        return Action(self.actionPoint, lambda : self.realize(), self.before, self.after, 'PutBalance3')
+        return Action(lambda : self.moving(), lambda : self.realize(), self.before, self.after, 'PutBalance3')
