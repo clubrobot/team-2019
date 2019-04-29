@@ -13,6 +13,12 @@ using namespace std;
 
 namespace IK
 {
+	
+static bool float_equals(float a, float b, float epsilon = 0.001)
+{
+    return std::abs(a - b) < epsilon;
+}
+
 
 MotorWrapper::MotorWrapper()
 {
@@ -101,6 +107,13 @@ void MotorWrapper::process(float timestep)
 			_state.id       = e.get_id();
 			_state.err_code = e.get_error_code();
         }
+
+		/* check position to break loop if the joint is arrived before estimation */
+		if(float_equals(_motor.readPosition(), (_pos + _offset), 1.5))
+		{
+			_step_counter = _vel_profile.size();
+			_arrived = true;
+		}
 	}
 	else
 	{
