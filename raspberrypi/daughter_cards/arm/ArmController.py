@@ -45,18 +45,6 @@ class ArmController():
             if (time.time()-init_time > timeout):
                 raise RuntimeError('{} Timeout'.format(self.name))
 
-    def check_pressure(self, timestep = 0.1, timeout = 100, max_attempt = 5):
-        self.log(self.name, "WAIT FOR SUFFISANT PRESSURE")
-        init_time = time.time()
-        attempt   = 0
-        while self.get_atmosphere_pressure():
-            time.sleep(timestep)
-            if (time.time()-init_time > timeout):
-                if(attempt >= max_attempt):
-                    return False
-                attempt += 1
-        return True
-
     def start_pump(self):
         self.log(self.name, "Start Pump")
         self.arm.start_pump()
@@ -74,19 +62,3 @@ class ArmController():
     def go_home(self):
         self.log(self.name, "Go Home")
         self.movePath(HomePath)
-
-    # def prepare_to_take_road(self):
-    #     self.log(self.name, "Prepare to take")
-    #     self.move(PREPARE_TAKING_POS_ROAD)
-
-    # def prepare_to_take(self):
-    #     self.log(self.name, "Prepare to take")
-    #     self.move(PREPARE_TAKING_POS_STATIC)
-
-    # def take(self, puck):
-    #     self.log(self.name, "Take")
-    #     self.move(TAKE_PUCK_STATIC)
-
-    # def after_take(self):
-    #     self.log(self.name, "after Take")
-    #     self.move(TAKE_PUCK_INTER_AFTER_STATIC)
