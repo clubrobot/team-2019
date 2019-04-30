@@ -59,13 +59,10 @@ class ThreadActionManager(Thread):
         self.stopped        = Event()
         self.ActionEnd      = Event()
         self.queueFunc      = Queue()
-        self.locker         = RLock()
 
     def putAction(self, func):
-        self.locker.acquire()
         self.queueFunc.put(func)
         self.ActionEnd.clear()
-        self.locker.release()
         
     def stop(self):
         while not self.end():
@@ -77,13 +74,8 @@ class ThreadActionManager(Thread):
         while not self.stopped.is_set():
             while not self.queueFunc.empty():
                 self.ActionEnd.clear()
-
                 # execute the current action in Queue
-                self.locker.acquire()
                 self.queueFunc.get()()
-                self.locker.release()
-                # sleep 100 ms before the next action
-                time.sleep(0.1)
 
             self.ActionEnd.set()
     
