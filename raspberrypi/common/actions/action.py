@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
-from threading import Thread, Event
+from threading import Thread, Event, RLock
 from queue import Queue
 from collections import namedtuple
 import time
@@ -59,6 +59,7 @@ class ThreadActionManager(Thread):
         self.stopped        = Event()
         self.ActionEnd      = Event()
         self.queueFunc      = Queue()
+        self.locker         = RLock()
 
     def putAction(self, func):
         self.queueFunc.put(func)
@@ -74,7 +75,14 @@ class ThreadActionManager(Thread):
         while not self.stopped.is_set():
             while not self.queueFunc.empty():
                 self.ActionEnd.clear()
+
+                # execute the current action in Queue
+                self.locker.acquire()
                 self.queueFunc.get()()
+                self.locker.release()
+                # sleep 100 ms before the next action
+                time.sleep(0.1)
+
             self.ActionEnd.set()
     
     def end(self):
