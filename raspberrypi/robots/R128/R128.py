@@ -20,7 +20,6 @@ class R128(Automaton):
     DISTRIB3_1 = 4
     DISTRIB3_2 = 5
 
-
     def __init__(self):
         Automaton.__init__(self)
         # Save daughter_cards
@@ -80,16 +79,8 @@ class R128(Automaton):
         self.movingAfterlittle  = MovingAfterLittle(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
         #self.accel              = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
-        # self.action_list = [
-        #     self.movingAfterStart,
-        #     self.takeSyncPos1Act,
-        #     self.takeSyncPos2Act,
-        #     self.takeSyncPos3Act,
-        #     self.balanceAct,
-        # ]
 
         self.action_list = [
-            self.movingAfterStart,
             self.takeSyncPos1Act,
             self.takeSyncPos2Act,
             self.takeSyncPos3Act,
@@ -116,13 +107,6 @@ class R128(Automaton):
         armF.stop()
         armB.stop()
         manager.disconnect()
-
-    # def check_electron(self):
-    #     while not self.electron.connected():
-    #         time.sleep(5)
-    #     self.log("MAIN : ", "Launch Electron")
-    #     self.electron.start()
-    #     self.display.addPoints(35)
 
     def run(self):
         self.log("MAIN : ", "RUN...")
@@ -173,7 +157,7 @@ class R128(Automaton):
 
 if __name__ == '__main__':
     auto = R128()
-    auto.set_side(R128.YELLOW)
+    auto.set_side(R128.PURPLE)
     init_robot()
     auto.set_position()
     print("ready")
