@@ -62,8 +62,10 @@ class ThreadActionManager(Thread):
         self.locker         = RLock()
 
     def putAction(self, func):
+        self.locker.acquire()
         self.queueFunc.put(func)
         self.ActionEnd.clear()
+        self.locker.release()
         
     def stop(self):
         while not self.end():
