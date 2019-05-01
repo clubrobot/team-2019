@@ -24,11 +24,13 @@ class TakePuckSync(Actionnable):
     DISTRIB3_2 = 5
 
     def __init__(self, geogebra, daughter_cards, side, distrib_pos, puckFront, puckBack, log):
+        # Save map, log and side
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
         self.distrib_pos    = distrib_pos
 
+        # Bind arm in funtion of desired side
         if self.side == self.YELLOW:
             self.arm1       = daughter_cards['armFront']
             self.arm2       = daughter_cards['armBack']
@@ -36,15 +38,16 @@ class TakePuckSync(Actionnable):
             self.arm1       = daughter_cards['armBack']
             self.arm2       = daughter_cards['armFront']
 
-        #wheeledbase
+        # wheeledbase
         self.wheeledbase    = daughter_cards['wheeledbase']
 
-        #display
+        # display
         self.display        = daughter_cards['display']
 
         # action Points
         self.point          = self.geogebra.get('Distrib{}_{}'.format(self.side,self.distrib_pos))
 
+        # if action correspond to the first distrib pos, prepare starting path
         if self.distrib_pos == self.DISTRIB6_1:
             # start Path
             self.path = self.geogebra.getall('StartPath{}_*'.format(self.side))         
@@ -57,6 +60,7 @@ class TakePuckSync(Actionnable):
             self.point = (self.point[0] + offset_x, self.point[1] + offset_y)
             self.actionPoint    = ActPoint(self.point, pi/2)
 
+        # 3 tank pos list
         self.TankPos        = [TAKE_TANK_PUCK1, TAKE_TANK_PUCK2, TAKE_TANK_PUCK3]
 
         # Taking error event
@@ -71,25 +75,28 @@ class TakePuckSync(Actionnable):
         self.puck1              = puckFront
         self.puck2              = puckBack
 
-
-
     def moving(self):
+        # if action correspond to the first distrib pos
         if self.distrib_pos == self.DISTRIB6_1:
-
+            
+            # Set velocites to the max
             self.wheeledbase.max_linacc.set(900.0)
             self.wheeledbase.max_lindec.set(900.0)
             self.wheeledbase.max_linvel.set(700)
             self.wheeledbase.lookahead.set(200.0)
             self.wheeledbase.lookaheadbis.set(50.0)
 
+            # Start Path
             self.wheeledbase.purepursuit(self.path, direction = 'backward')
             while not self.wheeledbase.isarrived():
                 time.sleep(0.1)
 
+            # prepare recalage
             self.wheeledbase.turnonthespot(pi)
             while not self.wheeledbase.isarrived():
                 time.sleep(0.1)
 
+            # recalage 
             self.wheeledbase.set_velocities(-200,0)
             time.sleep(1)
             self.correct_pos = self.wheeledbase.get_position()
@@ -98,6 +105,7 @@ class TakePuckSync(Actionnable):
 
             self.point = (self.point[0] - offset_x, self.point[1] - offset_y)
 
+            # prepare arm to take
             self.arm1.move(PREPARE_TAKING_POS_ROAD)
             self.arm2.move(PREPARE_TAKING_POS_ROAD)
 
@@ -107,6 +115,7 @@ class TakePuckSync(Actionnable):
                 time.sleep(0.1)
 
         else:
+            # else go to point
             self.wheeledbase.lookaheadbis.set(150.0)
             self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
 
