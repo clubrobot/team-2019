@@ -51,7 +51,6 @@ class R128(Automaton):
 
         # Apply cube obstacle
         self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
-        print("TEST SIDE")
 
         # Specific Actions initialisation
         self.balanceAct6        = BalanceAfter6(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
