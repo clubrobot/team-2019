@@ -67,8 +67,6 @@ class R128(Automaton):
 
         self.moveToRed          = MovingToRed(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
-        self.movingTolittle     = MovingToLittle(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
-
         self.takesingle         = TakePuckSingle(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_1, RedPuck, self.log).getAction()
 
         self.takemaintain       = TakePuckSyncMaintain(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_2, GreenPuck, BluePuck, self.log).getAction()
@@ -82,7 +80,6 @@ class R128(Automaton):
             self.takeSyncPos2Act,
             self.takeSyncPos3Act,
             self.balanceAct6,
-            self.movingTolittle,
             self.takesingle,
             self.takemaintain,
             self.movingAfterlittle,
