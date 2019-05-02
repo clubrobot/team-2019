@@ -1,17 +1,49 @@
+#!/usr/bin/python3
+#-*- coding: utf-8 -*-
+
 from robots.Bornibus.setup_bornibus import *
 from robots.automaton import Automaton
+from robots.Bornibus.actions.detectorAction import *
+from robots.Bornibus.actions.goldeniumAction import *
+from robots.Bornibus.actions.balanceGAction import *
+from robots.Bornibus.actions.tabAtomsAction import *
+from robots.Bornibus.actions.chaosAction import *
+from common.actions.action import ThreadActionManager
+from common.geogebra import Geogebra
+from robots.sensors_manager import *
 
-MAX_TIME_FOR_GOLDENIUM = 2
-
+couleur = "YELLOW"
 
 class gripperError(Exception) :
     def __init__(self,*args, **kwargs) :
         Exception.__init__(self,*args, kwargs)
 
 class Bornibus(Automaton):
+
     def __init__(self):
         Automaton.__init__(self)
-        self.side = Bornibus.UNDEFINED
+
+        # Save daughter_cards
+        self.daughter_cards = dict( wheeledbase     = wheeledbase, 
+                                    display         = disp)
+
+        # Save annexes inf
+        self.side           = Automaton.UNDEFINED
+        self.geogebra       = geo
+        self.log            = log
+
+        # action List
+        self.action_list    = []
+
+        # Wheeledbase
+        self.wheeledbase    = self.daughter_cards['wheeledbase']
+
+        # Display screen
+        self.display        = self.daughter_cards['display']
+
+        # Action thread manager
+        self.tam = ThreadActionManager()
+
         self.points = dict()
 
     def set_position(self):
@@ -23,20 +55,20 @@ class Bornibus(Automaton):
             print(*self.points["Ini"])
 
     def set_side(self, side):
-        couleur = 'YELLOW'
         self.side = side
         color = "M" if side == self.PURPLE else "O"
 
         self.points["Ini"] = geo.get("Ini"+color)
-        self.points["Gold3"] = geo.get("Gold3"+color)
-        self.points["Gold2"] = geo.get("Gold2"+color)
-        self.points["Gold4"] = geo.get("Gold4"+color)
-        self.points["Gold5"] = geo.get("Gold5"+color)
-        self.points["Gold6"] = geo.get("Gold6"+color)
 
         self.points["Dep1"] = geo.get("Dep1"+color)
         self.points["Dep2"] = geo.get("Dep2"+color)
         self.points["Dep3"] = geo.get("Dep3"+color)
+
+        self.points["Gold2"] = geo.get("Gold2"+color)
+        self.points["Gold3"] = geo.get("Gold3"+color)
+        self.points["Gold4"] = geo.get("Gold4"+color)
+        self.points["Gold5"] = geo.get("Gold5"+color)
+        self.points["Gold6"] = geo.get("Gold6"+color)
 
         self.points["Pal1"] = geo.get("Pal1"+color)
         self.points["Pal2"] = geo.get("Pal2"+color)
@@ -44,10 +76,6 @@ class Bornibus(Automaton):
         self.points["Pal4"] = geo.get("Pal4"+color)
         self.points["Pal5"] = geo.get("Pal5"+color)
         self.points["Pal6"] = geo.get("Pal6"+color)
-
-        self.points["tmp"] = geo.get("tmp"+color)
-        self.points["tmp2"] = geo.get("tmp2"+color)
-        self.points["tmp3"] = geo.get("tmp3"+color)
 
     def stop_match(self):
         import time
@@ -165,6 +193,7 @@ class Bornibus(Automaton):
             try :
                 while not wheeledbase.isarrived() :
                     if endstops.get_ES2():
+                        # Touched left
                         print("TOUCHED LEFT")
                         self.points["Gold4"] = (self.points["Gold4"][0], self.points["Gold4"][1]-10)
                         self.points["Gold3"] = (self.points["Gold3"][0], self.points["Gold3"][1]-10)
@@ -172,6 +201,7 @@ class Bornibus(Automaton):
                         raise gripperError("Grripper left touched")
                     
                     elif endstops.get_ES1():
+                        # Touched right
                         print("TOUCHED RIGHT")
                         self.points["Gold4"] = (self.points["Gold4"][0], self.points["Gold4"][1]+10)
                         self.points["Gold3"] = (self.points["Gold3"][0], self.points["Gold3"][1]+10)
@@ -312,3 +342,4 @@ if __name__ == "__main__":
     print("ready")
     input()
     auto.run()
+    pass

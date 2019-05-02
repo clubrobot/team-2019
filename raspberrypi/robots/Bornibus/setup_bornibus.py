@@ -9,8 +9,11 @@ from daughter_cards.Sensor_IR import *
 from robots.sensors_manager import *
 from robots.display_manager import *
 from math import pi
+from common.logger import *
 from common.geogebra import Geogebra
 from robots.get_robot_name import *
+
+log = Logger(Logger.SHOW)
 
 led1 = LEDMatrix(manager, 1)
 led2 = LEDMatrix(manager, 2)
