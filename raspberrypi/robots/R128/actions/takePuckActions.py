@@ -307,6 +307,9 @@ class TakePuckSingle(Actionnable):
         # handled puck
         self.puck              = puck
 
+        # wait befor deploy arms
+        self.deployArm    = Event()
+
     def moving(self):
         # reach little distributor
         if self.side == self.YELLOW:
@@ -322,7 +325,13 @@ class TakePuckSingle(Actionnable):
             time.sleep(0.1)
 
         # goto action point
-        self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
+        self.wheeledbase.goto(*self.actionPoint.point)
+        
+        self.deployArm.set()
+        # correct robot orientation
+        self.wheeledbase.turnonthespot(self.actionPoint.theta)
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
 
         # Recalage ??????
 
@@ -375,8 +384,14 @@ class TakePuckSingle(Actionnable):
                 time.sleep(0.1)
     
     def before(self):
-        pass
+        # wait turnonthespot action before deploy arm
+        while not self.deployArm.is_set():
+            time.sleep(0.1)
         
+        # prepare arm to take
+        self.arm.move(PREPARE_TAKING_POS_ROAD)
+        while not (self.arm.is_arrived()):
+                time.sleep(0.1)
 
     def after(self):
 
