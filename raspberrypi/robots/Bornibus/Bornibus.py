@@ -12,7 +12,8 @@ from common.actions.action import ThreadActionManager
 from common.geogebra import Geogebra
 from robots.sensors_manager import *
 
-couleur = "YELLOW"
+color = "YELLOW"
+#color = "PURPLE"
 
 class gripperError(Exception) :
     def __init__(self,*args, **kwargs) :
@@ -24,7 +25,11 @@ class Bornibus(Automaton):
         Automaton.__init__(self)
 
         # Save daughter_cards
-        self.daughter_cards = dict( wheeledbase     = wheeledbase, 
+        self.daughter_cards = dict( wheeledbase     = wheeledbase,
+                                    pushers         = pushers,
+                                    arm             = arm,
+                                    endstops        = endstops,
+                                    gripper         = gripper,
                                     display         = disp)
 
         # Save annexes inf
@@ -76,6 +81,19 @@ class Bornibus(Automaton):
         self.points["Pal4"] = geo.get("Pal4"+color)
         self.points["Pal5"] = geo.get("Pal5"+color)
         self.points["Pal6"] = geo.get("Pal6"+color)
+
+        self.action_list = [
+            self.takeSyncPos1Act,
+            self.takeSyncPos2Act,
+            self.takeSyncPos3Act,
+            self.balanceAct6,
+            self.movingTolittle,
+            self.takesingle,
+            self.takemaintain,
+            self.movingAfterlittle,
+            self.balanceAct3,
+            self.putRedZoneAct,
+        ]
 
     def stop_match(self):
         import time
@@ -336,7 +354,10 @@ class Bornibus(Automaton):
 
 if __name__ == "__main__":
     auto = Bornibus()
-    auto.set_side(Bornibus.YELLOW)
+    if color == "YELLOW" :
+        auto.set_side(Bornibus.YELLOW)
+    if color == "PURPLE" :
+        auto.set_side(Bornibus.PURPLE)
     init_robot()
     auto.set_position()
     print("ready")
