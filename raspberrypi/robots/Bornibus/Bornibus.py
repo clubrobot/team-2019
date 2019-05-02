@@ -15,10 +15,6 @@ from robots.sensors_manager import *
 color = "YELLOW"
 #color = "PURPLE"
 
-class gripperError(Exception) :
-    def __init__(self,*args, **kwargs) :
-        Exception.__init__(self,*args, kwargs)
-
 class Bornibus(Automaton):
 
     def __init__(self):
@@ -73,9 +69,11 @@ class Bornibus(Automaton):
 
         # Specific Actions initialisation
         self.detectorAct    = detector(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
-        
+        self.goldeniumAct   = goldenium(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+
         self.action_list = [
-            self.detectorAct
+            self.detectorAct,
+            self.goldeniumAct
         ]
 
     def set_position(self):
@@ -148,65 +146,7 @@ class Bornibus(Automaton):
         self.wheeledbase.stop()
 
         """
-        # Vers préparation Goldenium
-        print("Vers préparation Goldenium")
-        # sens_manager.enable_front()
-        wheeledbase.goto(*self.points["Gold3"], theta=pi)
-        while not wheeledbase.isarrived():
-            print(wheeledbase.get_position())
-            time.sleep(0.1)
-
-        # sens_manager.disable_front()
-
-        # Vers Goldenium
-        print("Vers Goldenium")
-        wheeledbase.right_wheel_maxPWM.set(0.2)
-        wheeledbase.left_wheel_maxPWM.set(0.2)
-
-        goldenium = 0
-
-        while goldenium != 1 :
-            wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Gold4"]], direction="forward", lookaheadbis=1, finalangle=pi)
-            try :
-                while not wheeledbase.isarrived() :
-                    if endstops.get_ES2():
-                        # Touched left
-                        print("TOUCHED LEFT")
-                        self.points["Gold4"] = (self.points["Gold4"][0], self.points["Gold4"][1]-10)
-                        self.points["Gold3"] = (self.points["Gold3"][0], self.points["Gold3"][1]-10)
-                        print(*self.points["Gold4"])
-                        raise gripperError("Grripper left touched")
-                    
-                    elif endstops.get_ES1():
-                        # Touched right
-                        print("TOUCHED RIGHT")
-                        self.points["Gold4"] = (self.points["Gold4"][0], self.points["Gold4"][1]+10)
-                        self.points["Gold3"] = (self.points["Gold3"][0], self.points["Gold3"][1]+10)
-                        print(*self.points["Gold4"])
-                        raise gripperError("Grripper right touched")
-                    time.sleep(0.1)
-                goldenium = 1
-            
-            except gripperError as e :
-                print("gripperException : ", e)
-                wheeledbase.goto(*self.points["Gold3"], theta=pi, lookaheadbis=1)
-
-            except BaseException as e :
-                print("BaseException : ", e)
-                goldenium=1
-            
-         
-        wheeledbase.lookaheadbis.set(150)
-        # Prise goldenium
-        print("Prise Goldenium")
-        gripper.close()
-        time.sleep(1)
-
-        wheeledbase.goto_delta(-100, 0)
-        wheeledbase.wait()
-
-        if endstops.get_ES3():
-            disp.addPoints(20)
+        
 
         # Tempo
         temp = 65 - (time.time() - begin)
