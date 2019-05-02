@@ -104,46 +104,6 @@ class MovingAfterLittle(Actionnable):
     def getAction(self):
         return Action(lambda : self.moving(), lambda : self.realize(), self.before, self.after, 'MovingToLittle')
 
-
-class MovingAfterStart(Actionnable):
-    YELLOW  = 0
-    PURPLE  = 1
-
-    def __init__(self, geogebra, daughter_cards, side, log):
-        self.geogebra       = geogebra
-        self.log            = log
-        self.side           = side
-
-        if self.side == self.YELLOW:
-            self.arm        = daughter_cards['armFront']
-        else:
-            self.arm        = daughter_cards['armBack']
-        
-        self.wheeledbase    = daughter_cards['wheeledbase']
-
-        # action Points
-        self.point          = self.geogebra.get('Inter{}'.format(self.side))
-
-    def moving(self):
-        if self.side == self.YELLOW:
-            self.wheeledbase.goto(*self.point, pi/2, direction = 'forward')
-        else:
-            self.wheeledbase.goto(*self.point, pi/2, direction = 'backward')
-
-    def realize(self):
-        pass
-
-    def before(self):
-        pass
-
-    def after(self):
-        pass
-
-    #override
-    def getAction(self):
-        return Action(lambda : self.moving(), lambda : self.realize(), self.before, self.after, 'MovingAfterStart')
-
-
 class MovingToRed(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
