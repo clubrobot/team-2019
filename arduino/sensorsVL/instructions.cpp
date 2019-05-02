@@ -18,3 +18,7 @@ void CHECK_ERROR(SerialTalks& inst, Deserializer& input, Serializer& output){
     output.write<bool>(failedToBoot[1]);
 }
 
+void GET_BOTH_RANGE(SerialTalks& inst, Deserializer& input, Serializer& output){
+    output.write<int16_t>(range_1);
+    output.write<int16_t>(range_2);
+}

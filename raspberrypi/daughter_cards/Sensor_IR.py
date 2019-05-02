@@ -10,7 +10,7 @@ from common.components import SecureSerialTalksProxy
 GET_RANGE1_OPCODE     = 0x10
 GET_RANGE2_OPCODE     = 0x11
 CHECK_ERROR_OPCODE    = 0x12
-
+GET_BOTH_RANGE_OPCODE     = 0x13
 
 class Sensors(SecureSerialTalksProxy):
     # Default execute result
@@ -31,3 +31,19 @@ class Sensors(SecureSerialTalksProxy):
         if dist == 0:
             return 1000
         return dist
+
+    def check_errors(self):
+        deser = self.execute(CHECK_ERROR_OPCODE)
+        error1 = deser.read(SHORT)
+        error2 = deser.read(SHORT)
+        return error1, error2
+
+    def get_both_range(self):
+        deser = self.execute(GET_BOTH_RANGE_OPCODE)
+        dist1 = deser.read(SHORT)
+        dist2 = deser.read(SHORT)
+        if dist1 == 0:
+            dist1=1000
+        if dist2 == 0:
+            dist2=1000
+        return dist1, dist2
