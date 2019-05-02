@@ -167,10 +167,11 @@ class BalanceAfter3(Actionnable):
 
         # action Points
         self.point          = self.geogebra.get('Balance{}'.format(self.side))
-        if self.side == self.YELLOW:
-            self.actionPoint    = ActPoint(self.point, pi/2)
-        else:
-            self.actionPoint    = ActPoint(self.point, pi/2)
+        self.actionPoint    = ActPoint(self.point, pi/2)
+        
+        # path Points
+        self.path           = self.geogebra.getall('PathDistrib{}_*'.format(self.side))
+        self.path.reverse()
 
         #armPos
         self.beforeTankPos  = [BEFORE_TAKE_TANK_PUCK1, BEFORE_TAKE_TANK_PUCK2, BEFORE_TAKE_TANK_PUCK3]
@@ -181,10 +182,22 @@ class BalanceAfter3(Actionnable):
         self.handeledPuck2   = None
 
     def moving(self):
+        self.wheeledbase.turnonthespot(-pi)
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
+
+        if self.side == self.YELLOW:
+            self.wheeledbase.purepursuit(self.path, direction='backward')
+            while not self.wheeledbase.isarrived():
+                time.sleep(0.1)
+        else:
+            self.wheeledbase.purepursuit(self.path, direction='forward')
+            while not self.wheeledbase.isarrived():
+                time.sleep(0.1)
+        
         self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
 
     def realize(self):
-
         if self.side == self.YELLOW:
             self.wheeledbase.set_velocities(100,0)
             time.sleep(1)

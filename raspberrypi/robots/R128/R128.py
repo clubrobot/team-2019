@@ -4,7 +4,6 @@
 from robots.R128.actions.balanceAction import *
 from robots.R128.actions.takePuckActions import *
 from robots.R128.actions.PutRedZoneAction import *
-from robots.R128.actions.movingAction import *
 from robots.R128.actions.acceleratorAction import *
 from common.actions.action import ThreadActionManager
 from common.geogebra import Geogebra
@@ -68,8 +67,6 @@ class R128(Automaton):
         self.takesingle         = TakePuckSingle(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_1, RedPuck, self.log).getAction()
 
         self.takemaintain       = TakePuckSyncMaintain(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_2, GreenPuck, BluePuck, self.log).getAction()
-
-        self.movingAfterlittle  = MovingAfterLittle(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
         #self.accel              = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
