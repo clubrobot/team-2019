@@ -158,6 +158,8 @@ class TakePuckSync(Actionnable):
                     time.sleep(0.1)
                 # check presure
                 if not self.arm1.get_atmosphere_pressure():
+                    # wait for taking secure
+                    time.sleep(0.5)
                     self.arm1.sucker.put_puck(self.puck1)
                     self.arm1.move(TAKE_PUCK_INTER_AFTER_STATIC)
                     self.log("TakePuckSync", "Take arm 1... OK")
@@ -186,6 +188,8 @@ class TakePuckSync(Actionnable):
                     time.sleep(0.1)
                 # check presure
                 if not self.arm2.get_atmosphere_pressure():
+                    # wait for taking secure
+                    time.sleep(0.5)
                     self.arm2.sucker.put_puck(self.puck1)
                     self.arm2.move(TAKE_PUCK_INTER_AFTER_STATIC)
                     self.log("TakePuckSync", "Take arm 2... OK")
@@ -242,15 +246,14 @@ class TakePuckSync(Actionnable):
 
         if self.distrib_pos != self.DISTRIB6_3:
             if self.takeErrorPuck1 == False:
+                if not self.arm1.get_atmosphere_pressure():
+                    self.arm1.tank.put_puck(self.arm1.sucker.get_puck())
                 self.arm1.stop_pump()
-                self.arm1.tank.put_puck(self.arm1.sucker.get_puck())
 
         if self.takeErrorPuck2 == False:
+            if not self.arm1.get_atmosphere_pressure():
+                self.arm2.tank.put_puck(self.arm2.sucker.get_puck())
             self.arm2.stop_pump()
-            self.arm2.tank.put_puck(self.arm2.sucker.get_puck())
-
-        # TODO : add a better pump management
-        time.sleep(0.5)
 
         if self.distrib_pos != self.DISTRIB6_3:
             if self.takeErrorPuck1 == False:
@@ -261,7 +264,6 @@ class TakePuckSync(Actionnable):
 
         while not ((self.arm1.is_arrived() or self.takeErrorPuck1) and (self.arm2.is_arrived() or self.takeErrorPuck2)):
             time.sleep(0.1)
-        pass
 
     #override
     def getAction(self):
