@@ -250,10 +250,14 @@ class TakePuckSync(Actionnable):
                     self.arm1.tank.put_puck(self.arm1.sucker.get_puck())
                 self.arm1.stop_pump()
 
+
         if self.takeErrorPuck2 == False:
             if not self.arm1.get_atmosphere_pressure():
                 self.arm2.tank.put_puck(self.arm2.sucker.get_puck())
             self.arm2.stop_pump()
+        
+        # sleep after vaccum stop
+        time.sleep(0.5)
 
         if self.distrib_pos != self.DISTRIB6_3:
             if self.takeErrorPuck1 == False:
@@ -289,15 +293,38 @@ class TakePuckSingle(Actionnable):
         # action Points
         self.point          = self.geogebra.get('Distrib{}_{}'.format(self.side,self.distrib_pos))
         self.actionPoint    = ActPoint(self.point, pi/2)
+        # path Points
+        self.path           = self.geogebra.getall('PathDistrib{}_*'.format(self.side))
 
         self.TankPos        = [TAKE_TANK_PUCK1, TAKE_TANK_PUCK2, TAKE_TANK_PUCK3]
 
-        self.takeError      = False
+        # Taking error event
+        self.takeErrorPuck
 
-        self.puck = puck
+        # taking state event
+        self.armTakingState    = Event()
+
+        # handled puck
+        self.puck              = puck
 
     def moving(self):
+        # reach little distributor
+        if self.side == self.YELLOW:
+            self.wheeledbase.purepursuit(self.path, direction = 'backward')
+        else:
+            self.wheeledbase.purepursuit(self.path, direction = 'forward')
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
+
+        # correct robot orientation
+        self.wheeledbase.turnonthespot(0)
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
+
+        # goto action point
         self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
+
+        # Recalage ??????
 
     def realize(self):
         self.arm.start_pump()
@@ -309,48 +336,73 @@ class TakePuckSingle(Actionnable):
         while not (self.arm.is_arrived()):
             time.sleep(0.1)
 
-        while self.arm.get_atmosphere_pressure():
-            time.sleep(0.2)
+            # get the current time
+        self.init_time = time.time()
 
-        # handle puck by sucker
-        self.arm.sucker.put_puck(self.puck)
-    
-        self.arm.move(TAKE_PUCK_INTER_AFTER_STATIC)
-        
-        while not (self.arm.is_arrived()):
-            time.sleep(0.1)
+        # while not the taking sequence is end
+        while not self.armTakingState.is_set():
+            if not self.arm.get_atmosphere_pressure():
+                # handle puck by sucker
+                self.arm.sucker.put_puck(self.puck)
+                # move after take
+                self.arm.move(TAKE_PUCK_INTER_AFTER_STATIC)
+                self.armTakingState.set()
+                self.log("TakePuckSync", "Take arm 1... OK")
+            else:
+                # retry with new pos
+                self.log("TakePuckSync", "Take arm 1... Retry")
+                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 3, TAKE_PUCK_STATIC.phi)
+                self.arm.move(self.new_arm_pos)
 
+                while not (self.arm.is_arrived()):
+                    time.sleep(0.1)
+                # check presure
+                if not self.arm.get_atmosphere_pressure():
+                    # wait for taking secure
+                    time.sleep(0.5)
+                    self.arm.sucker.put_puck(self.puck)
+                    self.arm.move(TAKE_PUCK_INTER_AFTER_STATIC)
+                    self.log("TakePuckSync", "Take arm 1... OK")
+                    self.armTakingState.set()
+                else:
+                    # error stop pump
+                    self.arm.stop_pump()
+                    self.takeErrorPuck = True
+                    self.armTakingState.set()
+                    self.log("TakePuckSync", "Take arm 1... ERROR")
+
+            while not (self.arm.is_arrived()):
+                time.sleep(0.1)
     
     def before(self):
         pass
         
 
     def after(self):
-        if not self.takeError:
-            self.arm.move(TANK_POS_INTER)
-            while not (self.arm.is_arrived()):
-                time.sleep(0.1)
 
-            self.arm.move(self.TankPos[self.arm.tank.index()])
-            while not (self.arm.is_arrived()):
-                time.sleep(0.1)
-
-            self.arm.tank.put_puck(self.arm.sucker.get_puck())
-
-            self.arm.stop_pump()
-
-            time.sleep(0.5)
-            self.arm.move(PUT_TANK_AFTER)
-            self.arm.move(PUT_TANK_AFTER)
-
-            while not (self.arm.is_arrived()):
-                time.sleep(0.1)
-
+        # if puck1 1 error go home else action
+        if self.takeErrorPuck == False:
+                self.arm.move(TANK_POS_INTER)
         else:
-            self.arm.go_home()
-            while not (self.arm.is_arrived()):
-                time.sleep(0.1)
+                self.arm.move(PREPARE_TAKING_POS_ROAD)
+
+        while not self.arm.is_arrived():
+            time.sleep(0.1)
         
+        if self.takeErrorPuck == False:
+            self.arm.move(self.TankPos[self.arm.tank.index()])
+
+        while not (self.arm.is_arrived() or self.takeErrorPuck):
+            time.sleep(0.1)
+
+        if self.takeErrorPuck == False:
+            if not self.arm.get_atmosphere_pressure():
+                self.arm.tank.put_puck(self.arm.sucker.get_puck())
+            self.arm.stop_pump()
+            self.arm.move(PUT_TANK_AFTER)
+
+        while not (self.arm.is_arrived() or self.takeErrorPuck):
+            time.sleep(0.1)
 
     #override
     def getAction(self):
@@ -382,42 +434,104 @@ class TakePuckSyncMaintain(Actionnable):
 
         self.TankPos        = [TAKE_TANK_PUCK1, TAKE_TANK_PUCK2, TAKE_TANK_PUCK3]
 
-        self.takeError      = False
+        # Taking error event
+        self.takeErrorPuck1     = False
+        self.takeErrorPuck2     = False
 
-        self.puck1      = puckFront
-        self.puck2      = puckBack
+        # taking state event
+        self.arm1TakingState    = Event()
+        self.arm2TakingState    = Event()
+
+        # handled puck
+        self.puck1              = puckFront
+        self.puck2              = puckBack
 
     def moving(self):
         self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
 
     def realize(self):
+        # starting two pump
         self.arm1.start_pump()
         self.arm2.start_pump()
+
+        # prepare to taking
         self.arm1.move(PREPARE_TAKING_POS_STATIC)
         self.arm2.move(PREPARE_TAKING_POS_STATIC)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
 
+        # taking
         self.arm1.move(TAKE_PUCK_STATIC)
         self.arm2.move(TAKE_PUCK_STATIC)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
 
-        while self.arm1.get_atmosphere_pressure():
-            time.sleep(0.2)
+        # get the current time
+        self.init_time = time.time()
 
-        while self.arm2.get_atmosphere_pressure():
-            time.sleep(0.2)
+        # while not the taking sequence is end
+        while not (self.arm1TakingState.is_set() and self.arm2TakingState.is_set()):
+            if not self.arm1.get_atmosphere_pressure():
+                # handle puck by sucker
+                self.arm1.sucker.put_puck(self.puck1)
+                # move after take
+                self.arm1.move(TAKE_PUCK_INTER_AFTER_STATIC)
+                self.arm1TakingState.set()
+                self.log("TakePuckSync", "Take arm 1... OK")
+            else:
+                # retry with new pos
+                self.log("TakePuckSync", "Take arm 1... Retry")
+                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 3, TAKE_PUCK_STATIC.phi)
+                self.arm1.move(self.new_arm_pos)
 
-        # handle puck by sucker
-        self.arm1.sucker.put_puck(self.puck1)
-        self.arm2.sucker.put_puck(self.puck2)
-    
-        self.arm1.move(TAKE_PUCK_INTER_AFTER_STATIC)
-        self.arm2.move(TAKE_PUCK_INTER_AFTER_STATIC)
-        
-        while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
-            time.sleep(0.1)
+                while not (self.arm1.is_arrived()):
+                    time.sleep(0.1)
+                # check presure
+                if not self.arm1.get_atmosphere_pressure():
+                    # wait for taking secure
+                    time.sleep(0.5)
+                    self.arm1.sucker.put_puck(self.puck1)
+                    self.arm1.move(TAKE_PUCK_INTER_AFTER_STATIC)
+                    self.log("TakePuckSync", "Take arm 1... OK")
+                    self.arm1TakingState.set()
+                else:
+                    # error stop pump
+                    self.arm1.stop_pump()
+                    self.takeErrorPuck1 = True
+                    self.arm1TakingState.set()
+                    self.log("TakePuckSync", "Take arm 1... ERROR")
+
+            if not self.arm2.get_atmosphere_pressure():
+                # handle puck by sucker
+                self.arm2.sucker.put_puck(self.puck1)
+                # move after take
+                self.arm2.move(TAKE_PUCK_INTER_AFTER_STATIC)
+                self.arm2TakingState.set()
+                self.log("TakePuckSync", "Take arm 2... OK")
+            else:
+                # retry with new pos
+                self.log("TakePuckSync", "Take arm 2... Retry")
+                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 3, TAKE_PUCK_STATIC.phi)
+                self.arm2.move(self.new_arm_pos)
+                # check presure
+                while not (self.arm2.is_arrived()):
+                    time.sleep(0.1)
+                # check presure
+                if not self.arm2.get_atmosphere_pressure():
+                    # wait for taking secure
+                    time.sleep(0.5)
+                    self.arm2.sucker.put_puck(self.puck1)
+                    self.arm2.move(TAKE_PUCK_INTER_AFTER_STATIC)
+                    self.log("TakePuckSync", "Take arm 2... OK")
+                    self.arm2TakingState.set()
+                else:
+                    # error stop pump
+                    self.arm2.stop_pump()
+                    self.takeErrorPuck2 = True
+                    self.arm2TakingState.set()
+                    self.log("TakePuckSync", "Take arm 2... ERROR")
+            while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
+                time.sleep(0.1)
 
     def before(self):
         self.arm1.move(PREPARE_TAKING_POS_ROAD)
@@ -426,17 +540,16 @@ class TakePuckSyncMaintain(Actionnable):
             time.sleep(0.1)
 
     def after(self):
-        if not self.takeError:
-            self.arm1.move(HOME)
-            self.arm2.move(HOME)
-            while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
-                time.sleep(0.1)
-
+        if ((self.takeErrorPuck1 == True) and (self.takeErrorPuck1 == False)):
+            pass    # Find a way to switch balance3 action
         else:
-            self.arm1.go_home()
-            self.arm2.go_home()
-            while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
-                time.sleep(0.1)
+            if self.takeErrorPuck1 == False:
+                self.arm1.move(HOME)
+            if self.takeErrorPuck2 == False:
+                self.arm2.move(HOME)
+        
+        while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
+            time.sleep(0.1)
 
     #override
     def getAction(self):
