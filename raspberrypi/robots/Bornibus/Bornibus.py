@@ -50,30 +50,23 @@ class Bornibus(Automaton):
     def set_side(self, side):
         self.side = side
         self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
-        color = "P" if side == self.PURPLE else "Y"
-
+        if self.side == self.YELLOW:
+            color = "Y"
+        else:
+            color = "P"
         self.points["Ini"] = geo.get("Ini"+color)
-
-        self.points["Gold4"] = geo.get("Gold4"+color)
-        self.points["Gold5"] = geo.get("Gold5"+color)
-        self.points["Gold6"] = geo.get("Gold6"+color)
-
-        self.points["Pal1"] = geo.get("Pal1"+color)
-        self.points["Pal2"] = geo.get("Pal2"+color)
-        self.points["Pal3"] = geo.get("Pal3"+color)
-        self.points["Pal4"] = geo.get("Pal4"+color)
-        self.points["Pal5"] = geo.get("Pal5"+color)
-        self.points["Pal6"] = geo.get("Pal6"+color)
 
         # Specific Actions initialisation
         self.detectorAct    = detector(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
         self.goldeniumAct   = goldenium(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
         self.balanceGAct    = balance(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.tabAtomsAct    = tabAtoms(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
         self.action_list = [
             self.detectorAct,
             self.goldeniumAct,
-            self.balanceGAct
+            self.balanceGAct,
+            self.tabAtomsAct
         ]
 
     def set_position(self):
@@ -108,10 +101,6 @@ class Bornibus(Automaton):
         pushers.up()
         gripper.open()    
 
-        print("INTO RUN ...")
-        time.sleep(3)
-        input()
-
         self.tam.start()
         
         for act in self.action_list:
@@ -144,59 +133,6 @@ class Bornibus(Automaton):
         self.tam.stop()
         self.display.stop()
         self.wheeledbase.stop()
-
-        """
-
-                # Premier palet
-        if self.side == Bornibus.YELLOW:
-            wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Gold5"], self.points["Pal1"],
-                                 self.points["Pal6"]], direction="backward", finalangle=-pi / 4, lookahead=150)
-        if self.side == Bornibus.PURPLE:
-            wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Gold5"], self.points["Pal1"],
-                                     self.points["Pal6"]], direction="backward", finalangle=pi / 4, lookahead=150)
-        wheeledbase.wait()
-        # Vers palets
-        print("Vers Palets")
-        wheeledbase.right_wheel_maxPWM.set(1)
-        wheeledbase.left_wheel_maxPWM.set(1)
-        # sens_manager.enable_back()
-        if self.side == Bornibus.YELLOW:
-            wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Pal3"],
-                                     self.points["Pal4"]], direction="forward", finalangle=-pi/4, lookahead=150, lookaheadbis=150)
-        if self.side == Bornibus.PURPLE:
-            wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Pal3"],
-                                     self.points["Pal4"]], direction="forward", finalangle=pi/4, lookahead=150)
-
-        wheeledbase.wait()
-
-        if self.side == Bornibus.YELLOW:
-            wheeledbase.turnonthespot(-3*pi/4)
-        else:
-            wheeledbase.turnonthespot(3 * pi / 4)
-        wheeledbase.wait()
-
-        # Vers zone
-        print("Vers Zone")
-        # sens_manager.back_disable()
-        # sens_manager.front_enable()
-        pushers.down()
-
-        if self.side == Bornibus.YELLOW:
-            wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Pal5"], self.points["Pal6"]],
-                                    direction="forward", lookahead=50, lookaheadbis=10, finalangle=-pi/2)
-        if self.side == Bornibus.PURPLE:
-            wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Pal5"], self.points["Pal6"]],
-                                direction="forward", lookahead=50, lookaheadbis=10, finalangle=pi/2)
-        wheeledbase.wait()
-
-        disp.addPoints(13)
-
-        # fin
-        pushers.up()
-        wheeledbase.stop()
-        print("fin")
-        disp.stop()
-        """
 
 if __name__ == "__main__":
     auto = Bornibus()

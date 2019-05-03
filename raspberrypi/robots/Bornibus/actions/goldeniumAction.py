@@ -99,7 +99,7 @@ class goldenium(Actionnable):
         self.wheeledbase.right_wheel_maxPWM.set(1)
         self.wheeledbase.left_wheel_maxPWM.set(1)
         self.wheeledbase.lookaheadbis.set(150)
-        self.log("GOLDENIUM ACTION", "goldenium pris")
+        self.log("GOLDENIUM ACTION : ", "goldenium pris")
 
         try :
             self.wheeledbase.goto_delta(-100, 0)
