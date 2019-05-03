@@ -42,16 +42,17 @@ class tabAtoms(Actionnable):
         self.wheeledbase.max_lindec.set(700.0)
         self.wheeledbase.max_angvel.set(10)
         self.wheeledbase.lookahead.set(150.0)
+        self.wheeledbase.lookahead.set(150.0)
         self.wheeledbase.right_wheel_maxPWM.set(1)
         self.wheeledbase.left_wheel_maxPWM.set(1)
         
         # Premier palet
         if self.side == self.YELLOW:
             self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Gold5"], self.points["Pal1"],
-                                 self.points["Pal6"]], direction="backward", finalangle=-pi / 4, lookahead=150)
+                                 self.points["Pal6"]], direction="backward", finalangle=-pi/4, lookahead=150)
         if self.side == self.PURPLE:
             self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Gold5"], self.points["Pal1"],
-                                     self.points["Pal6"]], direction="backward", finalangle=pi / 4, lookahead=150)
+                                     self.points["Pal6"]], direction="backward", finalangle=pi/4, lookahead=150)
         self.wheeledbase.wait()
        
         # Vers palets
@@ -87,13 +88,11 @@ class tabAtoms(Actionnable):
 
         self.display.addPoints(13)
 
-        # fin
+    def realize(self):
+         # fin
         self.pushers.up()
         self.wheeledbase.stop()
         self.display.stop()
-
-    def realize(self):
-        pass
 
     def before(self):
         pass

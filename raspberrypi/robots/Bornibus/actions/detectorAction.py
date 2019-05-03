@@ -62,10 +62,10 @@ class detector(Actionnable):
         self.wheeledbase.left_wheel_maxPWM.set(1)
 
         if self.side == self.YELLOW :
-            self.wheeledbase.goto_delta(100, 30)
+            self.wheeledbase.goto_delta(90, 30)
             
         if self.side == self.PURPLE :
-            self.wheeledbase.goto_delta(100, -30)            
+            self.wheeledbase.goto_delta(90, -30)            
         self.wheeledbase.wait()
         self.wheeledbase.lookaheadbis.set(150)
 

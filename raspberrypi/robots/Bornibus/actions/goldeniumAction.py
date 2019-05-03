@@ -54,13 +54,14 @@ class goldenium(Actionnable):
     def realize(self):
         # Vers prise goldenium
         self.log("GOLDENIUM ACTION : ", "Prise goldenium")
-        self.wheeledbase.right_wheel_maxPWM.set(0.2)
-        self.wheeledbase.left_wheel_maxPWM.set(0.2)
 
         goldenium = 0
 
         while goldenium != 1 :
-            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Gold4"]], direction="forward", lookaheadbis=1, finalangle=pi)
+            self.gripper.open()
+            self.wheeledbase.right_wheel_maxPWM.set(0.2)
+            self.wheeledbase.left_wheel_maxPWM.set(0.2)
+            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Gold4"]], direction="forward", lookahead=150, lookaheadbis=1, finalangle=pi)
             try :
                 while not self.wheeledbase.isarrived() :
                     if self.endstops.get_ES2():
@@ -84,9 +85,12 @@ class goldenium(Actionnable):
             except gripperError as e :
                 self.log("GOLDENIUM ACTION : ", "gripperException :", e)
                 try :
-                    self.wheeledbase.goto(*self.points["Gold3"], theta=pi, lookaheadbis=1)
+                    self.wheeledbase.right_wheel_maxPWM.set(1)
+                    self.wheeledbase.left_wheel_maxPWM.set(1)
+                    self.wheeledbase.goto(*self.points["Gold3"], theta=pi, lookahead=150, lookaheadbis=1)
                 except :
                     pass
+
             except BaseException as e :
                 self.log("GOLDENIUM ACTION : ", "BaseException :", e)
                 self.gripper.close()
@@ -94,13 +98,18 @@ class goldenium(Actionnable):
                 if self.endstops.get_ES3():
                     goldenium=1
                 else :
-                    pass
-        
+                    try :
+                        self.wheeledbase.right_wheel_maxPWM.set(1)
+                        self.wheeledbase.left_wheel_maxPWM.set(1)
+                        self.wheeledbase.goto(*self.points["Gold3"], theta=pi, lookahead=150, lookaheadbis=1)
+                    except :
+                        pass
+
+        self.log("GOLDENIUM ACTION : ", "goldenium pris")
         self.wheeledbase.right_wheel_maxPWM.set(1)
         self.wheeledbase.left_wheel_maxPWM.set(1)
         self.wheeledbase.lookaheadbis.set(150)
-        self.log("GOLDENIUM ACTION : ", "goldenium pris")
-
+        
         try :
             self.wheeledbase.goto_delta(-100, 0)
             self.wheeledbase.wait()
@@ -111,7 +120,6 @@ class goldenium(Actionnable):
             try :
                 self.wheeledbase.goto(*self.points["Gold3"], theta=pi, lookaheadbis=150)
             except :
-                # CODER LA STRAT DE RECOMMENCER SI PAS ES3 OK !!!
                 pass
 
 
