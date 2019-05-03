@@ -38,10 +38,12 @@ class detector(Actionnable):
         self.wheeledbase.max_angvel.set(10)
         self.wheeledbase.lookahead.set(150.0)
         self.wheeledbase.max_linacc.set(500.0)
-        self.wheeledbase.max_lindec.set(700.0)
+        self.wheeledbase.max_lindec.set(500.0)
+        self.wheeledbase.right_wheel_maxPWM.set(1)
+        self.wheeledbase.left_wheel_maxPWM.set(1)
 
         # Vers l'accélérateur
-        self.log("detector Action", "--- Vers l'accélérateur")
+        self.log("DETECTOR ACTION : ", "Vers l'accélérateur")
 
         self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Dep1"], self.points["Dep2"],
                                  self.points["Dep3"], self.points["Gold2"]], direction="forward", lookahead=150, lookaheadbis=3)
@@ -50,7 +52,10 @@ class detector(Actionnable):
         self.wheeledbase.wait()
         self.wheeledbase.right_wheel_maxPWM.set(0.2)
         self.wheeledbase.left_wheel_maxPWM.set(0.2)
-        self.wheeledbase.set_velocities(-200, 0)
+        try :
+            self.wheeledbase.set_velocities(-200, 0)
+        except :
+            pass
         time.sleep(2)
         self.wheeledbase.set_velocities(0, 0)
         self.wheeledbase.right_wheel_maxPWM.set(1)
@@ -66,7 +71,7 @@ class detector(Actionnable):
 
     def realize(self):
         # Prépare le bras
-        self.log("detector Action", "Prépare le bras")
+        self.log("DETECTOR ACTION : ", "Prépare le bras")
 
         if self.side == self.YELLOW:
             self.arm.deploy()
@@ -85,7 +90,7 @@ class detector(Actionnable):
         self.arm.up()
 
         # Pousse le Blueium
-        self.log("detector Action", "Pouse le Blueium")
+        self.log("DETECTOR ACTION : ", "Pouse le Blueium")
         self.wheeledbase.turnonthespot(-pi/2)
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)

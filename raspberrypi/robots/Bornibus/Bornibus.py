@@ -12,8 +12,8 @@ from common.actions.action import ThreadActionManager
 from common.geogebra import Geogebra
 from robots.sensors_manager import *
 
-color = "YELLOW"
-#color = "PURPLE"
+#color = "YELLOW"
+color = "PURPLE"
 
 class Bornibus(Automaton):
 
@@ -54,8 +54,6 @@ class Bornibus(Automaton):
 
         self.points["Ini"] = geo.get("Ini"+color)
 
-        self.points["Gold2"] = geo.get("Gold2"+color)
-        self.points["Gold3"] = geo.get("Gold3"+color)
         self.points["Gold4"] = geo.get("Gold4"+color)
         self.points["Gold5"] = geo.get("Gold5"+color)
         self.points["Gold6"] = geo.get("Gold6"+color)
@@ -70,10 +68,12 @@ class Bornibus(Automaton):
         # Specific Actions initialisation
         self.detectorAct    = detector(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
         self.goldeniumAct   = goldenium(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.balanceGAct    = balance(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
         self.action_list = [
             self.detectorAct,
-            self.goldeniumAct
+            self.goldeniumAct,
+            self.balanceGAct
         ]
 
     def set_position(self):
@@ -146,62 +146,8 @@ class Bornibus(Automaton):
         self.wheeledbase.stop()
 
         """
-        
 
-        # Tempo
-        temp = 65 - (time.time() - begin)
-        if temp > 0:
-            time.sleep(temp)
-
-        wheeledbase.right_wheel_maxPWM.set(1)
-        wheeledbase.left_wheel_maxPWM.set(1)
-
-        # Vers balance
-        print("Vers Balance")
-        # sens_manager.enable_back()
-        wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Gold3"], self.points["Gold5"]],
-                                direction="backward", finalangle=0, lookahead=150, lookaheadbis=10)
-        wheeledbase.wait()
-        wheeledbase.max_linacc.set(300.0)
-        wheeledbase.max_lindec.set(300.0)
-        wheeledbase.max_linvel.set(400)
-        wheeledbase.turnonthespot(0)
-        wheeledbase.wait()
-
-        # Dépose balance
-        print("Dépose Balance")
-        # sens_manager.disable_back()
-        wheeledbase.goto(*self.points["Gold6"], theta=0)
-
-        wheeledbase.right_wheel_maxPWM.set(0.5)
-        wheeledbase.left_wheel_maxPWM.set(0.5)
-
-        wheeledbase.set_velocities(200, 0)
-        time.sleep(2)
-        wheeledbase.set_velocities(0, 0)
-
-        #try:
-        #    wheeledbase.goto(*self.points["Gold6"], theta=0, lookaheadbis=150)
-        #    wheeledbase.wait()
-        #except:
-        #    gripper.open()
-        #    print("error")
-
-        wheeledbase.reset_parameters()
-        wheeledbase.max_linacc.set(500.0)
-        wheeledbase.max_lindec.set(500.0)
-
-        # Depose
-        print("Dépose")
-        time.sleep(0.5)
-
-        if endstops.get_ES3():
-            disp.addPoints(24)
-        gripper.open()
-
-        time.sleep(0.5)
-
-        # Premier palet
+                # Premier palet
         if self.side == Bornibus.YELLOW:
             wheeledbase.purepursuit([wheeledbase.get_position()[:2], self.points["Gold5"], self.points["Pal1"],
                                  self.points["Pal6"]], direction="backward", finalangle=-pi / 4, lookahead=150)

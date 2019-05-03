@@ -40,7 +40,9 @@ class goldenium(Actionnable):
         self.wheeledbase.max_angvel.set(10)
         self.wheeledbase.lookahead.set(150.0)
         self.wheeledbase.max_linacc.set(500.0)
-        self.wheeledbase.max_lindec.set(700.0)
+        self.wheeledbase.max_lindec.set(500.0)
+        self.wheeledbase.right_wheel_maxPWM.set(1)
+        self.wheeledbase.left_wheel_maxPWM.set(1)
 
         # Vers goldenium
         self.log("GOLDENIUM ACTION : ", "Vers goldenium")
