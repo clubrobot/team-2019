@@ -12,7 +12,8 @@ LOCAL_CPP_SRCS = 				\
 	instructions.cpp 			\
 	$(COMMON)/SerialTalks.cpp   \
 	$(COMMON)/CRC16.cpp			\
-	lib/Pololulu/VL53L0X.cpp
+	lib/Pololulu/VL53L0X/VL53L0X.cpp \
+	lib/Pololulu/VL6180X/VL6180X.cpp
 
 LOCAL_C_SRCS = \
 	$(COMMON)/twi.c

@@ -814,11 +814,9 @@ uint16_t VL53L0X::readRangeContinuousMillimeters(void (*functionPointer)())
 {
   while ((readReg(RESULT_INTERRUPT_STATUS) & 0x07) == 0)
   {
-    Serial.println("Interrupt Wait");
     if (checkTimeoutExpired())
     {
         did_timeout = true;
-        Serial.println("Previous");
         return _previousRange;
     }
     functionPointer();
