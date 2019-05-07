@@ -31,6 +31,7 @@ class balance(Actionnable):
         self.points["Gold3"] = self.geogebra.get("Gold3"+color)
         self.points["Gold5"] = self.geogebra.get("Gold5"+color)
         self.points["Gold6"] = self.geogebra.get("Gold6"+color)
+        self.points["Pal5"] = self.geogebra.get("Pal5"+color)
 
     def moving(self):
         self.wheeledbase.max_linvel.set(700)
@@ -43,10 +44,13 @@ class balance(Actionnable):
 
         # Vers balance
         self.log("BALANCE ACTION :", "Vers la balance")
-        self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Gold5"]],
+        try :
+            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Pal5"], self.points["Gold5"]],
                                 direction="backward", finalangle=0, lookahead=150, lookaheadbis=10)
-        self.wheeledbase.wait()
-
+            self.wheeledbase.wait()
+        except :
+            pass
+            
         self.wheeledbase.max_linacc.set(300)
         self.wheeledbase.max_lindec.set(300)
         self.wheeledbase.max_linvel.set(400)
