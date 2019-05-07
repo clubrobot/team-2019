@@ -31,7 +31,9 @@ class chaos(Actionnable):
         self.points["Gold3"] = self.geogebra.get("Gold3"+color)
         self.points["Gold4"] = self.geogebra.get("Gold4"+color)
         self.points["Gold5"] = self.geogebra.get("Gold5"+color)
-
+        self.points["Cha1"] = self.geogebra.get("Cha1"+color)
+        self.points["Dep3"] = self.geogebra.get("Dep3"+color)
+        self.points["Ini"] = self.geogebra.get("Ini"+color)
 
     def moving(self):
         self.wheeledbase.max_linvel.set(700)
@@ -41,10 +43,20 @@ class chaos(Actionnable):
         self.wheeledbase.lookahead.set(150.0)
         self.wheeledbase.right_wheel_maxPWM.set(1)
         self.wheeledbase.left_wheel_maxPWM.set(1)
-        pass
+        
+        self.wheeledbase.goto(*self.points["Cha1"], theta=0 ,lookaheadbis=1)
+        self.wheeledbase.wait()
 
     def realize(self):
-        pass
+        if self.side == self.YELLOW:
+            self.wheeledbase.turnonthespot(-pi/2)
+            self.wheeledbase.wait()
+        else :
+            self.wheeledbase.turnonthespot(pi/2)
+            self.wheeledbase.wait()
+
+        self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Dep3"], self.points["Ini"]], direction='forward', lookahead=150, lookaheadbis=3)
+        self.wheeledbase.wait()
 
     def before(self):
         pass

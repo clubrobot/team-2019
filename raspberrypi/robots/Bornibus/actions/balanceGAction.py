@@ -57,7 +57,7 @@ class balance(Actionnable):
         # Positionnement pour la balance
         self.log("BALANCE ACTION :", "Positionnement pour la balance")
         try:
-            wheeledbase.goto(*self.points["Gold6"], theta=0, lookaheadbis=1)
+            self.wheeledbase.goto(*self.points["Gold6"], theta=0, lookaheadbis=1)
         except:
             pass
             

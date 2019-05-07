@@ -61,10 +61,12 @@ class Bornibus(Automaton):
         self.goldeniumAct   = goldenium(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
         self.balanceGAct    = balance(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
         self.tabAtomsAct    = tabAtoms(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.chaosAct       = chaos(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
         self.action_list = [
             self.detectorAct,
             self.goldeniumAct,
+            self.chaosAct,
             self.balanceGAct,
             self.tabAtomsAct
         ]
