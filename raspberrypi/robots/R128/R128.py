@@ -68,8 +68,11 @@ class R128(Automaton):
 
         self.takemaintain       = TakePuckSyncMaintain(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_2, GreenPuck, BluePuck, self.log).getAction()
 
-        #self.accel              = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.accel              = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
+        # self.daughter_cards['armFront'].tank.put_puck(RedPuck)
+        # self.daughter_cards['armFront'].tank.put_puck(RedPuck)
+        # self.daughter_cards['armFront'].tank.put_puck(RedPuck)
         self.action_list = [
             self.takeSyncPos1Act,
             self.takeSyncPos2Act,
@@ -77,7 +80,6 @@ class R128(Automaton):
             self.balanceAct6,
             self.takesingle,
             self.takemaintain,
-            self.movingAfterlittle,
             self.balanceAct3,
             self.putRedZoneAct,
         ]
@@ -128,7 +130,7 @@ class R128(Automaton):
                 time.sleep(0.1)
             
             # execute the current action
-            self.log("MAIN ; ", "Arrived on action point ! Go execute {} =)".format(act.name))
+            self.log("MAIN ; ", "............... Arrived on action point ! Go execute {} =) ....................".format(act.name))
             act()
             act.done.set()
             self.log("MAIN ; ", "Action End !")
@@ -137,7 +139,7 @@ class R128(Automaton):
             self.log("MAIN : ", "Launch After Action")
             self.tam.putAction(act.getAfter())
             
-            self.log("MAIN : ", "Let's go to the next action !")
+            self.log("MAIN : ", "....................... Let's go to the next action !..................")
         
         #stop thread action manager
         self.tam.stop()

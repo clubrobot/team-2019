@@ -173,7 +173,7 @@ class TakePuckSync(Actionnable):
 
             if not self.arm2.get_atmosphere_pressure():
                 # handle puck by sucker
-                self.arm2.sucker.put_puck(self.puck1)
+                self.arm2.sucker.put_puck(self.puck2)
                 # move after take
                 self.arm2.move(TAKE_PUCK_INTER_AFTER_STATIC)
                 self.arm2TakingState.set()
@@ -190,7 +190,7 @@ class TakePuckSync(Actionnable):
                 if not self.arm2.get_atmosphere_pressure():
                     # wait for taking secure
                     time.sleep(0.5)
-                    self.arm2.sucker.put_puck(self.puck1)
+                    self.arm2.sucker.put_puck(self.puck2)
                     self.arm2.move(TAKE_PUCK_INTER_AFTER_STATIC)
                     self.log("TakePuckSync", "Take arm 2... OK")
                     self.arm2TakingState.set()
@@ -214,7 +214,7 @@ class TakePuckSync(Actionnable):
         # if puck1 1 error go home else action
         if self.takeErrorPuck1 == False:
             if self.distrib_pos == self.DISTRIB6_3:
-                self.arm1.move(GLOBAL_POS_INTER)
+                self.arm1.move(GLOBAL_POS_INTER_AFTER_TAKE)
             else:
                 self.arm1.move(TANK_POS_INTER)
         else:
@@ -238,8 +238,8 @@ class TakePuckSync(Actionnable):
         if self.distrib_pos != self.DISTRIB6_3:
             if self.takeErrorPuck1 == False:
                 self.arm1.move(self.TankPos[self.arm1.tank.index()])
-            if self.takeErrorPuck2 == False:
-                self.arm2.move(self.TankPos[self.arm2.tank.index()])
+        if self.takeErrorPuck2 == False:
+            self.arm2.move(self.TankPos[self.arm2.tank.index()])
 
         while not ((self.arm1.is_arrived() or self.takeErrorPuck1) and (self.arm2.is_arrived() or self.takeErrorPuck2)):
             time.sleep(0.1)
@@ -248,16 +248,15 @@ class TakePuckSync(Actionnable):
             if self.takeErrorPuck1 == False:
                 if not self.arm1.get_atmosphere_pressure():
                     self.arm1.tank.put_puck(self.arm1.sucker.get_puck())
+                time.sleep(0.2)
                 self.arm1.stop_pump()
 
 
         if self.takeErrorPuck2 == False:
             if not self.arm1.get_atmosphere_pressure():
                 self.arm2.tank.put_puck(self.arm2.sucker.get_puck())
+            time.sleep(0.2)
             self.arm2.stop_pump()
-        
-        # sleep after vaccum stop
-        time.sleep(0.5)
 
         if self.distrib_pos != self.DISTRIB6_3:
             if self.takeErrorPuck1 == False:
@@ -299,7 +298,7 @@ class TakePuckSingle(Actionnable):
         self.TankPos        = [TAKE_TANK_PUCK1, TAKE_TANK_PUCK2, TAKE_TANK_PUCK3]
 
         # Taking error event
-        self.takeErrorPuck
+        self.takeErrorPuck  = False
 
         # taking state event
         self.armTakingState    = Event()
@@ -345,7 +344,7 @@ class TakePuckSingle(Actionnable):
         while not (self.arm.is_arrived()):
             time.sleep(0.1)
 
-            # get the current time
+        # get the current time
         self.init_time = time.time()
 
         # while not the taking sequence is end
@@ -518,7 +517,7 @@ class TakePuckSyncMaintain(Actionnable):
 
             if not self.arm2.get_atmosphere_pressure():
                 # handle puck by sucker
-                self.arm2.sucker.put_puck(self.puck1)
+                self.arm2.sucker.put_puck(self.puck2)
                 # move after take
                 self.arm2.move(TAKE_PUCK_INTER_AFTER_STATIC)
                 self.arm2TakingState.set()
@@ -535,7 +534,7 @@ class TakePuckSyncMaintain(Actionnable):
                 if not self.arm2.get_atmosphere_pressure():
                     # wait for taking secure
                     time.sleep(0.5)
-                    self.arm2.sucker.put_puck(self.puck1)
+                    self.arm2.sucker.put_puck(self.puck2)
                     self.arm2.move(TAKE_PUCK_INTER_AFTER_STATIC)
                     self.log("TakePuckSync", "Take arm 2... OK")
                     self.arm2TakingState.set()
@@ -555,14 +554,11 @@ class TakePuckSyncMaintain(Actionnable):
             time.sleep(0.1)
 
     def after(self):
-        if ((self.takeErrorPuck1 == True) and (self.takeErrorPuck1 == False)):
+        if ((self.takeErrorPuck1 == True) and (self.takeErrorPuck2 == True)):
             pass    # Find a way to switch balance3 action
         else:
-            if self.takeErrorPuck1 == False:
-                self.arm1.move(HOME)
-            if self.takeErrorPuck2 == False:
-                self.arm2.move(HOME)
-        
+            self.arm1.move(HOME)
+            self.arm2.move(HOME)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
 

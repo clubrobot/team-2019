@@ -25,8 +25,7 @@ class PutAccelerator(Actionnable):
         self.display        = daughter_cards['display']
 
         # action Points
-        self.point          = self.geogebra.get('Accelerator{}'.format(self.side))
-        self.actionPoint    = ActPoint(self.point, -pi/2)
+        self.path          = self.geogebra.getall('PathAccel{}_*'.format(self.side))
 
         #armPos
         self.beforeTankPos  = [BEFORE_TAKE_TANK_PUCK1, BEFORE_TAKE_TANK_PUCK2, BEFORE_TAKE_TANK_PUCK3]
@@ -36,7 +35,19 @@ class PutAccelerator(Actionnable):
         self.handeledPuck   = None
 
     def moving(self):
-        self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
+        # if self.side == self.YELLOW:
+        #     self.wheeledbase.purepursuit(self.path, direction='backward')
+        #     while not self.wheeledbase.isarrived():
+        #         time.sleep(0.1)
+        # else:
+        #     self.wheeledbase.purepursuit(self.path, direction='forward')
+        #     while not self.wheeledbase.isarrived():
+        #         time.sleep(0.1)
+
+        # self.wheeledbase.turnonthespot(-pi/2)
+        # while not self.wheeledbase.isarrived():
+        #     time.sleep(0.1)
+        self.wheeledbase.set_velocities(0,0)
 
     def realize(self):
         # put the first handled puck
@@ -50,8 +61,10 @@ class PutAccelerator(Actionnable):
 
         self.display.addPoints(self.handeledPuck.getPoints().Balance)
         self.log("BALANCE6", "Add {} points".format(self.handeledPuck.getPoints().Balance))
+
         time.sleep(0.5)
         self.arm.stop_pump()
+        time.sleep(0.5)
 
         self.arm.move(ACCELERATOR_AFTER)
         while not self.arm.is_arrived():
@@ -101,7 +114,7 @@ class PutAccelerator(Actionnable):
             while not self.arm.is_arrived():
                 time.sleep(0.1)
 
-            self.arm.move(TANK_POS_INTER_150)
+            self.arm.move(TANK_POS_INTER)
             while not self.arm.is_arrived():
                 time.sleep(0.1)
 
