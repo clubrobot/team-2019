@@ -12,13 +12,9 @@ client.connect("localhost",1883,60)
 # Publish message to topic/iopi and set pin 1 on bus 1 to on
 
 
-class Electron(SerialTalks):
-
-	def __init__(self, uuid='expServ'):
-		#SerialTalks.__init__(self, "/dev/arduino/{}".format(uuid))
-
+class Electron:
 	def isOnTop(self):
 		return 0
 
 	def start(self):
-		client.publish("topic/start", "2");
+		client.publish("topic/start", "2")
