@@ -6,8 +6,8 @@ ArmPos = namedtuple('ArmPos', ['x', 'y', 'phi'])
 # Home
 HOME                            = ArmPos(1.5,    7.0,    0)
 GLOBAL_POS_INTER                = ArmPos(3.8 ,    14,  0)
-GLOBAL_POS_INTER2               = ArmPos(3.8 ,   14,   0)
-
+GLOBAL_POS_INTER_AFTER_TAKE     = ArmPos(0 ,   17.5,   90)
+GLOBAL_POS_INTER_AFTER_BALANCE  = ArmPos(0 ,   17.5,   90)
 # Prepare Taking
 PREPARE_TAKING_POS_ROAD         = ArmPos(11.5,   3.1,    10)
 PREPARE_TAKING_POS_STATIC       = ArmPos(12.5,   3.5,    00)
@@ -47,13 +47,16 @@ TAKE_TANK_PUCK3                 = ArmPos(-9.5,  3.0,   210)
 AFTER_TAKE_TANK_PUCK3           = ArmPos(-5.5,  7.0,   160)
 
 # Put Balance
-BALANCE                         = ArmPos(13.0,   10.0,   10)
-RED_ZONE                        = ArmPos(10.0,   2.0,   300)
+BALANCE                         = ArmPos(14.0,   10.0,   30)
+
+RED_ZONE1                        = ArmPos(10.0,   -2.0,   270)
+RED_ZONE2                        = ArmPos(10.0,   0.0,   270)
+RED_ZONE3                        = ArmPos(10.0,   2.0,   270)
 
 # Accelerator 
-ACCELERATOR_BEFORE              = ArmPos(6.5,   6.0,   20)
-ACCELERATOR                     = ArmPos(6.0,   4.5,   15)
-ACCELERATOR_AFTER               = ArmPos(7.0,   10.0,   10)
+ACCELERATOR_BEFORE              = ArmPos(9,   10.0,  30)
+ACCELERATOR                     = ArmPos(8.8,   7.0,  15)
+ACCELERATOR_AFTER               = ArmPos(9,   10.0,  30)
 
 BALANCE3_POS_INTER              = ArmPos(-5 ,    14,   90)
 
