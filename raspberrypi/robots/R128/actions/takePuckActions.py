@@ -248,6 +248,9 @@ class TakePuckSync(Actionnable):
             if self.takeErrorPuck1 == False:
                 if not self.arm1.get_atmosphere_pressure():
                     self.arm1.tank.put_puck(self.arm1.sucker.get_puck())
+                else:
+                    # release puck for next take
+                    self.arm1.sucker.get_puck()
                 time.sleep(0.2)
                 self.arm1.stop_pump()
 
@@ -255,6 +258,9 @@ class TakePuckSync(Actionnable):
         if self.takeErrorPuck2 == False:
             if not self.arm1.get_atmosphere_pressure():
                 self.arm2.tank.put_puck(self.arm2.sucker.get_puck())
+            else:
+                    # release puck for next take
+                    self.arm2.sucker.get_puck()
             time.sleep(0.2)
             self.arm2.stop_pump()
 
@@ -412,6 +418,9 @@ class TakePuckSingle(Actionnable):
         if self.takeErrorPuck == False:
             if not self.arm.get_atmosphere_pressure():
                 self.arm.tank.put_puck(self.arm.sucker.get_puck())
+            else:
+                # release puck for next take
+                self.arm.sucker.get_puck()
             self.arm.stop_pump()
             self.arm.move(PUT_TANK_AFTER)
 
