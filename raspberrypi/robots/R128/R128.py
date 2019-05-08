@@ -70,9 +70,6 @@ class R128(Automaton):
 
         self.accel              = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
-        # self.daughter_cards['armFront'].tank.put_puck(RedPuck)
-        # self.daughter_cards['armFront'].tank.put_puck(RedPuck)
-        # self.daughter_cards['armFront'].tank.put_puck(RedPuck)
         self.action_list = [
             self.takeSyncPos1Act,
             self.takeSyncPos2Act,
@@ -110,8 +107,6 @@ class R128(Automaton):
         self.electron.start()
         self.display.addPoints(35)
 
-        # s = SensorsManager(wheeledbase, sensorsFront, sensorsBack)
-        # s.start()
         # starting thread action manager
         self.tam.start()
         
