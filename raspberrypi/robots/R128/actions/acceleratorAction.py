@@ -35,19 +35,31 @@ class PutAccelerator(Actionnable):
         self.handeledPuck   = None
 
     def moving(self):
-        # if self.side == self.YELLOW:
-        #     self.wheeledbase.purepursuit(self.path, direction='backward')
-        #     while not self.wheeledbase.isarrived():
-        #         time.sleep(0.1)
-        # else:
-        #     self.wheeledbase.purepursuit(self.path, direction='forward')
-        #     while not self.wheeledbase.isarrived():
-        #         time.sleep(0.1)
+        if self.side == self.YELLOW:
+            self.wheeledbase.purepursuit(self.path, direction='backward')
+            while not self.wheeledbase.isarrived():
+                time.sleep(0.1)
+        else:
+            self.wheeledbase.purepursuit(self.path, direction='forward')
+            while not self.wheeledbase.isarrived():
+                time.sleep(0.1)
 
-        # self.wheeledbase.turnonthespot(-pi/2)
-        # while not self.wheeledbase.isarrived():
-        #     time.sleep(0.1)
+        self.wheeledbase.turnonthespot(-pi)
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
+
+        self.wheeledbase.set_velocities(100,0)
+        time.sleep(2)
         self.wheeledbase.set_velocities(0,0)
+        time.sleep(1)
+
+        self.wheeledbase.goto_delta(-220,0)
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
+        time.sleep(1)
+        self.wheeledbase.turnonthespot(-pi/2)
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
 
     def realize(self):
         # put the first handled puck
