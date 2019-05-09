@@ -59,24 +59,18 @@ void DCMotor::save(int address) const
 
 
 void DCMotor::setConstant   (float constant)   {
-	if(m_constant != constant) {
-		m_constant = constant;
-		update();
-	}
+	m_constant = constant;
+	update();
 }
 
 void DCMotor::setWheelRadius   (float wheelRadius)   {
-	if(m_wheelRadius != wheelRadius) {
-		m_wheelRadius = wheelRadius;
-		update();
-	}
+	m_wheelRadius = wheelRadius;
+	update();
 }
 
 void DCMotor::setMaxPWM   (float maxPWM)   {
-	if(m_maxPWM != maxPWM) {
-		m_maxPWM = maxPWM;
-		update();
-	}
+	m_maxPWM = maxPWM;
+	update();
 }
 
 

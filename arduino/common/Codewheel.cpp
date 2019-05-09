@@ -91,14 +91,10 @@ void Codewheel::save(int address)
 
 void Codewheel::setCountsPerRev(long countsPerRev)
 {
-	if(m_countsPerRev != countsPerRev) {
-		m_countsPerRev = countsPerRev;
-	}
+	m_countsPerRev = countsPerRev;
 }
 
 void Codewheel::setWheelRadius (float wheelRadius)
 {
-	if(m_wheelRadius != wheelRadius) {
-		m_wheelRadius = wheelRadius;
-	}
+	m_wheelRadius = wheelRadius;
 }

@@ -33,8 +33,6 @@ void DifferentialController::save(int address) const
 }
 
 void DifferentialController::setAxleTrack   (float axleTrack)   {
-	if(m_axleTrack != axleTrack) {
-		m_axleTrack = axleTrack;
-		update();
-	}
+	m_axleTrack = axleTrack;
+	update();
 }
