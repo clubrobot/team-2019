@@ -12,22 +12,15 @@ LOCAL_CPP_SRCS = 				\
 	instructions.cpp 			\
 	$(COMMON)/SerialTalks.cpp   \
 	$(COMMON)/CRC16.cpp			\
-	$(COMMON)/Wire.cpp			\
-	lib/Adafruit_VL53L0X.cpp	\
-	lib/core/src/vl53l0x_api_calibration.cpp			\
-	lib/core/src/vl53l0x_api_core.cpp 					\
-	lib/core/src/vl53l0x_api_ranging.cpp				\
-	lib/core/src/vl53l0x_api_strings.cpp				\
-	lib/core/src/vl53l0x_api.cpp						\
-	lib/platform/src/vl53l0x_i2c_comms.cpp				\
-	lib/platform/src/vl53l0x_platform.cpp
+	lib/Pololulu/VL53L0X/VL53L0X.cpp \
+	lib/Pololulu/VL6180X/VL6180X.cpp
 
 LOCAL_C_SRCS = \
 	$(COMMON)/twi.c
 
 
 # Sketch libraries
-ARDUINO_LIBS = EEPROM
+ARDUINO_LIBS = EEPROM Wire
 
 # Congratulations! You made a pretty Makefile :)
 # Now let the grown-ups do the hard work :D

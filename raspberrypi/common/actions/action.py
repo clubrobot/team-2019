@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
-from threading import Thread, Event
+from threading import Thread, Event, RLock
 from queue import Queue
 from collections import namedtuple
 import time
@@ -8,8 +8,8 @@ import time
 ActPoint = namedtuple('ActPoint', ['point', 'theta'])
 
 class Action():
-    def __init__(self, actionPoint, actionFunc, before, after, name):
-        self.actionPoint    = actionPoint
+    def __init__(self, movingAct, actionFunc, before, after, name):
+        self.movingAct      = movingAct
         self.actionFunc     = actionFunc
         self.before         = before
         self.after          = after
@@ -17,6 +17,9 @@ class Action():
 
         self.done           = Event()
         self.done.clear()
+
+    def moving(self):
+        self.movingAct()
 
     def __call__(self):
         self.actionFunc()
@@ -27,9 +30,6 @@ class Action():
     def realize(self):
         self()
 
-    def getActionPoint(self):
-        return self.actionPoint
-
     def getBefore(self):
         return self.before
 
@@ -37,6 +37,18 @@ class Action():
         return self.after
 
 class Actionnable():
+    def moving(self):
+        pass
+
+    def realize(self):
+        pass
+
+    def before(self):
+        pass
+
+    def after(self):
+        pass
+
     def getAction(self):
         raise NotImplementedError("Need implementation")
 
@@ -62,7 +74,9 @@ class ThreadActionManager(Thread):
         while not self.stopped.is_set():
             while not self.queueFunc.empty():
                 self.ActionEnd.clear()
+                # execute the current action in Queue
                 self.queueFunc.get()()
+
             self.ActionEnd.set()
     
     def end(self):

@@ -20,7 +20,6 @@ class R128(Automaton):
     DISTRIB3_1 = 4
     DISTRIB3_2 = 5
 
-
     def __init__(self):
         Automaton.__init__(self)
         # Save daughter_cards
@@ -80,16 +79,8 @@ class R128(Automaton):
         self.movingAfterlittle  = MovingAfterLittle(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
         #self.accel              = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
-        # self.action_list = [
-        #     self.movingAfterStart,
-        #     self.takeSyncPos1Act,
-        #     self.takeSyncPos2Act,
-        #     self.takeSyncPos3Act,
-        #     self.balanceAct,
-        # ]
 
         self.action_list = [
-            self.movingAfterStart,
             self.takeSyncPos1Act,
             self.takeSyncPos2Act,
             self.takeSyncPos3Act,
@@ -117,13 +108,6 @@ class R128(Automaton):
         armB.stop()
         manager.disconnect()
 
-    # def check_electron(self):
-    #     while not self.electron.connected():
-    #         time.sleep(5)
-    #     self.log("MAIN : ", "Launch Electron")
-    #     self.electron.start()
-    #     self.display.addPoints(35)
-
     def run(self):
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
@@ -141,23 +125,26 @@ class R128(Automaton):
         self.tam.start()
         
         for act in self.action_list:
-
+            
+            # add before action to the parralel action queue
             self.log("MAIN : ", "Launch Before Action")
             self.tam.putAction(act.getBefore())
 
-            if act.actionPoint is not None:
-                self.log("MAIN : ", "{}".format(act.actionPoint))
-                self.daughter_cards['wheeledbase'].goto(*act.actionPoint.point, theta=act.actionPoint.theta)
+            # moving to action point
+            self.log("MAIN : ", "Moving ! ...")
+            act.moving()
 
+            # wait for parralels action end
             while not self.tam.end():
                 time.sleep(0.1)
-
+            
+            # execute the current action
             self.log("MAIN ; ", "Arrived on action point ! Go execute {} =)".format(act.name))
             act()
             act.done.set()
-
             self.log("MAIN ; ", "Action End !")
 
+            # add after action to the parrel action queue
             self.log("MAIN : ", "Launch After Action")
             self.tam.putAction(act.getAfter())
             
@@ -170,7 +157,7 @@ class R128(Automaton):
 
 if __name__ == '__main__':
     auto = R128()
-    auto.set_side(R128.YELLOW)
+    auto.set_side(R128.PURPLE)
     init_robot()
     auto.set_position()
     print("ready")
