@@ -78,7 +78,7 @@ class R128(Automaton):
             self.takesingle,
             self.takemaintain,
             self.balanceAct3,
-            self.putRedZoneAct,
+            self.accel,
         ]
 
     def set_position(self):
@@ -94,6 +94,8 @@ class R128(Automaton):
         armBack.stop_pump()
         armF.stop()
         armB.stop()
+        self.tam.stop()
+        self.log("STOP MATCH : ", "END...")
         manager.disconnect()
 
     def run(self):
@@ -127,6 +129,7 @@ class R128(Automaton):
             # execute the current action
             self.log("MAIN ; ", "............... Arrived on action point ! Go execute {} =) ....................".format(act.name))
             act()
+
             act.done.set()
             self.log("MAIN ; ", "Action End !")
 
@@ -138,8 +141,12 @@ class R128(Automaton):
         
         #stop thread action manager
         self.tam.stop()
-        self.display.stop()
         self.wheeledbase.stop()
+        armFront.stop_pump()
+        armBack.stop_pump()
+        armF.stop()
+        armB.stop()
+        manager.disconnect()
 
 if __name__ == '__main__':
     auto = R128()
