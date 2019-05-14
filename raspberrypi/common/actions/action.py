@@ -55,7 +55,7 @@ class Actionnable():
 class ThreadActionManager(Thread):
     def __init__(self):
         Thread.__init__(self)
-        self.daemon         = False
+        self.daemon         = True
         self.stopped        = Event()
         self.ActionEnd      = Event()
         self.queueFunc      = Queue()
@@ -65,8 +65,6 @@ class ThreadActionManager(Thread):
         self.ActionEnd.clear()
         
     def stop(self):
-        while not self.end():
-            time.sleep(0.1)
         self.stopped.set()
         self.join()
 
@@ -75,8 +73,12 @@ class ThreadActionManager(Thread):
             while not self.queueFunc.empty():
                 self.ActionEnd.clear()
                 # execute the current action in Queue
-                self.queueFunc.get()()
-
+                try:
+                    self.queueFunc.get()()
+                except RuntimeError :
+                    pass
+                if self.stopped.is_set():
+                    self.queueFunc.queue.clear()
             self.ActionEnd.set()
     
     def end(self):
