@@ -83,6 +83,7 @@ class Bornibus(Automaton):
         import time
         time.sleep(100)
         wheeledbase.stop()
+        disp.stop()
         gripper.open()
         pushers.up()
         arm.up()
