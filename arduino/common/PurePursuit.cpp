@@ -258,14 +258,10 @@ void PurePursuit::save(int address) const
 
 void PurePursuit::setLookAheadBis(float lookAheadBis)
 {
-	if(!m_lookAheadBis == lookAheadBis) {
-		m_lookAheadBis = lookAheadBis;
-	}
+	m_lookAheadBis = lookAheadBis;
 }
 
 void PurePursuit::setLookAhead(float lookAhead)
 {
-	if(!m_lookAhead == lookAhead) {
-		m_lookAhead = lookAhead;
-	}
+	m_lookAhead = lookAhead;
 }

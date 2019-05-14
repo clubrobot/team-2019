@@ -56,23 +56,16 @@ void PositionController::save(int address) const
 }
 
 void PositionController::setVelTunings(float linVelKp, float angVelKp) {
-	if(!(m_linVelKp == linVelKp && linVelKp)) {
-		m_linVelKp = linVelKp;
-		m_angVelKp = angVelKp;
-	}
+	m_linVelKp = linVelKp;
+	m_angVelKp = angVelKp;
 }
 
 void PositionController::setVelLimits(float linVelMax, float angVelMax){
-	if(!(m_linVelMax == linVelMax && m_angVelMax == angVelMax))
-	{
-		m_linVelMax = linVelMax;
-		m_angVelMax = angVelMax;
-	}
+	m_linVelMax = linVelMax;
+	m_angVelMax = angVelMax;
 }
 
 void PositionController::setPosThresholds(float linPosThreshold, float angPosThreshold) {
-	if (!(m_linPosThreshold == linPosThreshold && m_angPosThreshold == angPosThreshold)) {
-		m_linPosThreshold = linPosThreshold;
-		m_angPosThreshold = angPosThreshold;
-	}
+	m_linPosThreshold = linPosThreshold;
+	m_angPosThreshold = angPosThreshold;
 }
