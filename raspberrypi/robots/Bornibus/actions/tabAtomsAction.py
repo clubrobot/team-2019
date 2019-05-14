@@ -34,6 +34,9 @@ class tabAtoms(Actionnable):
         self.points["Pal4"] = self.geogebra.get("Pal4"+color)
         self.points["Pal5"] = self.geogebra.get("Pal5"+color)
         self.points["Pal6"] = self.geogebra.get("Pal6"+color)
+        self.points["Pal7"] = self.geogebra.get("Pal7"+color)
+        self.points["Pal8"] = self.geogebra.get("Pal8"+color)
+        
 
 
     def moving(self):
@@ -60,36 +63,50 @@ class tabAtoms(Actionnable):
         self.wheeledbase.right_wheel_maxPWM.set(1)
         self.wheeledbase.left_wheel_maxPWM.set(1)
 
-        #self.wheeledbase.goto("P")
-
+        try:
+            self.wheeledbase.goto(*self.points["Pal8"])
+        except:
+            pass
 
         if self.side == self.YELLOW:
-            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Gold5"],
-                                     self.points["Pal4"]], direction="forward", finalangle=-3*pi/4, lookahead=150, lookaheadbis=150)
+            self.pushers.down_r()
+#            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], 
+#                                     self.points["Pal4"]], direction="forward", finalangle=-3*pi/4, lookahead=150, lookaheadbis=150)
         if self.side == self.PURPLE:
-            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Gold5"],
-                                     self.points["Pal4"]], direction="forward", finalangle=3*pi/4, lookahead=150)
-
+            self.pushers.down_l()
+#            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], 
+#                                     self.points["Pal4"]], direction="forward", finalangle=3*pi/4, lookahead=150)
+        self.wheeledbase.turnonthespot(-pi)
         self.wheeledbase.wait()
 
-#        if self.side == self.YELLOW:
-#            self.wheeledbase.turnonthespot(-3*pi/4)
-#        else:
-#            self.wheeledbase.turnonthespot(3 * pi / 4)
-#        self.wheeledbase.wait()
+        try:
+            self.wheeledbase.goto(*self.points["Pal6"])
+        except:
+            pass
+
+        if self.side == self.YELLOW:
+            self.wheeledbase.turnonthespot(-pi/2)
+        else:
+            self.wheeledbase.turnonthespot(pi/2)
+        self.wheeledbase.wait()
+
+        try:
+            self.wheeledbase.goto(*self.points["Ini"])
+        except:
+            pass
 
         # Vers zone
-        self.log("TABATOMS ACTION : ", "Vers zone")
+#        self.log("TABATOMS ACTION : ", "Vers zone")
 #        self.pushers.down()
-        self.pushers.down_l()
-        self.pushers.down_r()
-        if self.side == self.YELLOW:
-            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Pal5"], self.points["Pal6"], self.points["Pal7"]],
-                                    direction="forward", lookahead=50, lookaheadbis=10, finalangle=-pi/2)
-        if self.side == self.PURPLE:
-            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Pal5"], self.points["Pal6"], self.points["Pal7"]],
-                                direction="forward", lookahead=50, lookaheadbis=10, finalangle=pi/2)
-        self.wheeledbase.wait()
+#        self.pushers.down_l()
+#        self.pushers.down_r()
+#        if self.side == self.YELLOW:
+#            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Pal5"], self.points["Pal6"], self.points["Pal7"]],
+#                                    direction="forward", lookahead=50, lookaheadbis=10, finalangle=-pi/2)
+#        if self.side == self.PURPLE:
+#            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Pal5"], self.points["Pal6"], self.points["Pal7"]],
+#                                direction="forward", lookahead=50, lookaheadbis=10, finalangle=pi/2)
+#        self.wheeledbase.wait()
 
         self.display.addPoints(13)
 
