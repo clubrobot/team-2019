@@ -22,7 +22,7 @@ class DisplayPoints:
         self.start_time = time.time()
         self.display_stop.clear()
         self.points = 0
-        self.display_thread = Thread(target=self.run)
+        self.display_thread = Thread(target=self.run, daemon=True)
         self.display_thread.start()
 
 
