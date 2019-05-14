@@ -62,7 +62,7 @@ class PutAccelerator(Actionnable):
         self.wheeledbase.set_velocities(200,0)
         time.sleep(1)
 
-        self.wheeledbase.goto(*self.path[-1], theta=-pi)
+        self.wheeledbase.goto(*self.path[-1])
         
         self.wheeledbase.turnonthespot(-pi/2)
         while not self.wheeledbase.isarrived():
@@ -135,8 +135,13 @@ class PutAccelerator(Actionnable):
             while not self.arm1.is_arrived():
                 time.sleep(0.1)
 
+            if not self.arm1.get_atmosphere_pressure():
+                self.display.addPoints(self.handeledPuck1.getPoints().Tab)
+                self.log("ACCELERATOR", "Add {} points".format(self.handeledPuck1.getPoints().Accelerator))
+
             time.sleep(0.5)
             self.arm1.stop_pump()
+            time.sleep(0.5)
 
             self.arm1.move(ACCELERATOR_AFTER_ARM1)
             while not self.arm1.is_arrived():
