@@ -117,6 +117,7 @@ void SerialTalks::begin(Stream& stream)
 }
 int SerialTalks::send(byte opcode,Serializer output)
 {
+	m_mutex.acquire();
 	int count = 0;
 	unsigned long retcode = opcode;
 	if (m_stream != 0 && isConnected())
@@ -138,12 +139,14 @@ int SerialTalks::send(byte opcode,Serializer output)
 		count += m_stream->write((byte*)(&retcode), sizeof(retcode));
 		count += m_stream->write(m_outputBuffer, output.buffer-m_outputBuffer);	
 	}
+	m_mutex.release();
 	return count;
 }
 
 
 int SerialTalks::sendback(long retcode, const byte* buffer, int size)
 {
+	m_mutex.acquire();
 	int count = 0;
 	if (m_stream != 0 && isConnected())
 	{
@@ -162,6 +165,7 @@ int SerialTalks::sendback(long retcode, const byte* buffer, int size)
 		count += m_stream->write((byte*)(&retcode), sizeof(retcode));
 		count += m_stream->write(buffer, size);	
 	}
+	m_mutex.release();
 	return count;
 }
 
