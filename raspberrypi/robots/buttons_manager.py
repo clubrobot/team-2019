@@ -8,10 +8,10 @@ from robots.automaton import Automaton
 class ButtonsManager:
     def begin(self):
         print("debut Button Manager")
-        self.blue.when_pressed = self.set_team_purple
-        self.orange.when_pressed = self.set_team_orange
         ssd.clear_messages()
         ssd.set_message("set team")
+        self.blue.when_pressed = self.set_team_purple
+        self.orange.when_pressed = self.set_team_orange
 
     def set_team_orange(self):
         print("team jaune")
@@ -29,8 +29,6 @@ class ButtonsManager:
 
     def odometry_stage(self):
         print("validation team")
-        self.orange.close()
-        self.blue.close()
         self.auto.set_side(self.side)
         ssd.clear_messages()
         ssd.set_message("set pos")
@@ -56,14 +54,18 @@ class ButtonsManager:
 
     def ready_stage(self):
         print("validation tirette")
-        self.red.close()
-        self.green.close()
         ssd.clear_messages()
         ssd.set_message("ready")
         self.tirette.when_released = self.run_match
 
     def run_match(self):
         print("lancement match")
+        self.red.close()
+        self.green.close()
+        self.orange.close()
+        self.blue.close()
+        self.tirette.close()
+        self.urgency.close()
         self.auto.run()
         self.tirette.close()
 
