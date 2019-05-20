@@ -6,71 +6,77 @@ from robots.automaton import Automaton
 
 
 class ButtonsManager:
+    def begin(self):
+        print("debut Button Manager")
+        self.blue.when_pressed = self.set_team_purple
+        self.orange.when_pressed = self.set_team_orange
+        ssd.clear_messages()
+        ssd.set_message("set team")
+
     def set_team_orange(self):
         print("team jaune")
         self.side = Automaton.YELLOW
         ssd.clear_messages()
         ssd.set_message("team : o")
-        self.green_switch.when_released = self.odometry
+        self.green.when_released = self.odometry_stage
 
     def set_team_purple(self):
         print("team mauve")
         self.side = Automaton.PURPLE
         ssd.clear_messages()
         ssd.set_message("team : m")
-        self.green_switch.when_released = self.odometry
+        self.green.when_released = self.odometry_stage
 
-    def odometry(self):
+    def odometry_stage(self):
         print("validation team")
-        self.orange_switch.close()
-        self.blue_switch.close()
+        self.orange.close()
+        self.blue.close()
         self.points = self.auto.set_side(self.side)
 
         ssd.clear_messages()
         ssd.set_message("set pos")
-        self.green_switch.when_released = self.tirret
+        self.green.when_released = self.tirret_stage
 
-    def ready(self):
-        print("validation tirette")
-        self.red_switch.close()
-        self.green_switch.close()
-        ssd.clear_messages()
-        ssd.set_message("ready")
-        self.tirette_switch.when_released = self.run_match
-
-    def run_match(self):
-        print("lancement match")
-        self.auto.run()
-        self.tirette_switch.close()
-
-    def tirret(self):
+    def tirette_stage(self):
         print("validation odometry")
         self.auto.set_position()
         ssd.clear_messages()
         ssd.set_message("tirette")
-        self.tirette_switch.when_pressed = self.ready
+        self.tirette.when_activated = self.urgency_stage
 
-    def begin(self):
-        print("debut Button Manager")
-        self.blue_switch.when_pressed = self.set_team_purple
-        self.orange_switch.when_pressed = self.set_team_orange
+    def urgency_stage(self):
+        print("validation urgency")
         ssd.clear_messages()
-        ssd.set_message("set team")
+        ssd.set_message("urgency")
+        self.urgency.when_deactivated = self.ready_stage
+
+    def ready_stage(self):
+        print("validation tirette")
+        self.red.close()
+        self.green.close()
+        ssd.clear_messages()
+        ssd.set_message("ready")
+        self.tirette.when_released = self.run_match
+
+    def run_match(self):
+        print("lancement match")
+        self.auto.run()
+        self.tirette.close()
 
     def __init__(self, auto):
-        self.state = None
-        self.red = 18  # 1
-        self.blue = 12  # 2
-        self.green = 6  # 3
-        self.orange = 5  # 4
-        self.tirette = 26
+        self.red_pin = 18  # 1
+        self.blue_pin = 12  # 2
+        self.green_pin = 6  # 3
+        self.orange_pin = 5  # 4
+        self.tirette_pin = 26
+        self.urgency_pin = 20
 
         self.auto = auto
-        self.points = None
         self.side = None
 
-        self.red_switch = Button(self.red)
-        self.green_switch = Button(self.green)
-        self.blue_switch = Button(self.blue)
-        self.orange_switch = Button(self.orange)
-        self.tirette_switch = Button(self.tirette)
+        self.red = Button(self.red_pin)
+        self.green = Button(self.green_pin)
+        self.blue = Button(self.blue_pin)
+        self.orange = Button(self.orange_pin)
+        self.tirette = Button(self.tirette_pin)
+        self.urgency = Button(self.urgency_pin)
