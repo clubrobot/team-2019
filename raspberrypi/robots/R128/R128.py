@@ -68,7 +68,7 @@ class R128(Automaton):
 
         self.takemaintain       = TakePuckSyncMaintain(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_2, GreenPuck, BluePuck, self.log).getAction()
 
-        self.accel              = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.accelAct           = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
         self.action_list = [
             self.takeSyncPos1Act,
@@ -90,10 +90,13 @@ class R128(Automaton):
     def stop_match(self):
         time.sleep(100)
         wheeledbase.stop()
+        self.display.stop()
         armFront.stop_pump()
         armBack.stop_pump()
         armF.stop()
         armB.stop()
+        self.tam.stop()
+        self.log("STOP MATCH : ", "END...")
         manager.disconnect()
 
     def run(self):
@@ -127,6 +130,7 @@ class R128(Automaton):
             # execute the current action
             self.log("MAIN ; ", "............... Arrived on action point ! Go execute {} =) ....................".format(act.name))
             act()
+
             act.done.set()
             self.log("MAIN ; ", "Action End !")
 
@@ -137,9 +141,14 @@ class R128(Automaton):
             self.log("MAIN : ", "....................... Let's go to the next action !..................")
         
         #stop thread action manager
-        self.tam.stop()
-        self.display.stop()
         self.wheeledbase.stop()
+        self.display.stop()
+        armFront.stop_pump()
+        armBack.stop_pump()
+        armF.stop()
+        armB.stop()
+        self.tam.stop()
+        manager.disconnect()
 
 if __name__ == '__main__':
     auto = R128()

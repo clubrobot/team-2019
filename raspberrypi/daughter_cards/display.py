@@ -118,4 +118,4 @@ class SevenSegments(SecureSerialTalksProxy):
 				self.upload_char_pattern(char, pattern)
 
 	def clear_messages(self):
-		self.send(CLEAR_IPDISPLAY_MESSAGE_OPCODE);
+		self.send(CLEAR_IPDISPLAY_MESSAGE_OPCODE)

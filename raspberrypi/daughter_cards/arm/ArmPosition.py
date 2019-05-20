@@ -49,16 +49,20 @@ AFTER_TAKE_TANK_PUCK3           = ArmPos(-5.5,  7.0,   160)
 # Put Balance
 BALANCE                         = ArmPos(14.0,   10.0,   30)
 
-RED_ZONE1                        = ArmPos(10.0,   -2.0,   270)
-RED_ZONE2                        = ArmPos(10.0,   0.0,   270)
-RED_ZONE3                        = ArmPos(10.0,   2.0,   270)
+RED_ZONE1                       = ArmPos(10.0,   -2.0,   270)
+RED_ZONE2                       = ArmPos(10.0,   0.0,   270)
+RED_ZONE3                       = ArmPos(10.0,   2.0,   270)
 
 # Accelerator 
-ACCELERATOR_BEFORE              = ArmPos(9,   10.0,  30)
-ACCELERATOR                     = ArmPos(8.8,   7.0,  15)
-ACCELERATOR_AFTER               = ArmPos(9,   10.0,  30)
+ACCELERATOR_BEFORE_ARM1          = ArmPos(9.8,   10.0,  45)
+ACCELERATOR_ARM1                 = ArmPos(10,    7,  25)
+ACCELERATOR_AFTER_ARM1           = ArmPos(9.8,   10.0,  45)
 
-BALANCE3_POS_INTER              = ArmPos(-5 ,    14,   90)
+ACCELERATOR_BEFORE_ARM2          = ArmPos(9.8,   13.0,  45)
+ACCELERATOR_ARM2                 = ArmPos(10,    10.0,  25)
+ACCELERATOR_AFTER_ARM2           = ArmPos(9.8,   13.0,  45)
+
+BALANCE3_POS_INTER               = ArmPos(-5 ,    14,   90)
 
 
 HomePath = [GLOBAL_POS_INTER, HOME]
