@@ -17,6 +17,9 @@ class Automaton:
     def run(self):
         pass
 
+    def positioning(self):
+        pass
+
     @staticmethod
     def start_preparation():
         from common.components import Manager

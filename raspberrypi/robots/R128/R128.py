@@ -4,7 +4,6 @@
 from robots.R128.actions.balanceAction import *
 from robots.R128.actions.takePuckActions import *
 from robots.R128.actions.PutRedZoneAction import *
-from robots.R128.actions.movingAction import *
 from robots.R128.actions.acceleratorAction import *
 from common.actions.action import ThreadActionManager
 from common.geogebra import Geogebra
@@ -51,44 +50,33 @@ class R128(Automaton):
 
         # Apply cube obstacle
         self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
-        print("TEST SIDE")
 
         # Specific Actions initialisation
         self.balanceAct6        = BalanceAfter6(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
         self.balanceAct3        = BalanceAfter3(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
-        self.movingAfterStart   = MovingAfterStart(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.takeSyncPos1Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_1, GreenPuck, RedPuck, self.log, sens_manager).getAction()
 
-        self.takeSyncPos1Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_1, GreenPuck, RedPuck, self.log).getAction()
+        self.takeSyncPos2Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_2, BluePuck, RedPuck, self.log, sens_manager).getAction()
 
-        self.takeSyncPos2Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_2, BluePuck, RedPuck, self.log).getAction()
-
-        self.takeSyncPos3Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_3, GreenPuck, RedPuck, self.log).getAction()
+        self.takeSyncPos3Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_3, GreenPuck, RedPuck, self.log, sens_manager).getAction()
 
         self.putRedZoneAct      = PutRedZone(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
-
-        self.moveToRed          = MovingToRed(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
-
-        self.movingTolittle     = MovingToLittle(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
         self.takesingle         = TakePuckSingle(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_1, RedPuck, self.log).getAction()
 
         self.takemaintain       = TakePuckSyncMaintain(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_2, GreenPuck, BluePuck, self.log).getAction()
 
-        self.movingAfterlittle  = MovingAfterLittle(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
-
-        #self.accel              = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.accelAct           = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
         self.action_list = [
             self.takeSyncPos1Act,
             self.takeSyncPos2Act,
             self.takeSyncPos3Act,
             self.balanceAct6,
-            self.movingTolittle,
             self.takesingle,
             self.takemaintain,
-            self.movingAfterlittle,
             self.balanceAct3,
             self.putRedZoneAct,
         ]
@@ -99,13 +87,19 @@ class R128(Automaton):
         else:
             self.wheeledbase.set_position(755, 3000-322, -pi)
 
+    def positioning(self):
+        pass
+
     def stop_match(self):
         time.sleep(100)
         wheeledbase.stop()
+        self.display.stop()
         armFront.stop_pump()
         armBack.stop_pump()
         armF.stop()
         armB.stop()
+        self.tam.stop()
+        self.log("STOP MATCH : ", "END...")
         manager.disconnect()
 
     def run(self):
@@ -119,8 +113,6 @@ class R128(Automaton):
         self.electron.start()
         self.display.addPoints(35)
 
-        # s = SensorsManager(wheeledbase, sensorsFront, sensorsBack)
-        # s.start()
         # starting thread action manager
         self.tam.start()
         
@@ -139,8 +131,9 @@ class R128(Automaton):
                 time.sleep(0.1)
             
             # execute the current action
-            self.log("MAIN ; ", "Arrived on action point ! Go execute {} =)".format(act.name))
+            self.log("MAIN ; ", "............... Arrived on action point ! Go execute {} =) ....................".format(act.name))
             act()
+
             act.done.set()
             self.log("MAIN ; ", "Action End !")
 
@@ -148,12 +141,17 @@ class R128(Automaton):
             self.log("MAIN : ", "Launch After Action")
             self.tam.putAction(act.getAfter())
             
-            self.log("MAIN : ", "Let's go to the next action !")
+            self.log("MAIN : ", "....................... Let's go to the next action !..................")
         
         #stop thread action manager
-        self.tam.stop()
-        self.display.stop()
         self.wheeledbase.stop()
+        self.display.stop()
+        armFront.stop_pump()
+        armBack.stop_pump()
+        armF.stop()
+        armB.stop()
+        self.tam.stop()
+        manager.disconnect()
 
 if __name__ == '__main__':
     auto = R128()

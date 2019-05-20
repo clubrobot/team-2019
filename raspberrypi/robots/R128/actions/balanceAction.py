@@ -36,8 +36,13 @@ class BalanceAfter6(Actionnable):
         self.TankPos        = [TAKE_TANK_PUCK1, TAKE_TANK_PUCK2, TAKE_TANK_PUCK3]
         self.afterTankPos   = [AFTER_TAKE_TANK_PUCK1, AFTER_TAKE_TANK_PUCK2, AFTER_TAKE_TANK_PUCK3]
 
-        self.handeledPuck1   = None
-        self.handeledPuck2   = None
+        self.handeledPuck   = None
+
+        # Taking error event
+        self.takeErrorPuck  = False
+
+        # taking state event
+        self.armTakingState    = Event()
 
     def moving(self):
         self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
@@ -52,16 +57,18 @@ class BalanceAfter6(Actionnable):
             self.wheeledbase.set_velocities(-100,0)
             time.sleep(1)
             self.wheeledbase.set_velocities(0,0)
-            
 
         # put the first handled puck
         self.arm.move(BALANCE)
         
         while not self.arm.is_arrived():
             time.sleep(0.1)
-
-        self.display.addPoints(self.handeledPuck.getPoints().Balance)
-        self.log("BALANCE6", "Add {} points".format(self.handeledPuck.getPoints().Balance))
+        
+        if not self.arm.get_atmosphere_pressure():
+            self.display.addPoints(self.handeledPuck.getPoints().Balance)
+            self.log("BALANCE6", "Add {} points".format(self.handeledPuck.getPoints().Balance))
+        else:
+            self.log("BALANCE6", "Loose PUCK")
 
         time.sleep(0.2)
         self.arm.stop_pump()
@@ -75,39 +82,76 @@ class BalanceAfter6(Actionnable):
 
         for i in range(0,self.remainingPuck):
             self.arm.start_pump()
-            self.arm.move(self.beforeTankPos[self.arm.tank.index()-1])
 
+            self.arm.move(self.beforeTankPos[self.arm.tank.index()-1])
             while not self.arm.is_arrived():
                 time.sleep(0.1)
 
             self.arm.move(self.TankPos[self.arm.tank.index()-1])
-
             while not self.arm.is_arrived():
+                time.sleep(0.1)
+                
+            time.sleep(0.2)
+            # get the current time
+            self.init_time = time.time()
+
+            # while not the taking sequence is end
+            while not self.armTakingState.is_set():
+                if not self.arm.get_atmosphere_pressure():
+                    # move after take
+                    self.log("Balance6", "Take Puck {}... OK".format(self.arm.tank.index()-1))
+                    self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
+                    self.armTakingState.set()
+                else:
+                    # retry with new pos
+                    self.log("Balance6", "Take Puck... Retry")
+                    self.new_arm_pos = ArmPos(self.TankPos[self.arm.tank.index()-1].x - 1 ,self.TankPos[self.arm.tank.index()-1].y, self.TankPos[self.arm.tank.index()-1].phi)
+                    self.arm.move(self.new_arm_pos)
+
+                    while not (self.arm.is_arrived()):
+                        time.sleep(0.1)
+                    # check presure
+                    if not self.arm.get_atmosphere_pressure():
+                        # wait for taking secure
+                        time.sleep(0.5)
+                        self.log("Balance6", "Take Puck {}... OK".format(self.arm.tank.index()-1))
+                        self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
+                        self.armTakingState.set()
+                    else:
+                        # error stop pump
+                        self.takeErrorPuck = True
+                        self.armTakingState.set()
+                        self.log("Balance6", "Take Puck... ERROR")
+
+            while not (self.arm.is_arrived()):
                 time.sleep(0.1)
     
-            self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
+            # reset state
+            self.armTakingState.clear()
+
             self.handeledPuck = self.arm.tank.get_puck()
-            self.display.addPoints(self.handeledPuck.getPoints().Balance)
-            self.log("BALANCE6", "Add {} points".format(self.handeledPuck.getPoints().Balance))
-            while not self.arm.is_arrived():
-                time.sleep(0.1)
 
             # put the remaning pucks
             self.arm.move(BALANCE)
-        
             while not self.arm.is_arrived():
                 time.sleep(0.1)
 
-            time.sleep(0.2)
-            self.arm.stop_pump()
+            if not self.arm.get_atmosphere_pressure():
+                self.display.addPoints(self.handeledPuck.getPoints().Balance)
+                self.log("BALANCE6", "Add {} points".format(self.handeledPuck.getPoints().Balance))
 
             time.sleep(0.5)
-            
+            self.arm.stop_pump()
+            time.sleep(0.5)
+
             if(self.arm.tank.index() > 0):
                 self.arm.move(TANK_POS_INTER)
                 while not self.arm.is_arrived():
                     time.sleep(0.1)
-        time.sleep(0.5)
+            else:
+                self.arm.move(GLOBAL_POS_INTER_AFTER_BALANCE)
+                while not self.arm.is_arrived():
+                    time.sleep(0.1)
 
     def before(self):
         self.arm.start_pump()
@@ -121,26 +165,57 @@ class BalanceAfter6(Actionnable):
             
             
         elif (self.arm.tank.index() > 0):
-            self.arm.move(self.beforeTankPos[self.arm.tank.index()-1])
+            self.arm.start_pump()
 
+            self.arm.move(self.beforeTankPos[self.arm.tank.index()-1])
             while not self.arm.is_arrived():
                 time.sleep(0.1)
 
             self.arm.move(self.TankPos[self.arm.tank.index()-1])
             while not self.arm.is_arrived():
                 time.sleep(0.1)
-    
-            self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
-            self.handeledPuck = self.arm.tank.get_puck()
-            while not self.arm.is_arrived():
+                
+            time.sleep(0.2)
+            # get the current time
+            self.init_time = time.time()
+
+            # while not the taking sequence is end
+            while not self.armTakingState.is_set():
+                if not self.arm.get_atmosphere_pressure():
+                    # move after take
+                    self.log("Balance6", "Take Puck {}... OK".format(self.arm.tank.index()-1))
+                    self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
+                    self.armTakingState.set()
+                else:
+                    # retry with new pos
+                    self.log("Balance6", "Take Puck... Retry")
+                    self.new_arm_pos = ArmPos(self.TankPos[self.arm.tank.index()-1].x - 1 ,self.TankPos[self.arm.tank.index()-1].y, self.TankPos[self.arm.tank.index()-1].phi)
+                    self.arm.move(self.new_arm_pos)
+
+                    while not (self.arm.is_arrived()):
+                        time.sleep(0.1)
+                    # check presure
+                    if not self.arm.get_atmosphere_pressure():
+                        # wait for taking secure
+                        time.sleep(0.5)
+                        self.log("Balance6", "Take Puck {}... OK".format(self.arm.tank.index()-1))
+                        self.arm.move(self.afterTankPos[self.arm.tank.index()-1])
+                        self.armTakingState.set()
+                    else:
+                        # error stop pump
+                        self.takeErrorPuck = True
+                        self.armTakingState.set()
+                        self.log("Balance6", "Take Puck... ERROR")
+
+            while not (self.arm.is_arrived()):
                 time.sleep(0.1)
+    
+            # reset state
+            self.armTakingState.clear()
+            self.handeledPuck = self.arm.tank.get_puck()
         
     def after(self):
         pass
-        # self.arm.go_home()
-        # self.arm2.go_home()
-        # while not (self.arm.is_arrived() and self.arm2.is_arrived()):
-        #         time.sleep(0.1)
 
     #override
     def getAction(self):
@@ -167,10 +242,11 @@ class BalanceAfter3(Actionnable):
 
         # action Points
         self.point          = self.geogebra.get('Balance{}'.format(self.side))
-        if self.side == self.YELLOW:
-            self.actionPoint    = ActPoint(self.point, pi/2)
-        else:
-            self.actionPoint    = ActPoint(self.point, pi/2)
+        self.actionPoint    = ActPoint(self.point, pi/2)
+        
+        # path Points
+        self.path           = self.geogebra.getall('PathDistrib{}_*'.format(self.side))
+        self.path.reverse()
 
         #armPos
         self.beforeTankPos  = [BEFORE_TAKE_TANK_PUCK1, BEFORE_TAKE_TANK_PUCK2, BEFORE_TAKE_TANK_PUCK3]
@@ -181,9 +257,20 @@ class BalanceAfter3(Actionnable):
         self.handeledPuck2   = None
 
     def moving(self):
-        self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
+        self.wheeledbase.turnonthespot(-pi)
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
 
-    def realize(self):
+        if self.side == self.YELLOW:
+            self.wheeledbase.purepursuit(self.path, direction='backward')
+            while not self.wheeledbase.isarrived():
+                time.sleep(0.1)
+        else:
+            self.wheeledbase.purepursuit(self.path, direction='forward')
+            while not self.wheeledbase.isarrived():
+                time.sleep(0.1)
+        
+        self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
 
         if self.side == self.YELLOW:
             self.wheeledbase.set_velocities(100,0)
@@ -193,47 +280,35 @@ class BalanceAfter3(Actionnable):
             self.wheeledbase.set_velocities(-100,0)
             time.sleep(1)
             self.wheeledbase.set_velocities(0,0)
+
+    def realize(self):
+        
         # put the first handled puck
         self.arm1.move(BALANCE)
         self.arm2.move(BALANCE)
-        while not self.arm1.is_arrived():
+        while not (self.arm1.is_arrived()and self.arm2.is_arrived()):
             time.sleep(0.1)
+
+        if not self.arm1.get_atmosphere_pressure():
+            self.display.addPoints(self.handeledPuck1.getPoints().Balance)
+            self.log("BALANCE3", "Add {} points".format(self.handeledPuck1.getPoints().Balance))
+        
+        if not self.arm2.get_atmosphere_pressure():
+            self.display.addPoints(self.handeledPuck2.getPoints().Balance)
+            self.log("BALANCE3", "Add {} points".format(self.handeledPuck2.getPoints().Balance))
 
         time.sleep(0.5)
         self.arm1.stop_pump()
         self.arm2.stop_pump()
         time.sleep(0.5)
 
-        self.display.addPoints(self.handeledPuck1.getPoints().Balance)
-        self.display.addPoints(self.handeledPuck2.getPoints().Balance)
-        self.log("BALANCE3", "Add {} points".format(self.handeledPuck1.getPoints().Balance))
-
         self.arm1.move(TANK_POS_INTER)
         self.arm2.move(TANK_POS_INTER)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
-
-        # self.wheeledbase.turnonthespot(pi/3)
-        # while not self.wheeledbase.isarrived():
-        #     time.sleep(0.1)
-
-        # # put the first handled puck
-        # self.arm2.move(BALANCE)
-        # while not self.arm2.is_arrived():
-        #     time.sleep(0.1)
-
-        # time.sleep(0.5)
-        # self.arm2.stop_pump()
-        # time.sleep(0.5)
-
-        # self.display.addPoints(self.handeledPuck2.getPoints().Balance)
-        # self.log("BALANCE3", "Add {} points".format(self.handeledPuck2.getPoints().Balance))
-
-        # self.arm2.move(TANK_POS_INTER)
-        # while not self.arm2.is_arrived():
-        #     time.sleep(0.1)
     
     def before(self):
+        time.sleep(2)
         if(self.arm1.sucker.index() > 0):
             self.arm1.move(GLOBAL_POS_INTER)
 

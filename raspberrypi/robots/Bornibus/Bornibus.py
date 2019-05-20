@@ -55,6 +55,7 @@ class Bornibus(Automaton):
         else:
             color = "P"
         self.points["Ini"] = geo.get("Ini"+color)
+        self.points["Ini2"] = geo.get("Ini2"+color)
 
         # Specific Actions initialisation
         self.detectorAct    = detector(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
@@ -102,10 +103,10 @@ class Bornibus(Automaton):
         disp.points = 0
         disp.start()
         pushers.up()
-        gripper.open()    
+        gripper.open()
 
         self.tam.start()
-        
+
         for act in self.action_list:
             
             # add before action to the parralel action queue
@@ -119,7 +120,7 @@ class Bornibus(Automaton):
             # wait for parralels action end
             while not self.tam.end():
                 time.sleep(0.1)
-            
+
             # execute the current action
             self.log("MAIN ; ", "Arrived on action point ! Go execute {} =)".format(act.name))
             act()
@@ -129,9 +130,9 @@ class Bornibus(Automaton):
             # add after action to the parrel action queue
             self.log("MAIN : ", "Launch After Action")
             self.tam.putAction(act.getAfter())
-            
+
             self.log("MAIN : ", "Let's go to the next action !")
-        
+
         #stop thread action manager
         self.tam.stop()
         self.display.stop()

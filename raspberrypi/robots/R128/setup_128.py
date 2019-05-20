@@ -12,7 +12,6 @@ from daughter_cards.Sensor_IR import *
 from robots.sensors_manager import *
 import time
 
-
 log = Logger(Logger.SHOW)
 
 armF = RobotArm(manager, uuid='arm_front')
@@ -28,15 +27,20 @@ sensorsB = Sensors(manager, uuid="sensorsB")
 sensorsC = Sensors(manager, uuid="sensorsC")
 sensorsD = Sensors(manager, uuid="sensorsD")
 
-sensorsFront = [Sensor("Avant droit",   sensorsB.get_range1, (110, -110), -pi/4),
-                Sensor("Avant      ",   sensorsB.get_range2, (140, -50), 0),
-                Sensor("Avant gauche",  sensorsC.get_range1, (110, 110), pi/4)]
-sensorsBack  = [Sensor("Arrière droit", sensorsA.get_range1, (-110, -110), -3*pi/4),
-                Sensor("Arrière",       sensorsA.get_range2, (-110, -50), pi),
-                Sensor("Arrière gauche",sensorsD.get_range2, (-110, 110), 3*pi/4)]
+sensorsFront = [Sensor("Avant gauche",   sensorsD.get_range2, (110, 110), pi/4),
+                Sensor("Avant      ",    sensorsD.get_range1, (140, -50), 0),
+                Sensor("Avant droit",    sensorsC.get_range2, (110, -110), -pi/4)]
 
+sensorsLat =   [Sensor("Lateral avant",  sensorsC.get_range1, (60, -130), -pi/2),
+                Sensor("Lateral arriere",sensorsB.get_range1, (-60, -130), -pi/2)]
+
+sensorsBack  = [Sensor("Arrière droit",  sensorsB.get_range2, (-110, -110), -3*pi/4),
+                Sensor("Arrière",        sensorsA.get_range1, (-110, -50), pi),
+                Sensor("Arrière gauche", sensorsA.get_range2, (-110, 110), 3*pi/4)]
+sens_manager = SensorsManager(wheeledbase, sensorsFront, sensorsBack, sensorsLat)
 import os
 if ROBOT_ID == R128_ID:
+        print("128")
         os.chdir("/home/pi/git/clubrobot/team-2019")
 
 roadmap = None
@@ -44,7 +48,10 @@ for root, dirs, files in os.walk("."):
         for file in files:
                 if file == "128.ggb":
                         roadmap = os.path.join(root, file)
-geo = Geogebra(roadmap)
+if roadmap:
+        geo = Geogebra(roadmap)
+else:
+        geo = None
 
 
 def init_robot():
@@ -53,8 +60,6 @@ def init_robot():
 
         armFront.go_home()
         armBack.go_home()
-        while not (armFront.is_arrived() and armBack.is_arrived()):
-                time.sleep(0.1)
 
 if __name__ == "__main__":
         init_robot()
