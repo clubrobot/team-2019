@@ -49,6 +49,11 @@ class ButtonsManager:
         ssd.set_message("urgency")
         self.urgency.when_deactivated = self.ready_stage
 
+    def positioning_stage(self):
+        print("positionnement")
+        self.auto.positioning()
+        self.ready_stage()
+
     def ready_stage(self):
         print("validation tirette")
         self.red.close()

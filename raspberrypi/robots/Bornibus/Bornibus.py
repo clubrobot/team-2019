@@ -28,6 +28,7 @@ class Bornibus(Automaton):
         color = "M" if side == self.PURPLE else "O"
 
         self.points["Ini"] = geo.get("Ini"+color)
+        self.points["Ini2"] = geo.get("Ini2"+color)
         self.points["Gold3"] = geo.get("Gold3"+color)
         self.points["Gold2"] = geo.get("Gold2"+color)
         self.points["Gold4"] = geo.get("Gold4"+color)
@@ -48,6 +49,9 @@ class Bornibus(Automaton):
         self.points["tmp"] = geo.get("tmp"+color)
         self.points["tmp2"] = geo.get("tmp2"+color)
         self.points["tmp3"] = geo.get("tmp3"+color)
+
+    def positioning(self):
+        wheeledbase.goto(self.points["Ini2"], theta=(pi/2+pi/6) if self.side == Automaton.YELLOW else -pi/2-pi/6)
 
     def stop_match(self):
         import time

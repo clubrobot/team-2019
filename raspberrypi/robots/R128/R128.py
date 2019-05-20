@@ -87,6 +87,9 @@ class R128(Automaton):
         else:
             self.wheeledbase.set_position(755, 3000-322, -pi)
 
+    def positioning(self):
+        pass
+
     def stop_match(self):
         time.sleep(100)
         wheeledbase.stop()
