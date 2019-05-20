@@ -26,12 +26,12 @@ gripper = Gripper(manager, endstops)
 sensorsA = Sensors(manager, uuid="sensorsA")
 sensorsB = Sensors(manager, uuid="sensorsB")
 sensorsC = Sensors(manager, uuid="sensorsC")
-sensorsFront = [Sensor("Avant droit",   sensorsC.get_range1, (50, -100), -pi/4),
-                Sensor("Avant      ",   sensorsA.get_range1, (60, 0), 0),
-                Sensor("Avant gauche",  sensorsB.get_range1, (50, 100), pi/4)]
-sensorsBack  = [Sensor("Arrière droit", sensorsC.get_range2, (-50, -100), -3*pi/4),
-                Sensor("Arrière",       sensorsA.get_range2, (-60, 0), pi),
-                Sensor("Arrière gauche",sensorsB.get_range2, (-50, 100), 3*pi/4)]
+sensorsFront = [Sensor("Avant droit",   sensorsA.get_range1, (50, -100), -pi/4),
+                Sensor("Avant      ",   sensorsB.get_range2, (60, 0), 0),
+                Sensor("Avant gauche",  sensorsC.get_range1, (50, 100), pi/4)]
+sensorsBack  = [Sensor("Arrière droit", sensorsA.get_range2, (-50, -100), -3*pi/4),
+                Sensor("Arrière",       sensorsB.get_range1, (-60, 0), pi),
+                Sensor("Arrière gauche",sensorsC.get_range2, (-50, 100), 3*pi/4)]
 sens_manager = SensorsManager(wheeledbase, sensorsFront, sensorsBack, None)
 
 import os
