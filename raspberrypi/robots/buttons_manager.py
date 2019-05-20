@@ -31,11 +31,10 @@ class ButtonsManager:
         print("validation team")
         self.orange.close()
         self.blue.close()
-        self.points = self.auto.set_side(self.side)
-
+        self.auto.set_side(self.side)
         ssd.clear_messages()
         ssd.set_message("set pos")
-        self.green.when_released = self.tirret_stage
+        self.green.when_released = self.tirette_stage
 
     def tirette_stage(self):
         print("validation odometry")
