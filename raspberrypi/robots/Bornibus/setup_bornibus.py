@@ -32,7 +32,7 @@ sensorsFront = [Sensor("Avant droit",   sensorsC.get_range1, (50, -100), -pi/4),
 sensorsBack  = [Sensor("Arrière droit", sensorsC.get_range2, (-50, -100), -3*pi/4),
                 Sensor("Arrière",       sensorsA.get_range2, (-60, 0), pi),
                 Sensor("Arrière gauche",sensorsB.get_range2, (-50, 100), 3*pi/4)]
-sens_manager = SensorsManager(wheeledbase, sensorsFront, sensorsBack)
+sens_manager = SensorsManager(wheeledbase, sensorsFront, sensorsBack, None)
 
 import os
 if ROBOT_ID == BORNIBUS_ID:
