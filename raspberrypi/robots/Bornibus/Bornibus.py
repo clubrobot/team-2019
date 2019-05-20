@@ -9,7 +9,6 @@ from robots.Bornibus.actions.balanceGAction import *
 from robots.Bornibus.actions.tabAtomsAction import *
 from robots.Bornibus.actions.chaosAction import *
 from common.actions.action import ThreadActionManager
-from common.geogebra import Geogebra
 from robots.sensors_manager import *
 
 #color = "YELLOW"
@@ -79,6 +78,10 @@ class Bornibus(Automaton):
         if self.side == Bornibus.YELLOW:
             wheeledbase.set_position(*self.points["Ini"], pi/2)
             print(*self.points["Ini"])
+
+    def positioning(self):
+        wheeledbase.goto(*self.points["Ini2"],
+                         theta=(pi / 2 + pi / 6) if self.side == Automaton.YELLOW else -pi / 2 - pi / 6)
 
     def stop_match(self):
         import time
