@@ -101,7 +101,7 @@ class Bornibus(Automaton):
         self.display.start()
         begin = time.time()
 
-        ##sens_manager.start()
+        sens_manager.start()
         wheeledbase.reset_parameters()
         disp.points = 0
         disp.start()
