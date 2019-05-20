@@ -308,6 +308,7 @@ class BalanceAfter3(Actionnable):
             time.sleep(0.1)
     
     def before(self):
+        time.sleep(2)
         if(self.arm1.sucker.index() > 0):
             self.arm1.move(GLOBAL_POS_INTER)
 
