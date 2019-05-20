@@ -51,7 +51,7 @@ class Bornibus(Automaton):
         self.points["tmp3"] = geo.get("tmp3"+color)
 
     def positioning(self):
-        wheeledbase.goto(self.points["Ini2"], theta=(pi/2+pi/6) if self.side == Automaton.YELLOW else -pi/2-pi/6)
+        wheeledbase.goto(*self.points["Ini2"], theta=(pi/2+pi/6) if self.side == Automaton.YELLOW else -pi/2-pi/6)
 
     def stop_match(self):
         import time
