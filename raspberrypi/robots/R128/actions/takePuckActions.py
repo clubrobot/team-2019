@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 
 import time
-from math import pi
+from math import pi, atan
 from common.actions.action import *
 from common.funcutils      import *
 from daughter_cards.arm.ArmPosition import *
@@ -23,12 +23,17 @@ class TakePuckSync(Actionnable):
     DISTRIB3_1 = 4
     DISTRIB3_2 = 5
 
-    def __init__(self, geogebra, daughter_cards, side, distrib_pos, puckFront, puckBack, log):
+    SENSORS = 0
+    WALL = 1
+    RECALAGE = SENSORS
+
+    def __init__(self, geogebra, daughter_cards, side, distrib_pos, puckFront, puckBack, log, sensors):
         # Save map, log and side
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
         self.distrib_pos    = distrib_pos
+        self.sensors = sensors
 
         # Bind arm in funtion of desired side
         if self.side == self.YELLOW:
@@ -88,28 +93,52 @@ class TakePuckSync(Actionnable):
 
             # Start Path
             self.wheeledbase.purepursuit(self.path, direction = 'backward')
-            while not self.wheeledbase.isarrived():
-                time.sleep(0.1)
+            self.wheeledbase.wait()
 
-            # prepare recalage
-            self.wheeledbase.turnonthespot(pi)
-            while not self.wheeledbase.isarrived():
-                time.sleep(0.1)
+            sens_left = self.sensors.sensors_lat[0]
+            sens_right = self.sensors.sensors_lat[1]
 
-            # recalage 
-            self.wheeledbase.set_velocities(-200,0)
-            time.sleep(1)
-            self.correct_pos = self.wheeledbase.get_position()
+            if self.RECALAGE is self.SENSORS:
+                # prepare recalage
+                self.wheeledbase.turnonthespot(pi/2)
+                self.wheeledbase.wait()
+                time.sleep(1)
 
-            offset_x = self.RecalagePoint[0] - self.correct_pos[0]
+                left = sens_left.dist()
+                right = sens_right.dist()
+                self.log("CHECK ALIGNMENT:", left, right)
 
-            self.point = (self.point[0] - offset_x, self.point[1] - offset_y)
+                dtheta = atan((right-left)/(sens_left.pos[0] - sens_right.pos[0]))
+                theta = self.wheeledbase.get_position()[2]
 
-            # prepare arm to take
-            self.arm1.move(PREPARE_TAKING_POS_ROAD)
-            self.arm2.move(PREPARE_TAKING_POS_ROAD)
+                self.log("CHECK ALIGNMENT angle correction:", dtheta*180/pi, "°")
 
-            self.wheeledbase.goto(*self.point, theta=pi/2, direction = 'forward')
+                self.wheeledbase.turnonthespot(theta + dtheta)
+                self.wheeledbase.wait()
+                time.sleep(1)
+
+                left = sens_left.dist()
+                right = sens_right.dist()
+                self.log("CHECK ALIGNMENT after correction:", left, right)
+
+            else:
+                # prepare recalage
+                self.wheeledbase.turnonthespot(pi)
+                self.wheeledbase.wait()
+                # recalage
+                self.wheeledbase.set_velocities(-200,0)
+                time.sleep(1)
+                self.correct_pos = self.wheeledbase.get_position()
+
+                offset_x = self.RecalagePoint[0] - self.correct_pos[0]
+
+                self.point = (self.point[0] - offset_x, self.point[1] - offset_y)
+
+                # prepare arm to take
+                self.arm1.move(PREPARE_TAKING_POS_ROAD)
+                self.arm2.move(PREPARE_TAKING_POS_ROAD)
+
+                self.wheeledbase.goto(*self.point, theta=pi/2, direction = 'forward')
 
             while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
                 time.sleep(0.1)

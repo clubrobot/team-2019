@@ -44,7 +44,8 @@ class Sensor:
 
 
 class SensorsManager(Thread):
-    def __init__(self, wheeledbase, sensors_front, sensors_back):
+    SENSORS_FREQ = 0.5
+    def __init__(self, wheeledbase, sensors_front, sensors_back, sensors_lat, threshold=300):
         Thread.__init__(self)
         self.daemon         = False
 
@@ -54,19 +55,20 @@ class SensorsManager(Thread):
 
         self.sensors_front = sensors_front
         self.sensors_back  = sensors_back
+        self.sensors_lat   = sensors_lat
 
         self.front_disable  = Event()
         self.back_disable   = Event()
 
-        self.threshold      = 300 #mm
+        self.threshold      = threshold
         self.lock           = Lock()
 
         self.stopped = False
+        self.stop_thread = Event()
 
     def run(self):
-        while True:
+        while not self.stop_thread.is_set():
             obstacle = False
-            self.lock.acquire()
             wheeledbase_pos = self.wheeledbase.get_position()
             if self.wheeledbase.direction == self.wheeledbase.FORWARD:
                 for sensor in self.sensors_front:
@@ -78,7 +80,6 @@ class SensorsManager(Thread):
                     if sensor.obstacle(wheeledbase_pos) and sensor.enable:
                         obstacle = True
 
-            self.lock.release()
 
             if obstacle:
                 if not self.stopped:
@@ -93,6 +94,8 @@ class SensorsManager(Thread):
                 self.wheeledbase.max_linvel.set(self.max_linvel)
                 self.wheeledbase.max_angvel.set(self.max_angvel)
                 self.stopped = False
+
+            time.sleep(self.SENSORS_FREQ)
 
     def disable_front(self):
         self.front_disable.set()
@@ -110,5 +113,8 @@ class SensorsManager(Thread):
         self.lock.acquire()
         self.threshold = thresold
         self.lock.release()
+
+    def stop(self):
+        self.stop_thread.set()
 
 
