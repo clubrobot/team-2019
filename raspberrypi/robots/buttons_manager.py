@@ -47,7 +47,7 @@ class ButtonsManager:
         print("validation urgency")
         ssd.clear_messages()
         ssd.set_message("urgency")
-        self.urgency.when_deactivated = self.ready_stage
+        self.urgency.when_deactivated = self.positioning_stage
 
     def positioning_stage(self):
         print("positionnement")
