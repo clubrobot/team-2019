@@ -8,7 +8,7 @@ from common.funcutils      import *
 from common.geogebra import Geogebra
 from daughter_cards.wheeledbase import *
 
-MAX_TIME_FOR_GOLDENIUM = 30
+MAX_TIME_FOR_GOLDENIUM = 20
 
 class gripperError(Exception) :
     def __init__(self,*args, **kwargs) :

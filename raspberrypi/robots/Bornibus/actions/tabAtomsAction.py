@@ -49,14 +49,10 @@ class tabAtoms(Actionnable):
         self.wheeledbase.left_wheel_maxPWM.set(1)
 
         try:
-            self.wheeledbase.goto(*self.points["Tab2"])
+            self.wheeledbase.goto(*self.points["Tab2"], direction='forward')
         except:
             pass
 
-        if self.side == self.YELLOW:
-            self.pushers.down_r()
-        if self.side == self.PURPLE:
-            self.pushers.down_l()
         self.wheeledbase.turnonthespot(-pi)
         self.wheeledbase.wait()
 
@@ -65,30 +61,27 @@ class tabAtoms(Actionnable):
         except:
             pass
 
+
+
+    def realize(self):
         if self.side == self.YELLOW:
             self.wheeledbase.turnonthespot(-pi/2)
         else:
             self.wheeledbase.turnonthespot(pi/2)
         self.wheeledbase.wait()
 
-        try:
-            self.wheeledbase.goto(*self.points["Tab3"])
-        except:
-            pass
-
         self.display.addPoints(13)
-
-    def realize(self):
-         # fin
-        self.pushers.up_l()
-        self.pushers.up_r()
-        self.display.stop()
+        
 
     def before(self):
-        pass
+        if self.side == self.YELLOW:
+            self.pushers.down_r()
+        if self.side == self.PURPLE:
+            self.pushers.down_l()
 
     def after(self):
-        pass
+        self.pushers.up_l()
+        self.pushers.up_r()
 
     #override
     def getAction(self):
