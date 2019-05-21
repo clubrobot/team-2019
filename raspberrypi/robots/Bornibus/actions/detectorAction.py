@@ -43,7 +43,7 @@ class detector(Actionnable):
         self.wheeledbase.left_wheel_maxPWM.set(1)
 
         # Vers l'accélérateur
-        self.log("DETECTOR ACTION : ", "Vers l'accélérateur")
+        self.log("DETECTOR ACTION : ", "Vers l'accelrateur")
 
         self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Dep1"], self.points["Dep2"],
                                  self.points["Dep3"], self.points["Gold2"]], direction="forward", lookahead=150, lookaheadbis=3)
@@ -71,7 +71,7 @@ class detector(Actionnable):
 
     def realize(self):
         # Prépare le bras
-        self.log("DETECTOR ACTION : ", "Prépare le bras")
+        self.log("DETECTOR ACTION : ", "Prepare le bras")
 
         if self.side == self.YELLOW:
             self.arm.deploy()
