@@ -52,13 +52,14 @@ class PutRedZone(Actionnable):
 
 
     def moving(self):
-        # self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
         # Start Path
-        self.wheeledbase.purepursuit(self.path)
+        if self.side == self.YELLOW:
+            self.wheeledbase.purepursuit(self.path, direction='backward')
+        else:
+            self.wheeledbase.purepursuit(self.path, direction='forward')
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
 
-        # prepare recalage
         self.wheeledbase.turnonthespot(-pi/2)
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)

@@ -50,11 +50,11 @@ class BalanceAfter6(Actionnable):
     def realize(self):
 
         if self.side == self.YELLOW:
-            self.wheeledbase.set_velocities(100,0)
+            self.wheeledbase.set_velocities(50,0)
             time.sleep(1)
             self.wheeledbase.set_velocities(0,0)
         else:
-            self.wheeledbase.set_velocities(-100,0)
+            self.wheeledbase.set_velocities(-50,0)
             time.sleep(1)
             self.wheeledbase.set_velocities(0,0)
 
@@ -247,6 +247,7 @@ class BalanceAfter3(Actionnable):
         # path Points
         self.path           = self.geogebra.getall('PathDistrib{}_*'.format(self.side))
         self.path.reverse()
+        self.path.append(self.point)
 
         #armPos
         self.beforeTankPos  = [BEFORE_TAKE_TANK_PUCK1, BEFORE_TAKE_TANK_PUCK2, BEFORE_TAKE_TANK_PUCK3]
@@ -257,27 +258,32 @@ class BalanceAfter3(Actionnable):
         self.handeledPuck2   = None
 
     def moving(self):
-        self.wheeledbase.turnonthespot(-pi)
+        if self.side == self.YELLOW:
+            self.wheeledbase.turnonthespot(-pi)
+        else:
+            self.wheeledbase.turnonthespot(0)
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
 
         if self.side == self.YELLOW:
-            self.wheeledbase.purepursuit(self.path, direction='backward')
-            while not self.wheeledbase.isarrived():
-                time.sleep(0.1)
-        else:
             self.wheeledbase.purepursuit(self.path, direction='forward')
             while not self.wheeledbase.isarrived():
                 time.sleep(0.1)
-        
-        self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
+        else:
+            self.wheeledbase.purepursuit(self.path, direction='backward')
+            while not self.wheeledbase.isarrived():
+                time.sleep(0.1)
+
+        self.wheeledbase.turnonthespot(pi/2)
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
 
         if self.side == self.YELLOW:
-            self.wheeledbase.set_velocities(100,0)
+            self.wheeledbase.set_velocities(50,0)
             time.sleep(1)
             self.wheeledbase.set_velocities(0,0)
         else:
-            self.wheeledbase.set_velocities(-100,0)
+            self.wheeledbase.set_velocities(-50,0)
             time.sleep(1)
             self.wheeledbase.set_velocities(0,0)
 

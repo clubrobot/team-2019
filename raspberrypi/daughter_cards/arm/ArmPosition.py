@@ -5,7 +5,7 @@ ArmPos = namedtuple('ArmPos', ['x', 'y', 'phi'])
 #                                      | x(cm) | y(cm) | phi(deg)
 # Home
 HOME                            = ArmPos(1.5,    7.0,    0)
-GLOBAL_POS_INTER                = ArmPos(3.8 ,    14,  0)
+GLOBAL_POS_INTER                = ArmPos(3.8 ,    15,  90)
 GLOBAL_POS_INTER_AFTER_TAKE     = ArmPos(0 ,   17.5,   90)
 GLOBAL_POS_INTER_AFTER_BALANCE  = ArmPos(0 ,   17.5,   90)
 # Prepare Taking
