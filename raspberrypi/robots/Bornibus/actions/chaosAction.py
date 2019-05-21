@@ -28,21 +28,15 @@ class chaos(Actionnable):
 
         # action Points
         self.points = dict()
-        self.points["Gold3"] = self.geogebra.get("Gold3"+color)
-        self.points["Gold4"] = self.geogebra.get("Gold4"+color)
-        self.points["Gold5"] = self.geogebra.get("Gold5"+color)
+        
         self.points["Cha1"] = self.geogebra.get("Cha1"+color)
         self.points["Cha2"] = self.geogebra.get("Cha2"+color)
         self.points["Cha3"] = self.geogebra.get("Cha3"+color)
         self.points["Cha4"] = self.geogebra.get("Cha4"+color)
-        self.points["Dep3"] = self.geogebra.get("Dep3"+color)
-        self.points["Ini"] = self.geogebra.get("Ini"+color)
-        self.points["Pal3"] = self.geogebra.get("Pal3"+color)
-        self.points["Pal5"] = self.geogebra.get("Pal5"+color)
-        self.points["Pal6"] = self.geogebra.get("Pal6"+color)
-        self.points["Pal7"] = self.geogebra.get("Pal7"+color)
-        self.points["Ini"] = self.geogebra.get("Ini"+color)
-        
+        self.points["Cha5"] = self.geogebra.get("Cha5"+color)
+        self.points["Cha6"] = self.geogebra.get("Cha6"+color)
+        self.points["Cha7"] = self.geogebra.get("Cha7"+color)
+
 
     def moving(self):
         self.wheeledbase.max_linvel.set(700)
@@ -77,12 +71,12 @@ class chaos(Actionnable):
         self.wheeledbase.max_linvel.set(500)
 
         if self.side == self.YELLOW:
-            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Cha3"], self.points["Pal3"], self.points["Pal5"], self.points["Pal7"]], direction='forward', finalangle=-pi/2 ,lookahead=150, lookaheadbis=150)
+            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Cha3"], self.points["Cha4"], self.points["Cha5"], self.points["Cha6"]], direction='forward', finalangle=-pi/2 ,lookahead=150, lookaheadbis=150)
         else :
-            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Cha3"], self.points["Pal3"], self.points["Pal5"], self.points["Pal7"]], direction='forward', finalangle=pi/2 ,lookahead=150, lookaheadbis=150)
+            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Cha3"], self.points["Cha4"], self.points["Cha5"], self.points["Cha6"]], direction='forward', finalangle=pi/2 ,lookahead=150, lookaheadbis=150)
         self.wheeledbase.wait()
 
-        self.wheeledbase.goto(*self.points["Ini"], direction='backward')
+        self.wheeledbase.goto(*self.points["Cha7"], direction='backward')
         
 
     def before(self):
