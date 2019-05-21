@@ -28,8 +28,9 @@ class PutRedZone(Actionnable):
         
         self.display        = daughter_cards['display']
         # action Points
-        self.point          = self.geogebra.get('Ini{}'.format(self.side))
-        self.actionPoint    = ActPoint(self.point, -pi/2)
+        #self.point          = self.geogebra.get('Ini{}'.format(self.side))
+        # self.actionPoint    = ActPoint(self.point, -pi/2)
+        self.path = self.geogebra.getall('PathRed{}_*'.format(self.side))    
 
         #armPos
         self.beforeTankPos  = [BEFORE_TAKE_TANK_PUCK1, BEFORE_TAKE_TANK_PUCK2, BEFORE_TAKE_TANK_PUCK3]
@@ -51,7 +52,16 @@ class PutRedZone(Actionnable):
 
 
     def moving(self):
-        self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
+        # self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
+        # Start Path
+        self.wheeledbase.purepursuit(self.path)
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
+
+        # prepare recalage
+        self.wheeledbase.turnonthespot(-pi/2)
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
 
     def realize(self):
         
