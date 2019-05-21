@@ -272,7 +272,7 @@ protected:
 	 */
 	float getAngPosThreshold() const {return m_context->m_angPosThreshold;}
 
-private:
+protected:
 
 	PositionController* m_context;/*!< Pointeur du PositionControlleur associé.*/
 

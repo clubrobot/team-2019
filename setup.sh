@@ -119,6 +119,10 @@ if [ -z "$ARDMK_DIR" ]; then # ifndef ARDMK_DIR
 		
 		sudo apt-get install python3-pip
 
+		sudo apt-get install zlib1g-dev
+		
+		sudo apt-get install libxml2-dev
+
 		sudo pip3 install python-igraph
 
 		sudo apt-get install doxygen

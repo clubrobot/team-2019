@@ -98,38 +98,28 @@ void VelocityController::save(int address) const
 
 
 void VelocityController::setMaxLinAcc   (float maxLinAcc)   {
-	if(m_maxLinAcc != maxLinAcc) {
-		m_maxLinAcc = maxLinAcc;
-		update();
-	}
+	m_maxLinAcc = maxLinAcc;
+	update();
 }
 
 void VelocityController::setMaxLinDec   (float maxLinDec)   {
-	if(m_maxLinDec != maxLinDec) {
-		m_maxLinDec = maxLinDec;
-		update();
-	}
+	m_maxLinDec = maxLinDec;
+	update();
 }
 
 void VelocityController::setMaxAngAcc   (float maxAngAcc)   {
-	if(m_maxAngAcc != maxAngAcc) {
-		m_maxAngAcc = maxAngAcc;
-		update();
-	}
+	m_maxAngAcc = maxAngAcc;
+	update();
 }
 
 void VelocityController::setMaxAngDec   (float maxAngDec)   {
-	if(m_maxAngDec != maxAngDec) {
-		m_maxAngDec = maxAngDec;
-		update();
-	}
+	m_maxAngDec = maxAngDec;
+	update();
 }
 
 void VelocityController::setSpinShutdown   (bool spinShutdown)   {
-	if(m_spinShutdown != spinShutdown) {
-		m_spinShutdown = spinShutdown;
-		update();
-	}
+	m_spinShutdown = spinShutdown;
+	update();
 }
 
 

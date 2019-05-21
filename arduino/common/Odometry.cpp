@@ -39,16 +39,12 @@ void Odometry::save(int address) const
 
 
 void Odometry::setAxleTrack   (float axleTrack)   {
-	if(m_axleTrack != axleTrack) {
-		m_axleTrack = axleTrack;
-		update();
-	}
+	m_axleTrack = axleTrack;
+	update();
 }
 
 void Odometry::setSlippage   (float slippage)   {
-	if(m_slippage != slippage) {
-		m_slippage = slippage;
-		update();
-	}
+	m_slippage = slippage;
+	update();
 }
 
