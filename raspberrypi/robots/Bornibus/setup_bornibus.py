@@ -5,7 +5,7 @@ from robots.setup_serialtalks import *
 from robots.setup_wheeledbase import *
 from daughter_cards.bornibus_actuators import *
 from daughter_cards.display import *
-from daughter_cards.Sensor_IR import *
+from daughter_cards.sensors_IR import *
 from robots.sensors_manager import *
 from robots.display_manager import *
 from math import pi
@@ -26,9 +26,9 @@ arm = Arm(manager)
 endstops = EndStops(manager)
 gripper = Gripper(manager, endstops)
 
-sensorsA = Sensors(manager, uuid="sensorsA")
-sensorsB = Sensors(manager, uuid="sensorsB")
-sensorsC = Sensors(manager, uuid="sensorsC")
+sensorsA = SensorsIR(manager, uuid="sensorsA")
+sensorsB = SensorsIR(manager, uuid="sensorsB")
+sensorsC = SensorsIR(manager, uuid="sensorsC")
 sensorsFront = [Sensor("Avant droit",   sensorsA.get_range1, (50, -100), -pi/4),
                 Sensor("Avant      ",   sensorsB.get_range2, (60, 0), 0),
                 Sensor("Avant gauche",  sensorsC.get_range1, (50, 100), pi/4)]

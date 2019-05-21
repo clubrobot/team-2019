@@ -152,4 +152,3 @@ if __name__ == "__main__":
     print("ready")
     input()
     auto.run()
-    pass

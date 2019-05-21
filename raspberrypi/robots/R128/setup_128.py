@@ -8,7 +8,7 @@ from common.funcutils import *
 from common.geogebra import *
 from common.logger import *
 from daughter_cards.electron import *
-from daughter_cards.Sensor_IR import *
+from daughter_cards.sensors_IR import *
 from robots.sensors_manager import *
 import time
 
@@ -22,10 +22,10 @@ electron = Electron(manager)
 armFront = ArmController(armF, 'ARM FRONT', log)
 armBack  = ArmController(armB, 'ARM BACK' , log)
 
-sensorsA = Sensors(manager, uuid="sensorsA")
-sensorsB = Sensors(manager, uuid="sensorsB")
-sensorsC = Sensors(manager, uuid="sensorsC")
-sensorsD = Sensors(manager, uuid="sensorsD")
+sensorsA = SensorsIR(manager, uuid="sensorsA")
+sensorsB = SensorsIR(manager, uuid="sensorsB")
+sensorsC = SensorsIR(manager, uuid="sensorsC")
+sensorsD = SensorsIR(manager, uuid="sensorsD")
 
 sensorsFront = [Sensor("Avant gauche",   sensorsD.get_range2, (110, 110), pi/4),
                 Sensor("Avant      ",    sensorsD.get_range1, (140, -50), 0),
