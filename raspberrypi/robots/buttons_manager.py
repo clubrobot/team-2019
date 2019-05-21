@@ -29,7 +29,7 @@ class ButtonsManager:
 
     def odometry_stage(self):
         print("validation team")
-        self.green.close()
+        self.blue.close()
         self.orange.close()
 
         self.auto.set_side(self.side)
