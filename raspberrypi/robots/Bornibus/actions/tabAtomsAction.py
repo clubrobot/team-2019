@@ -82,7 +82,6 @@ class tabAtoms(Actionnable):
          # fin
         self.pushers.up_l()
         self.pushers.up_r()
-        self.wheeledbase.stop()
         self.display.stop()
 
     def before(self):

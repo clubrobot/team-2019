@@ -97,7 +97,7 @@ class balance(Actionnable):
         pass
 
     def after(self):
-        pass
+        self.wheeledbase.stop()
 
     #override
     def getAction(self):

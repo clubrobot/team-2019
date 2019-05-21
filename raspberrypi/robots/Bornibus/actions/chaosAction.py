@@ -28,7 +28,7 @@ class chaos(Actionnable):
 
         # action Points
         self.points = dict()
-        
+
         self.points["Cha1"] = self.geogebra.get("Cha1"+color)
         self.points["Cha2"] = self.geogebra.get("Cha2"+color)
         self.points["Cha3"] = self.geogebra.get("Cha3"+color)
@@ -51,10 +51,12 @@ class chaos(Actionnable):
         self.wheeledbase.wait()
 
     def realize(self):
+        self.wheeledbase.max_linvel.set(300)
+        self.wheeledbase.max_angvel.set(2)
         if self.side == self.YELLOW:
             self.pushers.down_l()
             #time.sleep(0.5)
-            self.wheeledbase.goto(*self.points["Cha2"], theta=-3*pi/4 ,lookaheadbis=1)
+            self.wheeledbase.goto(*self.points["Cha2"], theta=-2*pi/3 ,lookaheadbis=1)
             #self.wheeledbase.turnonthespot(-pi/2)
             self.wheeledbase.wait()
             self.pushers.down_r()
@@ -63,7 +65,7 @@ class chaos(Actionnable):
             self.pushers.down_r()
             print('after down_r')
             #time.sleep(0.5)
-            self.wheeledbase.goto(*self.points["Cha2"], theta=3*pi/4 ,lookaheadbis=1)
+            self.wheeledbase.goto(*self.points["Cha2"], theta=2*pi/3 ,lookaheadbis=1)
             #self.wheeledbase.turnonthespot(pi/2)
             self.wheeledbase.wait()
             self.pushers.down_l()
@@ -75,7 +77,8 @@ class chaos(Actionnable):
         else :
             self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Cha3"], self.points["Cha4"], self.points["Cha5"], self.points["Cha6"]], direction='forward', finalangle=pi/2 ,lookahead=150, lookaheadbis=150)
         self.wheeledbase.wait()
-
+        self.pushers.up_r()
+        self.pushers.up_l()
         self.wheeledbase.goto(*self.points["Cha7"], direction='backward')
         
 
@@ -83,8 +86,7 @@ class chaos(Actionnable):
         pass
 
     def after(self):
-        self.pushers.up_r()
-        self.pushers.up_l()
+        pass
 
     #override
     def getAction(self):
