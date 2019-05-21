@@ -29,6 +29,9 @@ class ButtonsManager:
 
     def odometry_stage(self):
         print("validation team")
+        self.green.close()
+        self.orange.close()
+
         self.auto.set_side(self.side)
         ssd.clear_messages()
         ssd.set_message("set pos")
@@ -37,12 +40,14 @@ class ButtonsManager:
     def tirette_stage(self):
         print("validation odometry")
         self.auto.set_position()
+        self.green.close()
+
         ssd.clear_messages()
         ssd.set_message("tirette")
         self.tirette.when_activated = self.urgency_stage
 
     def urgency_stage(self):
-        print("validation urgency")
+        print("validation tirette")
         ssd.clear_messages()
         ssd.set_message("urgency")
         self.urgency.when_deactivated = self.positioning_stage
@@ -53,21 +58,16 @@ class ButtonsManager:
         self.ready_stage()
 
     def ready_stage(self):
-        print("validation tirette")
+        print("validation urgency")
+        self.urgency.close()
         ssd.clear_messages()
         ssd.set_message("ready")
         self.tirette.when_released = self.run_match
 
     def run_match(self):
         print("lancement match")
-        self.red.close()
-        self.green.close()
-        self.orange.close()
-        self.blue.close()
         self.tirette.close()
-        self.urgency.close()
         self.auto.run()
-        self.tirette.close()
 
     def __init__(self, auto):
         self.red_pin = 18  # 1

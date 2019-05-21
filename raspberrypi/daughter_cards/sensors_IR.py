@@ -47,9 +47,9 @@ class SensorsIR(SecureSerialTalksProxy):
         dist1 = deser.read(SHORT)
         dist2 = deser.read(SHORT)
 
-        if dist1 == 0:
+        if dist1 <= 0:
             dist1 = SensorsIR.ERROR_DIST
-        if dist2 == 0:
+        if dist2 <= 0:
             dist2 = SensorsIR.ERROR_DIST
 
         self.last_both = (dist1, dist2)
