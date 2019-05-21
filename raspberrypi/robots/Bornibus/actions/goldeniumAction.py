@@ -34,8 +34,8 @@ class goldenium(Actionnable):
 
         # action Points
         self.points = dict()
-        self.points["Gold3"] = self.geogebra.get("Gold3"+color)
-        self.points["Gold4"] = self.geogebra.get("Gold4"+color)
+        self.points["Gold1"] = self.geogebra.get("Gold1"+color)
+        self.points["Gold2"] = self.geogebra.get("Gold2"+color)
 
     def moving(self):
         self.wheeledbase.max_linvel.set(700)
@@ -48,7 +48,7 @@ class goldenium(Actionnable):
 
         # Vers goldenium
         self.log("GOLDENIUM ACTION : ", "Vers goldenium")
-        self.wheeledbase.goto(*self.points["Gold3"], theta=pi)
+        self.wheeledbase.goto(*self.points["Gold1"], theta=pi)
         while not self.wheeledbase.isarrived():
             print(self.wheeledbase.get_position())
             time.sleep(0.1)
@@ -67,23 +67,23 @@ class goldenium(Actionnable):
                 self.gripper.open()
                 self.wheeledbase.right_wheel_maxPWM.set(0.2)
                 self.wheeledbase.left_wheel_maxPWM.set(0.2)
-                self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Gold4"]], direction="forward", lookahead=150, lookaheadbis=1, finalangle=pi)
+                self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Gold2"]], direction="forward", lookahead=150, lookaheadbis=1, finalangle=pi)
                 try :
                     while not self.wheeledbase.isarrived() :
                         if self.endstops.get_ES2():
                             # Touched left
                             self.log("GOLDENIUM ACTION : ", "gripper touched left")
-                            self.points["Gold4"] = (self.points["Gold4"][0], self.points["Gold4"][1]-7)
-                            self.points["Gold3"] = (self.points["Gold3"][0], self.points["Gold3"][1]-7)
-                            print(*self.points["Gold4"])
+                            self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]-7)
+                            self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]-7)
+                            print(*self.points["Gold2"])
                             raise gripperError("Grripper left touched")
                         
                         elif self.endstops.get_ES1():
                             # Touched right
                             self.log("GOLDENIUM ACTION : ", "gripper touched right")
-                            self.points["Gold4"] = (self.points["Gold4"][0], self.points["Gold4"][1]+7)
-                            self.points["Gold3"] = (self.points["Gold3"][0], self.points["Gold3"][1]+7)
-                            print(*self.points["Gold4"])
+                            self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]+7)
+                            self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]+7)
+                            print(*self.points["Gold2"])
                             raise gripperError("Grripper right touched")
                         time.sleep(0.1)
                     goldenium = 1
@@ -93,7 +93,7 @@ class goldenium(Actionnable):
                     try :
                         self.wheeledbase.right_wheel_maxPWM.set(1)
                         self.wheeledbase.left_wheel_maxPWM.set(1)
-                        self.wheeledbase.goto(*self.points["Gold3"], theta=pi, lookahead=150, lookaheadbis=1)
+                        self.wheeledbase.goto(*self.points["Gold1"], theta=pi, lookahead=150, lookaheadbis=1)
                     except :
                         pass
 
@@ -104,7 +104,7 @@ class goldenium(Actionnable):
                     try :
                         self.wheeledbase.right_wheel_maxPWM.set(1)
                         self.wheeledbase.left_wheel_maxPWM.set(1)
-                        self.wheeledbase.goto(*self.points["Gold3"], theta=pi, lookahead=150, lookaheadbis=1)
+                        self.wheeledbase.goto(*self.points["Gold1"], theta=pi, lookahead=150, lookaheadbis=1)
                     except :
                         pass
 
@@ -121,7 +121,7 @@ class goldenium(Actionnable):
             time.sleep(0.5)
             self.wheeledbase.set_velocities(0, 0)
             try :
-                self.wheeledbase.goto(*self.points["Gold3"], theta=pi, lookaheadbis=150)
+                self.wheeledbase.goto(*self.points["Gold1"], theta=pi, lookaheadbis=150)
             except :
                 pass
 

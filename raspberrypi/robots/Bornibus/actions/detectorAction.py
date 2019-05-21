@@ -27,10 +27,10 @@ class detector(Actionnable):
 
         # action Points
         self.points = dict()
-        self.points["Dep1"] = self.geogebra.get("Dep1"+color)
-        self.points["Dep2"] = self.geogebra.get("Dep2"+color)
-        self.points["Dep3"] = self.geogebra.get("Dep3"+color)
-        self.points["Gold2"] = self.geogebra.get("Gold2"+color)
+        self.points["Det1"] = self.geogebra.get("Det1"+color)
+        self.points["Det2"] = self.geogebra.get("Det2"+color)
+        self.points["Det3"] = self.geogebra.get("Det3"+color)
+        self.points["Det4"] = self.geogebra.get("Det4"+color)
 
 
     def moving(self):
@@ -43,10 +43,10 @@ class detector(Actionnable):
         self.wheeledbase.left_wheel_maxPWM.set(1)
 
         # Vers l'accélérateur
-        self.log("DETECTOR ACTION : ", "Vers l'accelrateur")
+        self.log("DETECTOR ACTION : ", "Vers l'accelerateur")
 
-        self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Dep1"], self.points["Dep2"],
-                                 self.points["Dep3"], self.points["Gold2"]], direction="forward", lookahead=150, lookaheadbis=3)
+        self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Det1"], self.points["Det2"],
+                                 self.points["Det3"], self.points["Det4"]], direction="forward", lookahead=150, lookaheadbis=3)
         self.wheeledbase.wait()
         self.wheeledbase.turnonthespot(0)
         self.wheeledbase.wait()
@@ -90,7 +90,7 @@ class detector(Actionnable):
         self.arm.up()
 
         # Pousse le Blueium
-        self.log("DETECTOR ACTION : ", "Pouse le Blueium")
+        self.log("DETECTOR ACTION : ", "Pousse le Blueium")
         self.wheeledbase.turnonthespot(-pi/2)
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)

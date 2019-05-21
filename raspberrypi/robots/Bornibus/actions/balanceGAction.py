@@ -28,11 +28,9 @@ class balance(Actionnable):
 
         # action Points
         self.points = dict()
-        self.points["Gold3"] = self.geogebra.get("Gold3"+color)
-        self.points["Gold5"] = self.geogebra.get("Gold5"+color)
-        self.points["Gold6"] = self.geogebra.get("Gold6"+color)
-        self.points["Pal5"] = self.geogebra.get("Pal5"+color)
-        self.points["Pal8"] = self.geogebra.get("Pal8"+color)
+        self.points["Bal1"] = self.geogebra.get("Bal1"+color)
+        self.points["Bal2"] = self.geogebra.get("Bal2"+color)
+        self.points["Bal3"] = self.geogebra.get("Bal3"+color)
 
     def moving(self):
         self.wheeledbase.max_linvel.set(700)
@@ -46,7 +44,7 @@ class balance(Actionnable):
         # Vers balance
         self.log("BALANCE ACTION :", "Vers la balance")
         try :
-            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Pal8"], self.points["Gold5"]],
+            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal1"], self.points["Bal2"]],
                                 direction="backward", finalangle=0, lookahead=150, lookaheadbis=5)
             self.wheeledbase.wait()
         except :
@@ -65,7 +63,7 @@ class balance(Actionnable):
         # Positionnement pour la balance
         self.log("BALANCE ACTION :", "Positionnement pour la balance")
         try:
-            self.wheeledbase.goto(*self.points["Gold6"], theta=0, lookaheadbis=1)
+            self.wheeledbase.goto(*self.points["Bal3"], theta=0, lookaheadbis=1)
         except:
             pass
             
@@ -93,7 +91,7 @@ class balance(Actionnable):
         self.gripper.open()
 
         time.sleep(0.5)
-        self.wheeledbase.goto(*self.points["Gold5"], theta=0, lookaheadbis=150)
+        self.wheeledbase.goto(*self.points["Bal2"], theta=0, lookaheadbis=150)
 
     def before(self):
         pass

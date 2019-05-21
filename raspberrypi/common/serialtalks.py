@@ -403,7 +403,7 @@ class SerialListener(Thread):
                     if type_packet == MASTER_BYTE: self.parent.receive(Deserializer(buffer))
                 else:
                     warnings.warn("Message receive corrupted !", SerialTalksWarning)
-                    _, retcode = Deserializer(buffer).read(ULONG)
+                    retcode = Deserializer(buffer).read(ULONG)
                     self.parent.re_receive(retcode)
                     state = 'waiting'
 
