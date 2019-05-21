@@ -1,8 +1,6 @@
+from RPi import GPIO
 from gpiozero import Button
-import time
 
-
-# 10 GPIO.BOARD
 
 class Device:
     list_pin = [False] * 59
@@ -35,9 +33,9 @@ class Switch(Device):
         self.args = args
 
     def close(self):
-        if Device.list_pin[]
-        Device.list_pin[self.input_pin] = False
-        self.button.close()
+        if Device.list_pin[self.input_pin]:
+            Device.list_pin[self.input_pin] = False
+            self.button.close()
 
 
 class LightButton(Device):
