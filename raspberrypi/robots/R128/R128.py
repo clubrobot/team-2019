@@ -48,7 +48,6 @@ class R128(Automaton):
 
     def set_side(self, side):
         self.side = side
-
         # Apply cube obstacle
         self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
 
@@ -79,8 +78,10 @@ class R128(Automaton):
             self.takesingle,
             self.takemaintain,
             self.balanceAct3,
-            self.putRedZoneAct,
+            self.accelAct,
         ]
+
+        init_robot()
 
     def set_position(self):
         if self.side == R128.YELLOW:

@@ -110,7 +110,6 @@ class balance(Actionnable):
         self.gripper.open()
 
         time.sleep(0.5)
-        self.wheeledbase.goto(*self.points["Bal2"], theta=0)#, lookaheadbis=150)
 
     def before(self):
         pass
