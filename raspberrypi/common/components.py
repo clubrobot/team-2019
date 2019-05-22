@@ -225,7 +225,6 @@ class Server(TCPTalksServer):
         compid = (switchpin, ledpin)
         self.addcomponent(comp, compid)
         comp.set_function(self.send, MAKE_MANAGER_EXECUTE_OPCODE, compid, id=None, broadcast=True)
-        print("lightbutton component created")
         return compid
 
     def CREATE_PICAMERA_COMPONENT(self, resolution, framerate):
@@ -262,7 +261,6 @@ class Manager(TCPTalks):
                 self.picameras[compid].currentframe = currentframe
 
     def MAKE_MANAGER_EXECUTE(self, compid):
-        print("Manager Execute : ", compid)
         if compid in self.functions:
             self.functions[compid](*self.args[compid])
 
