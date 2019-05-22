@@ -59,10 +59,12 @@ class PutAccelerator(Actionnable):
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
 
-        self.wheeledbase.set_velocities(200,0)
-        time.sleep(1)
+        self.wheeledbase.set_velocities(50,0)
+        time.sleep(3)
 
-        self.wheeledbase.goto(*self.path[-1])
+        self.wheeledbase.goto_delta(-110, 0)
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
         
         self.wheeledbase.turnonthespot(-pi/2)
         while not self.wheeledbase.isarrived():
