@@ -96,7 +96,6 @@ try:
     class LightButtonComponent(LightButton, Component):
         def __init__(self, switchpin, ledpin):
             LightButton.__init__(self, switchpin, ledpin)
-            print("lightbutton created")
 
         def _cleanup(self):
             self.close()
@@ -216,7 +215,7 @@ class Server(TCPTalksServer):
         comp = SwitchComponent(switchpin, active_high=active_high)
         compid = (switchpin,)
         self.addcomponent(comp, compid)
-        comp.set_function(self.send, MAKE_MANAGER_EXECUTE_OPCODE, None, compid)
+        comp.set_function(self.send, MAKE_MANAGER_EXECUTE_OPCODE, compid, id=None, broadcast=True)
         return compid
 
     def CREATE_LIGHTBUTTON_COMPONENT(self, switchpin, ledpin):
@@ -225,7 +224,7 @@ class Server(TCPTalksServer):
         comp = LightButtonComponent(switchpin, ledpin)
         compid = (switchpin, ledpin)
         self.addcomponent(comp, compid)
-        comp.set_function(self.send, MAKE_MANAGER_EXECUTE_OPCODE, None, compid)
+        comp.set_function(self.send, MAKE_MANAGER_EXECUTE_OPCODE, compid, id=None, broadcast=True)
         print("lightbutton component created")
         return compid
 
@@ -263,6 +262,7 @@ class Manager(TCPTalks):
                 self.picameras[compid].currentframe = currentframe
 
     def MAKE_MANAGER_EXECUTE(self, compid):
+        print("Manager Execute : ", compid)
         if compid in self.functions:
             self.functions[compid](*self.args[compid])
 
@@ -283,7 +283,6 @@ class Proxy:
                                              timeout=tcptimeout)
 
             object.__setattr__(self, methodname, MethodType(method, self))
-        print("Proxy Created")
 
     def __getattr__(self, attrname, tcptimeout=10):
         if attrname in object.__getattribute__(self, "_attrlist"):

@@ -553,11 +553,15 @@ class TCPTalksServer:
     def full(self):
         return len(self.client) >= self.NbClients
 
-    def send(self, opcode, *args, id=None, **kwargs):
+    def send(self, opcode, *args, id=None, broadcast=False, **kwargs):
         try:
             id = id if not id is None else list(self.client.keys())[0]
         except IndexError:
             raise NotConnectedError('No more client to talks')
+
+        if broadcast:
+            for id in self.client.keys():
+                return self.client[id].send(opcode, *args, **kwargs)
 
         return self.client[id].send(opcode, *args, **kwargs)
 
