@@ -53,6 +53,17 @@ class tabAtoms(Actionnable):
         except:
             pass
 
+       
+
+
+
+    def realize(self):
+
+        if self.side == self.YELLOW:
+            self.pushers.down_r()
+        if self.side == self.PURPLE:
+            self.pushers.down_l()
+        
         self.wheeledbase.turnonthespot(-pi)
         self.wheeledbase.wait()
 
@@ -62,8 +73,6 @@ class tabAtoms(Actionnable):
             pass
 
 
-
-    def realize(self):
         if self.side == self.YELLOW:
             self.wheeledbase.turnonthespot(-pi/2)
         else:
@@ -74,10 +83,8 @@ class tabAtoms(Actionnable):
         
 
     def before(self):
-        if self.side == self.YELLOW:
-            self.pushers.down_r()
-        if self.side == self.PURPLE:
-            self.pushers.down_l()
+        pass
+
 
     def after(self):
         self.pushers.up_l()
