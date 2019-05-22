@@ -1,7 +1,7 @@
 from robots.setup_display import *
 from robots.automaton import Automaton
 from common.components import LightButtonProxy, SwitchProxy
-
+from threading import Semaphore
 
 class ButtonsManager:
     RED_PIN = 18  # 1
@@ -12,28 +12,31 @@ class ButtonsManager:
     GREEN_LIGHT = 21
     ORANGE_PIN = 5  # 4
     ORANGE_LIGHT = 16
+    TIRETTE_PIN = 26
+    URGENCY_PIN = 20
 
     def begin(self):
         print("debut Button Manager")
         ssd.clear_messages()
         ssd.set_message("set team")
-        self.blue.set_function(Thread(target=self.set_team_purple).start)
-        self.orange.set_function(Thread(target=self.set_team_orange).start)
-        self.red.set_function(Thread(target=self.begin).start)
+        self.blue.set_function(Thread(target=self.set_team_purple, daemon=True).start)
+        self.orange.set_function(Thread(target=self.set_team_orange, daemon=True).start)
+        self.red.set_function(Thread(target=self.begin, daemon=True).start)
+        self.p.acquire()
 
     def set_team_orange(self):
         print("team jaune")
         self.side = Automaton.YELLOW
         ssd.clear_messages()
         ssd.set_message("team : o")
-        self.green.set_function(Thread(target=self.odometry_stage).start)
+        self.green.set_function(Thread(target=self.odometry_stage, daemon=True).start)
 
     def set_team_purple(self):
         print("team mauve")
         self.side = Automaton.PURPLE
         ssd.clear_messages()
         ssd.set_message("team : m")
-        self.green.set_function(Thread(target=self.odometry_stage).start)
+        self.green.set_function(Thread(target=self.odometry_stage, daemon=True).start)
 
     def odometry_stage(self):
         print("validation team")
@@ -43,7 +46,7 @@ class ButtonsManager:
         self.auto.set_side(self.side)
         ssd.clear_messages()
         ssd.set_message("set pos")
-        self.green.set_function(Thread(target=self.tirette_stage).start)
+        self.green.set_function(Thread(target=self.tirette_stage, daemon=True).start)
 
     def tirette_stage(self):
         print("validation odometry")
@@ -52,36 +55,39 @@ class ButtonsManager:
 
         ssd.clear_messages()
         ssd.set_message("tirette")
-        self.tirette.set_function(Thread(target=self.urgency_stage).start)
+        self.tirette.set_function(Thread(target=self.urgency_stage, daemon=True).start)
 
     def urgency_stage(self):
         print("validation tirette")
         ssd.clear_messages()
         ssd.set_message("urgency")
-        self.urgency.set_function(Thread(target=self.positioning_stage).start)
+        self.urgency.set_function(Thread(target=self.positioning_stage, daemon=True).start)
 
     def positioning_stage(self):
+        print("validation urgency")
         print("positionnement")
         self.auto.positioning()
         self.ready_stage()
 
     def ready_stage(self):
-        print("validation urgency")
+        print("ready")
         self.urgency.close()
+
         ssd.clear_messages()
         ssd.set_message("ready")
-        self.tirette.set_function(Thread(target=self.run_match).start)
+
+        self.tirette.close()
+        self.tirette = SwitchProxy(manager, self.TIRETTE_PIN, active_high=False)
+        self.tirette.set_function(Thread(target=self.run_match, daemon=True).start)
 
     def run_match(self):
         print("lancement match")
         self.tirette.close()
         self.red.close()
-        self.auto.run()
+        self.p.release()
+        Thread(target=self.auto.run(), daemon=True).start()
 
     def __init__(self, auto):
-        self.tirette_pin = 26
-        self.urgency_pin = 20
-
         self.auto = auto
         self.side = None
 
@@ -89,5 +95,7 @@ class ButtonsManager:
         self.green = LightButtonProxy(manager, self.GREEN_PIN, self.GREEN_LIGHT)
         self.blue = LightButtonProxy(manager, self.BLUE_PIN, self.BLUE_LIGHT)
         self.orange = LightButtonProxy(manager, self.ORANGE_PIN, self.ORANGE_LIGHT)
-        self.tirette = SwitchProxy(manager, self.tirette_pin)
-        self.urgency = SwitchProxy(manager, self.urgency_pin, active_high=False)
+        self.tirette = SwitchProxy(manager, self.TIRETTE_PIN)
+        self.urgency = SwitchProxy(manager, self.URGENCY_PIN, active_high=False)
+
+        self.p = Semaphore(0)

@@ -141,14 +141,6 @@ class Bornibus(Automaton):
         self.display.stop()
         self.wheeledbase.stop()
 
+
 if __name__ == "__main__":
-    auto = Bornibus()
-    if color == "YELLOW" :
-        auto.set_side(Bornibus.YELLOW)
-    if color == "PURPLE" :
-        auto.set_side(Bornibus.PURPLE)
-    init_robot()
-    auto.set_position()
-    print("ready")
-    input()
-    auto.run()
+    Bornibus().start_preparation()
