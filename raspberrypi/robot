@@ -93,6 +93,7 @@ def server(args):
             continue
 
 def stop(args):
+    import os
     os.system("sudo kill `pidof python3`")
 
 
