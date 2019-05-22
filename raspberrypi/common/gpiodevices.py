@@ -50,8 +50,8 @@ class LightButton(Device):
             self.kwargs = kwargs
             self.input_pin = input_pin
             self.light_pin = light_pin
-            if GPIO.getmode() != GPIO.BOARD:
-                GPIO.setmode(GPIO.BOARD)
+            if GPIO.getmode() != GPIO.BCM:
+                GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.input_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
             GPIO.setup(self.light_pin, GPIO.OUT)
             GPIO.add_event_detect(self.input_pin, GPIO.FALLING, callback=self.launch_function, bouncetime=500)

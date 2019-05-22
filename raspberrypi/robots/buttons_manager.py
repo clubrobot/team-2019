@@ -3,6 +3,15 @@ from robots.automaton import Automaton
 from common.components import LightButtonProxy, SwitchProxy
 
 class ButtonsManager:
+    RED_PIN = 18  # 1
+    RED_LIGHT = 23
+    BLUE_PIN = 12  # 2
+    BLUE_LIGHT = 4
+    GREEN_PIN = 6  # 3
+    GREEN_LIGHT = 21
+    ORANGE_PIN = 5  # 4
+    ORANGE_LIGHT = 16
+
     def begin(self):
         print("debut Button Manager")
         ssd.clear_messages()
@@ -69,24 +78,15 @@ class ButtonsManager:
         self.auto.run()
 
     def __init__(self, auto):
-        self.red_pin = 18  # 1
-        self.red_light = 23
-        self.blue_pin = 12  # 2
-        self.blue_light = 4
-        self.green_pin = 6  # 3
-        self.green_light = 21
-        self.orange_pin = 5  # 4
-        self.orange_light = 16
-
         self.tirette_pin = 26
         self.urgency_pin = 20
 
         self.auto = auto
         self.side = None
 
-        self.red = LightButtonProxy(manager, self.red_pin, self.red_light)
-        self.green = LightButtonProxy(manager, self.green_pin, self.green_light)
-        self.blue = LightButtonProxy(manager, self.blue_pin, self.blue_light)
-        self.orange = LightButtonProxy(manager, self.orange_pin, self.orange_light)
+        self.red = LightButtonProxy(manager, self.RED_PIN, self.RED_LIGHT)
+        self.green = LightButtonProxy(manager, self.GREEN_PIN, self.GREEN_LIGHT)
+        self.blue = LightButtonProxy(manager, self.BLUE_PIN, self.BLUE_LIGHT)
+        self.orange = LightButtonProxy(manager, self.ORANGE_PIN, self.ORANGE_LIGHT)
         self.tirette = SwitchProxy(manager, self.tirette_pin)
         self.urgency = SwitchProxy(manager, self.urgency_pin, active_high=False)
