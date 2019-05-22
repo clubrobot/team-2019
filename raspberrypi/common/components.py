@@ -437,7 +437,7 @@ class SwitchProxy(Proxy):
 
     def __init__(self, manager, switchpin, active_high=True):
         compid = manager.execute(CREATE_SWITCH_COMPONENT_OPCODE, switchpin, active_high=active_high)
-        attrlist = ['state', 'PinInput']
+        attrlist = ['state', 'input_pin']
         methlist = ['close']
         Proxy.__init__(self, manager, compid, attrlist, methlist)
 
@@ -450,8 +450,8 @@ class LightButtonProxy(Proxy):
 
     def __init__(self, manager, switchpin, ledpin):
         compid = manager.execute(CREATE_LIGHTBUTTON_COMPONENT_OPCODE, switchpin, ledpin)
-        attrlist = ['state', 'PinInput', 'PinLight']
-        methlist = ['SetAutoSwitch', 'On', 'Off', 'Switch', 'close']
+        attrlist = ['state', 'input_pin', 'light_pin']
+        methlist = ['set_auto_switch', 'on', 'off', 'switch', 'close']
         Proxy.__init__(self, manager, compid, attrlist, methlist)
 
     def set_function(self, function, *args):
