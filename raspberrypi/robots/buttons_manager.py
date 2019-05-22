@@ -2,6 +2,7 @@ from robots.setup_display import *
 from robots.automaton import Automaton
 from common.components import LightButtonProxy, SwitchProxy
 
+
 class ButtonsManager:
     RED_PIN = 18  # 1
     RED_LIGHT = 23
@@ -16,23 +17,23 @@ class ButtonsManager:
         print("debut Button Manager")
         ssd.clear_messages()
         ssd.set_message("set team")
-        self.blue.set_function(self.set_team_purple)
-        self.orange.set_function(self.set_team_orange)
-        self.red.set_function(self.begin)
+        self.blue.set_function(Thread(target=self.set_team_purple).start)
+        self.orange.set_function(Thread(target=self.set_team_orange).start)
+        self.red.set_function(Thread(target=self.begin).start)
 
     def set_team_orange(self):
         print("team jaune")
         self.side = Automaton.YELLOW
         ssd.clear_messages()
         ssd.set_message("team : o")
-        self.green.set_function(self.odometry_stage)
+        self.green.set_function(Thread(target=self.odometry_stage).start)
 
     def set_team_purple(self):
         print("team mauve")
         self.side = Automaton.PURPLE
         ssd.clear_messages()
         ssd.set_message("team : m")
-        self.green.set_function(self.odometry_stage)
+        self.green.set_function(Thread(target=self.odometry_stage).start)
 
     def odometry_stage(self):
         print("validation team")
@@ -42,7 +43,7 @@ class ButtonsManager:
         self.auto.set_side(self.side)
         ssd.clear_messages()
         ssd.set_message("set pos")
-        self.green.set_function(self.tirette_stage)
+        self.green.set_function(Thread(target=self.tirette_stage).start)
 
     def tirette_stage(self):
         print("validation odometry")
@@ -51,13 +52,13 @@ class ButtonsManager:
 
         ssd.clear_messages()
         ssd.set_message("tirette")
-        self.tirette.set_function(self.urgency_stage)
+        self.tirette.set_function(Thread(target=self.urgency_stage).start)
 
     def urgency_stage(self):
         print("validation tirette")
         ssd.clear_messages()
         ssd.set_message("urgency")
-        self.urgency.set_function(self.positioning_stage)
+        self.urgency.set_function(Thread(target=self.positioning_stage).start)
 
     def positioning_stage(self):
         print("positionnement")
@@ -69,7 +70,7 @@ class ButtonsManager:
         self.urgency.close()
         ssd.clear_messages()
         ssd.set_message("ready")
-        self.tirette.set_function(self.run_match)
+        self.tirette.set_function(Thread(target=self.run_match).start)
 
     def run_match(self):
         print("lancement match")
