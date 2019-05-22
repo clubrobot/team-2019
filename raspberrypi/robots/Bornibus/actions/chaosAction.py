@@ -50,12 +50,13 @@ class chaos(Actionnable):
         # self.wheeledbase.right_wheel_maxPWM.set(1)
         # self.wheeledbase.left_wheel_maxPWM.set(1)
         
-        self.wheeledbase.goto(*self.points["Cha1"], theta=0)
+        self.wheeledbase.goto(*self.points["Cha1"])
         self.wheeledbase.wait()
 
     def realize(self):
         self.wheeledbase.max_angvel.set(2)
         self.wheeledbase.lookahead.set(300)
+        self.wheeledbase.lookaheadbis.set(150)
         self.wheeledbase.linpos_threshold.set(10)
         if self.side == self.YELLOW:
             self.pushers.down_l()
