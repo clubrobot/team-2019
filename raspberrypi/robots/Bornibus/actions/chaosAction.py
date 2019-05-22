@@ -51,7 +51,7 @@ class chaos(Actionnable):
         self.wheeledbase.wait()
 
     def realize(self):
-        self.wheeledbase.max_angvel.set(2)
+        self.wheeledbase.max_angvel.set(1)
         self.wheeledbase.lookahead.set(300)
         self.wheeledbase.lookaheadbis.set(150)
         self.wheeledbase.linpos_threshold.set(5)
