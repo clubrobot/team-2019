@@ -50,11 +50,11 @@ class ButtonsManager:
     def tirette_stage(self):
         print("validation odometry")
         self.auto.set_position()
-        self.green.close()
 
         ssd.clear_messages()
         ssd.set_message("tirette")
         self.tirette.set_function(Thread(target=self.urgency_stage, daemon=True).start)
+        self.green.set_function(None)
 
     def urgency_stage(self):
         print("validation tirette")
@@ -85,8 +85,8 @@ class ButtonsManager:
         self.orange.close()
         self.green.close()
 
-        self.p.release()
         Thread(target=self.auto.run(), daemon=True).start()
+        self.p.release()
 
     def __init__(self, auto):
         self.auto = auto

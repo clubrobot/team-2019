@@ -20,10 +20,8 @@ class Switch(Device):
             self.kwargs = kwargs
             self.input_pin = input_pin
             self.button = Button(input_pin, pull_up=True)
-            if active_high:
-                self.button.when_pressed = self.launch_function
-            else:
-                self.button.when_released = self.launch_function
+            self.set_active_high(active_high)
+
         else:
             raise RuntimeError('pin already in use')
 
