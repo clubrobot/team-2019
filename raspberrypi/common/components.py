@@ -96,6 +96,7 @@ try:
     class LightButtonComponent(LightButton, Component):
         def __init__(self, switchpin, ledpin):
             LightButton.__init__(self, switchpin, ledpin)
+            print("lightbutton created")
 
         def _cleanup(self):
             self.close()
@@ -225,6 +226,7 @@ class Server(TCPTalksServer):
         compid = (switchpin, ledpin)
         self.addcomponent(comp, compid)
         comp.set_function(self.send, MAKE_MANAGER_EXECUTE_OPCODE, None, compid)
+        print("lightbutton component created")
         return compid
 
     def CREATE_PICAMERA_COMPONENT(self, resolution, framerate):
@@ -238,6 +240,7 @@ class Server(TCPTalksServer):
 
 class Manager(TCPTalks):
     MANAGER_CREATED = None
+
     def __init__(self, ip='localhost', port=COMPONENTS_SERVER_DEFAULT_PORT, password=None):
         TCPTalks.__init__(self, ip, port=port, password=password)
         # PiCamera components
@@ -269,8 +272,7 @@ class Manager(TCPTalks):
             return result
 
 
-class Proxy():
-
+class Proxy:
     def __init__(self, manager, compid, attrlist, methlist):
         object.__setattr__(self, '_manager', manager)
         object.__setattr__(self, '_compid', compid)
@@ -281,6 +283,7 @@ class Proxy():
                                              timeout=tcptimeout)
 
             object.__setattr__(self, methodname, MethodType(method, self))
+        print("Proxy Created")
 
     def __getattr__(self, attrname, tcptimeout=10):
         if attrname in object.__getattribute__(self, "_attrlist"):
@@ -422,12 +425,12 @@ class SecureSerialTalksProxy(Proxy):
         object.__setattr__(self, "connect", MethodType(connect, self))
         object.__setattr__(self, "execute", MethodType(execute, self))
         object.__setattr__(self, "send", MethodType(send, self))
+
     def bind(self, opcode, function):
         if not str(opcode) + self._compid in self._manager.instructions:
             self._manager.serial_instructions[str(opcode) + self._compid] = function
         else:
             raise KeyError("Opcode already use")
-
 
 
 class SwitchProxy(Proxy):
