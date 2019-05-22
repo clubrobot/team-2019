@@ -130,7 +130,7 @@ def update(args):
         print("updating " + arduino)
         subprocess.run(['/usr/bin/make', 'upload_safe', '-C', arduino_path])
 
-no_server = ["server", "getuuid"]
+no_server = ["server", "getuuid", "stop"]
 if sys.argv[1] not in no_server:
     manager = Manager("127.0.0.1")
     manager.connect()
