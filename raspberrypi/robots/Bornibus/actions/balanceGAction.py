@@ -45,7 +45,7 @@ class balance(Actionnable):
         self.log("BALANCE ACTION :", "Vers la balance")
         try :
             self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal1"], self.points["Bal2"]],
-                                direction="backward", finalangle=0, lookahead=150, lookaheadbis=5)
+                                direction="backward", finalangle=0, lookahead=150, lookaheadbis=200)
             self.wheeledbase.wait()
         except :
             pass
@@ -55,7 +55,7 @@ class balance(Actionnable):
         self.wheeledbase.max_linvel.set(400)
         
         try :
-            self.wheeledbase.turnonthespot(0)
+            self.wheeledbase.turnonthespot(pi)
             self.wheeledbase.wait()
         except:
             pass
@@ -63,19 +63,44 @@ class balance(Actionnable):
         # Positionnement pour la balance
         self.log("BALANCE ACTION :", "Positionnement pour la balance")
         try:
-            self.wheeledbase.goto(*self.points["Bal3"], theta=0, lookaheadbis=1)
+            #self.wheeledbase.goto(*self.points["Bal3"])
+            self.wheeledbase.goto_delta(-265,0)
+            self.wheeledbase.wait()
         except:
             pass
-            
+        #TODO COULEUR
+
+        self.wheeledbase.turnonthespot(pi/2)
+        self.wheeledbase.wait()
+        self.wheeledbase.right_wheel_maxPWM.set(0.5)
+        self.wheeledbase.left_wheel_maxPWM.set(0.5)
+
+
+        try :
+            self.wheeledbase.goto_delta(-200, 0)
+            self.wheeledbase.wait()
+        except :
+            pass
+        self.wheeledbase.stop()
+
+
+        self.wheeledbase.right_wheel_maxPWM.set(1)
+        self.wheeledbase.left_wheel_maxPWM.set(1)
+        self.wheeledbase.goto_delta(90,0)
+        self.wheeledbase.wait()
+
+        self.wheeledbase.turnonthespot(0)
+        self.wheeledbase.wait()
+
         self.wheeledbase.right_wheel_maxPWM.set(0.5)
         self.wheeledbase.left_wheel_maxPWM.set(0.5)
 
         try :
-            self.wheeledbase.set_velocities(200, 0)
-            time.sleep(2)
+            self.wheeledbase.goto_delta(300, 0)
+            self.wheeledbase.wait()
         except :
             pass
-        self.wheeledbase.set_velocities(0, 0)
+        self.wheeledbase.stop()
 
         self.wheeledbase.reset_parameters()
         self.wheeledbase.max_linacc.set(500.0)
