@@ -11,8 +11,9 @@ from robots.Bornibus.actions.chaosAction import *
 from common.actions.action import ThreadActionManager
 from robots.sensors_manager import *
 
-#color = "YELLOW"
-color = "PURPLE"
+#COLOR = "YELLOW"
+COLOR = "PURPLE"
+PREPARATION = False
 
 class Bornibus(Automaton):
 
@@ -86,6 +87,8 @@ class Bornibus(Automaton):
     def stop_match(self):
         import time
         time.sleep(100)
+        self.tam.stop()
+        sens_manager.stop()
         wheeledbase.stop()
         disp.stop()
         gripper.open()
@@ -94,13 +97,11 @@ class Bornibus(Automaton):
         manager.disconnect()
 
     def run(self):
-
+        begin = time.time()
         self.log("MAIN : ", "RUN...")
         self.log.reset_time()
         Thread(target=self.stop_match).start()
         self.display.start()
-        begin = time.time()
-
         sens_manager.start()
         wheeledbase.reset_parameters()
         disp.points = 0
@@ -109,6 +110,8 @@ class Bornibus(Automaton):
         gripper.open()
 
         self.tam.start()
+
+        print("temps init : ", time.time() - begin)
 
         for act in self.action_list:
             
@@ -142,5 +145,14 @@ class Bornibus(Automaton):
         self.wheeledbase.stop()
 
 
-if __name__ == "__main__":
-    Bornibus().start_preparation()
+if __name__ == '__main__':
+    if PREPARATION:
+        Bornibus().start_preparation()
+    else:
+        auto = Bornibus()
+        auto.set_side(COLOR)
+        init_robot()
+        auto.set_position()
+        print("ready")
+        input()
+        auto.run()

@@ -93,6 +93,8 @@ class R128(Automaton):
 
     def stop_match(self):
         time.sleep(100)
+        self.tam.stop()
+        sens_manager.stop()
         wheeledbase.stop()
         self.display.stop()
         armFront.stop_pump()

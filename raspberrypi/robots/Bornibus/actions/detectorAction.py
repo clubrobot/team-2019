@@ -34,13 +34,16 @@ class detector(Actionnable):
 
 
     def moving(self):
-        self.wheeledbase.max_linvel.set(700)
-        self.wheeledbase.max_angvel.set(10)
-        self.wheeledbase.lookahead.set(150.0)
-        self.wheeledbase.max_linacc.set(500.0)
-        self.wheeledbase.max_lindec.set(500.0)
-        self.wheeledbase.right_wheel_maxPWM.set(1)
-        self.wheeledbase.left_wheel_maxPWM.set(1)
+        self.wheeledbase.reset_parameters()
+        self.wheeledbase.max_linacc.set(800.0)
+        self.wheeledbase.max_lindec.set(800.0)
+        # self.wheeledbase.max_linvel.set(700)
+        # self.wheeledbase.max_angvel.set(10)
+        # self.wheeledbase.lookahead.set(150.0)
+        # self.wheeledbase.max_linacc.set(500.0)
+        # self.wheeledbase.max_lindec.set(500.0)
+        # self.wheeledbase.right_wheel_maxPWM.set(1)
+        # self.wheeledbase.left_wheel_maxPWM.set(1)
 
         # Vers l'accélérateur
         self.log("DETECTOR ACTION : ", "Vers l'accelerateur")
