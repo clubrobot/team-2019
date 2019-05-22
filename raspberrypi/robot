@@ -6,7 +6,6 @@ from argparse import ArgumentParser
 from common.serialtalks import *
 from common.components import Manager, Server
 from robots.automaton import *
-import time
 
 DEV_MODE = True
 MATCH_MODE = False
@@ -45,6 +44,7 @@ def showip(args):
         ips = []
         wlan_up = False
         attempts = 0
+        import time
         while not wlan_up and attempts < 10:
             proc = subprocess.run(['iwconfig', 'wlan0'], stdout=subprocess.PIPE)
             wifi_config = proc.stdout.strip().decode('utf8')
