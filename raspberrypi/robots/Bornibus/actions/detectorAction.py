@@ -1,5 +1,5 @@
-#!/usr/bin/python3
-#-*- coding: utf-8 -*-
+# !/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 import time
 from math import pi
@@ -8,9 +8,11 @@ from common.funcutils      import *
 from common.geogebra import Geogebra
 from daughter_cards.wheeledbase import *
 
+
 class detector(Actionnable):
-    YELLOW  = 0
-    PURPLE  = 1
+    YELLOW = 0
+    PURPLE = 1
+
     def __init__(self, geogebra, daughter_cards, side, log):
         self.geogebra       = geogebra
         self.log            = log
@@ -35,8 +37,6 @@ class detector(Actionnable):
 
     def moving(self):
         self.wheeledbase.reset_parameters()
-        self.wheeledbase.max_linacc.set(800.0)
-        self.wheeledbase.max_lindec.set(800.0)
         # self.wheeledbase.max_linvel.set(700)
         # self.wheeledbase.max_angvel.set(10)
         # self.wheeledbase.lookahead.set(150.0)
@@ -47,9 +47,11 @@ class detector(Actionnable):
 
         # Vers l'accélérateur
         self.log("DETECTOR ACTION : ", "Vers l'accelerateur")
-
         self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Det1"], self.points["Det2"],
-                                 self.points["Det3"], self.points["Det4"]], direction="forward", lookahead=150, lookaheadbis=3)
+                                      self.points["Det3"], self.points["Det4"]], direction="forward")
+        self.log("DETECTOR ACTION : ", "PurePursuit lance")
+        self.wheeledbase.linpos_threshold.set(10)
+
         self.wheeledbase.wait()
         self.wheeledbase.turnonthespot(0)
         self.wheeledbase.wait()
@@ -59,6 +61,7 @@ class detector(Actionnable):
             self.wheeledbase.set_velocities(-200, 0)
         except :
             pass
+        self.wheeledbase.lookaheadbis.set(1)
         time.sleep(2)
         self.wheeledbase.set_velocities(0, 0)
         self.wheeledbase.right_wheel_maxPWM.set(1)
@@ -70,7 +73,6 @@ class detector(Actionnable):
         if self.side == self.PURPLE :
             self.wheeledbase.goto_delta(90, -30)            
         self.wheeledbase.wait()
-        self.wheeledbase.lookaheadbis.set(150)
 
     def realize(self):
         # Prépare le bras
