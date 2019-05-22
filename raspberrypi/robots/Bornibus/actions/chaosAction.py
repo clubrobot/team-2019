@@ -42,22 +42,19 @@ class chaos(Actionnable):
         self.wheeledbase.reset_parameters()
         self.wheeledbase.linpos_threshold.set(10)
         self.wheeledbase.lookaheadbis.set(10)
-        # self.wheeledbase.max_linvel.set(700)
-        # self.wheeledbase.max_linacc.set(500.0)
-        # self.wheeledbase.max_lindec.set(700.0)
-        # self.wheeledbase.max_angvel.set(10)
-        # self.wheeledbase.lookahead.set(150.0)
-        # self.wheeledbase.right_wheel_maxPWM.set(1)
-        # self.wheeledbase.left_wheel_maxPWM.set(1)
-        
-        self.wheeledbase.goto(*self.points["Cha1"])
+
+        if self.side == self.YELLOW:
+            self.wheeledbase.goto(*self.points["Cha1"], theta=-pi/6)
+        else:
+            self.wheeledbase.goto(*self.points["Cha1"], theta=pi/6)
+        self.log("CHAOS ACTION : ", "Arrive zone chaos")
         self.wheeledbase.wait()
 
     def realize(self):
         self.wheeledbase.max_angvel.set(2)
         self.wheeledbase.lookahead.set(300)
         self.wheeledbase.lookaheadbis.set(150)
-        self.wheeledbase.linpos_threshold.set(10)
+        self.wheeledbase.linpos_threshold.set(5)
         if self.side == self.YELLOW:
             self.pushers.down_l()
             self.wheeledbase.goto(*self.points["Cha2"], theta=-2*pi/3)

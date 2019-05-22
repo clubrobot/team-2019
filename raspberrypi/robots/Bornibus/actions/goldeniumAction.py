@@ -39,16 +39,6 @@ class goldenium(Actionnable):
 
     def moving(self):
         self.wheeledbase.reset_parameters()
-        # self.wheeledbase.max_linvel.set(700)
-        # self.wheeledbase.max_angvel.set(10)
-        # self.wheeledbase.lookahead.set(150.0)
-        # self.wheeledbase.max_linacc.set(500.0)
-        # self.wheeledbase.max_lindec.set(500.0)
-        # self.wheeledbase.right_wheel_maxPWM.set(1)
-        # self.wheeledbase.left_wheel_maxPWM.set(1)
-        # self.wheeledbase.angpos_threshold.set(0.3)
-        # self.wheeledbase.linpos_threshold.set(3)
-        # Vers goldenium
         self.log("GOLDENIUM ACTION : ", "Vers goldenium")
         self.wheeledbase.goto(*self.points["Gold1"], theta=pi)
 
@@ -104,8 +94,10 @@ class goldenium(Actionnable):
                     time.sleep(1)
                     self.wheeledbase.reset_parameters()
                     self.wheeledbase.set_velocities(-700, 0)
+                    self.log("GOLDENIUM ACTION : ", "Recule")
                     time.sleep(0.5)
                     self.wheeledbase.set_velocities(0, 0)
+
 
                     # try :
                     #     self.wheeledbase.goto(*self.points["Gold1"], theta=pi, lookaheadbis=1)
@@ -118,9 +110,10 @@ class goldenium(Actionnable):
                     #     except :
                     #         pass
 
-        self.log("GOLDENIUM ACTION : ", "goldenium pris")
+        self.log("GOLDENIUM ACTION : ", "fin")
 
         if self.endstops.get_ES3():
+            self.log("GOLDENIUM ACTION : ", "Goldenium pris : +24 PTS")
             self.display.addPoints(20)
     
     def before(self):
