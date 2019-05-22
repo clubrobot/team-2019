@@ -40,12 +40,11 @@ class ButtonsManager:
 
     def odometry_stage(self):
         print("validation team")
-        self.blue.close()
-        self.orange.close()
-
         self.auto.set_side(self.side)
         ssd.clear_messages()
         ssd.set_message("set pos")
+        self.blue.set_function(None)
+        self.orange.set_function(None)
         self.green.set_function(Thread(target=self.tirette_stage, daemon=True).start)
 
     def tirette_stage(self):
@@ -71,19 +70,21 @@ class ButtonsManager:
 
     def ready_stage(self):
         print("ready")
-        self.urgency.close()
-
         ssd.clear_messages()
         ssd.set_message("ready")
-
-        self.tirette.close()
-        self.tirette = SwitchProxy(manager, self.TIRETTE_PIN, active_high=False)
         self.tirette.set_function(Thread(target=self.run_match, daemon=True).start)
+        self.tirette.set_active_high(False)
+
 
     def run_match(self):
         print("lancement match")
         self.tirette.close()
+        self.urgency.close()
         self.red.close()
+        self.blue.close()
+        self.orange.close()
+        self.green.close()
+
         self.p.release()
         Thread(target=self.auto.run(), daemon=True).start()
 

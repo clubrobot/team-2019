@@ -435,7 +435,7 @@ class SwitchProxy(Proxy):
     def __init__(self, manager, switchpin, active_high=True):
         compid = manager.execute(CREATE_SWITCH_COMPONENT_OPCODE, switchpin, active_high=active_high)
         attrlist = ['state', 'input_pin']
-        methlist = ['close']
+        methlist = ['close', 'set_active_high']
         Proxy.__init__(self, manager, compid, attrlist, methlist)
 
     def set_function(self, function, *args):

@@ -32,6 +32,14 @@ class Switch(Device):
         self.kwargs = kwargs
         self.args = args
 
+    def set_active_high(self, active_high):
+        if active_high:
+            self.button.when_pressed = self.launch_function
+            self.button.when_released = None
+        else:
+            self.button.when_pressed = None
+            self.button.when_released = self.launch_function
+
     def close(self):
         Device.list_pin[self.input_pin] = False
         self.button.close()
