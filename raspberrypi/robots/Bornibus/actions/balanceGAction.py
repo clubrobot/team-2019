@@ -31,6 +31,7 @@ class balance(Actionnable):
         self.points["Bal1"] = self.geogebra.get("Bal1"+color)
         self.points["Bal2"] = self.geogebra.get("Bal2"+color)
         self.points["Bal3"] = self.geogebra.get("Bal3"+color)
+        self.points["Bal4"] = self.geogebra.get("Bal4"+color)
 
     def moving(self):
         self.wheeledbase.reset_parameters()
@@ -45,30 +46,19 @@ class balance(Actionnable):
         # Vers balance
         self.log("BALANCE ACTION :", "Vers la balance")
         try :
-            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal1"], self.points["Bal2"]],
-                                direction="backward", finalangle=0)#, lookahead=150, lookaheadbis=200)
+            self.wheeledbase.linpos_threshold.set(10)
+            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal1"], self.points["Bal2"], self.points["Bal3"], self.points["Bal4"]],
+                                direction="backward", lookahead=200, lookaheadbis=120)
             self.wheeledbase.wait()
         except :
             pass
-            
+        self.wheeledbase.linpos_threshold.set(3)
         self.wheeledbase.max_linacc.set(300)
         self.wheeledbase.max_lindec.set(300)
         self.wheeledbase.max_linvel.set(400)
         
-        try :
-            self.wheeledbase.turnonthespot(pi)
-            self.wheeledbase.wait()
-        except:
-            pass
-
         # Positionnement pour la balance
         self.log("BALANCE ACTION :", "Positionnement pour la balance")
-        try:
-            #self.wheeledbase.goto(*self.points["Bal3"])
-            self.wheeledbase.goto_delta(-265, 0)
-            self.wheeledbase.wait()
-        except:
-            pass
         #TODO COULEUR
 
         self.wheeledbase.turnonthespot(pi/2)
@@ -87,7 +77,7 @@ class balance(Actionnable):
 
         self.wheeledbase.right_wheel_maxPWM.set(1)
         self.wheeledbase.left_wheel_maxPWM.set(1)
-        self.wheeledbase.goto_delta(90,0)
+        self.wheeledbase.goto_delta(80,0)
         self.wheeledbase.wait()
 
         self.wheeledbase.turnonthespot(0)
