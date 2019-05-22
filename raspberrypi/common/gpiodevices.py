@@ -33,9 +33,8 @@ class Switch(Device):
         self.args = args
 
     def close(self):
-        if Device.list_pin[self.input_pin]:
-            Device.list_pin[self.input_pin] = False
-            self.button.close()
+        Device.list_pin[self.input_pin] = False
+        self.button.close()
 
 
 class LightButton(Device):
@@ -88,11 +87,9 @@ class LightButton(Device):
         self.kwargs = kwargs
 
     def close(self):
-        if Device.list_pin[self.input_pin]:
-            Device.list_pin[self.input_pin] = False
-            GPIO.remove_event_detect(self.input_pin)
-            GPIO.cleanup(self.input_pin)
+        Device.list_pin[self.input_pin] = False
+        GPIO.remove_event_detect(self.input_pin)
+        GPIO.cleanup(self.input_pin)
 
-        if Device.list_pin[self.light_pin]:
-            Device.list_pin[self.light_pin] = False
-            GPIO.cleanup(self.light_pin)
+        Device.list_pin[self.light_pin] = False
+        GPIO.cleanup(self.light_pin)

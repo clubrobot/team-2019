@@ -154,11 +154,4 @@ class R128(Automaton):
         manager.disconnect()
 
 if __name__ == '__main__':
-    auto = R128()
-    auto.set_side(R128.PURPLE)
-    init_robot()
-    auto.set_position()
-    print("ready")
-    input()
-    auto.run()
-    pass
+    R128().start_preparation()
