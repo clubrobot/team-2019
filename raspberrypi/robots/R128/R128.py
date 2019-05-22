@@ -11,6 +11,7 @@ from robots.R128.setup_128 import *
 from robots.automaton import Automaton
 from robots.sensors_manager import *
 
+PREPARATION = True
 
 class R128(Automaton):
     DISTRIB6_1 = 1
@@ -154,11 +155,13 @@ class R128(Automaton):
         manager.disconnect()
 
 if __name__ == '__main__':
-    auto = R128()
-    auto.set_side(R128.PURPLE)
-    init_robot()
-    auto.set_position()
-    print("ready")
-    input()
-    auto.run()
-    pass
+    if PREPARATION:
+        R128().start_preparation()
+    else:
+        auto = R128()
+        auto.set_side(R128.PURPLE)
+        init_robot()
+        auto.set_position()
+        print("ready")
+        input()
+        auto.run()

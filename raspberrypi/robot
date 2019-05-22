@@ -6,6 +6,8 @@ from argparse import ArgumentParser
 from common.serialtalks import *
 from common.components import Manager, Server
 from robots.automaton import *
+from daughter_cards.display import SevenSegments
+import os
 
 DEV_MODE = True
 MATCH_MODE = False
@@ -39,18 +41,23 @@ def getuuid(args):
 
 def showip(args):
     try:
+        import time
+        time.sleep(1)
+        man = Manager()
+        man.connect()
+
+        ssd = SevenSegments(man)
         ssd.clear_messages()
         import subprocess
         ips = []
         wlan_up = False
         attempts = 0
-        import time
         while not wlan_up and attempts < 10:
             proc = subprocess.run(['iwconfig', 'wlan0'], stdout=subprocess.PIPE)
             wifi_config = proc.stdout.strip().decode('utf8')
             if wifi_config.find("ESSID:\"") > -1:
                 wlan_up = True
-                time.sleep(5)
+                time.sleep(3)
                 proc = subprocess.run(['hostname', '-I'], stdout=subprocess.PIPE)
                 ips = proc.stdout.strip().decode('utf8').split(" ")
             else:
@@ -60,6 +67,8 @@ def showip(args):
             [ssd.set_message(ip) for ip in ips]
         else:
             ssd.set_message("No Ip found ")
+
+        man.disconnect()
     except RuntimeError as e:
         print(e)
 
@@ -129,19 +138,6 @@ def update(args):
         arduino_path = os.path.dirname(os.path.realpath(__file__)) + '/../arduino/' + arduino
         print("updating " + arduino)
         subprocess.run(['/usr/bin/make', 'upload_safe', '-C', arduino_path])
-
-no_server = ["server", "getuuid"]
-if sys.argv[1] not in no_server:
-    manager = Manager("127.0.0.1")
-    manager.connect()
-    if ROBOT_ID == BORNIBUS_ID:
-        from robots.Bornibus.setup_bornibus import *
-        print("Init robot Bornibus")
-        init_robot()
-    else:
-        from robots.R128.setup_128 import *
-        print("Init robot 128")
-        init_robot()
 
 parser = ArgumentParser()
 subparsers = parser.add_subparsers()

@@ -32,10 +32,17 @@ class Switch(Device):
         self.kwargs = kwargs
         self.args = args
 
+    def set_active_high(self, active_high):
+        if active_high:
+            self.button.when_pressed = self.launch_function
+            self.button.when_released = None
+        else:
+            self.button.when_pressed = None
+            self.button.when_released = self.launch_function
+
     def close(self):
-        if Device.list_pin[self.input_pin]:
-            Device.list_pin[self.input_pin] = False
-            self.button.close()
+        Device.list_pin[self.input_pin] = False
+        self.button.close()
 
 
 class LightButton(Device):
@@ -88,11 +95,9 @@ class LightButton(Device):
         self.kwargs = kwargs
 
     def close(self):
-        if Device.list_pin[self.input_pin]:
-            Device.list_pin[self.input_pin] = False
-            GPIO.remove_event_detect(self.input_pin)
-            GPIO.cleanup(self.input_pin)
+        Device.list_pin[self.input_pin] = False
+        GPIO.remove_event_detect(self.input_pin)
+        GPIO.cleanup(self.input_pin)
 
-        if Device.list_pin[self.light_pin]:
-            Device.list_pin[self.light_pin] = False
-            GPIO.cleanup(self.light_pin)
+        Device.list_pin[self.light_pin] = False
+        GPIO.cleanup(self.light_pin)
