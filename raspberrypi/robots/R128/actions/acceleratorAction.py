@@ -62,7 +62,7 @@ class PutAccelerator(Actionnable):
         self.wheeledbase.set_velocities(50,0)
         time.sleep(3)
 
-        self.wheeledbase.goto_delta(-110, 0)
+        self.wheeledbase.goto_delta(-90, 0)
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
         
