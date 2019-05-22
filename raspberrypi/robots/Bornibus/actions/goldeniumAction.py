@@ -102,36 +102,23 @@ class goldenium(Actionnable):
                     self.log("GOLDENIUM ACTION : ", "BaseException :", e)
                     self.gripper.close()
                     time.sleep(1)
-                    try :
-                        self.wheeledbase.right_wheel_maxPWM.set(1)
-                        self.wheeledbase.left_wheel_maxPWM.set(1)
-                        self.wheeledbase.goto(*self.points["Gold1"], theta=pi, lookaheadbis=1)
-                    except : 
-                        self.wheeledbase.set_velocities(-700, 0)
-                        time.sleep(0.5)
-                        self.wheeledbase.set_velocities(0, 0)
-                        try :
-                            self.wheeledbase.goto(*self.points["Gold1"], theta=pi, lookaheadbis=150)
-                        except :
-                            pass
+                    self.wheeledbase.reset_parameters()
+                    self.wheeledbase.set_velocities(-700, 0)
+                    time.sleep(0.5)
+                    self.wheeledbase.set_velocities(0, 0)
+
+                    # try :
+                    #     self.wheeledbase.goto(*self.points["Gold1"], theta=pi, lookaheadbis=1)
+                    # except :
+                    #     self.wheeledbase.set_velocities(-700, 0)
+                    #     time.sleep(0.5)
+                    #     self.wheeledbase.set_velocities(0, 0)
+                    #     try :
+                    #         self.wheeledbase.goto(*self.points["Gold1"], theta=pi, lookaheadbis=150)
+                    #     except :
+                    #         pass
 
         self.log("GOLDENIUM ACTION : ", "goldenium pris")
-        # self.wheeledbase.right_wheel_maxPWM.set(1)
-        # self.wheeledbase.left_wheel_maxPWM.set(1)
-        # self.wheeledbase.lookaheadbis.set(150)
-        
-        #try :
-        #    self.wheeledbase.goto_delta(-100, 0)
-        #    self.wheeledbase.wait()
-        #except :
-        #    self.wheeledbase.set_velocities(-700, 0)
-        #    time.sleep(0.5)
-        #    self.wheeledbase.set_velocities(0, 0)
-        #    try :
-        #        self.wheeledbase.goto(*self.points["Gold1"], theta=pi, lookaheadbis=150)
-        #    except :
-        #        pass
-
 
         if self.endstops.get_ES3():
             self.display.addPoints(20)

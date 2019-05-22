@@ -65,9 +65,9 @@ class Bornibus(Automaton):
         self.chaosAct       = chaos(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
         self.action_list = [
+            self.chaosAct,
             self.detectorAct,
             self.goldeniumAct,
-            self.chaosAct,
             self.tabAtomsAct,
             self.balanceGAct
         ]
