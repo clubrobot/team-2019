@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 
 import time
-from math import pi
+from math import pi,atan2
 from common.actions.action import *
 from common.funcutils      import *
 from common.geogebra import Geogebra
@@ -45,18 +45,18 @@ class goldenium(Actionnable):
         self.wheeledbase.max_lindec.set(500.0)
         self.wheeledbase.right_wheel_maxPWM.set(1)
         self.wheeledbase.left_wheel_maxPWM.set(1)
-
+        self.wheeledbase.angpos_threshold.set(0.3)
+        self.wheeledbase.linpos_threshold.set(3)
         # Vers goldenium
         self.log("GOLDENIUM ACTION : ", "Vers goldenium")
         self.wheeledbase.goto(*self.points["Gold1"], theta=pi)
-        while not self.wheeledbase.isarrived():
-            print(self.wheeledbase.get_position())
-            time.sleep(0.1)
+        self.wheeledbase.angpos_threshold.set(0.1)
+        self.wheeledbase.linpos_threshold.set(1)
 
     def realize(self):
         # Vers prise goldenium
         self.log("GOLDENIUM ACTION : ", "Prise goldenium")
-
+        self.wheeledbase.turnonthespot(pi)
         goldenium = 0
         beginGoldeniumTime = time.time()
 
