@@ -60,8 +60,11 @@ class balance(Actionnable):
         # Positionnement pour la balance
         self.log("BALANCE ACTION :", "Positionnement pour la balance")
         #TODO COULEUR
-
-        self.wheeledbase.turnonthespot(pi/2)
+        
+        if self.side == self.YELLOW:
+            self.wheeledbase.turnonthespot(-pi/2)
+        else:
+            self.wheeledbase.turnonthespot(pi/2)
         self.wheeledbase.wait()
         self.wheeledbase.right_wheel_maxPWM.set(0.5)
         self.wheeledbase.left_wheel_maxPWM.set(0.5)
