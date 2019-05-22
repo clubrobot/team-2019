@@ -1,9 +1,6 @@
 from robots.setup_display import *
-from gpiozero import Button
 from robots.automaton import Automaton
-
-# GPIO: BTN_1=13 marche pas, BTN_2=12, BTN_3=6, BTN_4=5, TIR=26
-
+from common.components import LightButtonProxy, SwitchProxy
 
 class ButtonsManager:
     def begin(self):
@@ -68,6 +65,7 @@ class ButtonsManager:
     def run_match(self):
         print("lancement match")
         self.tirette.close()
+        self.red.close()
         self.auto.run()
 
     def __init__(self, auto):
@@ -86,9 +84,9 @@ class ButtonsManager:
         self.auto = auto
         self.side = None
 
-        self.red = LightButton(self.red_pin, self.red_light)
-        self.green = LightButton(self.green_pin, self.green_light)
-        self.blue = LightButton(self.blue_pin, self.blue_light)
-        self.orange = LightButton(self.orange_pin, self.orange_light)
-        self.tirette = Switch(self.tirette_pin)
-        self.urgency = Switch(self.urgency_pin, active_high=False)
+        self.red = LightButtonProxy(manager, self.red_pin, self.red_light)
+        self.green = LightButtonProxy(manager, self.green_pin, self.green_light)
+        self.blue = LightButtonProxy(manager, self.blue_pin, self.blue_light)
+        self.orange = LightButtonProxy(manager, self.orange_pin, self.orange_light)
+        self.tirette = SwitchProxy(manager, self.tirette_pin)
+        self.urgency = SwitchProxy(manager, self.urgency_pin, active_high=False)

@@ -7,9 +7,9 @@ class Device:
 
 
 class Switch(Device):
-    def launch_function(self, *args):
+    def launch_function(self):
         if self.function:
-            self.function(*self.args,**self.kwargs)
+            self.function(*self.args, **self.kwargs)
 
     def __init__(self, input_pin, function=None, active_high=True, *args, **kwargs):
         if not Device.list_pin[input_pin]:

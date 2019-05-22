@@ -1,4 +1,4 @@
-from common.components import *
+from common.components import Manager
 
 manager = Manager.MANAGER_CREATED
 

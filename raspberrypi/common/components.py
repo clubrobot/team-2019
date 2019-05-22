@@ -85,24 +85,24 @@ except ImportError:
 try:
     from common.gpiodevices import Switch, LightButton, Device
 
-
     class SwitchComponent(Switch, Component):
-
-        def __init__(self, switchpin):
-            Switch.__init__(self, switchpin)
+        def __init__(self, switchpin, active_high=True):
+            Switch.__init__(self, switchpin, active_high=active_high)
 
         def _cleanup(self):
-            self.Close()
+            self.close()
 
 
     class LightButtonComponent(LightButton, Component):
-
         def __init__(self, switchpin, ledpin):
             LightButton.__init__(self, switchpin, ledpin)
 
         def _cleanup(self):
-            self.Close()
+            self.close()
+
 except ImportError:
+    Switch = None
+except RuntimeError:
     pass
 
 try:
@@ -209,10 +209,10 @@ class Server(TCPTalksServer):
         self.addcomponent(comp, compid)
         return compid
 
-    def CREATE_SWITCH_COMPONENT(self, switchpin):
+    def CREATE_SWITCH_COMPONENT(self, switchpin, active_high=True):
         if (switchpin,) in self.components:
             return (switchpin,)
-        comp = SwitchComponent(switchpin)
+        comp = SwitchComponent(switchpin, active_high=active_high)
         compid = (switchpin,)
         self.addcomponent(comp, compid)
         comp.set_function(self.send, MAKE_MANAGER_EXECUTE_OPCODE, None, compid)
@@ -224,7 +224,7 @@ class Server(TCPTalksServer):
         comp = LightButtonComponent(switchpin, ledpin)
         compid = (switchpin, ledpin)
         self.addcomponent(comp, compid)
-        comp.SetFunction(self.send, MAKE_MANAGER_EXECUTE_OPCODE, None, compid)
+        comp.set_function(self.send, MAKE_MANAGER_EXECUTE_OPCODE, None, compid)
         return compid
 
     def CREATE_PICAMERA_COMPONENT(self, resolution, framerate):
@@ -251,9 +251,6 @@ class Manager(TCPTalks):
         self.bind(MAKE_MANAGER_REPLY_OPCODE, self.MAKE_MANAGER_REPLY)
         self.serial_instructions = {}
         Manager.MANAGER_CREATED = self
-
-    def start_match(self):
-        self.send(MAKE_MATCH_TIMER_OPCODE)
 
     def UPDATE_MANAGER_PICAMERA(self, compid, streamvalue):
         cvimageflags = 1
@@ -435,13 +432,13 @@ class SecureSerialTalksProxy(Proxy):
 
 class SwitchProxy(Proxy):
 
-    def __init__(self, manager, switchpin):
-        compid = manager.execute(CREATE_SWITCH_COMPONENT_OPCODE, switchpin)
+    def __init__(self, manager, switchpin, active_high=True):
+        compid = manager.execute(CREATE_SWITCH_COMPONENT_OPCODE, switchpin, active_high=active_high)
         attrlist = ['state', 'PinInput']
-        methlist = ['Close']
+        methlist = ['close']
         Proxy.__init__(self, manager, compid, attrlist, methlist)
 
-    def SetFunction(self, function, *args):
+    def set_function(self, function, *args):
         self._manager.functions[self._compid] = function
         self._manager.args[self._compid] = args
 
@@ -451,10 +448,10 @@ class LightButtonProxy(Proxy):
     def __init__(self, manager, switchpin, ledpin):
         compid = manager.execute(CREATE_LIGHTBUTTON_COMPONENT_OPCODE, switchpin, ledpin)
         attrlist = ['state', 'PinInput', 'PinLight']
-        methlist = ['SetAutoSwitch', 'On', 'Off', 'Switch', 'Close']
+        methlist = ['SetAutoSwitch', 'On', 'Off', 'Switch', 'close']
         Proxy.__init__(self, manager, compid, attrlist, methlist)
 
-    def SetFunction(self, function, *args):
+    def set_function(self, function, *args):
         self._manager.functions[self._compid] = function
         self._manager.args[self._compid] = args
 

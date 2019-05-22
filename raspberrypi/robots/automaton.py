@@ -20,24 +20,7 @@ class Automaton:
     def positioning(self):
         pass
 
-    @staticmethod
-    def start_preparation():
-        from common.components import Manager
-        manager = Manager()
-        manager.connect()
-        import os
-    
-        if ROBOT_ID == BORNIBUS_ID:
-            print("Launch match Bornibus")
-            from robots.Bornibus.Bornibus import Bornibus
-            auto = Bornibus()
-            print("Button manager Bornibus")
-        else:
-            print("Launch match 128")
-            from robots.R128.R128 import R128
-            print("Init 128")
-            auto = R128()
-        print("Button manager")
+    def start_preparation(self):
         from robots.buttons_manager import ButtonsManager
-        ButtonsManager(auto).begin()
+        ButtonsManager(self).begin()
 
