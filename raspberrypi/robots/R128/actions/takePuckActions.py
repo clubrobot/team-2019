@@ -60,10 +60,10 @@ class TakePuckSync(Actionnable):
 
             # recalage point
             self.RecalagePoint  = self.geogebra.get('Recal{}'.format(self.side))
-            self.point = (self.point[0] + offset_x, self.point[1] + offset_y)
+            self.point = (self.point[0] + offset_x, self.point[1])
             self.actionPoint    = ActPoint(self.point, pi)
         else:
-            self.point = (self.point[0] + offset_x, self.point[1] + offset_y)
+            self.point = (self.point[0] + offset_x, self.point[1])
             self.actionPoint    = ActPoint(self.point, pi/2)
 
         # 3 tank pos list
