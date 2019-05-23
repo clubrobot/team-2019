@@ -46,9 +46,9 @@ class balance(Actionnable):
         # self.wheeledbase.left_wheel_maxPWM.set(1)
         # Waiting for mutex
 
-        #if self.master.is_active():
-        #    while self.master.get_ressource("balance"):
-        #        time.sleep(0.4)
+        if self.master.is_active():
+            while not self.master.get_ressource("balance"):
+                time.sleep(0.4)
         # Vers balance
         self.log("BALANCE ACTION :", "Vers la balance")
         try :
@@ -140,14 +140,14 @@ class balance(Actionnable):
 
         time.sleep(0.5)
         self.wheeledbase.goto_delta(-220,0)
-        self.wheelbase.wait()
+        self.wheeledbase.wait()
 
     def before(self):
         pass
 
     def after(self):
         self.master.release_ressource("balance")
-      #  self.wheeledbase.stop()
+        #  self.wheeledbase.stop()
 
     #override
     def getAction(self):
