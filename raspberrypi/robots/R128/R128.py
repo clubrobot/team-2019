@@ -25,7 +25,8 @@ class R128(Automaton):
         self.daughter_cards = dict( wheeledbase     = wheeledbase, 
                                     armFront        = armFront,
                                     armBack         = armBack,
-                                    display         = disp)
+                                    display         = disp,
+                                    master          = beacons)
 
         # Save annexes inf
         self.side           = Automaton.UNDEFINED
