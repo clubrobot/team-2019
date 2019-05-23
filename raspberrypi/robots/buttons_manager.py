@@ -16,27 +16,32 @@ class ButtonsManager:
     URGENCY_PIN = 20
 
     def begin(self):
-        print("debut Button Manager")
-        ssd.set_message("set team")
-        self.blue.set_function(Thread(target=self.set_team_purple, daemon=True).start)
-        self.orange.set_function(Thread(target=self.set_team_orange, daemon=True).start)
-        self.red.set_function(Thread(target=self.begin, daemon=True).start)
+        print("BUTTON MANAGER : Start")
+        Thread(target=self.team_stage, daemon=True).start()
         self.p.acquire()
 
-    def set_team_orange(self):
-        print("team jaune")
+    def team_stage(self):
+        print("BUTTON MANAGER : Team Stage")
+        ssd.set_message("set team")
+        self.blue.set_function(Thread(target=self.set_team_purple, daemon=True).start)
+        self.orange.set_function(Thread(target=self.set_team_yellow, daemon=True).start)
+        self.red.set_function(Thread(target=self.begin, daemon=True).start)
+
+    def set_team_yellow(self):
+        print("BUTTON MANAGER : Yellow Team")
         self.side = Automaton.YELLOW
         ssd.set_message("team : o")
         self.green.set_function(Thread(target=self.odometry_stage, daemon=True).start)
 
     def set_team_purple(self):
-        print("team mauve")
+        print("BUTTON MANAGER : Purple Team")
         self.side = Automaton.PURPLE
         ssd.set_message("team : m")
         self.green.set_function(Thread(target=self.odometry_stage, daemon=True).start)
 
     def odometry_stage(self):
-        print("validation team")
+        print("BUTTON MANAGER : Team Validation")
+        print("BUTTON MANAGER : Odometry Stage")
         self.auto.set_side(self.side)
         ssd.set_message("set pos")
         self.blue.set_function(None)
@@ -44,33 +49,34 @@ class ButtonsManager:
         self.green.set_function(Thread(target=self.tirette_stage, daemon=True).start)
 
     def tirette_stage(self):
-        print("validation odometry")
+        print("BUTTON MANAGER : Odometry Validation")
         self.auto.set_position()
 
-        ssd.set_message("tirette")
+        print("BUTTON MANAGER : Tirret Stage")
+        ssd.set_message("tirret")
         self.tirette.set_function(Thread(target=self.urgency_stage, daemon=True).start)
         self.green.set_function(None)
 
     def urgency_stage(self):
-        print("validation tirette")
+        print("BUTTON MANAGER : Tirret Validation")
+        print("BUTTON MANAGER : Urgency Button Stage")
         ssd.set_message("urgency")
         self.urgency.set_function(Thread(target=self.positioning_stage, daemon=True).start)
 
     def positioning_stage(self):
-        print("validation urgency")
-        print("positionnement")
+        print("BUTTON MANAGER : Urgency Button Validation")
+        print("BUTTON MANAGER : Robot Positionning")
         self.auto.positioning()
         self.ready_stage()
 
     def ready_stage(self):
-        print("ready")
+        print("BUTTON MANAGER : Robot Ready !")
         ssd.set_message("ready")
         self.tirette.set_function(Thread(target=self.run_match, daemon=True).start)
         self.tirette.set_active_high(False)
 
-
     def run_match(self):
-        print("lancement match")
+        print("BUTTON MANAGER : MATCH LAUNCHED !!!")
         self.tirette.close()
         self.urgency.close()
         self.red.close()
