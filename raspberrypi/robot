@@ -4,6 +4,7 @@
 from argparse import ArgumentParser
 
 from common.serialtalks import *
+from common.tcptalks import ForeverAloneError
 from common.components import Manager, Server
 from robots.automaton import *
 from daughter_cards.display import SevenSegments
@@ -16,7 +17,30 @@ arduino_list = ['sensors', 'wheeledbase', 'power', 'display', 'modulescollector'
 
 
 def start(args):
-    pass
+    print("ROBOT START")
+    try:
+        man = Manager()
+        man.connect(2)
+    except ForeverAloneError:
+        print("NO SERVER")
+
+    from robots.get_robot_name import ROBOT_ID, BORNIBUS_ID, R128_ID
+    if ROBOT_ID == BORNIBUS_ID:
+        print("BORNIBUS")
+        from robots.Bornibus.Bornibus import Bornibus
+        auto = Bornibus()
+
+    elif ROBOT_ID == R128_ID:
+        print("R128")
+        from robots.R128.R128 import R128
+        auto = R128()
+
+    else:
+        print("NOT ON A ROBOT")
+        return
+
+    auto.start_preparation()
+
 
 def dev_mode(args):
     pass
@@ -47,7 +71,6 @@ def showip(args):
         man.connect()
 
         ssd = SevenSegments(man)
-        ssd.clear_messages()
         import subprocess
         ips = []
         wlan_up = False
@@ -64,7 +87,7 @@ def showip(args):
                 attempts += 1
                 time.sleep(1)
         if wlan_up:
-            [ssd.set_message(ip) for ip in ips]
+            [ssd.set_multi_message(ip) for ip in ips]
         else:
             ssd.set_message("No Ip found ")
 

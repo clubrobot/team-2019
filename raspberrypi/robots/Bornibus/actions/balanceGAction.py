@@ -60,8 +60,11 @@ class balance(Actionnable):
         # Positionnement pour la balance
         self.log("BALANCE ACTION :", "Positionnement pour la balance")
         #TODO COULEUR
-
-        self.wheeledbase.turnonthespot(pi/2)
+        
+        if self.side == self.YELLOW:
+            self.wheeledbase.turnonthespot(-pi/2)
+        else:
+            self.wheeledbase.turnonthespot(pi/2)
         self.wheeledbase.wait()
         self.wheeledbase.right_wheel_maxPWM.set(0.5)
         self.wheeledbase.left_wheel_maxPWM.set(0.5)
@@ -107,7 +110,6 @@ class balance(Actionnable):
         self.gripper.open()
 
         time.sleep(0.5)
-        self.wheeledbase.goto(*self.points["Bal2"], theta=0)#, lookaheadbis=150)
 
     def before(self):
         pass

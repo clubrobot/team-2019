@@ -85,9 +85,6 @@ class TakePuckSync(Actionnable):
         if self.distrib_pos == self.DISTRIB6_1:
             
             # Set velocites to the max
-            self.wheeledbase.max_linacc.set(900.0)
-            self.wheeledbase.max_lindec.set(900.0)
-            self.wheeledbase.max_linvel.set(700)
             self.wheeledbase.lookahead.set(200.0)
             self.wheeledbase.lookaheadbis.set(50.0)
 
@@ -148,7 +145,7 @@ class TakePuckSync(Actionnable):
 
         else:
             # else go to point
-            self.wheeledbase.lookaheadbis.set(150.0)
+            self.wheeledbase.lookaheadbis.set(100.0)
             self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
 
     def realize(self):

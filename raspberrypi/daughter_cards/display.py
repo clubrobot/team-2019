@@ -16,6 +16,7 @@ SET_EEPROM_CHAR_IPDISPLAY_OPCODE    = 0x0C
 SET_MATRIX_MESSAGE_OPCODE           = 0x0D
 SET_IPDISPLAY_MESSAGE_OPCODE        = 0x0E
 CLEAR_IPDISPLAY_MESSAGE_OPCODE		= 0x0F
+SET_IPDISPLAY_UNIQUE_MESSAGE_OPCODE = 0x10
 
 SLIDE_MODE          = 0
 ANIMATION_MODE      = 1
@@ -94,6 +95,11 @@ class SevenSegments(SecureSerialTalksProxy):
 		SecureSerialTalksProxy.__init__(self, parent, uuid, dict())
 
 	def set_message(self, message):
+		if len(message.replace('.', '')) > 12:
+			raise ValueError('message length must 12 characters or less')
+		self.send(SET_IPDISPLAY_UNIQUE_MESSAGE_OPCODE, STRING(message))
+
+	def set_multi_message(self, message):
 		if len(message.replace('.', '')) > 12:
 			raise ValueError('message length must 12 characters or less')
 		self.send(SET_IPDISPLAY_MESSAGE_OPCODE, STRING(message))

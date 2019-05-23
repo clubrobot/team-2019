@@ -59,10 +59,12 @@ class PutAccelerator(Actionnable):
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
 
-        self.wheeledbase.set_velocities(200,0)
-        time.sleep(1)
+        self.wheeledbase.set_velocities(75,0)
+        time.sleep(3)
 
-        self.wheeledbase.goto(*self.path[-1])
+        self.wheeledbase.goto_delta(-85, 0)
+        while not self.wheeledbase.isarrived():
+            time.sleep(0.1)
         
         self.wheeledbase.turnonthespot(-pi/2)
         while not self.wheeledbase.isarrived():
@@ -118,8 +120,8 @@ class PutAccelerator(Actionnable):
     
             self.arm1.move(self.afterTankPos[self.arm1.tank.index()-1])
             self.handeledPuck = self.arm1.tank.get_puck()
-            self.display.addPoints(self.handeledPuck.getPoints().Balance)
-            self.log("BALANCE6", "Add {} points".format(self.handeledPuck.getPoints().Balance))
+            self.display.addPoints(self.handeledPuck.getPoints().Accelerator)
+            self.log("ACCELERATOR", "Add {} points".format(self.handeledPuck.getPoints().Accelerator))
             while not self.arm1.is_arrived():
                 time.sleep(0.1)
 
@@ -232,26 +234,6 @@ class PutAccelerator(Actionnable):
         self.arm2.move(TANK_POS_INTER)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
-
-        # self.arm1.start_pump()
-        # self.arm1.move(self.beforeTankPos[self.arm1.tank.index()-1])
-
-        # while not self.arm1.is_arrived():
-        #     time.sleep(0.1)
-
-        # self.arm1.move(self.TankPos[self.arm1.tank.index()-1])
-
-        # while not self.arm1.is_arrived():
-        #     time.sleep(0.1)
-    
-        # self.arm1.move(self.afterTankPos[self.arm1.tank.index()-1])
-        # self.handeledPuck = self.arm1.tank.get_puck()
-        # while not self.arm1.is_arrived():
-        #     time.sleep(0.1)
-
-        # self.arm1.move(TANK_POS_INTER)
-        # while not self.arm1.is_arrived():
-        #     time.sleep(0.1)
 
     def after(self):
         self.arm1.move(GLOBAL_POS_INTER)

@@ -28,7 +28,6 @@ class DisplayPoints:
 
     def stop(self):
         self.locker.acquire()
-        self.display.clear_messages()
         self.display.set_message("P:" + str(self.points))
         self.display_stop.set()
         self.locker.release()
@@ -88,7 +87,6 @@ class DisplayPoints:
         self._reset_normal(duration)
 
     def updateDisplay(self):
-        self.display.clear_messages()
         remaining_time = MATCH_DURATION-round(time.time() - self.start_time)
         if remaining_time > 0:
             try:

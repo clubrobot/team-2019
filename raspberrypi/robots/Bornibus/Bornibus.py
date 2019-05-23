@@ -55,6 +55,7 @@ class Bornibus(Automaton):
         else:
             color = "P"
         self.points["Ini"] = geo.get("Ini"+color)
+        self.points["End"] = geo.get("End"+color)
         self.points["Ini2"] = geo.get("Ini2"+color)
 
         # Specific Actions initialisation
@@ -136,6 +137,7 @@ class Bornibus(Automaton):
             self.log("MAIN : ", "Let's go to the next action !")
 
         #stop thread action manager
+        self.wheeledbase.goto(*self.points["End"])
         self.tam.stop()
         self.display.stop()
         self.wheeledbase.stop()
