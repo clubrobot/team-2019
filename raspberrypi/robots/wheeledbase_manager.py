@@ -52,10 +52,10 @@ class Mover:
 
     def reset(self):
         self.interupted_lock.acquire()
-        self.wheeledbase.reset_parameters()
+        # self.wheeledbase.reset_parameters()
         self.front_flag.clear()
         self.interupted_lock.release()
-        self.params ={}
+        self.params = {}
 
     def goto(self, x, y, **params):
         self.params = params
@@ -68,36 +68,34 @@ class Mover:
         else:
             self.front_flag.bind(self.back_center.signal)
 
-        self.logger("MOVER : ", "path ", ((x,y),(self.goal)))
         self.isarrived = False
         x, y, _ = self.wheeledbase.get_position()
+        self.logger("MOVER : ", "path ", ((x,y),(self.goal)))
         self.wheeledbase.purepursuit(((x,y),(self.goal)),**self.params)
-        while hypot(x-self.goal[0],y-self.goal[1])>100:
-            while not self.isarrived or self.interupted_status.is_set():
-                try:
-                    if(self.goto_interrupt.is_set()):
-                        break
+        # while hypot(x-self.goal[0], y-self.goal[1])>100:
+        while not self.isarrived or self.interupted_status.is_set():
+            try:
+                if(self.goto_interrupt.is_set()):
+                    break
 
-                    self.isarrived = self.wheeledbase.isarrived()
-                    sleep(0.1)
-                except RuntimeError:
-                    if not self.interupted_lock.acquire(blocking=True, timeout=0.5):
-                        while self.interupted_status.is_set():
-                            sleep(0.1)
-                        continue
-                    #self.logger("MOVER : ", "Spin! ")
-                    x, y, _ = self.wheeledbase.get_position()
-                    vel, ang = self.wheeledbase.get_velocities_wanted(True)
-                    self.wheeledbase.set_velocities(copysign(150, -vel), copysign(1, ang))
-                    time.sleep(1)  # 0.5
-                    self.wheeledbase.set_velocities(copysign(150, vel), 0)
-                    time.sleep(1.2)
-                    self.wheeledbase.purepursuit(((x,y),(self.goal)),**self.params)
-                    self.interupted_lock.release()
-                except TimeoutError:
-                    self.isarrived = False
-
-            x, y, _ = self.wheeledbase.get_position()
+                self.isarrived = self.wheeledbase.isarrived()
+                sleep(0.1)
+            except RuntimeError:
+                if not self.interupted_lock.acquire(blocking=True, timeout=0.5):
+                    while self.interupted_status.is_set():
+                        sleep(0.1)
+                    continue
+                #self.logger("MOVER : ", "Spin! ")
+                x, y, _ = self.wheeledbase.get_position()
+                vel, ang = self.wheeledbase.get_velocities_wanted(True)
+                self.wheeledbase.set_velocities(copysign(150, -vel), copysign(1, ang))
+                time.sleep(1)  # 0.5
+                self.wheeledbase.set_velocities(copysign(150, vel), 0)
+                time.sleep(1.2)
+                self.wheeledbase.purepursuit(((x,y),(self.goal)),**self.params)
+                self.interupted_lock.release()
+            except TimeoutError:
+                self.isarrived = False
 
         # self.on_path_flag.clear()
         

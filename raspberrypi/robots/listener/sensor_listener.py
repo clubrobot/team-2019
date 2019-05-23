@@ -8,14 +8,14 @@ from time import sleep
 from math import hypot
 
 class SensorListener(Thread):
-    def __init__(self, getter, timestep = 0.1, threadhold = 220):
+    def __init__(self, getter, timestep = 0.1, threshold = 220):
         Thread.__init__(self)
         self.daemon = True
         self.signal   = Signal()
         self.getter   = getter
         self.timestep = timestep
         self.stop  = Event()
-        self.threadhold = threadhold
+        self.threshold = threshold
         self.error    = 0
         self.start()
 
@@ -26,7 +26,7 @@ class SensorListener(Thread):
                 left , right = self.getter()
             except TimeoutError:
                 continue
-            if left<self.threadhold or right<self.threadhold :
+            if left<self.threshold or right<self.threshold :
                 self.signal.ping()
 
 

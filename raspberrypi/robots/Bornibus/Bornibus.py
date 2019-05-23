@@ -84,6 +84,7 @@ class Bornibus(Automaton):
             print(*self.points["Ini"])
 
     def positioning(self):
+        init_robot()
         wheeledbase.goto(*self.points["Ini2"],
                          theta=(pi / 2 + pi / 6) if self.side == Automaton.YELLOW else -pi / 2 - pi / 6)
 
@@ -91,7 +92,6 @@ class Bornibus(Automaton):
         import time
         time.sleep(100)
         self.tam.stop()
-        sens_manager.stop()
         wheeledbase.stop()
         disp.stop()
         gripper.open()
@@ -104,7 +104,6 @@ class Bornibus(Automaton):
         self.log.reset_time()
         Thread(target=self.stop_match).start()
         self.display.start()
-        sens_manager.start()
         disp.points = 0
         disp.start()
 
