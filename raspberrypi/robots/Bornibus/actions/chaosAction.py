@@ -70,7 +70,7 @@ class chaos(Actionnable):
             self.wheeledbase.turnonthespot(pi/2)
             self.wheeledbase.wait()
 
-        self.wheeledbase.max_linvel.set(100)
+        self.wheeledbase.max_linvel.set(300)
 
         if self.side == self.YELLOW:
             self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Cha4"], self.points["Cha5"], self.points["Cha6"]], direction='forward', finalangle=-pi/2)#,lookahead=150, lookaheadbis=150)

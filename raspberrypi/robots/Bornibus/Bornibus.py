@@ -11,8 +11,8 @@ from robots.Bornibus.actions.chaosAction import *
 from common.actions.action import ThreadActionManager
 from robots.sensors_manager import *
 
-COLOR = Automaton.PURPLE
 COLOR = Automaton.YELLOW
+COLOR = Automaton.PURPLE
 PREPARATION = False
 
 class Bornibus(Automaton):
