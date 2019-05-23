@@ -4,6 +4,7 @@
 from argparse import ArgumentParser
 
 from common.serialtalks import *
+from common.tcptalks import ForeverAloneError
 from common.components import Manager, Server
 from robots.automaton import *
 from daughter_cards.display import SevenSegments
@@ -17,6 +18,12 @@ arduino_list = ['sensors', 'wheeledbase', 'power', 'display', 'modulescollector'
 
 def start(args):
     print("ROBOT START")
+    try:
+        man = Manager()
+        man.connect(2)
+    except ForeverAloneError:
+        print("NO SERVER")
+
     from robots.get_robot_name import ROBOT_ID, BORNIBUS_ID, R128_ID
     if ROBOT_ID == BORNIBUS_ID:
         print("BORNIBUS")
