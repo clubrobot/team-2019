@@ -5,7 +5,6 @@ import time
 from daughter_cards.arm.RobotArm import *
 from daughter_cards.arm.ArmPosition import *
 from daughter_cards.arm.puckUtils import *
-from daughter_cards.arm.puckUtils import *
 
 
 
