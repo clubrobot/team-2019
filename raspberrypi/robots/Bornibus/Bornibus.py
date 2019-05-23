@@ -11,8 +11,8 @@ from robots.Bornibus.actions.chaosAction import *
 from common.actions.action import ThreadActionManager
 from robots.sensors_manager import *
 
-COLOR = Automaton.YELLOW
 COLOR = Automaton.PURPLE
+COLOR = Automaton.YELLOW
 PREPARATION = False
 
 class Bornibus(Automaton):
@@ -70,7 +70,7 @@ class Bornibus(Automaton):
             self.goldeniumAct,
             self.chaosAct,
             self.tabAtomsAct,
-            self.balanceGAct
+            self.balanceGAct,
         ]
 
         wheeledbase.reset_parameters()
