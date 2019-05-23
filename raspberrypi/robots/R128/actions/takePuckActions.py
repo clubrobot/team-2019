@@ -157,7 +157,7 @@ class TakePuckSync(Actionnable):
         else:
             # else go to point
             self.wheeledbase.lookaheadbis.set(5)
-            self.actionPoint.point = (self..actionPoint.point[0] - offset_x, self..actionPoint.point[1] - offset_y)
+            self.actionPoint.point = (self..actionPoint.point[0] - offset_x, self.actionPoint.point[1] - offset_y)
             self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
 
     def realize(self):
