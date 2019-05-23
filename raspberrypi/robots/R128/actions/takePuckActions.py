@@ -10,7 +10,7 @@ from daughter_cards.arm.puckUtils import *
 
 from threading import Event
 
-RECALAGE_VEL = 300
+RECALAGE_VEL = 100
 offset_x = 0
 
 class TakePuckSync(Actionnable):
@@ -131,10 +131,11 @@ class TakePuckSync(Actionnable):
 
                 self.log("RECALAGE : fonce dans le mur")
                 self.wheeledbase.set_velocities(-RECALAGE_VEL,0)
-                try:
-                    self.wheeledbase.wait()
-                except:
-                    pass
+                time.sleep(2)
+                # try:
+                #     self.wheeledbase.wait()
+                # except:
+                #     pass
 
                 self.correct_pos = self.wheeledbase.get_position()
 
