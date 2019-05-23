@@ -33,6 +33,8 @@ class ClientGS(TCPTalks):
         return self.execute(_RELEASE_RESSOURCE_OPCODE, self.id, name)
 
     def is_active(self):
+        if not self.is_connected:
+            return False
         try:
             return self.execute(_IS_OK_OPCODE, self.id, timeout=1)
         except:
@@ -62,7 +64,21 @@ class ServerGS(TCPTalksServer):
         self.bind(_RELEASE_RESSOURCE_OPCODE, self.release_ressource)
         self.bind(_IS_OK_OPCODE, self._is_ok)
 
+    def run(self):
+        while True:
+            try:
+                while not self.full():
+                    self.connect(timeout=100)
+                self.sleep_until_one_disconnected()
 
+            except KeyboardInterrupt:
+                break
+            except Exception as e:
+                sys.stderr.write('{}: {}\n'.format(type(e).__name__, e))
+                continue
+
+
+                
     def _is_ok(self, idx):
         if _BORNIBUS_ID in list(self.client.keys()) and _R128_ID in list(self.client.keys()):
             try:

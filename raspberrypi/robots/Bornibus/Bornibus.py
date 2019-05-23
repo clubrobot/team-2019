@@ -26,7 +26,8 @@ class Bornibus(Automaton):
                                     arm             = arm,
                                     endstops        = endstops,
                                     gripper         = gripper,
-                                    display         = disp )
+                                    display         = disp,
+                                    master          = beacons)
 
         # Save annexes inf
         self.side           = Automaton.UNDEFINED
@@ -46,6 +47,9 @@ class Bornibus(Automaton):
         self.tam = ThreadActionManager()
 
         self.points = dict()
+
+        # Global sync client
+        self.master = beacons
 
     def set_side(self, side):
         self.side = side
@@ -82,6 +86,7 @@ class Bornibus(Automaton):
         if self.side == Bornibus.YELLOW:
             wheeledbase.set_position(*self.points["Ini"], pi/2)
             print(*self.points["Ini"])
+
 
     def positioning(self):
         init_robot()

@@ -8,6 +8,7 @@ from common.funcutils import *
 from common.geogebra import *
 from common.logger import *
 from daughter_cards.electron import *
+from beacons.global_sync import ClientGS
 from daughter_cards.sensors_IR import *
 from robots.sensors_manager import *
 import time
@@ -27,17 +28,18 @@ sensorsB = SensorsIR(manager, uuid="sensorsB")
 sensorsC = SensorsIR(manager, uuid="sensorsC")
 sensorsD = SensorsIR(manager, uuid="sensorsD")
 
-sensorsFront = [Sensor("Avant gauche",   sensorsD.get_range2, (110, 110), pi/4),
-                Sensor("Avant      ",    sensorsD.get_range1, (140, -50), 0),
-                Sensor("Avant droit",    sensorsC.get_range2, (110, -110), -pi/4)]
+sensorsFront = [Sensor(wheeledbase, "Avant gauche",   sensorsD.get_range2, (110, 110), pi/4),
+                Sensor(wheeledbase, "Avant      ",    sensorsD.get_range1, (140, -50), 0),
+                Sensor(wheeledbase, "Avant droit",    sensorsC.get_range2, (110, -110), -pi/4)]
 
-sensorsLat =   [Sensor("Lateral avant",  sensorsC.get_range1, (60, -130), -pi/2),
-                Sensor("Lateral arriere",sensorsB.get_range1, (-60, -130), -pi/2)]
+sensorsLat =   [Sensor(wheeledbase, "Lateral avant",  sensorsC.get_range1, (60, -130), -pi/2),
+                Sensor(wheeledbase, "Lateral arriere",sensorsB.get_range1, (-60, -130), -pi/2)]
 
-sensorsBack  = [Sensor("Arrière droit",  sensorsB.get_range2, (-110, -110), -3*pi/4),
-                Sensor("Arrière",        sensorsA.get_range1, (-110, -50), pi),
-                Sensor("Arrière gauche", sensorsA.get_range2, (-110, 110), 3*pi/4)]
+sensorsBack  = [Sensor(wheeledbase, "Arrière droit",  sensorsB.get_range2, (-110, -110), -3*pi/4),
+                Sensor(wheeledbase, "Arrière",        sensorsA.get_range1, (-110, -50), pi),
+                Sensor(wheeledbase, "Arrière gauche", sensorsA.get_range2, (-110, 110), 3*pi/4)]
 sens_manager = SensorsManager(wheeledbase, sensorsFront, sensorsBack, sensorsLat)
+
 import os
 if ROBOT_ID == R128_ID:
         print("128")
@@ -53,6 +55,11 @@ if roadmap:
 else:
         geo = None
 
+try:
+    beacons = ClientGS(2)
+    beacons.connect()
+except TimeoutError:
+    pass
 
 def init_robot():
         armFront.stop_pump()
@@ -63,4 +70,3 @@ def init_robot():
 
 if __name__ == "__main__":
         init_robot()
-        pass

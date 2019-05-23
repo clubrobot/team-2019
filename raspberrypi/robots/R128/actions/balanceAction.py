@@ -26,6 +26,8 @@ class BalanceAfter6(Actionnable):
 
         self.display        = daughter_cards['display']
         self.wheeledbase    = daughter_cards['wheeledbase']
+        
+        self.master         = daughter_cards["master"]
 
         # action Points
         self.point          = self.geogebra.get('Balance{}'.format(self.side))
@@ -45,6 +47,11 @@ class BalanceAfter6(Actionnable):
         self.armTakingState    = Event()
 
     def moving(self):
+        if self.master.is_active():
+            while self.master.get_ressource("balance"):
+                time.sleep(0.4)
+
+
         self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
 
     def realize(self):
@@ -215,7 +222,7 @@ class BalanceAfter6(Actionnable):
             self.handeledPuck = self.arm.tank.get_puck()
         
     def after(self):
-        pass
+        self.master.release_ressource("balance")
 
     #override
     def getAction(self):

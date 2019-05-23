@@ -12,8 +12,8 @@ from math import pi
 from common.logger import *
 from common.geogebra import Geogebra
 from robots.get_robot_name import *
-from robots.wheeledbase_manager import *
-
+from beacons.global_sync import ClientGS
+from robots.wheeledbase_manager import * 
 log = Logger(Logger.SHOW)
 
 led1 = LEDMatrix(manager, 1)
@@ -38,9 +38,16 @@ sensorsBack  = [Sensor(wheeledbase, "Arrière droit", sensorsA.get_range2, (-50,
                 Sensor(wheeledbase, "Arrière gauche",sensorsC.get_range2, (-50, 100), 3*pi/4)]
 # sens_manager = SensorsManager(wheeledbase, sensorsFront, sensorsBack, None)
 
+try:
+    beacons = ClientGS(1)
+    beacons.connect()
+except TimeoutError:
+    pass
+    
 import os
-if ROBOT_ID == BORNIBUS_ID:
-    os.chdir("/home/pi/git/clubrobot/team-2019")
+#if ROBOT_ID == BORNIBUS_ID:
+#    print("Bornibus")
+#    os.chdir("/home/pi/git/clubrobot/team-2019")
 
 roadmap = None
 for root, dirs, files in os.walk("."):
@@ -60,3 +67,7 @@ def init_robot():
 
 if __name__ == "__main__":
     init_robot()
+    wheeledbase.reset()
+    wheeledbase_manager = Mover(wheeledbase, print,sensorsFront, sensorsBack)
+    wheeledbase_manager.goto(1600,0)#, direction="backward")
+    
