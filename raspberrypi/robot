@@ -16,7 +16,24 @@ arduino_list = ['sensors', 'wheeledbase', 'power', 'display', 'modulescollector'
 
 
 def start(args):
-    pass
+    print("ROBOT START")
+    from robots.get_robot_name import ROBOT_ID, BORNIBUS_ID, R128_ID
+    if ROBOT_ID == BORNIBUS_ID:
+        print("BORNIBUS")
+        from robots.Bornibus.Bornibus import Bornibus
+        auto = Bornibus()
+
+    elif ROBOT_ID == R128_ID:
+        print("R128")
+        from robots.R128.R128 import R128
+        auto = R128()
+
+    else:
+        print("NOT ON A ROBOT")
+        return
+
+    auto.start_preparation()
+
 
 def dev_mode(args):
     pass
