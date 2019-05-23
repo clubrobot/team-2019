@@ -43,6 +43,8 @@ class R128(Automaton):
         # Display screen
         self.display        = self.daughter_cards['display']
 
+        self.points = dict()
+
         # Action thread manager
         self.tam = ThreadActionManager()
 
@@ -50,6 +52,9 @@ class R128(Automaton):
         self.side = side
         # Apply cube obstacle
         self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
+
+        #self.points["Ini"] = geo.get("Ini{}_0".format(self.side))
+        #self.points["Ini1"] = geo.get("Ini{}_1".format(self.side))
 
         # Specific Actions initialisation
         self.balanceAct6        = BalanceAfter6(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
@@ -90,7 +95,7 @@ class R128(Automaton):
             self.wheeledbase.set_position(755, 3000-322, -pi)
 
     def positioning(self):
-        pass
+        init_robot()
 
     def stop_match(self):
         time.sleep(100)

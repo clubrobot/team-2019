@@ -9,13 +9,13 @@ from common.sync_flag_signal import Signal
 
 
 class PositionListener(Thread):
-    def __init__(self, getter, timestep=0.1, threadhold=10):
+    def __init__(self, getter, timestep=0.1, threshold=10):
         Thread.__init__(self)
         self.signal = Signal()
         self.getter = getter
         self.timestep = timestep
         self.stop = Event()
-        self.threadhold = threadhold
+        self.threshold = threshold
         self.error = 0
         self.position = (-1000, -1000)  # self.getter()
         self.start()
@@ -25,7 +25,7 @@ class PositionListener(Thread):
             sleep(self.timestep)
             x, y = self.getter()
 
-            if (hypot(y - self.position[1], x - self.position[0]) + self.error) > self.threadhold:
+            if (hypot(y - self.position[1], x - self.position[0]) + self.error) > self.threshold:
                 self.signal.ping()
 
                 self.error = 0
