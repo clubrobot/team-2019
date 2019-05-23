@@ -47,7 +47,6 @@ def showip(args):
         man.connect()
 
         ssd = SevenSegments(man)
-        ssd.clear_messages()
         import subprocess
         ips = []
         wlan_up = False
@@ -64,7 +63,7 @@ def showip(args):
                 attempts += 1
                 time.sleep(1)
         if wlan_up:
-            [ssd.set_message(ip) for ip in ips]
+            [ssd.set_multi_message(ip) for ip in ips]
         else:
             ssd.set_message("No Ip found ")
 

@@ -13,6 +13,7 @@
 #define SET_MATRIX_MESSAGE_OPCODE			 0x0D
 #define SET_IPDISPLAY_MESSAGE_OPCODE		 0x0E
 #define CLEAR_IPDISPLAY_MESSAGE_OPCODE 		 0x0F
+#define SET_IPDISPLAY_UNIQUE_MESSAGE_OPCODE  0x10
 
 //***********
 // Examples *
@@ -120,11 +121,13 @@ talks.send(0x0C,CHAR(ord('8')),BYTE(0xFF))
 
 void SET_MATRIX_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &output);
 void SET_IPDISPLAY_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &output);
+void SET_IPDISPLAY_UNIQUE_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &output);
 void SET_EEPROM_CHAR_IPDISPLAY(SerialTalks &talks, Deserializer &input, Serializer &output);
 void SET_EEPROM_CHAR_LEDMATRIX(SerialTalks &talks, Deserializer &input, Serializer &output);
 void SET_SPEED_MATRIX(SerialTalks &talks, Deserializer &input, Serializer &output);
 void SET_EEPROM_DEFAULT_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &output);
 void CLEAR_IPDISPLAY_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &output);
+
 
 
 #endif

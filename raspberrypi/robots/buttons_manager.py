@@ -17,7 +17,6 @@ class ButtonsManager:
 
     def begin(self):
         print("debut Button Manager")
-        ssd.clear_messages()
         ssd.set_message("set team")
         self.blue.set_function(Thread(target=self.set_team_purple, daemon=True).start)
         self.orange.set_function(Thread(target=self.set_team_orange, daemon=True).start)
@@ -27,21 +26,18 @@ class ButtonsManager:
     def set_team_orange(self):
         print("team jaune")
         self.side = Automaton.YELLOW
-        ssd.clear_messages()
         ssd.set_message("team : o")
         self.green.set_function(Thread(target=self.odometry_stage, daemon=True).start)
 
     def set_team_purple(self):
         print("team mauve")
         self.side = Automaton.PURPLE
-        ssd.clear_messages()
         ssd.set_message("team : m")
         self.green.set_function(Thread(target=self.odometry_stage, daemon=True).start)
 
     def odometry_stage(self):
         print("validation team")
         self.auto.set_side(self.side)
-        ssd.clear_messages()
         ssd.set_message("set pos")
         self.blue.set_function(None)
         self.orange.set_function(None)
@@ -51,14 +47,12 @@ class ButtonsManager:
         print("validation odometry")
         self.auto.set_position()
 
-        ssd.clear_messages()
         ssd.set_message("tirette")
         self.tirette.set_function(Thread(target=self.urgency_stage, daemon=True).start)
         self.green.set_function(None)
 
     def urgency_stage(self):
         print("validation tirette")
-        ssd.clear_messages()
         ssd.set_message("urgency")
         self.urgency.set_function(Thread(target=self.positioning_stage, daemon=True).start)
 
@@ -70,7 +64,6 @@ class ButtonsManager:
 
     def ready_stage(self):
         print("ready")
-        ssd.clear_messages()
         ssd.set_message("ready")
         self.tirette.set_function(Thread(target=self.run_match, daemon=True).start)
         self.tirette.set_active_high(False)
