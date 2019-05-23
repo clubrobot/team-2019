@@ -12,7 +12,7 @@ class Mover:
     def __init__(self, wheeledbase, log_meth, sensorsFront, sensorsBack):
         self.wheeledbase = wheeledbase
         
-        self.log = log_meth
+        self.logger = log_meth
         self.front_center = SensorListener(sensorsFront[1])
         self.front_left   = SensorListener(sensorsFront[2])
         self.front_right  = SensorListener(sensorsFront[0])
@@ -68,7 +68,7 @@ class Mover:
         else:
             self.front_flag.bind(self.back_center.signal)
 
-        self.logger("MOVER : ", path=((x,y),(self.goal)))
+        self.logger("MOVER : ", "path ", ((x,y),(self.goal)))
         self.isarrived = False
         x, y, _ = self.wheeledbase.get_position()
         self.wheeledbase.purepursuit(((x,y),(self.goal)),**self.params)
