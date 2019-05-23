@@ -26,7 +26,8 @@ class Bornibus(Automaton):
                                     arm             = arm,
                                     endstops        = endstops,
                                     gripper         = gripper,
-                                    display         = disp )
+                                    display         = disp,
+                                    master          = beacons)
 
         # Save annexes inf
         self.side           = Automaton.UNDEFINED
@@ -46,6 +47,9 @@ class Bornibus(Automaton):
         self.tam = ThreadActionManager()
 
         self.points = dict()
+
+        # Global sync client
+        self.master = beacons
 
     def set_side(self, side):
         self.side = side

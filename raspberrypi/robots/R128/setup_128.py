@@ -8,6 +8,7 @@ from common.funcutils import *
 from common.geogebra import *
 from common.logger import *
 from daughter_cards.electron import *
+from beacons.global_sync import ClientGS
 from daughter_cards.sensors_IR import *
 from robots.sensors_manager import *
 import time
@@ -53,6 +54,11 @@ if roadmap:
 else:
         geo = None
 
+try:
+    beacons = ClientGS(2)
+    beacons.connect()
+except TimeoutError:
+    pass
 
 def init_robot():
         armFront.stop_pump()
@@ -63,4 +69,3 @@ def init_robot():
 
 if __name__ == "__main__":
         init_robot()
-        pass

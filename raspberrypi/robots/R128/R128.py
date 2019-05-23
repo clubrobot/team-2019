@@ -48,6 +48,9 @@ class R128(Automaton):
         # Action thread manager
         self.tam = ThreadActionManager()
 
+        # Global sync client
+        self.master = beacons
+
     def set_side(self, side):
         self.side = side
         # Apply cube obstacle

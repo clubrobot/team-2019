@@ -20,6 +20,7 @@ class balance(Actionnable):
         self.display        = daughter_cards['display']
         self.gripper        = daughter_cards['gripper']
         self.endstops       = daughter_cards['endstops']
+        self.master         = daughter_cards['master']
 
         if self.side == self.YELLOW:
             color = "Y"
@@ -42,7 +43,11 @@ class balance(Actionnable):
         # self.wheeledbase.lookahead.set(150.0)
         # self.wheeledbase.right_wheel_maxPWM.set(1)
         # self.wheeledbase.left_wheel_maxPWM.set(1)
+        # Waiting for mutex
 
+        if self.master.is_active():
+            while self.master.get_ressource("balance"):
+                time.sleep(0.4)
         # Vers balance
         self.log("BALANCE ACTION :", "Vers la balance")
         try :
@@ -115,6 +120,7 @@ class balance(Actionnable):
         pass
 
     def after(self):
+        self.master.release_ressource("balance")
         self.wheeledbase.stop()
 
     #override
