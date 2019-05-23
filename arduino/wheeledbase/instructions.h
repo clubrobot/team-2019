@@ -31,6 +31,7 @@
 
 #define RESET_PARAMETERS_OPCODE         0x1F
 #define SAVE_PARAMETERS_OPCODE          0x20
+#define START_TURNONTHESPOT_DIR_OPCODE  0x21
 // Parameters identifiers
 
 #define LEFTWHEEL_RADIUS_ID             0x10
@@ -94,6 +95,8 @@ void ADD_PUREPURSUIT_WAYPOINT(SerialTalks& talks, Deserializer& input, Serialize
 void START_PUREPURSUIT(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void START_TURNONTHESPOT(SerialTalks& talks, Deserializer& input, Serializer& output);
+
+void START_TURNONTHESPOT_DIR(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void POSITION_REACHED(SerialTalks& talks, Deserializer& input, Serializer& output);
 

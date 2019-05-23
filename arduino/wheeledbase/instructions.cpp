@@ -172,6 +172,23 @@ void START_TURNONTHESPOT(SerialTalks& talks, Deserializer& input, Serializer& ou
 	positionControl.enable();
 }
 
+void START_TURNONTHESPOT_DIR(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+	Position posSetpoint = odometry.getPosition();
+	posSetpoint.theta = input.read<float>();
+	velocityControl.enable();
+	positionControl.setPosSetpoint(posSetpoint);
+	if (input.read<byte>()){
+		turnOnTheSpot.setDirection(TurnOnTheSpot::TRIG);
+	}
+	else{
+		turnOnTheSpot.setDirection(TurnOnTheSpot::CLOCK);
+	}
+	positionControl.setMoveStrategy(turnOnTheSpot);
+	positionControl.enable();
+}
+
+
 void POSITION_REACHED(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
 	bool positionReached = positionControl.getPositionReached() && positionControl.isEnabled();
