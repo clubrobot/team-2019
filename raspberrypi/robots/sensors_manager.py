@@ -4,6 +4,30 @@
 import time
 from threading import Thread, Event, Lock
 import math
+from common.sync_flag_signal import Signal
+
+
+class SensorListener(Thread):
+    def __init__(self, sensors, timestep = 0.1, threadhold = 220):
+        Thread.__init__(self)
+        self.daemon = True
+        self.signal   = Signal()
+        self.getter   = sensors.dist
+        self.timestep = timestep
+        self.stop  = Event()
+        self.threadhold = threadhold
+        self.error    = 0
+        self.start()
+
+    def run(self):
+        while not self.stop.is_set():
+            time.sleep(self.timestep)
+            try:
+                val = self.getter()
+            except TimeoutError:
+                continue
+            if val<self.threadhold :
+                self.signal.ping()
 
 
 class Sensor:
@@ -18,10 +42,13 @@ class Sensor:
         self.enabled = True
         self.name = name
 
+
+
     def disable(self):
         self.enabled = False
 
     def obstacle(self, wheeledbase):
+        #deprecated
         dist = self.dist()
         if dist > Sensor.DIST_MIN:
             return False
