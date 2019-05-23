@@ -33,6 +33,8 @@ class ClientGS(TCPTalks):
         return self.execute(_RELEASE_RESSOURCE_OPCODE, self.id, name)
 
     def is_active(self):
+        if not self.is_connected:
+            return False
         try:
             return self.execute(_IS_OK_OPCODE, self.id, timeout=1)
         except:

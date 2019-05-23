@@ -34,7 +34,7 @@ class TakePuckSync(Actionnable):
         self.log            = log
         self.side           = side
         self.distrib_pos    = distrib_pos
-        self.sensors = sensors
+        self.sensors        = sensors
 
         # Bind arm in funtion of desired side
         if self.side == self.YELLOW:

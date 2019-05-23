@@ -20,6 +20,8 @@ class balance(Actionnable):
         self.display        = daughter_cards['display']
         self.gripper        = daughter_cards['gripper']
         self.endstops       = daughter_cards['endstops']
+        self.pushers        = daughter_cards['pushers']
+        self.master         = daughter_cards['master']
 
         if self.side == self.YELLOW:
             color = "Y"
@@ -42,13 +44,17 @@ class balance(Actionnable):
         # self.wheeledbase.lookahead.set(150.0)
         # self.wheeledbase.right_wheel_maxPWM.set(1)
         # self.wheeledbase.left_wheel_maxPWM.set(1)
+        # Waiting for mutex
 
+        if self.master.is_active():
+            while self.master.get_ressource("balance"):
+                time.sleep(0.4)
         # Vers balance
         self.log("BALANCE ACTION :", "Vers la balance")
         try :
             self.wheeledbase.linpos_threshold.set(10)
-            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal1"], self.points["Bal2"], self.points["Bal3"], self.points["Bal4"]],
-                                direction="backward", lookahead=200, lookaheadbis=120)
+            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal1"], self.points["Bal2"], self.points["Bal3"]],
+                                direction="forward", lookahead=200, lookaheadbis=120)
             self.wheeledbase.wait()
         except :
             pass
@@ -57,21 +63,43 @@ class balance(Actionnable):
         self.wheeledbase.max_lindec.set(300)
         self.wheeledbase.max_linvel.set(400)
         
-        # Positionnement pour la balance
-        self.log("BALANCE ACTION :", "Positionnement pour la balance")
-        #TODO COULEUR
+        #degagement de l'espace devant la balance
+        if self.side == self.YELLOW:
+            self.wheeledbase.turnonthespot(pi/4)
+            self.wheeledbase.wait()
+            self.pushers.down_r()
+        else :
+            self.wheeledbase.turnonthespot(-pi/4)
+            self.wheeledbase.wait()
+            self.pushers.down_l()
+            
+        try :
+            self.wheeledbase.goto(*self.points["Bal4"], lookahead=150)
+        except Exception as e:
+            pass
         
         if self.side == self.YELLOW:
-            self.wheeledbase.turnonthespot(-pi/2)
+            self.wheeledbase.set_velocities(-0, 10)
+            time.sleep(0.8)
+            self.wheeledbase.stop()
+            self.pushers.up()
+            self.wheeledbase.turnonthespot(-pi/2) 
         else:
-            self.wheeledbase.turnonthespot(pi/2)
+            self.wheeledbase.set_velocities(-0, -10)
+            time.sleep(0.8)
+            self.wheeledbase.stop()
+            self.pushers.up()
+            self.wheeledbase.turnonthespot(pi/2) 
         self.wheeledbase.wait()
+
+                # Positionnement pour la balance
+        self.log("BALANCE ACTION :", "Positionnement pour la balance")
         self.wheeledbase.right_wheel_maxPWM.set(0.5)
         self.wheeledbase.left_wheel_maxPWM.set(0.5)
 
 
         try :
-            self.wheeledbase.goto_delta(-200, 0)
+            self.wheeledbase.goto_delta(-300, 0)
             self.wheeledbase.wait()
         except :
             pass
@@ -89,6 +117,7 @@ class balance(Actionnable):
         self.wheeledbase.right_wheel_maxPWM.set(0.5)
         self.wheeledbase.left_wheel_maxPWM.set(0.5)
 
+        #positionnement contre la balance en attendant un spin
         try :
             self.wheeledbase.goto_delta(300, 0)
             self.wheeledbase.wait()
@@ -110,12 +139,15 @@ class balance(Actionnable):
         self.gripper.open()
 
         time.sleep(0.5)
+        self.wheeledbase.goto_delta(-220,0)
+        self.wheelbase.wait()
 
     def before(self):
         pass
 
     def after(self):
-        self.wheeledbase.stop()
+        self.master.release_ressource("balance")
+      #  self.wheeledbase.stop()
 
     #override
     def getAction(self):
