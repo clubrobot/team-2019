@@ -12,7 +12,6 @@ from threading import Event
 
 RECALAGE_VEL = 200
 offset_x = 0
-offset_y = 0
 
 class TakePuckSync(Actionnable):
     YELLOW  = 0
@@ -83,7 +82,7 @@ class TakePuckSync(Actionnable):
         self.puck2              = puckBack
 
     def moving(self):
-        global offset_x, offset_y
+        global offset_x
         self.wheeledbase.reset_parameters()
         # if action correspond to the first distrib pos
         if self.distrib_pos == self.DISTRIB6_1:
@@ -143,7 +142,7 @@ class TakePuckSync(Actionnable):
 
                 offset_x = self.RecalagePoint[0] - self.correct_pos[0]
 
-                self.point = (self.point[0] - offset_x, self.point[1] - offset_y)
+                self.point = (self.point[0] - offset_x, self.point[1])
 
                 # prepare arm to take
                 self.arm1.move(PREPARE_TAKING_POS_ROAD)
@@ -158,7 +157,7 @@ class TakePuckSync(Actionnable):
         else:
             # else go to point
             self.wheeledbase.lookaheadbis.set(5)
-            self.point = (self.actionPoint.point[0] - offset_x, self.actionPoint.point[1] - offset_y)
+            self.point = (self.actionPoint.point[0] - offset_x, self.actionPoint.point[1])
             self.wheeledbase.goto(*self.point, theta=self.actionPoint.theta)
 
     def realize(self):

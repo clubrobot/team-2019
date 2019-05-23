@@ -51,7 +51,7 @@ class BalanceAfter6(Actionnable):
             while not self.master.get_ressource("balance"):
                 time.sleep(0.4)
 
-
+        self.wheeledbase.lookaheadbis.set(100.0)
         self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
 
     def realize(self):
