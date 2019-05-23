@@ -3,13 +3,13 @@
 
 from argparse  import ArgumentParser
 
-from beacons.server import Server
+from beacons.global_sync import ServerGS
 
     
 
 def server(args):
 
-    srv = Server()
+    srv = ServerGS()
     srv.run()
 
 
