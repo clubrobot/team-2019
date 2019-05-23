@@ -83,6 +83,7 @@ class TakePuckSync(Actionnable):
         self.puck2              = puckBack
 
     def moving(self):
+        global offset_x, offset_y
         self.wheeledbase.reset_parameters()
         # if action correspond to the first distrib pos
         if self.distrib_pos == self.DISTRIB6_1:
