@@ -10,7 +10,7 @@ from daughter_cards.arm.puckUtils import *
 
 from threading import Event
 
-RECALAGE_VEL = 200
+RECALAGE_VEL = 300
 offset_x = 0
 
 class TakePuckSync(Actionnable):
