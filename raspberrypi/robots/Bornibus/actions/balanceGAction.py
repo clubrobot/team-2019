@@ -46,9 +46,9 @@ class balance(Actionnable):
         # self.wheeledbase.left_wheel_maxPWM.set(1)
         # Waiting for mutex
 
-        if self.master.is_active():
-            while self.master.get_ressource("balance"):
-                time.sleep(0.4)
+        #if self.master.is_active():
+        #    while self.master.get_ressource("balance"):
+        #        time.sleep(0.4)
         # Vers balance
         self.log("BALANCE ACTION :", "Vers la balance")
         try :

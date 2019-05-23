@@ -30,7 +30,6 @@ class tabAtoms(Actionnable):
         
         self.points["Tab1"] = self.geogebra.get("Tab1"+color)
         self.points["Tab2"] = self.geogebra.get("Tab2"+color)
-        self.points["Tab3"] = self.geogebra.get("Tab3"+color)
 
     def moving(self):
         self.wheeledbase.reset_parameters()
@@ -66,16 +65,13 @@ class tabAtoms(Actionnable):
         self.wheeledbase.turnonthespot(-pi)
         self.wheeledbase.wait()
 
-        try:
-            self.wheeledbase.goto(*self.points["Tab1"])
-        except:
-            pass
+        self.wheeledbase.goto(*self.points["Tab1"], direction='forward')
 
-
+        #se tourner pour mettre les palets dans le tableau
         if self.side == self.YELLOW:
-            self.wheeledbase.turnonthespot(-pi/2)
+            self.wheeledbase.turnonthespot(-3*pi/4)
         else:
-            self.wheeledbase.turnonthespot(pi/2)
+            self.wheeledbase.turnonthespot(3*pi/4)
         self.wheeledbase.wait()
 
         self.display.addPoints(13)
