@@ -146,8 +146,7 @@ class balance(Actionnable):
         pass
 
     def after(self):
-        if self.master.is_active():
-            self.master.release_ressource("balance")
+        self.master.release_ressource("balance")
         #  self.wheeledbase.stop()
 
     #override
