@@ -159,7 +159,7 @@ class TakePuckSync(Actionnable):
             # else go to point
             self.wheeledbase.lookaheadbis.set(5)
             self.point = (self.actionPoint.point[0] - offset_x, self.actionPoint.point[1] - offset_y)
-            self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
+            self.wheeledbase.goto(*self.point, theta=self.actionPoint.theta)
 
     def realize(self):
         # starting two pump
