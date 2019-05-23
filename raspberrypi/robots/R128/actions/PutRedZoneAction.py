@@ -57,12 +57,11 @@ class PutRedZone(Actionnable):
             self.wheeledbase.purepursuit(self.path, direction='backward')
         else:
             self.wheeledbase.purepursuit(self.path, direction='forward')
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
+        
+        self.wheeledbase.wait()
 
         self.wheeledbase.turnonthespot(-pi/2)
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
+        self.wheeledbase.wait()
 
     def realize(self):
         
