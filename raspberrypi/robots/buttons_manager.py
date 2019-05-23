@@ -18,6 +18,7 @@ class ButtonsManager:
     def begin(self):
         print("BUTTON MANAGER : Start")
         Thread(target=self.team_stage, daemon=True).start()
+        self.red.set_function(Thread(target=self.team_stage, daemon=True).start)
         self.p.acquire()
 
     def team_stage(self):
@@ -25,7 +26,6 @@ class ButtonsManager:
         ssd.set_message("set team")
         self.blue.set_function(Thread(target=self.set_team_purple, daemon=True).start)
         self.orange.set_function(Thread(target=self.set_team_yellow, daemon=True).start)
-        self.red.set_function(Thread(target=self.begin, daemon=True).start)
 
     def set_team_yellow(self):
         print("BUTTON MANAGER : Yellow Team")
