@@ -30,7 +30,10 @@ class ClientGS(TCPTalks):
         return self.execute(_GET_RESSOURCE_OPCODE, self.id, name)
 
     def release_ressource(self, name):
-        return self.execute(_RELEASE_RESSOURCE_OPCODE, self.id, name)
+        try:
+            self.send(_RELEASE_RESSOURCE_OPCODE, self.id, name)
+        except:
+            pass
 
     def is_active(self):
         if not self.is_connected:

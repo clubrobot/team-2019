@@ -264,6 +264,9 @@ class BalanceAfter3(Actionnable):
         self.handeledPuck1   = None
         self.handeledPuck2   = None
 
+        self.master         = daughter_cards["master"]
+
+
     def moving(self):
         if self.master.is_active():
             while not self.master.get_ressource("balance"):
