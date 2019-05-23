@@ -119,8 +119,6 @@ class PutAccelerator(Actionnable):
     
             self.arm1.move(self.afterTankPos[self.arm1.tank.index()-1])
             self.handeledPuck = self.arm1.tank.get_puck()
-            self.display.addPoints(self.handeledPuck.getPoints().Accelerator)
-            self.log("ACCELERATOR", "Add {} points".format(self.handeledPuck.getPoints().Accelerator))
             while not self.arm1.is_arrived():
                 time.sleep(0.1)
 
@@ -137,7 +135,7 @@ class PutAccelerator(Actionnable):
                 time.sleep(0.1)
 
             if not self.arm1.get_atmosphere_pressure():
-                self.display.addPoints(self.handeledPuck1.getPoints().Tab)
+                self.display.addPoints(self.handeledPuck1.getPoints().Accelerator)
                 self.log("ACCELERATOR", "Add {} points".format(self.handeledPuck1.getPoints().Accelerator))
 
             time.sleep(0.5)
