@@ -83,6 +83,7 @@ class Bornibus(Automaton):
             wheeledbase.set_position(*self.points["Ini"], pi/2)
             print(*self.points["Ini"])
 
+
     def positioning(self):
         init_robot()
         wheeledbase.goto(*self.points["Ini2"],

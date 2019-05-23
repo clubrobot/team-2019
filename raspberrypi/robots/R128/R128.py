@@ -6,7 +6,6 @@ from robots.R128.actions.takePuckActions import *
 from robots.R128.actions.PutRedZoneAction import *
 from robots.R128.actions.acceleratorAction import *
 from common.actions.action import ThreadActionManager
-from common.geogebra import Geogebra
 from robots.R128.setup_128 import *
 from robots.automaton import Automaton
 from robots.sensors_manager import *
@@ -53,8 +52,8 @@ class R128(Automaton):
         # Apply cube obstacle
         self.log("SIDE CONFIG : ", "Set Side : {}".format(self.side))
 
-        #self.points["Ini"] = geo.get("Ini{}_0".format(self.side))
-        #self.points["Ini1"] = geo.get("Ini{}_1".format(self.side))
+        self.points["Ini"] = geo.get("Ini{}_0".format(self.side))
+        self.points["Ini1"] = geo.get("Ini{}_1".format(self.side))
 
         # Specific Actions initialisation
         self.balanceAct6        = BalanceAfter6(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
@@ -86,16 +85,21 @@ class R128(Automaton):
             self.accelAct,
         ]
 
-        init_robot()
-
     def set_position(self):
         if self.side == R128.YELLOW:
-            self.wheeledbase.set_position(755, 322, 0)
+            self.wheeledbase.set_position(*self.points["Ini"], pi/2)
         else:
-            self.wheeledbase.set_position(755, 3000-322, -pi)
+            self.wheeledbase.set_position(*self.points["Ini"], -pi/2)
 
     def positioning(self):
         init_robot()
+        self.wheeledbase.lookaheadbis.set(5)
+        if self.side == R128.YELLOW:
+            wheeledbase.goto(*self.points["Ini1"], theta=0)
+        else:
+            wheeledbase.goto(*self.points["Ini1"], theta=pi)
+        self.wheeledbase.reset_parameters()
+
 
     def stop_match(self):
         time.sleep(100)
