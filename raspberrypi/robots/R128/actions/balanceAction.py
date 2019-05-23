@@ -264,6 +264,9 @@ class BalanceAfter3(Actionnable):
         self.handeledPuck1   = None
         self.handeledPuck2   = None
 
+        self.master         = daughter_cards["master"]
+
+
     def moving(self):
         if self.master.is_active():
             while not self.master.get_ressource("balance"):
@@ -275,21 +278,18 @@ class BalanceAfter3(Actionnable):
             self.wheeledbase.turnonthespot(-pi)
         else:
             self.wheeledbase.turnonthespot(0)
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
+        
+        self.wheeledbase.wait()
 
         if self.side == self.YELLOW:
             self.wheeledbase.purepursuit(self.path, direction='forward')
-            while not self.wheeledbase.isarrived():
-                time.sleep(0.1)
+            self.wheeledbase.wait()
         else:
             self.wheeledbase.purepursuit(self.path, direction='backward')
-            while not self.wheeledbase.isarrived():
-                time.sleep(0.1)
+            self.wheeledbase.wait()
 
         self.wheeledbase.turnonthespot(pi/2)
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
+        self.wheeledbase.wait()
 
         if self.side == self.YELLOW:
             self.wheeledbase.set_velocities(50,0)

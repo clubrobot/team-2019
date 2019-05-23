@@ -369,16 +369,16 @@ class TakePuckSingle(Actionnable):
             self.wheeledbase.purepursuit(self.path, direction = 'backward')
         else:
             self.wheeledbase.purepursuit(self.path, direction = 'forward')
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
+        
+        self.wheeledbase.wait()
 
         # correct robot orientation
         if self.side == self.YELLOW:
             self.wheeledbase.turnonthespot(-pi)
         else:
             self.wheeledbase.turnonthespot(0)
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
+        
+        self.wheeledbase.wait()
 
         # goto action point
         self.wheeledbase.goto(*self.actionPoint.point)

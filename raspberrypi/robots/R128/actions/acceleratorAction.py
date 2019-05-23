@@ -48,12 +48,10 @@ class PutAccelerator(Actionnable):
     def moving(self):
         if self.side == self.YELLOW:
             self.wheeledbase.purepursuit(self.path, direction='backward')
-            while not self.wheeledbase.isarrived():
-                time.sleep(0.1)
+            self.wheeledbase.wait()
         else:
             self.wheeledbase.purepursuit(self.path, direction='forward')
-            while not self.wheeledbase.isarrived():
-                time.sleep(0.1)
+            self.wheeledbase.wait()
 
         self.wheeledbase.turnonthespot(-pi)
         self.wheeledbase.wait()
