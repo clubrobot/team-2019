@@ -404,7 +404,7 @@ class TakePuckSingle(Actionnable):
             pos = self.wheeledbase.get_position()
             self.wheeledbase.set_position(2000 - 280 / 2, pos[1], 0)
 
-            self.log("RECALAGE : retour arrière")
+            self.log("RECALAGE : retour arriere")
             self.wheeledbase.goto(*self.actionPoint.point)
             self.wheeledbase.turnonthespot(pi/2)
 
