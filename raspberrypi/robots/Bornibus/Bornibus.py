@@ -33,6 +33,7 @@ class Bornibus(Automaton):
         self.side           = Automaton.UNDEFINED
         self.geogebra       = geo
         self.log            = log
+        self.mover = Mover(wheeledbase, log, sensorsFront, sensorsBack)
 
         # action List
         self.action_list    = []
@@ -63,7 +64,7 @@ class Bornibus(Automaton):
         self.points["Ini2"] = geo.get("Ini2"+color)
 
         # Specific Actions initialisation
-        self.detectorAct    = detector(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.detectorAct    = detector(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
         self.goldeniumAct   = goldenium(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
         self.balanceGAct    = balance(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
         self.tabAtomsAct    = tabAtoms(self.geogebra, self.daughter_cards, self.side, self.log).getAction()

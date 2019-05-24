@@ -13,7 +13,7 @@ class detector(Actionnable):
     YELLOW = 0
     PURPLE = 1
 
-    def __init__(self, geogebra, daughter_cards, side, log):
+    def __init__(self, geogebra, daughter_cards, mover, side, log):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
@@ -21,6 +21,8 @@ class detector(Actionnable):
         self.wheeledbase    = daughter_cards['wheeledbase']
         self.display        = daughter_cards['display']
         self.arm            = daughter_cards['arm']
+
+        self.mover = mover
 
         if self.side == self.YELLOW:
             color = "Y"
@@ -47,7 +49,7 @@ class detector(Actionnable):
 
         # Vers l'accélérateur
         self.log("DETECTOR ACTION : ", "Vers l'accelerateur")
-        self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Det1"], self.points["Det2"],
+        self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Det1"], self.points["Det2"],
                                       self.points["Det3"], self.points["Det4"]], direction="forward")
         self.log("DETECTOR ACTION : ", "PurePursuit lance")
         self.wheeledbase.linpos_threshold.set(20)
