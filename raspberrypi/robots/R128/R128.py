@@ -76,7 +76,7 @@ class R128(Automaton):
 
         self.takemaintain       = TakePuckSyncMaintain(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_2, GreenPuck, BluePuck, self.log).getAction()
 
-        self.accelAct           = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.accelAct           = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log, sensorsLat).getAction()
 
         self.action_list = [
             self.takeSyncPos1Act,
@@ -103,7 +103,6 @@ class R128(Automaton):
         else:
             wheeledbase.goto(*self.points["Ini1"], theta=pi)
         self.wheeledbase.reset_parameters()
-
 
     def stop_match(self):
         time.sleep(100)
