@@ -134,9 +134,9 @@ class Mover:
         else:
             lateral_point = (x, y)
 
-        x, y = lateral_point
-        if x < Sensor.HILL_ZONE[0][0] + self.MINIMUM_GAP or x > Sensor.HILL_ZONE[0][1] - self.MINIMUM_GAP or \
-                y < Sensor.HILL_ZONE[1][0] + self.MINIMUM_GAP or y > Sensor.HILL_ZONE[1][1] - self.MINIMUM_GAP:
+        x2, y2 = lateral_point
+        if x2 < Sensor.HILL_ZONE[0][0] + self.MINIMUM_GAP or x2 > Sensor.HILL_ZONE[0][1] - self.MINIMUM_GAP or \
+                y2 < Sensor.HILL_ZONE[1][0] + self.MINIMUM_GAP or y2 > Sensor.HILL_ZONE[1][1] - self.MINIMUM_GAP:
             self.logger("MOVER : ", "Cannot avoid")
         else:
             self.logger("MOVER : ", "Launch avoiding")
