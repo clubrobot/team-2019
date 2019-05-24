@@ -56,11 +56,11 @@ RED_ZONE3                       = ArmPos(11.0,   -1.0,   270)
 # Accelerator 
 ACCELERATOR_BEFORE_ARM1          = ArmPos(12.5,   10.0,  45)
 ACCELERATOR_ARM1                 = ArmPos(12.7,    7,  25)
-ACCELERATOR_AFTER_ARM1           = ArmPos(12.5,   10.0,  45)
+ACCELERATOR_AFTER_ARM1           = ArmPos(11.5,   10.0,  45)
 
-ACCELERATOR_BEFORE_ARM2          = ArmPos(12.5,   14.0,  45)
-ACCELERATOR_ARM2                 = ArmPos(12.7,    11.0,  25)
-ACCELERATOR_AFTER_ARM2           = ArmPos(12.5,   14.0,  45)
+ACCELERATOR_BEFORE_ARM2          = ArmPos(12.5,   13.0,  45)
+ACCELERATOR_ARM2                 = ArmPos(12.7,    10.0,  25)
+ACCELERATOR_AFTER_ARM2           = ArmPos(11.5,   13.0,  45)
 
 BALANCE3_POS_INTER               = ArmPos(-5 ,    15,   90)
 
