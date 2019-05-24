@@ -86,7 +86,7 @@ class R128(Automaton):
             self.takesingle,
             self.takemaintain,
             self.balanceAct3,
-            self.accelAct,
+            self.putRedZoneAct,
         ]
 
     def set_position(self):
