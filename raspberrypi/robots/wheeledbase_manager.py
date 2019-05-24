@@ -9,11 +9,13 @@ class Mover:
     SLOW   = 1
     MEDIUM = 2
 
+    FORWARD = 0
+    BACKWARD = 1
+
     LEFT  = 0
     RIGHT = 1
 
     LATERAL_SHIFT = 200
-
     MINIMUM_GAP = 300
 
     def __init__(self, wheeledbase, log_meth, sensorsFront, sensorsBack):
@@ -61,16 +63,16 @@ class Mover:
 
     def lateral_obstacle(self, side):
         # interuption quand obstacle devant:
-        self.logger("MOVER : ", "Object on the left detected !")
+        self.logger("MOVER : ", "Lateral object detected !")
         if not self.interupted_lock.acquire(blocking=True, timeout=0.5):
             self.logger("MOVER : ", "Abort !")
             return
         self.interupted_status.set()
-        if self.params.get("direction", "forward") == 'forward':
+        if self.direction == self.FORWARD:
             self.wheeledbase.goto_delta(-100, 0)
         else:
             self.wheeledbase.goto_delta(100, 0)
-        self.logger("MOVER : ", "Waiting for a second !")
+        self.logger("MOVER : ", "Waiting for backward")
         sleep(2)
         x, y, theta = self.wheeledbase.get_position()
         if side == self.LEFT:
@@ -79,7 +81,9 @@ class Mover:
             lateral_point = (x - math.sin(theta)*self.LATERAL_SHIFT, y - math.cos(theta)*self.LATERAL_SHIFT)
         else:
             lateral_point = (x, y)
-        self.wheeledbase.purepursuit(((x, y), lateral_point, (self.goal)), **self.params)
+
+        self.logger("MOVER : ", "Launch evitement")
+        self.wheeledbase.purepursuit(((x, y), lateral_point, self.goal), **self.params)
         time.sleep(1)
         self.interupted_status.clear()
         self.interupted_lock.release()
@@ -97,12 +101,16 @@ class Mover:
         #TODO ami
         if False :
             self.in_path_flag.bind(self.friend_listener.signal)
-        if self.params.get("direction","forward") =='forward':
+        if self.params.get("direction") =='forward':
+            self.logger("MOVER : ", "forward")
+            self.direction = self.FORWARD
             self.front_flag.bind(self.front_center.signal)
             self.left_flag.bind(self.front_left.signal)
             self.right_flag.bind(self.front_right.signal)
 
         else:
+            self.logger("MOVER : ", "backward")
+            self.direction = self.BACKWARD
             self.front_flag.bind(self.back_center.signal)
             self.left_flag.bind(self.back_left.signal)
             self.right_flag.bind(self.back_right.signal)
