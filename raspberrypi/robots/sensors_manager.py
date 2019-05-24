@@ -68,7 +68,7 @@ class Sensor:
 
         # print("obstacle en : ", round(x), round(y))
         # print("wheeledbase_pos : ", wheeledbase_pos)
-        # print("capteur", self.name)
+        print("CAPTEUR : ", self.name)
         # print("distance : ", dist)
         # print()
         return True

@@ -9,6 +9,16 @@ class Mover:
     SLOW   = 1
     MEDIUM = 2
 
+    FORWARD = 0
+    BACKWARD = 1
+
+    LEFT  = 0
+    RIGHT = 1
+
+    LATERAL_SHIFT = 200
+    LONGITUDINAL_SHIFT = 200
+    MINIMUM_GAP = 300
+
     def __init__(self, wheeledbase, log_meth, sensorsFront, sensorsBack):
         self.wheeledbase = wheeledbase
         
@@ -22,6 +32,8 @@ class Mover:
         self.back_right  = SensorListener(sensorsBack[0])
 
         self.front_flag = Flag(self.front_obstacle)
+        self.left_flag = Flag(lambda: self.lateral_obstacle(self.LEFT))
+        self.right_flag = Flag(lambda: self.lateral_obstacle(self.RIGHT))
 
         self.isarrived = False
         self.interupted_lock = RLock()
@@ -50,6 +62,31 @@ class Mover:
         self.interupted_status.clear()
         self.interupted_lock.release()
 
+    def lateral_obstacle(self, side):
+        # interuption quand obstacle devant:
+        self.logger("MOVER : ", "Lateral object detected !")
+        if not self.interupted_lock.acquire(blocking=True, timeout=0.5):
+            self.logger("MOVER : ", "Abort !")
+            return
+        self.interupted_status.set()
+        if self.direction == self.FORWARD:
+            self.wheeledbase.goto_delta(-self.LONGITUDINAL_SHIFT, 0)
+        else:
+            self.wheeledbase.goto_delta(self.LONGITUDINAL_SHIFT, 0)
+        self.logger("MOVER : ", "Waiting for backward")
+        x, y, theta = self.wheeledbase.get_position()
+        if side == self.LEFT:
+            lateral_point = (x + math.sin(theta)*self.LATERAL_SHIFT, y + math.cos(theta)*self.LATERAL_SHIFT)
+        elif side == self.RIGHT:
+            lateral_point = (x - math.sin(theta)*self.LATERAL_SHIFT, y - math.cos(theta)*self.LATERAL_SHIFT)
+        else:
+            lateral_point = (x, y)
+
+        self.logger("MOVER : ", "Launch evitement")
+        self.wheeledbase.purepursuit(((x, y), lateral_point, self.goal), **self.params)
+        self.interupted_status.clear()
+        self.interupted_lock.release()
+
     def reset(self):
         self.interupted_lock.acquire()
         # self.wheeledbase.reset_parameters()
@@ -63,10 +100,19 @@ class Mover:
         #TODO ami
         if False :
             self.in_path_flag.bind(self.friend_listener.signal)
-        if self.params.get("direction","forward") =='forward':
+        if self.params.get("direction") == 'forward' or self.params.get("direction") is None:
+            self.logger("MOVER : ", "forward")
+            self.direction = self.FORWARD
             self.front_flag.bind(self.front_center.signal)
+            self.left_flag.bind(self.front_left.signal)
+            self.right_flag.bind(self.front_right.signal)
+
         else:
+            self.logger("MOVER : ", "backward")
+            self.direction = self.BACKWARD
             self.front_flag.bind(self.back_center.signal)
+            self.left_flag.bind(self.back_left.signal)
+            self.right_flag.bind(self.back_right.signal)
 
         self.isarrived = False
         x, y, _ = self.wheeledbase.get_position()
