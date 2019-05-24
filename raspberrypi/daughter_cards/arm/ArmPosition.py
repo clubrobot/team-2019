@@ -13,7 +13,7 @@ PREPARE_TAKING_POS_ROAD         = ArmPos(13.7,   3.1,    10)
 PREPARE_TAKING_POS_STATIC       = ArmPos(14.7,   3.5,    00)
 
 # Take Puck
-TAKE_PUCK_STATIC                = ArmPos(17,   3.0,    5)
+TAKE_PUCK_STATIC                = ArmPos(17,   3.3,    5)
 TAKE_PUCK_INTER_AFTER_STATIC    = ArmPos(10.2,    12.0,   90.0)
 
 # Tank Inter
@@ -54,13 +54,13 @@ RED_ZONE2                       = ArmPos(11.0,   -3.0,   270)
 RED_ZONE3                       = ArmPos(11.0,   -1.0,   270)
 
 # Accelerator 
-ACCELERATOR_BEFORE_ARM1          = ArmPos(12,   10.0,  45)
-ACCELERATOR_ARM1                 = ArmPos(12.2,    7,  25)
-ACCELERATOR_AFTER_ARM1           = ArmPos(12,   10.0,  45)
+ACCELERATOR_BEFORE_ARM1          = ArmPos(12.5,   10.0,  45)
+ACCELERATOR_ARM1                 = ArmPos(12.7,    7,  25)
+ACCELERATOR_AFTER_ARM1           = ArmPos(12.5,   10.0,  45)
 
-ACCELERATOR_BEFORE_ARM2          = ArmPos(12,   13.0,  45)
-ACCELERATOR_ARM2                 = ArmPos(12.2,    10.0,  25)
-ACCELERATOR_AFTER_ARM2           = ArmPos(12,   13.0,  45)
+ACCELERATOR_BEFORE_ARM2          = ArmPos(12.5,   13.0,  45)
+ACCELERATOR_ARM2                 = ArmPos(12.7,    10.0,  25)
+ACCELERATOR_AFTER_ARM2           = ArmPos(12.5,   13.0,  45)
 
 BALANCE3_POS_INTER               = ArmPos(-5 ,    15,   90)
 
