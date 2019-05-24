@@ -10,10 +10,10 @@ GLOBAL_POS_INTER_AFTER_TAKE     = ArmPos(0 ,   17.5,   90)
 GLOBAL_POS_INTER_AFTER_BALANCE  = ArmPos(0 ,   17.5,   90)
 # Prepare Taking
 PREPARE_TAKING_POS_ROAD         = ArmPos(11.5,   3.1,    10)
-PREPARE_TAKING_POS_STATIC       = ArmPos(12.5,   3.5,    00)
+PREPARE_TAKING_POS_STATIC       = ArmPos(12,   3.5,    00)
 
 # Take Puck
-TAKE_PUCK_STATIC                = ArmPos(14.5,   3.0,    5)
+TAKE_PUCK_STATIC                = ArmPos(14,   3.0,    5)
 TAKE_PUCK_INTER_AFTER_STATIC    = ArmPos(9.0,    10.0,   90.0)
 
 # Tank Inter

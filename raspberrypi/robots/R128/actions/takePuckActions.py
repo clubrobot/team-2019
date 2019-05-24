@@ -83,6 +83,7 @@ class TakePuckSync(Actionnable):
         self.puck2              = puckBack
 
     def moving(self):
+        self.wheeledbase.reset_parameters()
         # if action correspond to the first distrib pos
         if self.distrib_pos == self.DISTRIB6_1:
             
@@ -383,15 +384,13 @@ class TakePuckSingle(Actionnable):
         
         self.wheeledbase.wait()
 
-        # goto action point
-        self.wheeledbase.goto(*self.actionPoint.point)
 
         if self.RECALAGE == self.WALL:
+            self.wheeledbase.turnonthespot(0)
             self.wheeledbase.linpos_threshold.set(10)
             self.wheeledbase.angpos_threshold.set(0.2)
 
             self.log("RECALAGE : face au mur en x")
-            self.wheeledbase.turnonthespot(0)
             self.wheeledbase.wait()
             self.wheeledbase.set_velocities(RECALAGE_VEL, 0)
 
@@ -433,12 +432,14 @@ class TakePuckSingle(Actionnable):
 
             self.log("RECALAGE : retour au point d'action")
 
+        else:
+            # goto action point
+            self.wheeledbase.goto(*self.actionPoint.point)
+
         self.deployArm.set()
         # correct robot orientation
         self.wheeledbase.turnonthespot(self.actionPoint.theta)
         self.wheeledbase.wait()
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
 
 
     def realize(self):
