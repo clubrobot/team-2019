@@ -10,6 +10,7 @@ from daughter_cards.arm.puckUtils import *
 
 from threading import Event
 
+RECALAGE_VEL = 200
 offset_x = 0
 offset_y = 0
 
@@ -130,7 +131,7 @@ class TakePuckSync(Actionnable):
                 # recalage
 
                 self.log("RECALAGE : fonce dans le mur")
-                self.wheeledbase.set_velocities(-200,0)
+                self.wheeledbase.set_velocities(-RECALAGE_VEL,0)
                 try:
                     self.wheeledbase.wait()
                 except:
@@ -154,7 +155,7 @@ class TakePuckSync(Actionnable):
 
         else:
             # else go to point
-            self.wheeledbase.lookaheadbis.set(100.0)
+            self.wheeledbase.lookaheadbis.set(5)
             self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
 
     def realize(self):
@@ -368,16 +369,16 @@ class TakePuckSingle(Actionnable):
             self.wheeledbase.purepursuit(self.path, direction = 'backward')
         else:
             self.wheeledbase.purepursuit(self.path, direction = 'forward')
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
+        
+        self.wheeledbase.wait()
 
         # correct robot orientation
         if self.side == self.YELLOW:
             self.wheeledbase.turnonthespot(-pi)
         else:
             self.wheeledbase.turnonthespot(0)
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
+        
+        self.wheeledbase.wait()
 
         # goto action point
         self.wheeledbase.goto(*self.actionPoint.point)
@@ -389,7 +390,7 @@ class TakePuckSingle(Actionnable):
             self.log("RECALAGE : face au mur en x")
             self.wheeledbase.turnonthespot(0)
             self.wheeledbase.wait()
-            self.wheeledbase.set_velocities(300, 0)
+            self.wheeledbase.set_velocities(RECALAGE_VEL, 0)
 
             try:
                 self.wheeledbase.wait()
@@ -408,9 +409,9 @@ class TakePuckSingle(Actionnable):
             self.wheeledbase.wait()
 
             if self.side == self.YELLOW:
-                self.wheeledbase.set_velocities(-300, 0)
+                self.wheeledbase.set_velocities(-RECALAGE_VEL, 0)
             else:
-                self.wheeledbase.set_velocities(300, 0)
+                self.wheeledbase.set_velocities(RECALAGE_VEL, 0)
 
             try:
                 self.wheeledbase.wait()
