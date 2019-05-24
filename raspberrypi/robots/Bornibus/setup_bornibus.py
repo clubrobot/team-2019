@@ -13,7 +13,7 @@ from common.logger import *
 from common.geogebra import Geogebra
 from robots.get_robot_name import *
 from beacons.global_sync import ClientGS
-from robots.wheeledbase_manager import *
+from robots.wheeledbase_manager import * 
 log = Logger(Logger.SHOW)
 
 led1 = LEDMatrix(manager, 1)
@@ -43,7 +43,7 @@ try:
     beacons.connect()
 except TimeoutError:
     pass
-
+    
 import os
 #if ROBOT_ID == BORNIBUS_ID:
 #    print("Bornibus")
@@ -74,4 +74,4 @@ if __name__ == "__main__":
     while True:
         wheeledbase_manager.goto(800, 300)
         wheeledbase_manager.goto(780, 2595, direction="backward")
-
+    
