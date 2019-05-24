@@ -10,9 +10,8 @@ from daughter_cards.arm.puckUtils import *
 
 from threading import Event
 
-RECALAGE_VEL = 200
+RECALAGE_VEL = 100
 offset_x = 0
-offset_y = 0
 
 class TakePuckSync(Actionnable):
     YELLOW  = 0
@@ -61,10 +60,8 @@ class TakePuckSync(Actionnable):
 
             # recalage point
             self.RecalagePoint  = self.geogebra.get('Recal{}'.format(self.side))
-            self.point = (self.point[0] + offset_x, self.point[1] + offset_y)
             self.actionPoint    = ActPoint(self.point, pi)
         else:
-            self.point = (self.point[0] + offset_x, self.point[1] + offset_y)
             self.actionPoint    = ActPoint(self.point, pi/2)
 
         # 3 tank pos list
@@ -83,6 +80,7 @@ class TakePuckSync(Actionnable):
         self.puck2              = puckBack
 
     def moving(self):
+        global offset_x
         self.wheeledbase.reset_parameters()
         # if action correspond to the first distrib pos
         if self.distrib_pos == self.DISTRIB6_1:
@@ -133,16 +131,17 @@ class TakePuckSync(Actionnable):
 
                 self.log("RECALAGE : fonce dans le mur")
                 self.wheeledbase.set_velocities(-RECALAGE_VEL,0)
-                try:
-                    self.wheeledbase.wait()
-                except:
-                    pass
+                time.sleep(2)
+                # try:
+                #     self.wheeledbase.wait()
+                # except:
+                #     pass
 
                 self.correct_pos = self.wheeledbase.get_position()
 
                 offset_x = self.RecalagePoint[0] - self.correct_pos[0]
 
-                self.point = (self.point[0] - offset_x, self.point[1] - offset_y)
+                self.point = (self.point[0] - offset_x, self.point[1])
 
                 # prepare arm to take
                 self.arm1.move(PREPARE_TAKING_POS_ROAD)
@@ -157,7 +156,8 @@ class TakePuckSync(Actionnable):
         else:
             # else go to point
             self.wheeledbase.lookaheadbis.set(5)
-            self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
+            self.point = (self.actionPoint.point[0] - offset_x, self.actionPoint.point[1])
+            self.wheeledbase.goto(*self.point, theta=self.actionPoint.theta)
 
     def realize(self):
         # starting two pump
@@ -403,7 +403,7 @@ class TakePuckSingle(Actionnable):
             pos = self.wheeledbase.get_position()
             self.wheeledbase.set_position(2000 - 280 / 2, pos[1], 0)
 
-            self.log("RECALAGE : retour arrière")
+            self.log("RECALAGE : retour arriere")
             self.wheeledbase.goto(*self.actionPoint.point)
             self.wheeledbase.turnonthespot(pi/2)
 

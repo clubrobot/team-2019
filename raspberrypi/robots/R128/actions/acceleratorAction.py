@@ -118,7 +118,7 @@ class PutAccelerator(Actionnable):
                 time.sleep(0.1)
     
             self.arm1.move(self.afterTankPos[self.arm1.tank.index()-1])
-            self.handeledPuck = self.arm1.tank.get_puck()
+            self.handeledPuck1 = self.arm1.tank.get_puck()
             while not self.arm1.is_arrived():
                 time.sleep(0.1)
 

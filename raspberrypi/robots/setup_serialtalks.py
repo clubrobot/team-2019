@@ -10,7 +10,7 @@ if not manager:
         if len(hostname) == 0:
             hostname = "127.0.0.1"
         elif len(hostname.split(".")) == 1:
-            hostname = "192.168.1." + hostname
+            hostname = "192.168.12." + hostname
         print("Try reaching raspberry at IP " + hostname + "...")
 
     # Connect to the Raspberry Pi and the different modules

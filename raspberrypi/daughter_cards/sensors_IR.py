@@ -14,7 +14,7 @@ GET_BOTH_RANGE_OPCODE     = 0x13
 
 
 class SensorsIR(SecureSerialTalksProxy):
-    MAX_PERIOD = 0.1
+    MIN_TIMESTEP = 0.05
     ERROR_DIST = 1000
     DEFAULT = {GET_RANGE1_OPCODE: Deserializer(SHORT(ERROR_DIST)),
                GET_RANGE2_OPCODE: Deserializer(SHORT(ERROR_DIST))}
@@ -40,7 +40,7 @@ class SensorsIR(SecureSerialTalksProxy):
 
     def get_both_range(self):
         current_time = time.time()
-        if self.last_time is not None and current_time - self.last_time < SensorsIR.MAX_PERIOD:
+        if self.last_time is not None and current_time - self.last_time < SensorsIR.MIN_TIMESTEP:
             return self.last_both
 
         deser = self.execute(GET_BOTH_RANGE_OPCODE)
