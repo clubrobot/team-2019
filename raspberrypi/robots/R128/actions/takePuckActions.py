@@ -11,7 +11,7 @@ from robots.arm_recalibration import *
 
 from threading import Event
 
-RECALAGE_VEL = 100
+RECALAGE_VEL = 200
 DISABLE = 0
 ENABLE  = 1
 RECALIB = ENABLE
@@ -369,13 +369,15 @@ class TakePuckSingle(Actionnable):
 
 
         if self.RECALAGE == self.WALL:
-            self.wheeledbase.turnonthespot(0)
             self.wheeledbase.linpos_threshold.set(10)
             self.wheeledbase.angpos_threshold.set(0.2)
 
             self.log("RECALAGE : face au mur en x")
             self.wheeledbase.wait()
-            self.wheeledbase.set_velocities(RECALAGE_VEL, 0)
+            if self.side == self.YELLOW:
+                self.wheeledbase.set_velocities(-RECALAGE_VEL, 0)
+            else:
+                self.wheeledbase.set_velocities(RECALAGE_VEL, 0)
 
             try:
                 self.wheeledbase.wait()
@@ -384,7 +386,10 @@ class TakePuckSingle(Actionnable):
 
             self.log("RECALAGE : colle au mur en x")
             pos = self.wheeledbase.get_position()
-            self.wheeledbase.set_position(2000 - 280 / 2, pos[1], 0)
+            if self.side == self.YELLOW:
+                self.wheeledbase.set_position(2000 - 280 / 2, pos[1], -pi)
+            else:
+                self.wheeledbase.set_position(2000 - 280 / 2, pos[1], 0)
 
             self.log("RECALAGE : retour arriere")
             self.wheeledbase.goto(*self.actionPoint.point)
