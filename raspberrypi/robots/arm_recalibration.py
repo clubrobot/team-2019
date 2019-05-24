@@ -26,8 +26,8 @@ class ArmRecalibration():
             self.arm1_sensor    = self.sensors[1]
             self.arm2_sensor    = self.sensors[0]
 
-    def readjust_arm1(self, last_desired_pos, x_offset = 0, y_offset = 0, theta_offset = 0):
-        if self.arm1_sensor.is_connected :
+    def readjust_arm1(self, last_desired_pos, enable ,x_offset = 0, y_offset = 0, theta_offset = 0):
+        if self.arm1_sensor.is_connected and bool(enable):
             self.log("ArmRecalibration","Start ARM 1 readjusts : {}".format(last_desired_pos))
 
             self.dist = self.arm1_sensor.dist() + self.SENSOR_TO_ORIGIN + x_offset
@@ -42,8 +42,8 @@ class ArmRecalibration():
             self.log("ArmRecalibration","ARM 1 sensor Disconnected, use initial pos ")
             return last_desired_pos
 
-    def readjust_arm2(self, last_desired_pos, x_offset = 0, y_offset = 0, theta_offset = 0):
-        if self.arm2_sensor.is_connected :
+    def readjust_arm2(self, last_desired_pos, enable, x_offset = 0, y_offset = 0, theta_offset = 0):
+        if self.arm2_sensor.is_connected and bool(enable):
             self.log("ArmRecalibration","Start ARM 2 readjusts : {}".format(last_desired_pos))
 
             self.dist = self.arm2_sensor.dist() + self.SENSOR_TO_ORIGIN + x_offset
