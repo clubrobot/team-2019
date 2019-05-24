@@ -34,10 +34,14 @@ class ArmRecalibration():
             self.log("ArmRecalibration","ARM 1 dist to wall : {} mm".format(self.dist))
 
             self.delta = ((last_desired_pos.x * 10)- self.dist) / 10
-            self.log("ArmRecalibration","ARM 1 current delta : {} cm".format(self.delta))
-            # readjust x
-            self.new_pos = ArmPos((last_desired_pos.x - self.delta) , last_desired_pos.y + y_offset, last_desired_pos.phi + theta_offset)
-            return self.new_pos
+            if(abs(self.delta) < 2):
+                self.log("ArmRecalibration","ARM 1 current delta : {} cm".format(self.delta))
+                # readjust x
+                self.new_pos = ArmPos((last_desired_pos.x - self.delta) , last_desired_pos.y + y_offset, last_desired_pos.phi + theta_offset)
+                return self.new_pos
+            else:
+                self.log("ArmRecalibration","ARM 1 Wrong Delta")
+                return last_desired_pos
         else:
             self.log("ArmRecalibration","ARM 1 sensor Disconnected, use initial pos ")
             return last_desired_pos
@@ -50,10 +54,13 @@ class ArmRecalibration():
             self.log("ArmRecalibration","ARM 2 dist to wall : {} mm".format(self.dist))
 
             self.delta = ((last_desired_pos.x * 10)- self.dist) / 10
-            self.log("ArmRecalibration","ARM 2 current delta : {} cm".format(self.delta))
-            # readjust x
-            self.new_pos = ArmPos((last_desired_pos.x - self.delta), last_desired_pos.y + y_offset, last_desired_pos.phi + theta_offset)
-            return self.new_pos
+            if(abs(self.delta) < 2):
+                self.log("ArmRecalibration","ARM 2 current delta : {} cm".format(self.delta))
+                # readjust x
+                self.new_pos = ArmPos((last_desired_pos.x - self.delta), last_desired_pos.y + y_offset, last_desired_pos.phi + theta_offset)
+                return self.new_pos
+            else:
+                return last_desired_pos
         else:
             self.log("ArmRecalibration","ARM 2 sensor Disconnected, use initial pos ")
             return last_desired_pos
