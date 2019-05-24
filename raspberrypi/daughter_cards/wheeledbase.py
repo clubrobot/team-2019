@@ -34,6 +34,8 @@ GOTO_DELTA_OPCODE               = 0x1E
 RESET_PARAMETERS_OPCODE         = 0x1F
 SAVE_PARAMETERS_OPCODE          = 0x20
 
+START_TURNONTHESPOT_DIR_OPCODE = 0x21
+
 LEFTWHEEL_RADIUS_ID	            = 0x10
 LEFTWHEEL_CONSTANT_ID           = 0x11
 LEFTWHEEL_MAXPWM_ID             = 0x12
@@ -176,8 +178,12 @@ class WheeledBase(SecureSerialTalksProxy):
         self.direction = {'forward':self.FORWARD, 'backward':self.BACKWARD}[direction]
         self.send(START_PUREPURSUIT_OPCODE, BYTE({'forward':0, 'backward':1}[direction]), FLOAT(finalangle))
 
-    def turnonthespot(self, theta, direction='forward'):
-        self.send(START_TURNONTHESPOT_OPCODE, FLOAT(theta), BYTE({'forward':0, 'backward':1}[direction]))
+    def turnonthespot(self, theta, direction=None, way='forward'):
+        if direction is None:
+            self.send(START_TURNONTHESPOT_OPCODE, FLOAT(theta), BYTE({'forward':0, 'backward':1}[way]))
+        else:
+            self.send(START_TURNONTHESPOT_DIR_OPCODE, FLOAT(theta), BYTE({'clock':0, 'trig':1}[direction]))
+
 
     def isarrived(self, **kwargs):
         output = self.execute(POSITION_REACHED_OPCODE, **kwargs)

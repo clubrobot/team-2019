@@ -89,7 +89,7 @@ class detector(Actionnable):
             self.wheeledbase.turnonthespot(0)
             time.sleep(0.2)
             self.arm.deploy()
-            self.wheeledbase.turnonthespot(-pi/3, direction="backward")
+            self.wheeledbase.turnonthespot(-pi/3, direction="trig")
             self.wheeledbase.wait()
 
         time.sleep(0.5)
