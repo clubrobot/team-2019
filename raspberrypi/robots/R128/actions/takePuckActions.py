@@ -363,6 +363,9 @@ class TakePuckSingle(Actionnable):
         # wait befor deploy arms
         self.deployArm    = Event()
 
+        self.master         = daughter_cards["master"]
+
+
     def moving(self):
         # reach little distributor
         if self.side == self.YELLOW:
@@ -439,6 +442,11 @@ class TakePuckSingle(Actionnable):
 
 
     def realize(self):
+        
+        if self.master.is_active():
+            self.master.get_ressource("balance")
+
+
         self.arm.start_pump()
         self.arm.move(PREPARE_TAKING_POS_STATIC)
         while not (self.arm.is_arrived()):
