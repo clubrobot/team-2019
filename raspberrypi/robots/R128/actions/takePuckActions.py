@@ -172,7 +172,7 @@ class TakePuckSync(Actionnable):
             else:
                 # retry with new pos
                 self.log("TakePuckSync", "Take arm 1... Retry")
-                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 3, TAKE_PUCK_STATIC.phi)
+                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 4.5, TAKE_PUCK_STATIC.phi)
                 self.arm1.move(self.new_arm_pos)
 
                 while not (self.arm1.is_arrived()):
@@ -203,7 +203,7 @@ class TakePuckSync(Actionnable):
             else:
                 # retry with new pos
                 self.log("TakePuckSync", "Take arm 2... Retry")
-                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 3, TAKE_PUCK_STATIC.phi)
+                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 4.5, TAKE_PUCK_STATIC.phi)
                 self.arm2.move(self.new_arm_pos)
                 # check presure
                 while not (self.arm2.is_arrived()):
@@ -462,7 +462,7 @@ class TakePuckSingle(Actionnable):
             else:
                 # retry with new pos
                 self.log("TakePuckSync", "Take arm 1... Retry")
-                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 3, TAKE_PUCK_STATIC.phi)
+                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 4.5, TAKE_PUCK_STATIC.phi)
                 self.arm.move(self.new_arm_pos)
 
                 while not (self.arm.is_arrived()):
@@ -606,7 +606,7 @@ class TakePuckSyncMaintain(Actionnable):
             else:
                 # retry with new pos
                 self.log("TakePuckSync", "Take arm 1... Retry")
-                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 3, TAKE_PUCK_STATIC.phi)
+                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 4.5, TAKE_PUCK_STATIC.phi)
                 self.arm1.move(self.new_arm_pos)
 
                 while not (self.arm1.is_arrived()):
@@ -614,7 +614,7 @@ class TakePuckSyncMaintain(Actionnable):
                 # check presure
                 if not self.arm1.get_atmosphere_pressure():
                     # wait for taking secure
-                    time.sleep(0.5)
+                    time.sleep(1)
                     self.arm1.sucker.put_puck(self.puck1)
                     self.arm1.move(TAKE_PUCK_INTER_AFTER_STATIC)
                     self.log("TakePuckSync", "Take arm 1... OK")
@@ -637,7 +637,7 @@ class TakePuckSyncMaintain(Actionnable):
             else:
                 # retry with new pos
                 self.log("TakePuckSync", "Take arm 2... Retry")
-                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 3, TAKE_PUCK_STATIC.phi)
+                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 4.5, TAKE_PUCK_STATIC.phi)
                 self.arm2.move(self.new_arm_pos)
                 # check presure
                 while not (self.arm2.is_arrived()):
@@ -645,7 +645,7 @@ class TakePuckSyncMaintain(Actionnable):
                 # check presure
                 if not self.arm2.get_atmosphere_pressure():
                     # wait for taking secure
-                    time.sleep(0.5)
+                    time.sleep(1)
                     self.arm2.sucker.put_puck(self.puck2)
                     self.arm2.move(TAKE_PUCK_INTER_AFTER_STATIC)
                     self.log("TakePuckSync", "Take arm 2... OK")
