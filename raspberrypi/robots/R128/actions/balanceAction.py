@@ -48,7 +48,7 @@ class BalanceAfter6(Actionnable):
 
     def moving(self):
         if self.master.is_active():
-            while self.master.get_ressource("balance"):
+            while not self.master.get_ressource("balance"):
                 time.sleep(0.4)
 
 
@@ -265,6 +265,12 @@ class BalanceAfter3(Actionnable):
         self.handeledPuck2   = None
 
     def moving(self):
+        if self.master.is_active():
+            while not self.master.get_ressource("balance"):
+                time.sleep(0.4)
+
+
+
         if self.side == self.YELLOW:
             self.wheeledbase.turnonthespot(-pi)
         else:
@@ -339,7 +345,8 @@ class BalanceAfter3(Actionnable):
             self.handeledPuck2 = self.arm2.sucker.get_puck()
         
     def after(self):
-        pass
+        self.master.release_ressource("balance")
+
 
     #override
     def getAction(self):
