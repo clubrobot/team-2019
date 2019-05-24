@@ -50,7 +50,7 @@ class Sensor:
         if dist > threshold:
             return False
         wheeledbase_pos = self.wheeledbase.get_position()
-        
+
         x = wheeledbase_pos[0] + self.pos[0]*math.cos(wheeledbase_pos[2]) - self.pos[1]*math.sin(wheeledbase_pos[2]) \
             + math.cos(self.angle+wheeledbase_pos[2])*dist
         y = wheeledbase_pos[1] + self.pos[0]*math.sin(wheeledbase_pos[2]) + self.pos[1]*math.cos(wheeledbase_pos[2]) \
@@ -66,11 +66,11 @@ class Sensor:
            Sensor.SCALE_ZONE[1][0] < y < Sensor.SCALE_ZONE[1][1]:
             return False
 
-        print("obstacle en : ", round(x), round(y))
-        print("wheeledbase_pos : ", wheeledbase_pos)
-        print("capteur", self.name)
-        print("distance : ", dist)
-        print()
+        # print("obstacle en : ", round(x), round(y))
+        # print("wheeledbase_pos : ", wheeledbase_pos)
+        # print("capteur", self.name)
+        # print("distance : ", dist)
+        # print()
         return True
 
 
