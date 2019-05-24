@@ -8,7 +8,7 @@ from common.sync_flag_signal import Signal
 
 
 class SensorListener(Thread):
-    def __init__(self, sensors, timestep = 0.1, threshold = 220):
+    def __init__(self, sensors, timestep = 0.05, threshold = 300):
         Thread.__init__(self)
         self.daemon = True
         self.signal   = Signal()
@@ -66,11 +66,11 @@ class Sensor:
            Sensor.SCALE_ZONE[1][0] < y < Sensor.SCALE_ZONE[1][1]:
             return False
 
-        print("obstacle en : ", round(x), round(y))
-        print("wheeledbase_pos : ", wheeledbase_pos)
-        print("capteur", self.name)
-        print("distance : ", dist)
-        print()
+        # print("obstacle en : ", round(x), round(y))
+        # print("wheeledbase_pos : ", wheeledbase_pos)
+        # print("CAPTEUR", self.name)
+        # print("distance : ", dist)
+        # print()
         return True
 
 
