@@ -66,11 +66,11 @@ class Sensor:
            Sensor.SCALE_ZONE[1][0] < y < Sensor.SCALE_ZONE[1][1]:
             return False
 
-        print("obstacle en : ", round(x), round(y))
-        print("wheeledbase_pos : ", wheeledbase_pos)
-        print("capteur", self.name)
-        print("distance : ", dist)
-        print()
+        # print("obstacle en : ", round(x), round(y))
+        # print("wheeledbase_pos : ", wheeledbase_pos)
+        # print("capteur", self.name)
+        # print("distance : ", dist)
+        # print()
         return True
 
 

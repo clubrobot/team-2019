@@ -101,7 +101,7 @@ class Mover:
         #TODO ami
         if False :
             self.in_path_flag.bind(self.friend_listener.signal)
-        if self.params.get("direction") =='forward':
+        if self.params.get("direction") == 'forward':
             self.logger("MOVER : ", "forward")
             self.direction = self.FORWARD
             self.front_flag.bind(self.front_center.signal)
