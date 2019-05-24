@@ -12,6 +12,7 @@ from math import pi
 from common.logger import *
 from common.geogebra import Geogebra
 from robots.get_robot_name import *
+from robots.wheeledbase_manager import *
 from beacons.global_sync import ClientGS
 from robots.wheeledbase_manager import * 
 log = Logger(Logger.SHOW)
@@ -70,8 +71,8 @@ if __name__ == "__main__":
     wheeledbase.reset_parameters()
     wheeledbase.max_linvel.set(300)
     wheeledbase.set_position(780, 2595, -pi/2)
-    wheeledbase_manager = Mover(wheeledbase, print,sensorsFront, sensorsBack)
-    while True:
-        wheeledbase_manager.goto(800, 300)
-        wheeledbase_manager.goto(780, 2595, direction="backward")
+    #wheeledbase_manager = Mover(wheeledbase, print,sensorsFront, sensorsBack)
+    wheeledbase.purepursuit([[780,2500],[780,2800],[780,500]])
+    wheeledbase.wait()
     
+
