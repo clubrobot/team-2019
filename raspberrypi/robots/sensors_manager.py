@@ -8,7 +8,7 @@ from common.sync_flag_signal import Signal
 
 
 class SensorListener(Thread):
-    def __init__(self, sensors, timestep = 0.1, threshold = 220):
+    def __init__(self, sensors, timestep = 0.05, threshold = 300):
         Thread.__init__(self)
         self.daemon = True
         self.signal   = Signal()

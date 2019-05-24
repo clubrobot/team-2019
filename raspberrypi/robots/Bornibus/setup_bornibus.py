@@ -69,9 +69,9 @@ if __name__ == "__main__":
     init_robot()
     wheeledbase.reset_parameters()
     wheeledbase.max_linvel.set(300)
-    wheeledbase.set_position(780s, 2595, -pi/2)
+    wheeledbase.set_position(780, 2595, -pi/2)
     wheeledbase_manager = Mover(wheeledbase, print,sensorsFront, sensorsBack)
     while True:
         wheeledbase_manager.goto(800, 300)
-        wheeledbase_manager.goto(450, 2595, direction="backward")
+        wheeledbase_manager.goto(780, 2595, direction="backward")
     
