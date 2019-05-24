@@ -103,10 +103,13 @@ class Mover:
 
         side = 1 if left<right else 1
         if side==1:
-            print(" je vais a droite")
+            self.logger("MOVER : ", "Waiting for a second !")
         else:
-            print("sfsef ")
-        self.wheeledbase.set_velocities(-200,0)
+            self.logger("MOVER : ", "Waiting for a second !")
+        if self.direction == self.FORWARD:
+            self.wheeledbase.goto_delta(-self.LONGITUDINAL_SHIFT, 0)
+        else:
+            self.wheeledbase.goto_delta(self.LONGITUDINAL_SHIFT, 0)
         sleep(0.5)
         self.wheeledbase.stop()
         self.wheeledbase.purepursuit(((x,y),(x+Mover.SIDE_DIST*robot_droite_vec[0]*side,y+Mover.SIDE_DIST*robot_droite_vec[1]*side),(self.goal)),**self.params)
