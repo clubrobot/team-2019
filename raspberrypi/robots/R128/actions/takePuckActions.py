@@ -23,8 +23,9 @@ class TakePuckSync(Actionnable):
     DISTRIB3_1 = 4
     DISTRIB3_2 = 5
 
-    SENSORS = 0
-    WALL = 1
+    NO = 0
+    SENSORS = 1
+    WALL = 2
     RECALAGE = WALL
 
     def __init__(self, geogebra, daughter_cards, side, distrib_pos, puckFront, puckBack, log, sensors):
@@ -33,7 +34,7 @@ class TakePuckSync(Actionnable):
         self.log            = log
         self.side           = side
         self.distrib_pos    = distrib_pos
-        self.sensors = sensors
+        self.sensors        = sensors
 
         # Bind arm in funtion of desired side
         if self.side == self.YELLOW:
@@ -122,12 +123,19 @@ class TakePuckSync(Actionnable):
                 self.log("CHECK ALIGNMENT after correction:", left, right)
 
             else:
+                self.log("RECALAGE : face au mur en x")
                 # prepare recalage
                 self.wheeledbase.turnonthespot(pi)
                 self.wheeledbase.wait()
                 # recalage
+
+                self.log("RECALAGE : fonce dans le mur")
                 self.wheeledbase.set_velocities(-200,0)
-                time.sleep(1)
+                try:
+                    self.wheeledbase.wait()
+                except:
+                    pass
+
                 self.correct_pos = self.wheeledbase.get_position()
 
                 offset_x = self.RecalagePoint[0] - self.correct_pos[0]
@@ -138,6 +146,7 @@ class TakePuckSync(Actionnable):
                 self.arm1.move(PREPARE_TAKING_POS_ROAD)
                 self.arm2.move(PREPARE_TAKING_POS_ROAD)
 
+                self.log("RECALAGE : Se repositionne correctement")
                 self.wheeledbase.goto(*self.point, theta=pi/2, direction = 'forward')
 
             while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
@@ -310,9 +319,15 @@ class TakePuckSync(Actionnable):
     def getAction(self):
         return Action(lambda : self.moving(), lambda : self.realize(), self.before, self.after, 'TakePuck_{}'.format(self.distrib_pos))
 
+
 class TakePuckSingle(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
+
+    NO = 0
+    SENSORS = 1
+    WALL = 2
+    RECALAGE = WALL
 
     def __init__(self, geogebra, daughter_cards, side, distrib_pos, puck, log):
         self.geogebra       = geogebra
@@ -366,14 +381,61 @@ class TakePuckSingle(Actionnable):
 
         # goto action point
         self.wheeledbase.goto(*self.actionPoint.point)
-        
+
+        if self.RECALAGE == self.WALL:
+            self.wheeledbase.linpos_threshold.set(10)
+            self.wheeledbase.angpos_threshold.set(0.2)
+
+            self.log("RECALAGE : face au mur en x")
+            self.wheeledbase.turnonthespot(0)
+            self.wheeledbase.wait()
+            self.wheeledbase.set_velocities(300, 0)
+
+            try:
+                self.wheeledbase.wait()
+            except:
+                pass
+
+            self.log("RECALAGE : colle au mur en x")
+            pos = self.wheeledbase.get_position()
+            self.wheeledbase.set_position(2000 - 280 / 2, pos[1], 0)
+
+            self.log("RECALAGE : retour arrière")
+            self.wheeledbase.goto(*self.actionPoint.point)
+            self.wheeledbase.turnonthespot(pi/2)
+
+            self.log("RECALAGE : face au mur en y")
+            self.wheeledbase.wait()
+
+            if self.side == self.YELLOW:
+                self.wheeledbase.set_velocities(-300, 0)
+            else:
+                self.wheeledbase.set_velocities(300, 0)
+
+            try:
+                self.wheeledbase.wait()
+            except:
+                pass
+
+            self.log("RECALAGE : colle au mur en y")
+            pos = self.wheeledbase.get_position()
+            if self.side == self.YELLOW:
+                self.wheeledbase.set_position(pos[0], 280 / 2, pos[2])
+            else:
+                self.wheeledbase.set_position(pos[0], 3000 - 280 / 2, pos[2])
+
+            self.wheeledbase.reset_parameters()
+            self.wheeledbase.goto(*self.actionPoint.point, theta=pi / 2)
+
+            self.log("RECALAGE : retour au point d'action")
+
         self.deployArm.set()
         # correct robot orientation
         self.wheeledbase.turnonthespot(self.actionPoint.theta)
+        self.wheeledbase.wait()
         while not self.wheeledbase.isarrived():
             time.sleep(0.1)
 
-        # Recalage ??????
 
     def realize(self):
         self.arm.start_pump()

@@ -56,19 +56,20 @@ class PutAccelerator(Actionnable):
                 time.sleep(0.1)
 
         self.wheeledbase.turnonthespot(-pi)
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
+        self.wheeledbase.wait()
 
-        self.wheeledbase.set_velocities(75,0)
-        time.sleep(3)
+        self.wheeledbase.set_velocities(150, 0)
+
+        try:
+            self.wheeledbase.wait()
+        except:
+            pass
 
         self.wheeledbase.goto_delta(-85, 0)
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
+        self.wheeledbase.wait()
         
         self.wheeledbase.turnonthespot(-pi/2)
-        while not self.wheeledbase.isarrived():
-            time.sleep(0.1)
+        self.wheeledbase.wait()
 
     def realize(self):
         # put the first handled puck
