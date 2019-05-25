@@ -178,7 +178,7 @@ class TakePuckSync(Actionnable):
                 while not (self.arm1.is_arrived()):
                     time.sleep(0.1)
                 # check presure
-                time.sleep(0.5)
+                time.sleep(1)
                 if not self.arm1.get_atmosphere_pressure():
                     # wait for taking secure
                     self.arm1.sucker.put_puck(self.puck1)
@@ -209,7 +209,7 @@ class TakePuckSync(Actionnable):
                 while not (self.arm2.is_arrived()):
                     time.sleep(0.1)
                 # check presure
-                time.sleep(0.5)
+                time.sleep(1)
                 if not self.arm2.get_atmosphere_pressure():
                     # wait for taking secure
                     self.arm2.sucker.put_puck(self.puck2)
