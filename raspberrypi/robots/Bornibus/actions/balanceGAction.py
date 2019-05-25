@@ -11,7 +11,7 @@ from daughter_cards.wheeledbase import *
 class balance(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
-    def __init__(self, geogebra, daughter_cards, side, log):
+    def __init__(self, geogebra, daughter_cards, mover, side, log):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
@@ -22,6 +22,8 @@ class balance(Actionnable):
         self.endstops       = daughter_cards['endstops']
         self.pushers        = daughter_cards['pushers']
         self.master         = daughter_cards['master']
+
+        self.mover = mover
 
         if self.side == self.YELLOW:
             color = "Y"
@@ -51,13 +53,9 @@ class balance(Actionnable):
                 time.sleep(0.4)
         # Vers balance
         self.log("BALANCE ACTION :", "Vers la balance")
-        try :
-            self.wheeledbase.linpos_threshold.set(10)
-            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal1"], self.points["Bal2"], self.points["Bal3"]],
+        self.wheeledbase.linpos_threshold.set(10)
+        self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal1"], self.points["Bal2"], self.points["Bal3"]],
                                 direction="forward", lookahead=200, lookaheadbis=120)
-            self.wheeledbase.wait()
-        except :
-            pass
         self.wheeledbase.linpos_threshold.set(3)
         self.wheeledbase.max_linacc.set(300)
         self.wheeledbase.max_lindec.set(300)
@@ -65,11 +63,11 @@ class balance(Actionnable):
         
         #degagement de l'espace devant la balance
         if self.side == self.YELLOW:
-            self.wheeledbase.turnonthespot(pi/4)
+            self.mover.turnonthespot(pi/4)
             self.wheeledbase.wait()
             self.pushers.down_r()
         else :
-            self.wheeledbase.turnonthespot(-pi/4)
+            self.mover.turnonthespot(-pi/4)
             self.wheeledbase.wait()
             self.pushers.down_l()
             

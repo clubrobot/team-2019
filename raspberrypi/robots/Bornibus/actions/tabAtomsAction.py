@@ -11,11 +11,11 @@ from daughter_cards.wheeledbase import *
 class tabAtoms(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
-    def __init__(self, geogebra, daughter_cards, side, log):
+    def __init__(self, geogebra, daughter_cards, mover, side, log):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
-
+        self.mover = mover
         self.wheeledbase    = daughter_cards['wheeledbase']
         self.display        = daughter_cards['display']
         self.pushers        = daughter_cards['pushers']
@@ -46,10 +46,9 @@ class tabAtoms(Actionnable):
         # Vers palets
         self.log("TABATOMS ACTION : ", "Vers palets")
 
-        try:
-            self.wheeledbase.goto(*self.points["Tab2"], direction='forward')
-        except:
-            pass
+        
+        self.mover.goto(*self.points["Tab2"], direction='forward')
+
 
        
 
@@ -62,17 +61,15 @@ class tabAtoms(Actionnable):
         if self.side == self.PURPLE:
             self.pushers.down_l()
         
-        self.wheeledbase.turnonthespot(-pi)
-        self.wheeledbase.wait()
+        self.mover.turnonthespot(-pi)
 
-        self.wheeledbase.goto(*self.points["Tab1"], direction='forward')
+        self.mover.goto(*self.points["Tab1"], safe_mode=False, direction='forward')
 
         #se tourner pour mettre les palets dans le tableau
         if self.side == self.YELLOW:
-            self.wheeledbase.turnonthespot(-3*pi/4)
+            self.mover.turnonthespot(-3*pi/4)
         else:
-            self.wheeledbase.turnonthespot(3*pi/4)
-        self.wheeledbase.wait()
+            self.mover.turnonthespot(3*pi/4)
 
         self.display.addPoints(13)
         

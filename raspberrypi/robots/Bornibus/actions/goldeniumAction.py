@@ -17,10 +17,11 @@ class gripperError(Exception) :
 class goldenium(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
-    def __init__(self, geogebra, daughter_cards, side, log):
+    def __init__(self, geogebra, daughter_cards, mover, side, log):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
+        self.mover = mover
 
         self.wheeledbase    = daughter_cards['wheeledbase']
         self.display        = daughter_cards['display']
@@ -40,7 +41,7 @@ class goldenium(Actionnable):
     def moving(self):
         self.wheeledbase.reset_parameters()
         self.log("GOLDENIUM ACTION : ", "Vers goldenium")
-        self.wheeledbase.goto(*self.points["Gold1"], theta=pi)
+        self.mover.goto(*self.points["Gold1"], theta=pi)
 
     def realize(self):
         self.wheeledbase.angpos_threshold.set(0.1)
@@ -48,7 +49,7 @@ class goldenium(Actionnable):
         self.wheeledbase.lookaheadbis.set(2)
         # Vers prise goldenium
         self.log("GOLDENIUM ACTION : ", "Prise goldenium")
-        self.wheeledbase.turnonthespot(pi)
+        self.mover.turnonthespot(pi)
         goldenium = 0
         beginGoldeniumTime = time.time()
         while (goldenium!=1) & (time.time()-beginGoldeniumTime<=MAX_TIME_FOR_GOLDENIUM) :
@@ -64,16 +65,16 @@ class goldenium(Actionnable):
                         if self.endstops.get_ES2():
                             # Touched left
                             self.log("GOLDENIUM ACTION : ", "gripper touched left")
-                            self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]-7)
-                            self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]-7)
+                            self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]-4)
+                            self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]-4)
                             print(*self.points["Gold2"])
                             raise gripperError("Grripper left touched")
                         
                         elif self.endstops.get_ES1():
                             # Touched right
                             self.log("GOLDENIUM ACTION : ", "gripper touched right")
-                            self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]+7)
-                            self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]+7)
+                            self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]+4)
+                            self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]+4)
                             print(*self.points["Gold2"])
                             raise gripperError("Grripper right touched")
                         time.sleep(0.1)
@@ -98,17 +99,6 @@ class goldenium(Actionnable):
                     time.sleep(0.5)
                     self.wheeledbase.set_velocities(0, 0)
 
-
-                    # try :
-                    #     self.wheeledbase.goto(*self.points["Gold1"], theta=pi, lookaheadbis=1)
-                    # except :
-                    #     self.wheeledbase.set_velocities(-700, 0)
-                    #     time.sleep(0.5)
-                    #     self.wheeledbase.set_velocities(0, 0)
-                    #     try :
-                    #         self.wheeledbase.goto(*self.points["Gold1"], theta=pi, lookaheadbis=150)
-                    #     except :
-                    #         pass
 
         self.log("GOLDENIUM ACTION : ", "fin")
 
