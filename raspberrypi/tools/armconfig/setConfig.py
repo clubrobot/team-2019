@@ -11,7 +11,7 @@ AX12_3_OFFSET = 150.0
 
 LINK1_LEN     = 7.0
 LINK2_LEN     = 7.0
-LINK3_LEN     = 3.8
+LINK3_LEN     = 6
 ELBOW         = ELBOW_BACK
 
 WS_FRONT    = Workspace(1.0, 30.0, -10.0, 30.0, ELBOW_BACK)
