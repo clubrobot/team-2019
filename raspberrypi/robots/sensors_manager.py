@@ -34,13 +34,14 @@ class Sensor:
     HILL_ZONE = ((300, 1400), (200, 2800))
     SCALE_ZONE = ((1150, 1600), (1200, 1800))
 
-    def __init__(self, wheeledbase, name, dist, pos, angle):
+    def __init__(self, wheeledbase, name, dist, pos, angle, connexion_flag):
         self.dist = dist
         self.pos = pos
         self.angle = angle
         self.enabled = True
         self.name = name
         self.wheeledbase = wheeledbase
+        self.is_connected = connexion_flag
 
     def disable(self):
         self.enabled = False

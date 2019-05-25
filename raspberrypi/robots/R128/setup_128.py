@@ -28,16 +28,16 @@ sensorsB = SensorsIR(manager, uuid="sensorsB")
 sensorsC = SensorsIR(manager, uuid="sensorsC")
 sensorsD = SensorsIR(manager, uuid="sensorsD")
 
-sensorsFront = [Sensor(wheeledbase, "Avant gauche",   sensorsD.get_range2, (110, 110), pi/4),
-                Sensor(wheeledbase, "Avant      ",    sensorsD.get_range1, (140, -50), 0),
-                Sensor(wheeledbase, "Avant droit",    sensorsC.get_range2, (110, -110), -pi/4)]
+sensorsFront = [Sensor(wheeledbase, "Avant gauche",   sensorsD.get_range2, (110, 110), pi/4, sensorsD.is_connected),
+                Sensor(wheeledbase, "Avant      ",    sensorsD.get_range1, (140, -50), 0, sensorsD.is_connected),
+                Sensor(wheeledbase, "Avant droit",    sensorsC.get_range2, (110, -110), -pi/4, sensorsC.is_connected)]
 
-sensorsLat =   [Sensor(wheeledbase, "Lateral avant",  sensorsC.get_range1, (60, -130), -pi/2),
-                Sensor(wheeledbase, "Lateral arriere",sensorsB.get_range1, (-60, -130), -pi/2)]
+sensorsLat =   [Sensor(wheeledbase, "Lateral avant",  sensorsC.get_range1, (60, -130), -pi/2, sensorsC.is_connected),
+                Sensor(wheeledbase, "Lateral arriere",sensorsB.get_range1, (-60, -130), -pi/2, sensorsB.is_connected)]
 
-sensorsBack  = [Sensor(wheeledbase, "Arrière droit",  sensorsB.get_range2, (-110, -110), -3*pi/4),
-                Sensor(wheeledbase, "Arrière",        sensorsA.get_range1, (-110, -50), pi),
-                Sensor(wheeledbase, "Arrière gauche", sensorsA.get_range2, (-110, 110), 3*pi/4)]
+sensorsBack  = [Sensor(wheeledbase, "Arrière droit",  sensorsB.get_range2, (-110, -110), -3*pi/4, sensorsB.is_connected),
+                Sensor(wheeledbase, "Arrière",        sensorsA.get_range1, (-110, -50), pi, sensorsA.is_connected),
+                Sensor(wheeledbase, "Arrière gauche", sensorsA.get_range2, (-110, 110), 3*pi/4, sensorsA.is_connected)]
 sens_manager = SensorsManager(wheeledbase, sensorsFront, sensorsBack, sensorsLat)
 
 import os
@@ -69,4 +69,7 @@ def init_robot():
         armBack.go_home()
 
 if __name__ == "__main__":
+        from robots.arm_recalibration import *  
+        a = ArmRecalibration(sensorsLat,1,log)
         init_robot()
+
