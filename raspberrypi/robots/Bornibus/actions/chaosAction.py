@@ -76,7 +76,8 @@ class chaos(Actionnable):
         self.pushers.up_r()
         self.pushers.up_l()
         self.mover.goto(*self.points["Cha7"], direction='backward')
-        
+
+        self.display.addPoints(14)
 
     def before(self):
         pass
