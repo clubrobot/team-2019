@@ -10,7 +10,7 @@ from robots.Bornibus.actions.tabAtomsAction import *
 from robots.Bornibus.actions.chaosAction import *
 from common.actions.action import ThreadActionManager
 from robots.sensors_manager import *
-
+from robots.wheeledbase_manager import PositionUnreachable
 COLOR = Automaton.YELLOW
 COLOR = Automaton.PURPLE
 PREPARATION = False
@@ -65,10 +65,10 @@ class Bornibus(Automaton):
 
         # Specific Actions initialisation
         self.detectorAct    = detector(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
-        self.goldeniumAct   = goldenium(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
-        self.balanceGAct    = balance(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
-        self.tabAtomsAct    = tabAtoms(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
-        self.chaosAct       = chaos(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.goldeniumAct   = goldenium(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
+        self.balanceGAct    = balance(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
+        self.tabAtomsAct    = tabAtoms(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
+        self.chaosAct       = chaos(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
 
         self.action_list = [
             self.detectorAct,
@@ -123,15 +123,20 @@ class Bornibus(Automaton):
 
             # moving to action point
             self.log("MAIN : ", "Moving ! ...")
-            act.moving()
-
+            try:
+                act.moving()
+            except PositionUnreachable:
+                continue
             # wait for parralels action end
             while not self.tam.end():
                 time.sleep(0.1)
 
             # execute the current action
             self.log("MAIN ; ", "Arrived on action point ! Go execute {} =)".format(act.name))
-            act()
+            try:
+                act()
+            except PositionUnreachable:
+                continue
             act.done.set()
             self.log("MAIN ; ", "Action End !")
 

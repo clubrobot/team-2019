@@ -49,16 +49,15 @@ class detector(Actionnable):
 
         # Vers l'accélérateur
         self.log("DETECTOR ACTION : ", "Vers l'accelerateur")
+        self.wheeledbase.linpos_threshold.set(20)
+        self.wheeledbase.angpos_threshold.set(0.1)
         self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Det1"], self.points["Det2"],
                                       self.points["Det3"], self.points["Det4"]], direction="forward")
         self.log("DETECTOR ACTION : ", "PurePursuit lance")
-        self.wheeledbase.linpos_threshold.set(20)
-        self.wheeledbase.angpos_threshold.set(0.1)
-        self.wheeledbase.wait()
+        #self.wheeledbase.wait()
         self.log("DETECTOR ACTION : ", "Arrive")
 
-        self.wheeledbase.turnonthespot(0)
-        self.wheeledbase.wait()
+        self.mover.turnonthespot(0)
         self.log("DETECTOR ACTION : ", "Oriente vers le mur")
 
         self.wheeledbase.set_velocities(-200, 0)
@@ -74,9 +73,11 @@ class detector(Actionnable):
             
         if self.side == self.PURPLE :
             self.wheeledbase.goto_delta(90, self.points["Det4"][1] - self.wheeledbase.get_position()[1] - 30)
-
-        self.wheeledbase.wait()
-
+        try:
+            self.wheeledbase.wait()
+            # TODO Géré ??
+        except:
+            pass
         self.log("DETECTOR ACTION : ", "Prepare pour pousser")
 
     def realize(self):
@@ -84,15 +85,13 @@ class detector(Actionnable):
         self.log("DETECTOR ACTION : ", "Pousse le Blueium")
         if self.side == self.YELLOW:
             self.arm.deploy()
-            self.wheeledbase.turnonthespot(-2*pi/3)
-            self.wheeledbase.wait()
+            self.mover.turnonthespot_dir(-2*pi/3, direction="clock")
 
         if self.side == self.PURPLE:
-            self.wheeledbase.turnonthespot(0)
-            time.sleep(0.2)
+            self.mover.turnonthespot(0)
+            time.sleep(0.4)
             self.arm.deploy()
-            self.wheeledbase.turnonthespot(-pi/3, direction="trig")
-            self.wheeledbase.wait()
+            self.mover.turnonthespot_dir(-pi/3, direction="trig")
 
         time.sleep(0.5)
         self.arm.up()

@@ -6,12 +6,17 @@ from math import pi
 from common.actions.action import *
 from common.funcutils      import *
 from daughter_cards.arm.ArmPosition import *
+from robots.arm_recalibration import *
+
+DISABLE = 0
+ENABLE = 1
+RECALIB = ENABLE
 
 class PutAccelerator(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
 
-    def __init__(self, geogebra, daughter_cards, side, log):
+    def __init__(self, geogebra, daughter_cards, side, log, sensors):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
@@ -27,7 +32,9 @@ class PutAccelerator(Actionnable):
         self.display        = daughter_cards['display']
 
         # action Points
-        self.path          = self.geogebra.getall('PathAccel{}_*'.format(self.side))
+        self.path           = self.geogebra.getall('PathAccel{}_*'.format(self.side))
+
+        self.recalArm       = ArmRecalibration(sensors, self.side, self.log)
 
         #armPos
         self.beforeTankPos  = [BEFORE_TAKE_TANK_PUCK1, BEFORE_TAKE_TANK_PUCK2, BEFORE_TAKE_TANK_PUCK3]
@@ -71,21 +78,28 @@ class PutAccelerator(Actionnable):
 
     def realize(self):
         # put the first handled puck
-        self.arm1.move(ACCELERATOR_BEFORE_ARM1)
-        self.arm2.move(ACCELERATOR_BEFORE_ARM2)
+
+        arm1_pos = self.recalArm.readjust_arm1(ACCELERATOR_BEFORE_ARM1, RECALIB)
+        arm2_pos = self.recalArm.readjust_arm2(ACCELERATOR_BEFORE_ARM2, RECALIB)
+        
+        self.arm1.move(arm1_pos)
+        self.arm2.move(arm2_pos)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
 
-        self.arm1.move(ACCELERATOR_ARM1)
-        self.arm2.move(ACCELERATOR_ARM2)
+        arm1_pos = self.recalArm.readjust_arm1(ACCELERATOR_ARM1, RECALIB)
+        arm2_pos = self.recalArm.readjust_arm2(ACCELERATOR_ARM2, RECALIB)
+        
+        self.arm1.move(arm1_pos)
+        self.arm2.move(arm2_pos)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
 
         if not self.arm1.get_atmosphere_pressure():
-            self.display.addPoints(self.handeledPuck1.getPoints().Tab)
+            self.display.addPoints(self.handeledPuck1.getPoints().Accelerator)
             self.log("ACCELERATOR", "Add {} points".format(self.handeledPuck1.getPoints().Accelerator))
         if not self.arm2.get_atmosphere_pressure():
-            self.display.addPoints(self.handeledPuck2.getPoints().Tab)
+            self.display.addPoints(self.handeledPuck2.getPoints().Accelerator)
             self.log("ACCELERATOR", "Add {} points".format(self.handeledPuck2.getPoints().Accelerator))
 
         time.sleep(0.5)
@@ -93,8 +107,12 @@ class PutAccelerator(Actionnable):
         self.arm2.stop_pump()
         time.sleep(0.5)
 
-        self.arm1.move(ACCELERATOR_AFTER_ARM1)
-        self.arm1.move(ACCELERATOR_AFTER_ARM2)
+        arm1_pos = self.recalArm.readjust_arm1(ACCELERATOR_AFTER_ARM1, RECALIB)
+        arm2_pos = self.recalArm.readjust_arm2(ACCELERATOR_AFTER_ARM2, RECALIB)
+        
+        self.arm1.move(arm1_pos)
+        self.arm2.move(arm2_pos)
+
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
 
@@ -125,12 +143,16 @@ class PutAccelerator(Actionnable):
             self.arm1.move(TANK_POS_INTER_150)
             while not self.arm1.is_arrived():
                 time.sleep(0.1)
+            
+            arm1_pos = self.recalArm.readjust_arm1(ACCELERATOR_BEFORE_ARM1, RECALIB)
 
-            self.arm1.move(ACCELERATOR_BEFORE_ARM1)
+            self.arm1.move(arm1_pos)
             while not self.arm1.is_arrived():
                 time.sleep(0.1)
 
-            self.arm1.move(ACCELERATOR_ARM1)
+            arm1_pos = self.recalArm.readjust_arm1(ACCELERATOR_ARM1, RECALIB)
+
+            self.arm1.move(arm1_pos)
             while not self.arm1.is_arrived():
                 time.sleep(0.1)
 
@@ -142,7 +164,9 @@ class PutAccelerator(Actionnable):
             self.arm1.stop_pump()
             time.sleep(0.5)
 
-            self.arm1.move(ACCELERATOR_AFTER_ARM1)
+            arm1_pos = self.recalArm.readjust_arm1(ACCELERATOR_AFTER_ARM1, RECALIB)
+
+            self.arm1.move(arm1_pos)
             while not self.arm1.is_arrived():
                 time.sleep(0.1)
 

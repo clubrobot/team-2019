@@ -12,6 +12,7 @@ from math import pi
 from common.logger import *
 from common.geogebra import Geogebra
 from robots.get_robot_name import *
+from robots.wheeledbase_manager import *
 from beacons.global_sync import ClientGS
 from robots.wheeledbase_manager import * 
 log = Logger(Logger.SHOW)
@@ -30,12 +31,12 @@ gripper = Gripper(manager, endstops)
 sensorsA = SensorsIR(manager, uuid="sensorsA")
 sensorsB = SensorsIR(manager, uuid="sensorsB")
 sensorsC = SensorsIR(manager, uuid="sensorsC")
-sensorsFront = [Sensor(wheeledbase, "Avant droit",   sensorsA.get_range1, (50, -100), -pi/4),
-                Sensor(wheeledbase, "Avant      ",   sensorsB.get_range2, (60, 0), 0),
-                Sensor(wheeledbase, "Avant gauche",  sensorsC.get_range1, (50, 100), pi/4)]
-sensorsBack  = [Sensor(wheeledbase, "Arrière droit", sensorsA.get_range2, (-50, -100), -3*pi/4),
-                Sensor(wheeledbase, "Arrière",       sensorsB.get_range1, (-60, 0), pi),
-                Sensor(wheeledbase, "Arrière gauche",sensorsC.get_range2, (-50, 100), 3*pi/4)]
+sensorsFront = [Sensor(wheeledbase, "Avant droit",   sensorsA.get_range1, (50, -100), -pi/4, sensorsA.is_connected),
+                Sensor(wheeledbase, "Avant      ",   sensorsB.get_range2, (60, 0), 0, sensorsB.is_connected),
+                Sensor(wheeledbase, "Avant gauche",  sensorsC.get_range1, (50, 100), pi/4, sensorsC.is_connected)]
+sensorsBack  = [Sensor(wheeledbase, "Arrière droit", sensorsA.get_range2, (-50, -100), -3*pi/4, sensorsA.is_connected),
+                Sensor(wheeledbase, "Arrière",       sensorsB.get_range1, (-60, 0), pi, sensorsB.is_connected),
+                Sensor(wheeledbase, "Arrière gauche",sensorsC.get_range2, (-50, 100), 3*pi/4, sensorsC.is_connected)]
 # sens_manager = SensorsManager(wheeledbase, sensorsFront, sensorsBack, None)
 
 try:
@@ -70,8 +71,8 @@ if __name__ == "__main__":
     wheeledbase.reset_parameters()
     wheeledbase.max_linvel.set(300)
     wheeledbase.set_position(780, 2595, -pi/2)
-    wheeledbase_manager = Mover(wheeledbase, print,sensorsFront, sensorsBack)
-    while True:
-        wheeledbase_manager.goto(800, 300)
-        wheeledbase_manager.goto(780, 2595, direction="backward")
+    #wheeledbase_manager = Mover(wheeledbase, print,sensorsFront, sensorsBack)
+    wheeledbase.purepursuit([[780,2500],[780,2800],[780,500]])
+    wheeledbase.wait()
     
+

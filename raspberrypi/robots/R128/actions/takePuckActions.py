@@ -7,10 +7,14 @@ from common.actions.action import *
 from common.funcutils      import *
 from daughter_cards.arm.ArmPosition import *
 from daughter_cards.arm.puckUtils import *
+from robots.arm_recalibration import *
 
 from threading import Event
 
-RECALAGE_VEL = 100
+RECALAGE_VEL = 200
+DISABLE = 0
+ENABLE  = 1
+RECALIB = ENABLE
 offset_x = 0
 
 class TakePuckSync(Actionnable):
@@ -52,6 +56,8 @@ class TakePuckSync(Actionnable):
 
         # action Points
         self.point          = self.geogebra.get('Distrib{}_{}'.format(self.side,self.distrib_pos))
+
+        self.recalArm       = ArmRecalibration(sensors, self.side, self.log)
 
         # if action correspond to the first distrib pos, prepare starting path
         if self.distrib_pos == self.DISTRIB6_1:
@@ -96,33 +102,7 @@ class TakePuckSync(Actionnable):
                 self.wheeledbase.purepursuit(self.path, direction = 'backward')
             self.wheeledbase.wait()
 
-            sens_left = self.sensors.sensors_lat[0]
-            sens_right = self.sensors.sensors_lat[1]
-
-            if self.RECALAGE is self.SENSORS:
-                # prepare recalage
-                self.wheeledbase.turnonthespot(pi/2)
-                self.wheeledbase.wait()
-                time.sleep(1)
-
-                left = sens_left.dist()
-                right = sens_right.dist()
-                self.log("CHECK ALIGNMENT:", left, right)
-
-                dtheta = atan((right-left)/(sens_left.pos[0] - sens_right.pos[0]))
-                theta = self.wheeledbase.get_position()[2]
-
-                self.log("CHECK ALIGNMENT angle correction:", dtheta*180/pi, "°")
-
-                self.wheeledbase.turnonthespot(theta + dtheta)
-                self.wheeledbase.wait()
-                time.sleep(1)
-
-                left = sens_left.dist()
-                right = sens_right.dist()
-                self.log("CHECK ALIGNMENT after correction:", left, right)
-
-            else:
+            if self.RECALAGE is self.WALL:
                 self.log("RECALAGE : face au mur en x")
                 # prepare recalage
                 self.wheeledbase.turnonthespot(pi)
@@ -131,11 +111,10 @@ class TakePuckSync(Actionnable):
 
                 self.log("RECALAGE : fonce dans le mur")
                 self.wheeledbase.set_velocities(-RECALAGE_VEL,0)
-                time.sleep(2)
-                # try:
-                #     self.wheeledbase.wait()
-                # except:
-                #     pass
+                try:
+                    self.wheeledbase.wait()
+                except:
+                    pass
 
                 self.correct_pos = self.wheeledbase.get_position()
 
@@ -171,8 +150,10 @@ class TakePuckSync(Actionnable):
             time.sleep(0.1)
 
         # taking
-        self.arm1.move(TAKE_PUCK_STATIC)
-        self.arm2.move(TAKE_PUCK_STATIC)
+        arm1_pos = self.recalArm.readjust_arm1(TAKE_PUCK_STATIC, RECALIB, x_offset=0.5)
+        arm2_pos = self.recalArm.readjust_arm2(TAKE_PUCK_STATIC, RECALIB, x_offset=0.5)
+        self.arm1.move(arm1_pos)
+        self.arm2.move(arm2_pos)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
 
@@ -191,13 +172,13 @@ class TakePuckSync(Actionnable):
             else:
                 # retry with new pos
                 self.log("TakePuckSync", "Take arm 1... Retry")
-                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 3, TAKE_PUCK_STATIC.phi)
+                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 4.5, TAKE_PUCK_STATIC.phi)
                 self.arm1.move(self.new_arm_pos)
 
                 while not (self.arm1.is_arrived()):
                     time.sleep(0.1)
                 # check presure
-                time.sleep(0.5)
+                time.sleep(1)
                 if not self.arm1.get_atmosphere_pressure():
                     # wait for taking secure
                     self.arm1.sucker.put_puck(self.puck1)
@@ -222,13 +203,13 @@ class TakePuckSync(Actionnable):
             else:
                 # retry with new pos
                 self.log("TakePuckSync", "Take arm 2... Retry")
-                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 3, TAKE_PUCK_STATIC.phi)
+                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 4.5, TAKE_PUCK_STATIC.phi)
                 self.arm2.move(self.new_arm_pos)
                 # check presure
                 while not (self.arm2.is_arrived()):
                     time.sleep(0.1)
                 # check presure
-                time.sleep(0.5)
+                time.sleep(1)
                 if not self.arm2.get_atmosphere_pressure():
                     # wait for taking secure
                     self.arm2.sucker.put_puck(self.puck2)
@@ -331,7 +312,7 @@ class TakePuckSingle(Actionnable):
     WALL = 2
     RECALAGE = WALL
 
-    def __init__(self, geogebra, daughter_cards, side, distrib_pos, puck, log):
+    def __init__(self, geogebra, daughter_cards, side, distrib_pos, puck, log, sensors):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
@@ -349,6 +330,8 @@ class TakePuckSingle(Actionnable):
         self.actionPoint    = ActPoint(self.point, pi/2)
         # path Points
         self.path           = self.geogebra.getall('PathDistrib{}_*'.format(self.side))
+
+        self.recalArm       = ArmRecalibration(sensors, self.side, self.log)
 
         self.TankPos        = [TAKE_TANK_PUCK1, TAKE_TANK_PUCK2, TAKE_TANK_PUCK3]
 
@@ -386,13 +369,15 @@ class TakePuckSingle(Actionnable):
 
 
         if self.RECALAGE == self.WALL:
-            self.wheeledbase.turnonthespot(0)
             self.wheeledbase.linpos_threshold.set(10)
             self.wheeledbase.angpos_threshold.set(0.2)
 
             self.log("RECALAGE : face au mur en x")
             self.wheeledbase.wait()
-            self.wheeledbase.set_velocities(RECALAGE_VEL, 0)
+            if self.side == self.YELLOW:
+                self.wheeledbase.set_velocities(-RECALAGE_VEL, 0)
+            else:
+                self.wheeledbase.set_velocities(RECALAGE_VEL, 0)
 
             try:
                 self.wheeledbase.wait()
@@ -401,7 +386,10 @@ class TakePuckSingle(Actionnable):
 
             self.log("RECALAGE : colle au mur en x")
             pos = self.wheeledbase.get_position()
-            self.wheeledbase.set_position(2000 - 280 / 2, pos[1], 0)
+            if self.side == self.YELLOW:
+                self.wheeledbase.set_position(2000 - 280 / 2, pos[1], -pi)
+            else:
+                self.wheeledbase.set_position(2000 - 280 / 2, pos[1], 0)
 
             self.log("RECALAGE : retour arriere")
             self.wheeledbase.goto(*self.actionPoint.point)
@@ -453,7 +441,9 @@ class TakePuckSingle(Actionnable):
         while not (self.arm.is_arrived()):
             time.sleep(0.1)
 
-        self.arm.move(TAKE_PUCK_STATIC)
+        arm1_pos = self.recalArm.readjust_arm1(TAKE_PUCK_STATIC, RECALIB, x_offset=0.5)
+
+        self.arm.move(arm1_pos)
         while not (self.arm.is_arrived()):
             time.sleep(0.1)
 
@@ -472,7 +462,7 @@ class TakePuckSingle(Actionnable):
             else:
                 # retry with new pos
                 self.log("TakePuckSync", "Take arm 1... Retry")
-                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 3, TAKE_PUCK_STATIC.phi)
+                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 4.5, TAKE_PUCK_STATIC.phi)
                 self.arm.move(self.new_arm_pos)
 
                 while not (self.arm.is_arrived()):
@@ -543,8 +533,7 @@ class TakePuckSingle(Actionnable):
 class TakePuckSyncMaintain(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
-
-    def __init__(self, geogebra, daughter_cards, side, distrib_pos, puckFront, puckBack, log):
+    def __init__(self, geogebra, daughter_cards, side, distrib_pos, puckFront, puckBack, log, sensors):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
@@ -562,6 +551,8 @@ class TakePuckSyncMaintain(Actionnable):
         # action Points
         self.point          = self.geogebra.get('Distrib{}_{}'.format(self.side,self.distrib_pos))
         self.actionPoint    = ActPoint(self.point, pi/2)
+
+        self.recalArm       = ArmRecalibration(sensors, self.side, self.log)
 
         self.TankPos        = [TAKE_TANK_PUCK1, TAKE_TANK_PUCK2, TAKE_TANK_PUCK3]
 
@@ -591,9 +582,12 @@ class TakePuckSyncMaintain(Actionnable):
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
 
+        arm1_pos = self.recalArm.readjust_arm1(TAKE_PUCK_STATIC, RECALIB, x_offset=0.5)
+        arm2_pos = self.recalArm.readjust_arm1(TAKE_PUCK_STATIC, RECALIB, x_offset=0.5)
+
         # taking
-        self.arm1.move(TAKE_PUCK_STATIC)
-        self.arm2.move(TAKE_PUCK_STATIC)
+        self.arm1.move(arm1_pos)
+        self.arm2.move(arm2_pos)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
 
@@ -612,7 +606,7 @@ class TakePuckSyncMaintain(Actionnable):
             else:
                 # retry with new pos
                 self.log("TakePuckSync", "Take arm 1... Retry")
-                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 3, TAKE_PUCK_STATIC.phi)
+                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 4.5, TAKE_PUCK_STATIC.phi)
                 self.arm1.move(self.new_arm_pos)
 
                 while not (self.arm1.is_arrived()):
@@ -620,7 +614,7 @@ class TakePuckSyncMaintain(Actionnable):
                 # check presure
                 if not self.arm1.get_atmosphere_pressure():
                     # wait for taking secure
-                    time.sleep(0.5)
+                    time.sleep(1)
                     self.arm1.sucker.put_puck(self.puck1)
                     self.arm1.move(TAKE_PUCK_INTER_AFTER_STATIC)
                     self.log("TakePuckSync", "Take arm 1... OK")
@@ -643,7 +637,7 @@ class TakePuckSyncMaintain(Actionnable):
             else:
                 # retry with new pos
                 self.log("TakePuckSync", "Take arm 2... Retry")
-                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 3, TAKE_PUCK_STATIC.phi)
+                self.new_arm_pos = ArmPos(TAKE_PUCK_STATIC.x + 1 , TAKE_PUCK_STATIC.y + 4.5, TAKE_PUCK_STATIC.phi)
                 self.arm2.move(self.new_arm_pos)
                 # check presure
                 while not (self.arm2.is_arrived()):
@@ -651,7 +645,7 @@ class TakePuckSyncMaintain(Actionnable):
                 # check presure
                 if not self.arm2.get_atmosphere_pressure():
                     # wait for taking secure
-                    time.sleep(0.5)
+                    time.sleep(1)
                     self.arm2.sucker.put_puck(self.puck2)
                     self.arm2.move(TAKE_PUCK_INTER_AFTER_STATIC)
                     self.log("TakePuckSync", "Take arm 2... OK")

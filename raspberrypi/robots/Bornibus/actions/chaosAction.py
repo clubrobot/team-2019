@@ -11,10 +11,12 @@ from daughter_cards.wheeledbase import *
 class chaos(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
-    def __init__(self, geogebra, daughter_cards, side, log):
+    def __init__(self, geogebra, daughter_cards, mover, side, log):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
+
+        self.mover = mover
 
         self.wheeledbase    = daughter_cards['wheeledbase']
         self.display        = daughter_cards['display']
@@ -44,11 +46,10 @@ class chaos(Actionnable):
         self.wheeledbase.lookaheadbis.set(10)
 
         if self.side == self.YELLOW:
-            self.wheeledbase.goto(*self.points["Cha1"], theta=-pi/6)
+            self.mover.goto(*self.points["Cha1"], theta=-pi/6)
         else:
-            self.wheeledbase.goto(*self.points["Cha1"], theta=pi/6)
+            self.mover.goto(*self.points["Cha1"], theta=pi/6)
         self.log("CHAOS ACTION : ", "Arrive zone chaos")
-        self.wheeledbase.wait()
 
     def realize(self):
         self.wheeledbase.max_angvel.set(1)
@@ -57,30 +58,26 @@ class chaos(Actionnable):
         self.wheeledbase.linpos_threshold.set(5)
         if self.side == self.YELLOW:
             self.pushers.down_l()
-            self.wheeledbase.goto(*self.points["Cha2"], theta=-2*pi/3)
-            self.wheeledbase.wait()
+            self.mover.goto(*self.points["Cha2"],safe_mode=True, theta=-2*pi/3)
             self.pushers.down_r()
-            self.wheeledbase.turnonthespot(-pi/2)
-            self.wheeledbase.wait()
+            self.mover.turnonthespot(-pi/2)
         else :
             self.pushers.down_r()
-            self.wheeledbase.goto(*self.points["Cha2"], theta=2*pi/3)
-            self.wheeledbase.wait()
+            self.mover.goto(*self.points["Cha2"],safe_mode=True, theta=2*pi/3)
             self.pushers.down_l()
-            self.wheeledbase.turnonthespot(pi/2)
-            self.wheeledbase.wait()
+            self.mover.turnonthespot(pi/2)
 
         self.wheeledbase.max_linvel.set(300)
 
         if self.side == self.YELLOW:
-            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Cha4"], self.points["Cha5"], self.points["Cha6"]], direction='forward', finalangle=-pi/2)#,lookahead=150, lookaheadbis=150)
+            self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Cha4"], self.points["Cha5"], self.points["Cha6"]],safe_mode=True, direction='forward', finalangle=-pi/2)#,lookahead=150, lookaheadbis=150)
         else :
-            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Cha4"], self.points["Cha5"], self.points["Cha6"]], direction='forward', finalangle=pi/2 )#,lookahead=150, lookaheadbis=150)
-        self.wheeledbase.wait()
+            self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Cha4"], self.points["Cha5"], self.points["Cha6"]],safe_mode=True, direction='forward', finalangle=pi/2 )#,lookahead=150, lookaheadbis=150)
         self.pushers.up_r()
         self.pushers.up_l()
-        self.wheeledbase.goto(*self.points["Cha7"], direction='backward')
-        
+        self.mover.goto(*self.points["Cha7"], direction='backward')
+
+        self.display.addPoints(14)
 
     def before(self):
         pass

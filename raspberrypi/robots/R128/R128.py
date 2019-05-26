@@ -64,19 +64,19 @@ class R128(Automaton):
 
         self.balanceAct3        = BalanceAfter3(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
-        self.takeSyncPos1Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_1, GreenPuck, RedPuck, self.log, sens_manager).getAction()
+        self.takeSyncPos1Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_1, GreenPuck, RedPuck, self.log, sensorsLat).getAction()
 
-        self.takeSyncPos2Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_2, BluePuck, RedPuck, self.log, sens_manager).getAction()
+        self.takeSyncPos2Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_2, BluePuck, RedPuck, self.log, sensorsLat).getAction()
 
-        self.takeSyncPos3Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_3, GreenPuck, RedPuck, self.log, sens_manager).getAction()
+        self.takeSyncPos3Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_3, GreenPuck, RedPuck, self.log, sensorsLat).getAction()
 
         self.putRedZoneAct      = PutRedZone(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
 
-        self.takesingle         = TakePuckSingle(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_1, RedPuck, self.log).getAction()
+        self.takesingle         = TakePuckSingle(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_1, RedPuck, self.log, sensorsLat).getAction()
 
-        self.takemaintain       = TakePuckSyncMaintain(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_2, GreenPuck, BluePuck, self.log).getAction()
+        self.takemaintain       = TakePuckSyncMaintain(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_2, GreenPuck, BluePuck, self.log, sensorsLat).getAction()
 
-        self.accelAct           = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.accelAct           = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log, sensorsLat).getAction()
 
         self.action_list = [
             self.takeSyncPos1Act,
@@ -86,7 +86,7 @@ class R128(Automaton):
             self.takesingle,
             self.takemaintain,
             self.balanceAct3,
-            self.accelAct,
+            self.putRedZoneAct,
         ]
 
     def set_position(self):
@@ -103,7 +103,6 @@ class R128(Automaton):
         else:
             wheeledbase.goto(*self.points["Ini1"], theta=pi)
         self.wheeledbase.reset_parameters()
-
 
     def stop_match(self):
         time.sleep(100)

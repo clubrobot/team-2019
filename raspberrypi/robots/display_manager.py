@@ -30,7 +30,6 @@ class DisplayPoints:
         self.locker.acquire()
         self.display.set_message("P:" + str(self.points))
         self.display_stop.set()
-        self.locker.release()
 
     def addPoints(self, points):
         self.locker.acquire()
