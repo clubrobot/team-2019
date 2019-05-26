@@ -65,6 +65,7 @@ class goldenium(Actionnable):
                         if self.endstops.get_ES2():
                             # Touched left
                             self.log("GOLDENIUM ACTION : ", "gripper touched left")
+                            self.display.angry()
                             self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]-4)
                             self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]-4)
                             print(*self.points["Gold2"])
@@ -73,6 +74,7 @@ class goldenium(Actionnable):
                         elif self.endstops.get_ES1():
                             # Touched right
                             self.log("GOLDENIUM ACTION : ", "gripper touched right")
+                            self.display.angry()
                             self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]+4)
                             self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]+4)
                             print(*self.points["Gold2"])
@@ -96,6 +98,7 @@ class goldenium(Actionnable):
                     self.wheeledbase.reset_parameters()
                     self.wheeledbase.set_velocities(-700, 0)
                     self.log("GOLDENIUM ACTION : ", "Recule")
+                    self.display.surprised()
                     time.sleep(0.5)
                     self.wheeledbase.set_velocities(0, 0)
 
@@ -105,7 +108,7 @@ class goldenium(Actionnable):
         if self.endstops.get_ES3():
             self.log("GOLDENIUM ACTION : ", "Goldenium pris : +24 PTS")
             self.display.addPoints(20)
-    
+            self.display.love()
     def before(self):
         pass
 

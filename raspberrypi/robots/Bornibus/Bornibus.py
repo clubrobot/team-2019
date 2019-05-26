@@ -33,8 +33,7 @@ class Bornibus(Automaton):
         self.side           = Automaton.UNDEFINED
         self.geogebra       = geo
         self.log            = log
-        self.mover = Mover(wheeledbase, log, sensorsFront, sensorsBack)
-
+        self.mover = Mover(self.daughter_cards, log, sensorsFront, sensorsBack)
         # action List
         self.action_list    = []
 
@@ -103,6 +102,7 @@ class Bornibus(Automaton):
         gripper.open()
         pushers.up()
         arm.up()
+        disp.love(duration=1000)
         manager.end_game()
 
     def run(self):

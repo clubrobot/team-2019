@@ -69,6 +69,7 @@ class balance(Actionnable):
             self.log("BALANCE ACTION :", "Pas de dégagement car pas le temps !")
         ###
         if do_freeing:
+            self.display.angry()
             if self.side == self.YELLOW:
                 self.mover.turnonthespot(pi/4)
                 self.wheeledbase.wait()
@@ -84,7 +85,7 @@ class balance(Actionnable):
             pass
 
         ###
-        
+
         if self.side == self.YELLOW:
             if do_freeing:
                 self.wheeledbase.set_velocities(-0, 10)
@@ -102,8 +103,8 @@ class balance(Actionnable):
         self.wheeledbase.wait()
         ###
 
-
-                # Recalage contre le bord pour la balance
+        self.display.sleep()
+        # Recalage contre le bord pour la balance
         self.log("BALANCE ACTION :", "Positionnement pour la balance")
         self.wheeledbase.right_wheel_maxPWM.set(0.5)
         self.wheeledbase.left_wheel_maxPWM.set(0.5)
@@ -116,7 +117,7 @@ class balance(Actionnable):
             pass
         self.wheeledbase.stop()
 
-
+        self.display.surprised()
         self.wheeledbase.right_wheel_maxPWM.set(1)
         self.wheeledbase.left_wheel_maxPWM.set(1)
         self.wheeledbase.goto_delta(80,0)
@@ -124,9 +125,6 @@ class balance(Actionnable):
 
         self.wheeledbase.turnonthespot(0)
         self.wheeledbase.wait()
-
-        self.wheeledbase.right_wheel_maxPWM.set(1)
-        self.wheeledbase.left_wheel_maxPWM.set(1)
 
         #positionnement contre la balance en attendant un spin
         try :
