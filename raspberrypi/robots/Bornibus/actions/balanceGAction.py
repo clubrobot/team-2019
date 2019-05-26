@@ -90,7 +90,7 @@ class balance(Actionnable):
             self.wheeledbase.turnonthespot(pi/2) 
         self.wheeledbase.wait()
 
-                # Positionnement pour la balance
+                # Recalage contre le bord pour la balance
         self.log("BALANCE ACTION :", "Positionnement pour la balance")
         self.wheeledbase.right_wheel_maxPWM.set(0.5)
         self.wheeledbase.left_wheel_maxPWM.set(0.5)
@@ -112,12 +112,12 @@ class balance(Actionnable):
         self.wheeledbase.turnonthespot(0)
         self.wheeledbase.wait()
 
-        self.wheeledbase.right_wheel_maxPWM.set(0.5)
-        self.wheeledbase.left_wheel_maxPWM.set(0.5)
+        self.wheeledbase.right_wheel_maxPWM.set(1)
+        self.wheeledbase.left_wheel_maxPWM.set(1)
 
         #positionnement contre la balance en attendant un spin
         try :
-            self.wheeledbase.goto_delta(300, 0)
+            self.wheeledbase.goto_delta(500, 0)
             self.wheeledbase.wait()
         except :
             pass
@@ -130,10 +130,11 @@ class balance(Actionnable):
     def realize(self):
         # Depose
         self.log("BALANCE ACTION :", "Depose dans la balance")
-        time.sleep(0.5)
-
+        
         if self.endstops.get_ES3():
             self.display.addPoints(24)
+        time.sleep(0.5)
+
         self.gripper.open()
 
         time.sleep(0.5)
