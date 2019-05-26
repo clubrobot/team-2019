@@ -21,10 +21,21 @@
 #include <Wire.h>
 #include "OLED_display.h"
 
+#include "filter/Kalman.h"
+#include "absoluteInertial/AccelerationController.h"
+#include "../../../common/BNO055.h"
+#include "../../../common/Clock.h"
+
 OLEDdisplay display(0x3C, PIN_SDA, PIN_SCL);
 byte currentBeaconNumber = 1;
 DataSync data = {GREEN, LONGDATA_RANGE_ACCURACY};
 Channel currentChannel = LONGDATA_RANGE_ACCURACY;
+
+BNO055 bno = BNO055();
+AccelerationController meanAcc = AccelerationController();
+Clock clk;
+
+Kalman filter;
 
 bool a1Connected = false;
 bool a2Connected = false;
@@ -39,6 +50,11 @@ void loopCore0(void *pvParameters)  // loop on core 0
   for(;;){
     display.update();
     talks.execute();
+    bno.update();
+   
+    if(bno.absoReady() && bno.linAccReady()){
+      meanAcc.computeProjection(bno.getLinAcc().getx(), bno.getLinAcc().gety(),bno.getLinAcc().getz(), bno.getAbsO().getx(), bno.getAbsO().gety(), bno.getAbsO().getz());
+    }
     delay(10);
   }
 }
@@ -242,10 +258,13 @@ void newRange()
       toDisplay += DW1000Ranging.getFrameRate();
       toDisplay += "Hz";
       display.displayMsg(Text(toDisplay, 5, 64, 0));
-
     }
       break;
   }
+  filter.update(p[0], p[1], (float) meanAcc.getMeanAcceleration_X(), (float) meanAcc.getMeanAcceleration_Y(), clk.restart());
+  meanAcc.resetMean();
+  p[0] = filter.getEstX();
+  p[1] = filter.getEstY();
   
   DW1000Ranging.setPosX(p[0],0);
   DW1000Ranging.setPosY(p[1],0);
@@ -507,6 +526,7 @@ void setup() {
   talks.begin(Serial);
 
   talks.bind(GET_POSITION_OPCODE, GET_POSITION);
+  talks.bind(SET_POSITION_OPCODE, SET_POSITION);
 
 #if 0
   EEPROM.write(EEPROM_NUM_TAG, currentBeaconNumber);
@@ -558,6 +578,15 @@ void setup() {
     display.displayMsg(Text("GROS\nROBOT", 4, 64, 0));
   else
     display.displayMsg(Text("PETIT\nROBOT", 4, 64, 0));
+
+  bno.activateAll(false);
+  bno.activateAbsO(true);
+  bno.activateLinAcc(true);
+  bno.setTimestep(0.01);
+
+  bno.begin(PIN_SDA, PIN_SCL);
+  bno.enable();
+  filter.init(600,2750,0,0);
 }
 
 void loop() {   // loop on core 1

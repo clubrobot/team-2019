@@ -10,6 +10,7 @@ from common.components import SerialTalksProxy
 # Instructions
 
 GET_POSITION_OPCODE  = 0x10
+SET_POSITION_OPCODE  = 0x11
 
 
 class Tag(SerialTalksProxy):
@@ -22,4 +23,6 @@ class Tag(SerialTalksProxy):
 		x, y = output.read(INT, INT)
 		return x, y
 	
+	def set_position(self, x,y,theta):
+		self.send(GET_POSITION_OPCODE, INT(x),INT(y),INT(theta))
 

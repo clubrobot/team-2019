@@ -10,6 +10,9 @@ DWM1000_LIB = ../../common/DWM1000
 SKETCH_LIBS = ~/Arduino/libraries/ESP8266_and_ESP32_Oled_Driver_for_SSD1306_display/src
 BEACONS_COMMON = ../common
 
+FILTER_LIBS = filter
+ACCEL_LIBS = absoluteinertial
+
 #Setup all libs used !
 LIBS = 	$(ESP_LIBS)/SPI \
 		$(ESP_LIBS)/EEPROM \
@@ -18,6 +21,8 @@ LIBS = 	$(ESP_LIBS)/SPI \
 		$(COMMON)/mathutils.cpp \
 		$(COMMON)/MatrixMath.cpp \
 		$(COMMON)/CRC16.cpp\
+		$(COMMON)/BNO055.cpp\
+		$(COMMON)/PeriodicProcess.cpp\
 		$(DWM1000_LIB)/DW1000Device.cpp\
 		$(DWM1000_LIB)/DW1000.cpp\
 		$(DWM1000_LIB)/DW1000Ranging.cpp\
@@ -25,6 +30,8 @@ LIBS = 	$(ESP_LIBS)/SPI \
 		$(DWM1000_LIB)/DW1000Mac.cpp\
 		$(SKETCH_LIBS)/OLEDDisplay.cpp\
 		$(BEACONS_COMMON)/OLED_display.cpp\
+		$(FILTER_LIBS)/Kalman.cpp\
+		$(ACCEL_LIBS)/AccelerationController.cpp\
 		instructions.cpp 
 
 # Define
