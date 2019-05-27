@@ -32,7 +32,7 @@ class TakePuckSync(Actionnable):
     WALL = 2
     RECALAGE = WALL
 
-    def __init__(self, geogebra, daughter_cards, side, distrib_pos, puckFront, puckBack, log, sensors):
+    def __init__(self, geogebra, daughter_cards, mover, side, distrib_pos, puckFront, puckBack, log, sensors):
         # Save map, log and side
         self.geogebra       = geogebra
         self.log            = log
@@ -53,6 +53,9 @@ class TakePuckSync(Actionnable):
 
         # display
         self.display        = daughter_cards['display']
+
+        self.mover = mover
+
 
         # action Points
         self.point          = self.geogebra.get('Distrib{}_{}'.format(self.side,self.distrib_pos))
@@ -97,10 +100,10 @@ class TakePuckSync(Actionnable):
 
             # Start Path
             if self.side == self.YELLOW:
-                self.wheeledbase.purepursuit(self.path, direction = 'forward')
+                self.mover.purepursuit(self.path, direction = 'forward')
             else:
-                self.wheeledbase.purepursuit(self.path, direction = 'backward')
-            self.wheeledbase.wait()
+                self.mover.purepursuit(self.path, direction = 'backward')
+            #self.wheeledbase.wait()
 
             if self.RECALAGE is self.WALL:
                 self.log("RECALAGE : face au mur en x")
@@ -312,7 +315,7 @@ class TakePuckSingle(Actionnable):
     WALL = 2
     RECALAGE = WALL
 
-    def __init__(self, geogebra, daughter_cards, side, distrib_pos, puck, log, sensors):
+    def __init__(self, geogebra, daughter_cards, mover, side, distrib_pos, puck, log, sensors):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
@@ -349,6 +352,7 @@ class TakePuckSingle(Actionnable):
 
         self.master         = daughter_cards["master"]
 
+        self.mover = mover
 
     def moving(self):
         # reach little distributor
@@ -533,7 +537,7 @@ class TakePuckSingle(Actionnable):
 class TakePuckSyncMaintain(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
-    def __init__(self, geogebra, daughter_cards, side, distrib_pos, puckFront, puckBack, log, sensors):
+    def __init__(self, geogebra, daughter_cards, mover, side, distrib_pos, puckFront, puckBack, log, sensors):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
@@ -568,8 +572,10 @@ class TakePuckSyncMaintain(Actionnable):
         self.puck1              = puckFront
         self.puck2              = puckBack
 
+        self.mover = mover
+
     def moving(self):
-        self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
+        self.mover.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
 
     def realize(self):
         # starting two pump

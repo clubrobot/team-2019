@@ -9,6 +9,7 @@ from common.actions.action import ThreadActionManager
 from robots.R128.setup_128 import *
 from robots.automaton import Automaton
 from robots.sensors_manager import *
+from robots.wheeledbase_manager import PositionUnreachable, Mover
 
 PREPARATION = True
 
@@ -51,6 +52,10 @@ class R128(Automaton):
         # Global sync client
         self.master = beacons
 
+
+        self.mover = Mover(self.daughter_cards, log, sensorsFront, sensorsBack)
+
+
     def set_side(self, side):
         self.side = side
         # Apply cube obstacle
@@ -60,23 +65,23 @@ class R128(Automaton):
         self.points["Ini1"] = geo.get("Ini{}_1".format(self.side))
 
         # Specific Actions initialisation
-        self.balanceAct6        = BalanceAfter6(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.balanceAct6        = BalanceAfter6(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
 
-        self.balanceAct3        = BalanceAfter3(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.balanceAct3        = BalanceAfter3(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
 
-        self.takeSyncPos1Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_1, GreenPuck, RedPuck, self.log, sensorsLat).getAction()
+        self.takeSyncPos1Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.mover, self.side, self.DISTRIB6_1, GreenPuck, RedPuck, self.log, sensorsLat).getAction()
 
-        self.takeSyncPos2Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_2, BluePuck, RedPuck, self.log, sensorsLat).getAction()
+        self.takeSyncPos2Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.mover, self.side, self.DISTRIB6_2, BluePuck, RedPuck, self.log, sensorsLat).getAction()
 
-        self.takeSyncPos3Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.side, self.DISTRIB6_3, GreenPuck, RedPuck, self.log, sensorsLat).getAction()
+        self.takeSyncPos3Act    = TakePuckSync(self.geogebra, self.daughter_cards, self.mover, self.side, self.DISTRIB6_3, GreenPuck, RedPuck, self.log, sensorsLat).getAction()
 
-        self.putRedZoneAct      = PutRedZone(self.geogebra, self.daughter_cards, self.side, self.log).getAction()
+        self.putRedZoneAct      = PutRedZone(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
 
-        self.takesingle         = TakePuckSingle(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_1, RedPuck, self.log, sensorsLat).getAction()
+        self.takesingle         = TakePuckSingle(self.geogebra, self.daughter_cards, self.mover, self.side, self.DISTRIB3_1, RedPuck, self.log, sensorsLat).getAction()
 
-        self.takemaintain       = TakePuckSyncMaintain(self.geogebra, self.daughter_cards, self.side, self.DISTRIB3_2, GreenPuck, BluePuck, self.log, sensorsLat).getAction()
+        self.takemaintain       = TakePuckSyncMaintain(self.geogebra, self.daughter_cards, self.mover, self.side, self.DISTRIB3_2, GreenPuck, BluePuck, self.log, sensorsLat).getAction()
 
-        self.accelAct           = PutAccelerator(self.geogebra, self.daughter_cards, self.side, self.log, sensorsLat).getAction()
+        self.accelAct           = PutAccelerator(self.geogebra, self.daughter_cards, self.mover, self.side, self.log, sensorsLat).getAction()
 
         self.action_list = [
             self.takeSyncPos1Act,
@@ -116,7 +121,7 @@ class R128(Automaton):
         armB.stop()
         self.tam.stop()
         self.log("STOP MATCH : ", "END...")
-        manager.disconnect()
+        manager.end_game()
 
     def run(self):
         self.log("MAIN : ", "RUN...")

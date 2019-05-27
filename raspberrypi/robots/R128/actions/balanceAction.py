@@ -12,10 +12,12 @@ class BalanceAfter6(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
 
-    def __init__(self, geogebra, daughter_cards, side, log):
+    def __init__(self, geogebra, daughter_cards, mover, side, log):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
+        self.mover = mover
+
 
         if self.side == self.YELLOW:
             self.arm        = daughter_cards['armFront']
@@ -59,10 +61,14 @@ class BalanceAfter6(Actionnable):
         if self.side == self.YELLOW:
             self.wheeledbase.set_velocities(50,0)
             time.sleep(1)
+            self.wheeledbase.stop()
+            time.sleep(0.04)
             self.wheeledbase.set_velocities(0,0)
         else:
             self.wheeledbase.set_velocities(-50,0)
             time.sleep(1)
+            self.wheeledbase.stop()
+            time.sleep(0.04)
             self.wheeledbase.set_velocities(0,0)
 
         # put the first handled puck
@@ -232,10 +238,12 @@ class BalanceAfter3(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
 
-    def __init__(self, geogebra, daughter_cards, side, log):
+    def __init__(self, geogebra, daughter_cards, mover, side, log):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
+        self.mover = mover
+
 
         if self.side == self.YELLOW:
             self.arm1       = daughter_cards['armFront']
