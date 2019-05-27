@@ -10,7 +10,7 @@ from robots.automaton import *
 
 
 class SensorListener(Thread):
-    def __init__(self, sensors, timestep = 0.05, threshold = 300):
+    def __init__(self, sensors, timestep=0.1, threshold=300):
         Thread.__init__(self)
         self.daemon = True
         self.signal   = Signal()
@@ -86,7 +86,7 @@ class Sensor:
 
         # zone balance
         if Sensor.SCALE_ZONE[0][0] < x < Sensor.SCALE_ZONE[0][1] and \
-                Sensor.SCALE_ZONE[1][0] < y < Sensor.SCALE_ZONE[1][1]:
+           Sensor.SCALE_ZONE[1][0] < y < Sensor.SCALE_ZONE[1][1]:
             return False
 
         if Sensor.START_ZONE[0][0] < x < Sensor.START_ZONE[0][1] and \
@@ -98,6 +98,7 @@ class Sensor:
 
 class SensorsManager(Thread):
     SENSORS_FREQ = 0.2
+
     def __init__(self, wheeledbase, sensors_front, sensors_back, sensors_lat, threshold=300):
         Thread.__init__(self)
         self.daemon         = False
@@ -118,39 +119,6 @@ class SensorsManager(Thread):
 
         self.stopped = False
         self.stop_thread = Event()
-
-    def run(self):
-        while not self.stop_thread.is_set():
-            begin = time.time()
-            obstacle = False
-            wheeledbase_pos = self.wheeledbase.get_position()
-            if wheeledbase_pos.direction == wheeledbase_pos.FORWARD:
-                for sensor in self.sensors_front:
-                    if sensor.enabled and sensor.obstacle(wheeledbase_pos):
-                        obstacle = True
-
-            if wheeledbase_pos.direction == wheeledbase_pos.BACKWARD:
-                for sensor in self.sensors_back:
-                    if sensor.enabled and sensor.obstacle(wheeledbase_pos):
-                        obstacle = True
-
-            if obstacle:
-                if not self.stopped:
-                    self.max_linvel     = wheeledbase_pos.max_linvel.get()
-                    self.max_angvel     = wheeledbase_pos.max_angvel.get()
-                wheeledbase_pos.max_linvel.set(0)
-                wheeledbase_pos.max_angvel.set(0)
-                self.stopped = True
-
-            else:
-                wheeledbase_pos.max_linvel.set(self.max_linvel)
-                wheeledbase_pos.max_angvel.set(self.max_angvel)
-                self.stopped = False
-
-            time.sleep(max(self.SENSORS_FREQ - (time.time() - begin), 0))
-
-        wheeledbase_pos.max_linvel.set(self.max_linvel)
-        wheeledbase_pos.max_angvel.set(self.max_angvel)
 
     def set_thresold(self, thresold):
         self.lock.acquire()

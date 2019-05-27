@@ -44,6 +44,7 @@ void DISABLE(SerialTalks& talks, Deserializer& input, Serializer& output)
 	positionControl.disable();
 	leftWheel .setVelocity(0);
 	rightWheel.setVelocity(0);	
+	ESP.restart();
 }
 
 void GOTO_DELTA(SerialTalks& talks, Deserializer& input, Serializer& output)
