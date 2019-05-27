@@ -44,8 +44,15 @@ class SensorsIR(SecureSerialTalksProxy):
             return self.last_both
 
         deser = self.execute(GET_BOTH_RANGE_OPCODE)
-        dist1 = deser.read(SHORT)
-        dist2 = deser.read(SHORT)
+        
+        try:
+            dist1 = deser.read(SHORT)
+        except AttributeError:
+            dist1 = SensorsIR.ERROR_DIST
+        try:
+            dist2 = deser.read(SHORT)
+        except AttributeError:
+            dist2 = SensorsIR.ERROR_DIST
 
         if dist1 <= 0:
             dist1 = SensorsIR.ERROR_DIST
