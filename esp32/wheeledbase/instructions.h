@@ -73,6 +73,8 @@
 
 
 // Instructions prototypes
+void DISABLE(SerialTalks& talks, Deserializer& input, Serializer& output);
+
 void GOTO_DELTA(SerialTalks& talks, Deserializer& input, Serializer& output);
 
 void RESET_PARAMETERS(SerialTalks& talks, Deserializer& input, Serializer& output);
