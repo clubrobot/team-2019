@@ -147,6 +147,7 @@ class WheeledBase(SecureSerialTalksProxy):
         self.theta                          = 0
         self.previous_measure               = 0
         self.direction = self.NO_DIR
+        self.final_angle = 0
 
     def set_openloop_velocities(self, left, right):
         self.send(SET_OPENLOOP_VELOCITIES_OPCODE, FLOAT(left), FLOAT(right))
@@ -176,7 +177,12 @@ class WheeledBase(SecureSerialTalksProxy):
         if finalangle is None:
             finalangle = math.atan2(waypoints[-1][1] - waypoints[-2][1], waypoints[-1][0] - waypoints[-2][0])
         self.direction = {'forward':self.FORWARD, 'backward':self.BACKWARD}[direction]
+        self.final_angle = finalangle
         self.send(START_PUREPURSUIT_OPCODE, BYTE({'forward':0, 'backward':1}[direction]), FLOAT(finalangle))
+
+    def start_purepursuit(self):
+        self.send(START_PUREPURSUIT_OPCODE, BYTE({self.NO_DIR:0, self.FORWARD:0, self.BACKWARD:1}[self.direction]),
+                  FLOAT(self.final_angle))
 
     def turnonthespot(self, theta, direction=None, way='forward'):
         if direction is None:

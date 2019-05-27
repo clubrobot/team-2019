@@ -31,8 +31,9 @@ class Mover:
     AVOIDING_ZONE = ((100, 1600), (0, 3000))
     BALANCE_SEP_ZONE = ((1350, 2000), (1400, 1600))
 
-    def __init__(self, wheeledbase, log_meth, sensorsFront, sensorsBack):
-        self.wheeledbase = wheeledbase
+    def __init__(self, daughter_cards, log_meth, sensorsFront, sensorsBack):
+        self.wheeledbase = daughter_cards["wheeledbase"]
+        self.display = daughter_cards["display"]
 
         self.logger = log_meth
         self.front_center = SensorListener(sensorsFront[1])
@@ -74,17 +75,14 @@ class Mover:
         self.interupted_status.set()
         if self.safe_mode:
             self.logger("MOVER : ", "Just wait a little (Safe mode ON) !")
-            vel = self.wheeledbase.max_angvel.get()
-            ang = self.wheeledbase.max_linvel.get()
-            self.wheeledbase.max_angvel.set(0)
-            self.wheeledbase.max_linvel.set(0)
+            self.wheeledbase.stop()
             sleep(1)
-            self.wheeledbase.max_angvel.set(vel)
-            self.wheeledbase.max_linvel.set(ang)
+            self.wheeledbase.start_purepursuit()
             self.interupted_status.clear()
             self.interupted_lock.release()
             return
         self.wheeledbase.stop()
+        self.display.angry()
         x, y, theta = self.wheeledbase.get_position()
 
         if hypot(x-self.goal[0],y-self.goal[1])<300:
@@ -147,21 +145,21 @@ class Mover:
             return
         # interuption quand obstacle devant:
         self.logger("MOVER : ", "Lateral object detected !", "LEFT" if side==self.LEFT else "RIGHT")
+
         if not self.interupted_lock.acquire(blocking=True, timeout=0.5):
             self.logger("MOVER : ", "Abort !")
             return
         self.interupted_status.set()
         self.wheeledbase.stop()
+
+        self.display.angry()
+
         x, y, theta = self.wheeledbase.get_position()
         if self.safe_mode:
-            vel = self.wheeledbase.max_angvel.get()
-            ang = self.wheeledbase.max_linvel.get()
-            self.wheeledbase.max_angvel.set(0)
-            self.wheeledbase.max_linvel.set(0)
+            self.wheeledbase.stop()
             self.logger("MOVER : ", "Just wait a little (Safe mode ON) !")
             sleep(1)
-            self.wheeledbase.max_angvel.set(vel)
-            self.wheeledbase.max_linvel.set(ang)
+            self.wheeledbase.start_purepursuit()
             #self.wheeledbase.purepursuit([(x, y), *self.path], **self.params)
             self.interupted_status.clear()
             self.interupted_lock.release()
@@ -226,7 +224,6 @@ class Mover:
         self.interupted_status.clear()
         self.interupted_lock.release()
 
-
     def reset(self):
         self.front_flag.clear()
         self.interupted_status.clear()
@@ -289,6 +286,7 @@ class Mover:
                         sleep(0.1)
                     continue
                 self.logger("MOVER : ", "Spin! ")
+                self.display.sick()
                 if self.safe_mode:
                     sleep(0.2)
                     self.wheeledbase.purepursuit(self.path, **self.params)

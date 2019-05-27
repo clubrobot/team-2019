@@ -46,13 +46,8 @@ class tabAtoms(Actionnable):
         # Vers palets
         self.log("TABATOMS ACTION : ", "Vers palets")
 
-        
         self.mover.goto(*self.points["Tab2"], direction='forward')
-
-
-       
-
-
+        self.display.sleep()
 
     def realize(self):
 
@@ -63,6 +58,7 @@ class tabAtoms(Actionnable):
         
         self.mover.turnonthespot(-pi)
 
+        self.display.happy()
         self.mover.goto(*self.points["Tab1"], safe_mode=False, direction='forward')
 
         #se tourner pour mettre les palets dans le tableau
@@ -71,6 +67,7 @@ class tabAtoms(Actionnable):
         else:
             self.mover.turnonthespot(3*pi/4)
 
+        self.display.love()
         self.display.addPoints(13)
         
 

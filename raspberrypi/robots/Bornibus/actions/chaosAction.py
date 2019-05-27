@@ -56,6 +56,7 @@ class chaos(Actionnable):
         self.wheeledbase.lookahead.set(300)
         self.wheeledbase.lookaheadbis.set(150)
         self.wheeledbase.linpos_threshold.set(5)
+
         if self.side == self.YELLOW:
             self.pushers.down_l()
             self.mover.goto(*self.points["Cha2"],safe_mode=True, theta=-2*pi/3)
@@ -68,6 +69,7 @@ class chaos(Actionnable):
             self.mover.turnonthespot(pi/2)
 
         self.wheeledbase.max_linvel.set(300)
+        self.display.happy()
 
         if self.side == self.YELLOW:
             self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Cha4"], self.points["Cha5"], self.points["Cha6"]],safe_mode=True, direction='forward', finalangle=-pi/2)#,lookahead=150, lookaheadbis=150)
@@ -78,6 +80,7 @@ class chaos(Actionnable):
         self.mover.goto(*self.points["Cha7"], direction='backward')
 
         self.display.addPoints(14)
+        self.display.love()
 
     def before(self):
         pass
