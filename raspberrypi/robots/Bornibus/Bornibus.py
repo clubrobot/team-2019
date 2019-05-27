@@ -64,7 +64,7 @@ class Bornibus(Automaton):
 
         # Specific Actions initialisation
         self.detectorAct    = detector(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
-        self.goldeniumAct   = goldenium(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
+        self.goldeniumAct   = Goldenium(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
         self.balanceGAct    = balance(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
         self.tabAtomsAct    = tabAtoms(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
         self.chaosAct       = chaos(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
@@ -76,6 +76,9 @@ class Bornibus(Automaton):
             self.tabAtomsAct,
             self.balanceGAct,
         ]
+
+        for sensor in sensorsBack+sensorsFront:
+            sensor.set_side(self.side)
 
         wheeledbase.reset_parameters()
 

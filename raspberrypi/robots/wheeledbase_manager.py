@@ -24,21 +24,22 @@ class Mover:
     SOFT=8
 
     LATERAL_SHIFT = 400
-    LONGITUDINAL_SHIFT = 150
+    LONGITUDINAL_SHIFT = 250
     MINIMUM_WALL_DIST = 200
     AVOIDING_ZONE = ((100, 1600), (0, 3000))
     BALANCE_SEP_ZONE = ((1350, 2000), (1400, 1600))
+    TIME_BETWEEN_OBSTACLES = 3
 
     def __init__(self, daughter_cards, log_meth, sensorsFront, sensorsBack):
         self.wheeledbase = daughter_cards["wheeledbase"]
         self.display = daughter_cards["display"]
 
         self.logger = log_meth
-        self.front_center = SensorListener(sensorsFront[1])
+        self.front_center = SensorListener(sensorsFront[1], threshold=300)
         self.front_left = SensorListener(sensorsFront[2], threshold=100)
         self.front_right = SensorListener(sensorsFront[0], threshold=100)
 
-        self.back_center = SensorListener(sensorsBack[1])
+        self.back_center = SensorListener(sensorsBack[1], threshold=300)
         self.back_left = SensorListener(sensorsBack[2], threshold=80)
         self.back_right = SensorListener(sensorsBack[0], threshold=80)
 
@@ -60,12 +61,12 @@ class Mover:
         self.timeout = 1
         self.try_limit = 4
         self.safe_mode = False
-
-
+        self.last_obstacle = None
 
     def front_obstacle(self):
         if (self.goto_interrupt.is_set()):
             return
+
         # interuption quand obstacle devant:
         self.logger("MOVER : ", "Object in the front detected !")
         if not self.interupted_lock.acquire(blocking=True, timeout=0.5):
@@ -135,12 +136,20 @@ class Mover:
         self.wheeledbase.stop()
         self.wheeledbase.purepursuit(((x,y),(x+Mover.SIDE_DIST*robot_droite_vec[0]*side,y+Mover.SIDE_DIST*robot_droite_vec[1]*side),(self.goal)),**self.params)
         sleep(0.3)
+
+        self.last_obstacle = time.time()
+
         self.interupted_status.clear()
         self.interupted_lock.release()
 
     def lateral_obstacle(self, side):
         if (self.goto_interrupt.is_set()):
             return
+
+        if self.last_obstacle and time.time() - self.last_obstacle < self.TIME_BETWEEN_OBSTACLES:
+            self.logger("MOVER : last front obstacle too close !")
+            return
+
         # interuption quand obstacle devant:
         self.logger("MOVER : ", "Lateral object detected !", "LEFT" if side==self.LEFT else "RIGHT")
 
@@ -158,7 +167,6 @@ class Mover:
             self.logger("MOVER : ", "Just wait a little (Safe mode ON) !")
             sleep(1)
             self.wheeledbase.start_purepursuit()
-            #self.wheeledbase.purepursuit([(x, y), *self.path], **self.params)
             self.interupted_status.clear()
             self.interupted_lock.release()
             return
@@ -203,7 +211,7 @@ class Mover:
             else:
                 self.wheeledbase.goto_delta(self.LONGITUDINAL_SHIFT, 0)
             sleep(0.5)
-            self.wheeledbase.purepursuit([(x, y), *self.path], **self.params)
+            self.wheeledbase.purepursuit([(x, y), self.goal], **self.params)
 
 
 
@@ -217,7 +225,7 @@ class Mover:
 
         else:
             self.logger("MOVER : ", "Launch avoiding")
-            self.wheeledbase.purepursuit([(x, y), avoiding_pt, *self.path], **self.params)
+            self.wheeledbase.purepursuit([(x, y), avoiding_pt, self.goal], **self.params)
 
         self.interupted_status.clear()
         self.interupted_lock.release()
@@ -249,7 +257,6 @@ class Mover:
         self.nb_try = 0
         self.try_limit = nb_try
         self.safe_mode = safe_mode
-        # TODO ami
         # if False:
         #     self.in_path_flag.bind(self.friend_listener.signal)
         if self.params.get("direction") is 'forward' or self.params.get("direction") is None:
@@ -287,7 +294,7 @@ class Mover:
                 self.display.sick()
                 if self.safe_mode:
                     sleep(0.2)
-                    self.wheeledbase.purepursuit(self.path, **self.params)
+                    self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.goal], **self.params)
                     continue
                 x, y, _ = self.wheeledbase.get_position()
                 vel, ang = self.wheeledbase.get_velocities_wanted(True)
@@ -295,7 +302,7 @@ class Mover:
                 time.sleep(1)  # 0.5
                 self.wheeledbase.set_velocities(copysign(150, vel), 0)
                 time.sleep(1.2)
-                self.wheeledbase.purepursuit(self.path, **self.params)
+                self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.goal], **self.params)
                 self.interupted_lock.release()
             except TimeoutError:
                 self.isarrived = False

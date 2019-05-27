@@ -5,6 +5,7 @@ import time
 from threading import Thread, Event, Lock
 import math
 from common.sync_flag_signal import Signal
+from robots.automaton import *
 
 
 class SensorListener(Thread):
@@ -33,6 +34,7 @@ class SensorListener(Thread):
 class Sensor:
     HILL_ZONE = ((300, 1400), (200, 2800))
     SCALE_ZONE = ((1150, 1600), (1200, 1800))
+    START_ZONE = ((0, 0), (0, 0))
 
     def __init__(self, wheeledbase, name, dist, pos, angle, connexion_flag):
         self.dist = dist
@@ -42,6 +44,12 @@ class Sensor:
         self.name = name
         self.wheeledbase = wheeledbase
         self.is_connected = connexion_flag
+
+    def set_side(self, side):
+        if side == Automaton.YELLOW:
+            self.START_ZONE = ((0, 1200), (0, 500))
+        else:
+            self.START_ZONE = ((0, 1200), (2500, 3000))
 
     def disable(self):
         self.enabled = False
@@ -64,14 +72,13 @@ class Sensor:
 
         # zone balance
         if Sensor.SCALE_ZONE[0][0] < x < Sensor.SCALE_ZONE[0][1] and \
-           Sensor.SCALE_ZONE[1][0] < y < Sensor.SCALE_ZONE[1][1]:
+                Sensor.SCALE_ZONE[1][0] < y < Sensor.SCALE_ZONE[1][1]:
             return False
 
-        # print("obstacle en : ", round(x), round(y))
-        # print("wheeledbase_pos : ", wheeledbase_pos)
-        # print("CAPTEUR", self.name)
-        # print("distance : ", dist)
-        # print()
+        if Sensor.START_ZONE[0][0] < x < Sensor.START_ZONE[0][1] and \
+           Sensor.START_ZONE[1][0] < y < Sensor.START_ZONE[1][1]:
+            return False
+
         return True
 
 
@@ -102,7 +109,7 @@ class SensorsManager(Thread):
         while not self.stop_thread.is_set():
             begin = time.time()
             obstacle = False
-            wheeledbase_pos = wheeledbase_pos.get_position()
+            wheeledbase_pos = self.wheeledbase.get_position()
             if wheeledbase_pos.direction == wheeledbase_pos.FORWARD:
                 for sensor in self.sensors_front:
                     if sensor.enabled and sensor.obstacle(wheeledbase_pos):
