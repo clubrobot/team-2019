@@ -49,6 +49,8 @@ class MotorWrapper : public PeriodicProcess
         void load(int address);
         void save(int address) const;
 
+        void end(){_motor.end();}
+
     private:
 
         float _velInput;
