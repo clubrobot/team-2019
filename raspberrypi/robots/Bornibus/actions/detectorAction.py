@@ -39,13 +39,6 @@ class detector(Actionnable):
 
     def moving(self):
         self.wheeledbase.reset_parameters()
-        # self.wheeledbase.max_linvel.set(700)
-        # self.wheeledbase.max_angvel.set(10)
-        # self.wheeledbase.lookahead.set(150.0)
-        # self.wheeledbase.max_linacc.set(500.0)
-        # self.wheeledbase.max_lindec.set(500.0)
-        # self.wheeledbase.right_wheel_maxPWM.set(1)
-        # self.wheeledbase.left_wheel_maxPWM.set(1)
 
         # Vers l'accélérateur
         self.log("DETECTOR ACTION : ", "Vers l'accelerateur")
@@ -88,15 +81,12 @@ class detector(Actionnable):
     def realize(self):
         # Pousse le Blueium
         self.log("DETECTOR ACTION : ", "Pousse le Blueium")
+        self.arm.deploy()
         if self.side == self.YELLOW:
-            self.arm.deploy()
-            self.mover.turnonthespot_dir(-2*pi/3, direction="clock")
+            self.mover.turnonthespot_dir(-2*pi/3, direction="clock", try_limit=1)
 
         if self.side == self.PURPLE:
-            self.mover.turnonthespot(0)
-            time.sleep(0.4)
-            self.arm.deploy()
-            self.mover.turnonthespot_dir(-pi/3, direction="trig")
+            self.mover.turnonthespot_dir(-pi/3, direction="trig", try_limit=1)
 
         self.display.sick()
         self.arm.up()

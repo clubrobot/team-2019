@@ -53,54 +53,58 @@ class goldenium(Actionnable):
         goldenium = 0
         beginGoldeniumTime = time.time()
         while (goldenium!=1) & (time.time()-beginGoldeniumTime<=MAX_TIME_FOR_GOLDENIUM) :
-            if self.endstops.get_ES3():
-                    goldenium=1
-            else :
-                self.gripper.open()
-                self.wheeledbase.right_wheel_maxPWM.set(0.2)
-                self.wheeledbase.left_wheel_maxPWM.set(0.2)
-                self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Gold2"]], direction="forward", lookahead=150, lookaheadbis=1, finalangle=pi)
-                try :
-                    while not self.wheeledbase.isarrived() :
-                        if self.endstops.get_ES2():
-                            # Touched left
-                            self.log("GOLDENIUM ACTION : ", "gripper touched left")
-                            self.display.angry()
-                            self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]-4)
-                            self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]-4)
-                            print(*self.points["Gold2"])
-                            raise gripperError("Grripper left touched")
-                        
-                        elif self.endstops.get_ES1():
-                            # Touched right
-                            self.log("GOLDENIUM ACTION : ", "gripper touched right")
-                            self.display.angry()
-                            self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]+4)
-                            self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]+4)
-                            print(*self.points["Gold2"])
-                            raise gripperError("Grripper right touched")
-                        time.sleep(0.1)
-                    raise BaseException("Reached position")
-                
-                except gripperError as e :
-                    self.log("GOLDENIUM ACTION : ", "gripperException :", e)
-                    try :
-                        self.wheeledbase.right_wheel_maxPWM.set(1)
-                        self.wheeledbase.left_wheel_maxPWM.set(1)
-                        self.wheeledbase.goto(*self.points["Gold1"], theta=pi, lookaheadbis=1)
-                    except :
-                        pass
 
-                except BaseException as e :
-                    self.log("GOLDENIUM ACTION : ", "BaseException :", e)
-                    self.gripper.close()
-                    time.sleep(1)
+            self.gripper.open()
+            self.wheeledbase.right_wheel_maxPWM.set(0.2)
+            self.wheeledbase.left_wheel_maxPWM.set(0.2)
+            self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.points["Gold2"]], direction="forward", lookahead=150, lookaheadbis=1, finalangle=pi)
+            try :
+                while not self.wheeledbase.isarrived() :
+                    if self.endstops.get_ES2():
+                        # Touched left
+                        self.log("GOLDENIUM ACTION : ", "gripper touched left")
+                        self.display.angry()
+                        self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]-4)
+                        self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]-4)
+                        print(*self.points["Gold2"])
+                        raise gripperError("Grripper left touched")
+
+                    elif self.endstops.get_ES1():
+                        # Touched right
+                        self.log("GOLDENIUM ACTION : ", "gripper touched right")
+                        self.display.angry()
+                        self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]+4)
+                        self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]+4)
+                        print(*self.points["Gold2"])
+                        raise gripperError("Grripper right touched")
+                    time.sleep(0.1)
+                raise BaseException("Reached position")
+
+            except gripperError as e :
+                self.log("GOLDENIUM ACTION : ", "gripperException :", e)
+                try :
+                    self.wheeledbase.right_wheel_maxPWM.set(1)
+                    self.wheeledbase.left_wheel_maxPWM.set(1)
+                    self.wheeledbase.goto(*self.points["Gold1"], theta=pi, lookaheadbis=1)
+                except :
+                    pass
+
+            except BaseException as e :
+                self.log("GOLDENIUM ACTION : ", "BaseException :", e)
+                self.gripper.close()
+                time.sleep(1)
+                if self.endstops.get_ES3():
+                    goldenium = 1
+                    self.wheeledbase.linpos_threshold.set(10)
+                    self.wheeledbase.angpos_threshold.set(0.5)
+                    self.mover.withdraw(-200, 0, direction="backward")
                     self.wheeledbase.reset_parameters()
-                    self.wheeledbase.set_velocities(-700, 0)
+
+                else:
+                    self.wheeledbase.reset_parameters()
+                    self.mover.goto(*self.points["Gold1"])
                     self.log("GOLDENIUM ACTION : ", "Recule")
                     self.display.surprised()
-                    time.sleep(0.5)
-                    self.wheeledbase.set_velocities(0, 0)
 
 
         self.log("GOLDENIUM ACTION : ", "fin")

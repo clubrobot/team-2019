@@ -47,6 +47,7 @@ class Mover:
         self.front_flag = Flag(self.front_obstacle)
         self.left_flag = Flag(lambda: self.lateral_obstacle(self.LEFT))
         self.right_flag = Flag(lambda: self.lateral_obstacle(self.RIGHT))
+        self.withdraw_flag = Flag(self.withdraw_obstacle)
 
         self.isarrived = False
         self.interupted_lock = RLock()
@@ -317,7 +318,8 @@ class Mover:
                 self.wheeledbase.turnonthespot(theta, direction=direction)
                 self.wheeledbase.wait()
                 arrived = True
-            except: 
+            except:
+                self.logger("MOVER : Turnonthespot spin")
                 self.nb_try+=1
                 if self.nb_try==1:
                     sleep(0.6)
@@ -337,11 +339,10 @@ class Mover:
                             self.wheeledbase.right_wheel_maxPWM.set(0.5) 
                             sleep(1)
         if self.try_limit>0:
-                self.wheeledbase.left_wheel_maxPWM.set(1)
-                self.wheeledbase.right_wheel_maxPWM.set(1)             
+            self.wheeledbase.left_wheel_maxPWM.set(1)
+            self.wheeledbase.right_wheel_maxPWM.set(1)
         if  self.nb_try>=self.try_limit:
             raise PositionUnreachable()
-
   
     def turnonthespot(self, theta, try_limit=3, way="forward"):
         self.goal = (*self.wheeledbase.get_position()[:-1], theta)
@@ -380,7 +381,6 @@ class Mover:
         if  self.nb_try>=self.try_limit:
             raise PositionUnreachable()
 
-
     def turnonthespot_hard(self, theta, try_limit=3, way="forward"):
         self.goal = (*self.wheeledbase.get_position()[:-1], theta)
         self.nb_try = 0
@@ -410,3 +410,59 @@ class Mover:
                 self.wheeledbase.right_wheel_maxPWM.set(1)             
         if  self.nb_try>=self.try_limit:
             raise PositionUnreachable()
+
+    def withdraw_obstacle(self):
+        if (self.goto_interrupt.is_set()):
+            return
+
+        if not self.interupted_lock.acquire(blocking=True, timeout=0.5):
+            return
+        self.interupted_status.set()
+        # interuption quand obstacle devant:
+        self.logger("MOVER : ", "Withdraw obstacle => stop")
+
+        self.wheeledbase.stop()
+        time.sleep(1)
+        self.wheeledbase.goto(*self.goal, direction=self.direction)
+
+        self.interupted_status.clear()
+        self.interupted_lock.release()
+
+    def withdraw(self, x, y, direction="forward", timeout=5):
+        w_x, w_y, _ = self.wheeledbase.get_position()
+        self.goal = (w_x + x, w_y + y)
+        self.timeout = timeout
+        self.direction = direction
+        self.wheeledbase.max_linvel.set(200)
+        if self.params.get("direction") is 'forward' or self.params.get("direction") is None:
+            self.logger("MOVER : ", "forward")
+            self.direction = self.FORWARD
+            self.withdraw_flag.bind(self.front_center.signal)
+            self.withdraw_flag.bind(self.front_left.signal)
+            self.withdraw_flag.bind(self.front_right.signal)
+
+        else:
+            self.logger("MOVER : ", "backward")
+            self.direction = self.BACKWARD
+            self.withdraw_flag.bind(self.back_center.signal)
+            self.withdraw_flag.bind(self.back_left.signal)
+            self.withdraw_flag.bind(self.back_right.signal)
+
+        self.wheeledbase.goto(x, y)
+        self.direction = direction
+        while not self.isarrived or self.interupted_status.is_set():
+            try:
+                if self.interupted_status.is_set():
+                    sleep(0.2)
+                else:
+                    self.wheeledbase.goto(*self.goal, direction=direction)
+                    self.isarrived = True
+
+            except RuntimeError:
+                if self.interupted_timeout.is_set():
+                    self.wheeledbase.stop()
+                    time.sleep(1)
+                    self.wheeledbase.goto(*self.goal, direction=direction)
+                else:
+                    pass
+        self.reset()
