@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "instructions.h"
 #include <vector>
 #include "addresses.h"
@@ -10,6 +11,14 @@ using namespace IK;
 
 extern VacumPump pump;
 extern PressureSensor pSensor;
+extern MotorWrapper AX1;
+
+void STOP_ALL(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+    VacumPump.stopPump();
+    AX1.end();
+    ESP.restart();
+}
 
 void GET_PRESSURE(SerialTalks& talks, Deserializer& input, Serializer& output){
 	output.write<int>(pSensor.getPressurekPa());
