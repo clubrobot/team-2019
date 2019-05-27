@@ -236,7 +236,12 @@ class Mover:
         self.try_limit = 4
 
     def goto(self, x, y, safe_mode=False,**params):
-        
+        if params.get("direction", None) is None:
+            x0, y0, theta0 = self.wheeledbase.get_position()
+            if math.cos(math.atan2(y - y0, x - x0) - theta0) >= 0:
+                params["direction"]  = 'forward'
+            else:
+                params["direction"] = 'backward'
         self.purepursuit([self.wheeledbase.get_position()[:2], (x, y)],safe_mode=safe_mode, **params)
         if not params.get("theta", None)  is None:
             self.wheeledbase.turnonthespot(params["theta"])
