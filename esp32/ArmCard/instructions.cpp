@@ -15,7 +15,7 @@ extern MotorWrapper AX1;
 
 void STOP_ALL(SerialTalks& talks, Deserializer& input, Serializer& output)
 {
-    VacumPump.stopPump();
+    pump.stopPump();
     AX1.end();
     ESP.restart();
 }
