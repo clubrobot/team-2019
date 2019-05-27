@@ -110,7 +110,7 @@ def getlogs(args):
 
 
 def server(args):
-    srv = Server(password=args.password, size=args.size, start_match=Automaton.start_preparation)
+    srv = Server(password=args.password, size=args.size)
     while True:
         try:
             while not srv.full():
