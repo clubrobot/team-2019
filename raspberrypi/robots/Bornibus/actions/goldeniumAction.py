@@ -102,7 +102,7 @@ class goldenium(Actionnable):
 
                 else:
                     self.wheeledbase.reset_parameters()
-                    self.mover.goto(*self.points["Gold1"])
+                    self.mover.goto(*self.points["Gold1"], direction="backward")
                     self.log("GOLDENIUM ACTION : ", "Recule")
                     self.display.surprised()
 
