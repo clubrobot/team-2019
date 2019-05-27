@@ -1,160 +1,162 @@
 #include <Arduino.h>
 #include "Arduino.h"
 #include "../common/ExperienceEffects.h"
-#include "../common/mqtt/Adafruit_MQTT.h"
-#include "../common/mqtt/Adafruit_MQTT_Client.h"
-#include <WiFi.h>
+#include "../common/TaskManager.h"
+#include <BLEDevice.h>
+#include <BLEClient.h>
 
-#define WLAN_SSID       "CLUB_ROBOT"
-#define WLAN_PASS       "zigouigoui"
+// The remote service we wish to connect to.
+static BLEUUID serviceUUID("6a54cace-89bf-4e0b-a9f9-7f78a7aab1ef");
+// The characteristic of the remote service we are interested in.
+static BLEUUID startCharUUID("bc4878c0-426a-45ed-b5db-2a9e1a1e43d7");
+static BLEUUID isOnTopUUID("561a3414-8b23-462e-ab59-1cdb47905789");
 
-#define AIO_SERVER      "192.168.1.13"
-#define AIO_SERVERPORT  1883
-
-#define TEMPS_MONTEE    20000
+static BLEAddress *pServerAddress;
+static boolean doConnect = false;
+static boolean connected = false;
+static BLERemoteCharacteristic *pStartCharacteristic;
+static BLERemoteCharacteristic *pIsOnTopCharacteristic;
 
 ExperienceEffects experience(true);
 
-WiFiClient client;
+TaskManager task_manager;
 
-Adafruit_MQTT_Client mqtt(&client, AIO_SERVER, AIO_SERVERPORT);
+static TickType_t xDelay = 100 / portTICK_PERIOD_MS; // 100 ms task Delay
 
-Adafruit_MQTT_Subscribe start = Adafruit_MQTT_Subscribe(&mqtt, "topic/start");
-Adafruit_MQTT_Publish start_publish = Adafruit_MQTT_Publish(&mqtt, "topic/start");
-Adafruit_MQTT_Publish isOnTop = Adafruit_MQTT_Publish(&mqtt, "topic/isOnTop");
+static void secondary_loop(void * parameters);
 
-bool MQTT_connect();
 
-bool mqtt_connected = false;
+class ClientCallbacks : public BLEClientCallbacks
+{
+    void onDisconnect(BLEClient *pClient)
+    {
+        ESP.restart(); // TODO : find a better way to handle disconnections
+    }
+
+    void onConnect(BLEClient *pClient) 
+    {
+        experience.connected();
+    }
+};
+
+bool connectToServer(BLEAddress pAddress)
+{
+    BLEClient *pClient = BLEDevice::createClient();
+
+    pClient->connect(pAddress);
+    pClient->setClientCallbacks(new ClientCallbacks());
+
+    BLERemoteService *pRemoteService = pClient->getService(serviceUUID);
+    if (pRemoteService == nullptr)
+    {
+        return false;
+    }
+
+    pStartCharacteristic = pRemoteService->getCharacteristic(startCharUUID);
+    if (pStartCharacteristic == nullptr) 
+    {
+        return false;
+    }
+
+    if (experience.isElectron)
+    {
+        pIsOnTopCharacteristic = pRemoteService->getCharacteristic(isOnTopUUID);
+        if (pIsOnTopCharacteristic == nullptr) 
+        {
+        return false;
+        }
+    }
+  //pRemoteCharacteristic->registerForNotify(notifyCallback);
+}
+/**
+* Scan for BLE servers and find the first one that advertises the service we are looking for.
+*/
+class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks
+{
+    /**
+     * Called for each advertising BLE server.
+     */
+    void onResult(BLEAdvertisedDevice advertisedDevice)
+    {
+    // We have found a device, let us now see if it contains the service we are looking for.
+        if (advertisedDevice.haveServiceUUID() && advertisedDevice.getServiceUUID().equals(serviceUUID))
+        {
+            advertisedDevice.getScan()->stop();
+
+            pServerAddress = new BLEAddress(advertisedDevice.getAddress());
+            doConnect = true;
+        }
+    } 
+};
+
+
 
 void setup()
-{
-  Serial.begin(115200);
-  experience.setup();
-  Serial.println(); Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(WLAN_SSID);
+{   
+    Serial.begin(115200);
 
-  WiFi.begin(WLAN_SSID, WLAN_PASS);
-  while (WiFi.status() != WL_CONNECTED) {
-    if (digitalRead(GO_BACK)==LOW){
-      experience.goBack();
-    }
+    /* init task manager */
+    task_manager.create_task(secondary_loop , NULL);
 
-    if (digitalRead(GO_FORWARD)==LOW){
-      experience.goForward();
-    }
+    /* setup experience */
+    experience.setup();
 
-    if (digitalRead(GO_FORWARD) == HIGH && digitalRead(GO_BACK) == HIGH){
-      experience.motorStop();
-    }
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println();
-
-  Serial.println("WiFi connected");
-  Serial.println("IP address: "); Serial.println(WiFi.localIP());
-  digitalWrite(16, LOW);
-  mqtt.subscribe(&start);
-
-  if(MQTT_connect())
-  {
-    mqtt_connected = true;
-    experience.connected();
-  }
-  else
-  {
-    mqtt_connected = false;
-  }
-  
+    BLEDevice::init("");
+    BLEScan *pBLEScan = BLEDevice::getScan();
+    pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
+    pBLEScan->setActiveScan(true);
+    pBLEScan->start(15);
 }
 
 void loop()
 {
-  static long starttime = millis();
-  static long currenttime = 0;
-
-  if(!mqtt_connected)
-  {
-    currenttime = millis();  
-    if (currenttime - starttime >= 5000)
+    if (doConnect == true)
     {
-      if(MQTT_connect())
-      {
-        mqtt_connected = true;
-        experience.connected();
-      }
-      else
-      {
-        mqtt_connected = false;
-      }
-      starttime = currenttime;
-    }
-  }
-
-  if (digitalRead(GO_BACK)==LOW && experience.getStart() == 0){
-    experience.goBack();
-  }
-
-  if (digitalRead(GO_FORWARD)==LOW && experience.getStart() == 0){
-    experience.goForward();
-  }
-
-  if (digitalRead(GO_FORWARD) != LOW && digitalRead(GO_BACK) != LOW &&  experience.getStart() == 0){
-    experience.motorStop();
-  }
-
-  
-  if(mqtt_connected)
-  {
-    Adafruit_MQTT_Subscribe *subscription;
-    while ((subscription = mqtt.readSubscription(100))) {
-      if (subscription == &start) {
-        Serial.print(F("Got: "));
-        Serial.println((char *)start.lastread);
-        char *value = (char *)start.lastread;
-        int current = atoi(value);
-        if (current == 2){
-          Serial.println("starting");
-          experience.start();
+        if (connectToServer(*pServerAddress))
+        {
+            connected = true;
+            experience.connected();
         }
-      }
+        
+        doConnect = false;
     }
 
-    if (experience.getTimer()+TEMPS_MONTEE < millis() && experience.isElectron && experience.getStart() == 1){
-      experience.stayOnTop();
-      isOnTop.publish("1");
+    if (connected)
+    {
+        String result = pStartCharacteristic->readValue().c_str();
+        Serial.println(result);
+        if (result=="start\0")
+        {
+            experience.start();
+        }
     }
-  }
 
-  delay(100);
+    if ((experience.getStart() == 1)&& experience.getTimer()+TEMPS_MIN*1000 < millis() && experience.isElectron && connected)
+    {
+        experience.stayOnTop();
+        //pIsOnTopCharacteristic->writeValue("top");
+    }
+    
+    vTaskDelay( xDelay );   /* include 10 ms delay for better task management by ordonnancer */
 }
 
-bool MQTT_connect() 
+static void secondary_loop(void * parameters)
 {
-  int8_t ret;
-
-  if (mqtt.connected()) 
-  {
-    experience.connected();
-    return true;
-  }
-
-  Serial.print("Connecting to MQTT... ");
-
-  if((ret = mqtt.connect()) != 0) 
-  {
-    Serial.println(mqtt.connectErrorString(ret));
-    Serial.println("Retrying MQTT connection in 5 seconds...");
-    mqtt.disconnect();
-    return false;
-  }
-  else
-  {
-    return true;
-  }
-  
-
-  Serial.println("MQTT Connected!");
+    while(1)
+    {
+        if((digitalRead(GO_BACK) == LOW) && (experience.getStart() == 0))
+        {
+            experience.goBack();
+        }
+        else if ((digitalRead(GO_FORWARD) == LOW) && (experience.getStart() == 0))
+        {
+            experience.goForward();
+        }
+        else if (experience.getStart() == 0)
+        {
+            experience.motorStop();
+        }
+        
+        vTaskDelay( xDelay );   /* include 10 ms delay for better task management by ordonnancer */
+    }
 }

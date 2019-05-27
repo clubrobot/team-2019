@@ -7,24 +7,23 @@ SKETCH = experience.ino
 BOARD_UUID = electron
 COMMON = ../common
 #Setup all libs used !
-LIBS = $(ESP_LIBS)/EEPROM \
-		 $(COMMON)/WiFi/src\
-	   $(COMMON)/CRC16.cpp \
-	   $(COMMON)/ExperienceEffects.cpp \
-		 $(COMMON)/ESP32-Arduino-Servo-Library/src/Servo.cpp \
-		 $(COMMON)/fastLED/FastLED.cpp \
-		 $(COMMON)/fastLED/bitswap.cpp \
-		 $(COMMON)/fastLED/colorpalettes.cpp \
-		 $(COMMON)/fastLED/colorutils.cpp \
-		 $(COMMON)/fastLED/hsv2rgb.cpp \
-		 $(COMMON)/fastLED/lib8tion.cpp \
-		 $(COMMON)/fastLED/noise.cpp \
-		 $(COMMON)/fastLED/power_mgt.cpp \
-		 $(COMMON)/fastLED/wiring.cpp \
-	   $(COMMON)/NeoPixel/Adafruit_NeoPixel.cpp\
-		 $(COMMON)/mqtt/Adafruit_MQTT.cpp\
-		 $(COMMON)/mqtt/Adafruit_MQTT_Client.cpp\
-		 $(COMMON)/DCMotor.cpp\
+LIBS =  $(ESP_LIBS)/EEPROM \
+		$(COMMON)/BLE \
+		$(COMMON)/CRC16.cpp \
+		$(COMMON)/ExperienceEffects.cpp \
+		$(COMMON)/ESP32-Arduino-Servo-Library/src/Servo.cpp \
+		$(COMMON)/fastLED/FastLED.cpp \
+		$(COMMON)/fastLED/bitswap.cpp \
+		$(COMMON)/fastLED/colorpalettes.cpp \
+		$(COMMON)/fastLED/colorutils.cpp \
+		$(COMMON)/fastLED/hsv2rgb.cpp \
+		$(COMMON)/fastLED/lib8tion.cpp \
+		$(COMMON)/fastLED/noise.cpp \
+		$(COMMON)/fastLED/power_mgt.cpp \
+		$(COMMON)/fastLED/wiring.cpp \
+		$(COMMON)/NeoPixel/Adafruit_NeoPixel.cpp\
+		$(COMMON)/TaskManager.cpp \
+		$(COMMON)/DCMotor.cpp\
 
 
 CPPFLAGS = -fexceptions
