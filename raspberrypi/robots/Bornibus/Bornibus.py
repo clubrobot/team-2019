@@ -103,7 +103,7 @@ class Bornibus(Automaton):
         gripper.open()
         pushers.up()
         arm.up()
-        manager.disconnect()
+        manager.end_game()
 
     def run(self):
         self.log("MAIN : ", "RUN...")

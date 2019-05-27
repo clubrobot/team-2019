@@ -62,33 +62,46 @@ class balance(Actionnable):
         self.wheeledbase.max_linvel.set(400)
         
         #degagement de l'espace devant la balance
-        if self.side == self.YELLOW:
-            self.mover.turnonthespot(pi/4)
-            self.wheeledbase.wait()
-            self.pushers.down_r()
-        else :
-            self.mover.turnonthespot(-pi/4)
-            self.wheeledbase.wait()
-            self.pushers.down_l()
-            
+        do_freeing = self.display.get_time_remaining()>17
+        if do_freeing :
+            self.log("BALANCE ACTION :", "Dégagement de la balance car le temps le permet")
+        else:
+            self.log("BALANCE ACTION :", "Pas de dégagement car pas le temps !")
+        ###
+        if do_freeing:
+            if self.side == self.YELLOW:
+                self.mover.turnonthespot(pi/4)
+                self.wheeledbase.wait()
+                self.pushers.down_r()
+            else :
+                self.mover.turnonthespot(-pi/4)
+                self.wheeledbase.wait()
+                self.pushers.down_l()
+                ###
         try :
             self.wheeledbase.goto(*self.points["Bal4"], lookahead=150)
         except Exception as e:
             pass
+
+        ###
         
         if self.side == self.YELLOW:
-            self.wheeledbase.set_velocities(-0, 10)
-            time.sleep(0.8)
-            self.wheeledbase.stop()
-            self.pushers.up()
+            if do_freeing:
+                self.wheeledbase.set_velocities(-0, 10)
+                time.sleep(0.8)
+                self.wheeledbase.stop()
+                self.pushers.up()
             self.wheeledbase.turnonthespot(-pi/2) 
         else:
-            self.wheeledbase.set_velocities(-0, -10)
-            time.sleep(0.8)
-            self.wheeledbase.stop()
-            self.pushers.up()
+            if do_freeing:
+                self.wheeledbase.set_velocities(-0, -10)
+                time.sleep(0.8)
+                self.wheeledbase.stop()
+                self.pushers.up()
             self.wheeledbase.turnonthespot(pi/2) 
         self.wheeledbase.wait()
+        ###
+
 
                 # Recalage contre le bord pour la balance
         self.log("BALANCE ACTION :", "Positionnement pour la balance")

@@ -14,14 +14,14 @@ CREATE_SWITCH_COMPONENT_OPCODE = 0x11
 CREATE_LIGHTBUTTON_COMPONENT_OPCODE = 0x12
 CREATE_PICAMERA_COMPONENT_OPCODE = 0x13
 
-MAKE_COMPONENT_EXECUTE_OPCODE = 0x20
+MAKE_COMPONENT_EXECUTE_OPCODE  = 0x20
 GET_COMPONENT_ATTRIBUTE_OPCODE = 0x21
 SET_COMPONENT_ATTRIBUTE_OPCODE = 0x22
+END_GAME_OPCODE                = 0x23
 
 UPDATE_MANAGER_PICAMERA_OPCODE = 0x30
 MAKE_MANAGER_REPLY_OPCODE = 0x40
 MAKE_MANAGER_EXECUTE_OPCODE = 0x50
-START_MATCH_OPCODE = 0x60
 
 
 class Component():
@@ -155,7 +155,7 @@ except ImportError:
 
 class Server(TCPTalksServer):
 
-    def __init__(self, port=COMPONENTS_SERVER_DEFAULT_PORT, password=None, size=4, start_match=None):
+    def __init__(self, port=COMPONENTS_SERVER_DEFAULT_PORT, password=None, size=4):
         TCPTalksServer.__init__(self, port=port, password=password, NbClients=size)
         self.bind(CREATE_SERIALTALKS_COMPONENT_OPCODE, self.CREATE_SERIALTALKS_COMPONENT)
         self.bind(CREATE_SWITCH_COMPONENT_OPCODE, self.CREATE_SWITCH_COMPONENT)
@@ -164,9 +164,8 @@ class Server(TCPTalksServer):
         self.bind(MAKE_COMPONENT_EXECUTE_OPCODE, self.MAKE_COMPONENT_EXECUTE)
         self.bind(GET_COMPONENT_ATTRIBUTE_OPCODE, self.GET_COMPONENT_ATTRIBUTE)
         self.bind(SET_COMPONENT_ATTRIBUTE_OPCODE, self.SET_COMPONENT_ATTRIBUTE)
-        self.bind(START_MATCH_OPCODE, self.START_MATCH)
+        self.bind(END_GAME_OPCODE, self.END_GAME)
         self.components = {}
-        self.start_match = start_match
 
     def disconnect(self, id=None):
         TCPTalksServer.disconnect(self, id=id)
@@ -177,11 +176,12 @@ class Server(TCPTalksServer):
             comp._cleanup()
         self.components = {}
 
-    def START_MATCH(self, *args):
-        def core():
-            self.start_match()
-
-        Thread(target=core).run()
+    def END_GAME(self, *args):
+        self.disconnect()
+        for compid in self.components:
+            if isinstance(compid,SerialTalksComponent):
+                compid._cleanup()
+        
 
     def addcomponent(self, comp, compid):
         if not compid in self.components:
@@ -268,6 +268,10 @@ class Manager(TCPTalks):
         if opcode in self.serial_instructions:
             result = self.serial_instructions[opcode](input)
             return result
+
+    def end_game(self):
+        self.send(END_GAME_OPCODE)
+        self.disconnect()
 
 
 class Proxy:

@@ -84,6 +84,9 @@ class DisplayPoints:
         self.left_eye.set_message("@", 2, 200)
         self.right_eye.set_message("@", 3, 200)
         self._reset_normal(duration)
+    
+    def get_time_remaining(self):
+        return MATCH_DURATION-round(time.time() - self.start_time)
 
     def updateDisplay(self):
         remaining_time = MATCH_DURATION-round(time.time() - self.start_time)
