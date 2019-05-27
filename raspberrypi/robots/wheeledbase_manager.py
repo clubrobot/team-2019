@@ -14,13 +14,11 @@ class Mover:
     MAP = ((0,0),(1600,0),(1600,3000),(100,3000),(0,0))
     SIDE_DIST = 200
 
-    FORWARD = 0
-    BACKWARD = 1
+    FORWARD = "forward"
+    BACKWARD = "backward"
 
     LEFT = 0
     RIGHT = 1
-
- 
 
     AIM=6
     SOFT=8
@@ -101,7 +99,6 @@ class Mover:
         sleep(0.6)
 
         #determination du coté.
-
         robot_droite_vec = (cos(theta+pi/2), sin(theta+pi/2))
 
         distance = [0,0,0,0]
@@ -398,9 +395,9 @@ class Mover:
                 self.wheeledbase.left_wheel_maxPWM.set(0.5)
                 self.wheeledbase.right_wheel_maxPWM.set(0.5) 
                 if ang_vel>=0:
-                    self.wheeledbase.goto_delta(-100,0)
+                    self.wheeledbase.goto_delta(-100, 0)
                 else:
-                    self.wheeledbase.goto_delta(100,0)
+                    self.wheeledbase.goto_delta(100, 0)
 
                 sleep(0.4)
                 self.wheeledbase.stop()
@@ -414,16 +411,16 @@ class Mover:
     def withdraw_obstacle(self):
         if (self.goto_interrupt.is_set()):
             return
-
         if not self.interupted_lock.acquire(blocking=True, timeout=0.5):
             return
+
         self.interupted_status.set()
         # interuption quand obstacle devant:
         self.logger("MOVER : ", "Withdraw obstacle => stop")
 
         self.wheeledbase.stop()
         time.sleep(1)
-        self.wheeledbase.goto(*self.goal, direction=self.direction)
+        self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.goal], direction=self.direction)
 
         self.interupted_status.clear()
         self.interupted_lock.release()
@@ -432,37 +429,38 @@ class Mover:
         w_x, w_y, _ = self.wheeledbase.get_position()
         self.goal = (w_x + x, w_y + y)
         self.timeout = timeout
-        self.direction = direction
         self.wheeledbase.max_linvel.set(200)
-        if self.params.get("direction") is 'forward' or self.params.get("direction") is None:
+        self.direction = direction
+        if direction == "forward":
             self.logger("MOVER : ", "forward")
-            self.direction = self.FORWARD
             self.withdraw_flag.bind(self.front_center.signal)
             self.withdraw_flag.bind(self.front_left.signal)
             self.withdraw_flag.bind(self.front_right.signal)
 
         else:
             self.logger("MOVER : ", "backward")
-            self.direction = self.BACKWARD
             self.withdraw_flag.bind(self.back_center.signal)
             self.withdraw_flag.bind(self.back_left.signal)
             self.withdraw_flag.bind(self.back_right.signal)
 
-        self.wheeledbase.goto(x, y)
-        self.direction = direction
+        self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.goal], direction=self.direction)
         while not self.isarrived or self.interupted_status.is_set():
             try:
                 if self.interupted_status.is_set():
                     sleep(0.2)
                 else:
-                    self.wheeledbase.goto(*self.goal, direction=direction)
-                    self.isarrived = True
+                    self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.goal],
+                                                 direction=self.direction)
+                self.isarrived = True
 
             except RuntimeError:
                 if self.interupted_timeout.is_set():
                     self.wheeledbase.stop()
                     time.sleep(1)
-                    self.wheeledbase.goto(*self.goal, direction=direction)
+                    self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.goal],
+                                                 direction=self.direction)
                 else:
                     pass
         self.reset()
+        if (self.goto_interrupt.is_set()):
+            raise PositionUnreachable()
