@@ -12,10 +12,11 @@ class PutRedZone(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
 
-    def __init__(self, geogebra, daughter_cards, side, log):
+    def __init__(self, geogebra, daughter_cards, mover, side, log):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
+        self.mover          = mover
 
         if self.side == self.YELLOW:
             self.arm1        = daughter_cards['armBack']
@@ -166,7 +167,7 @@ class PutRedZone(Actionnable):
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
 
-# while not the taking sequence is end
+        # while not the taking sequence is end
         while not (self.arm1TakingState.is_set() and self.arm2TakingState.is_set()):
             if not self.arm1.get_atmosphere_pressure():
                 # move after take
