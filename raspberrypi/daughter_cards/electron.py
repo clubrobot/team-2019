@@ -16,7 +16,7 @@ _ELECTRON_STATE_OPCODE       = 0X18
 
 
 class Electron(SecureSerialTalksProxy):
-    def __init__(self,parent, uuid='/dev/tty.SLAB_USBtoUART'):
+    def __init__(self,parent, uuid='expServ'):
         SecureSerialTalksProxy.__init__(self, parent, uuid, dict())
 
     def connect_sate(self):
