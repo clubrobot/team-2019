@@ -80,7 +80,7 @@ class PutAccelerator(Actionnable):
 
     def realize(self):
         # put the first handled puck
-
+        self.display.sleep(duration=4)
         arm1_pos = self.recalArm.readjust_arm1(ACCELERATOR_BEFORE_ARM1, RECALIB)
         arm2_pos = self.recalArm.readjust_arm2(ACCELERATOR_BEFORE_ARM2, RECALIB)
         
@@ -91,7 +91,7 @@ class PutAccelerator(Actionnable):
 
         arm1_pos = self.recalArm.readjust_arm1(ACCELERATOR_ARM1, RECALIB)
         arm2_pos = self.recalArm.readjust_arm2(ACCELERATOR_ARM2, RECALIB)
-        
+        self.display.happy(duration=1)
         self.arm1.move(arm1_pos)
         self.arm2.move(arm2_pos)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
