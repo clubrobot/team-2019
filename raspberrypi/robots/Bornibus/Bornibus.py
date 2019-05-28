@@ -83,13 +83,15 @@ class Bornibus(Automaton):
         wheeledbase.reset_parameters()
 
     def set_position(self):
-        if self.side == Bornibus.PURPLE:
-            wheeledbase.set_position(*self.points["Ini"], -pi/2)
-            print(*self.points["Ini"])
-        if self.side == Bornibus.YELLOW:
-            wheeledbase.set_position(*self.points["Ini"], pi/2)
-            print(*self.points["Ini"])
-
+        try:
+            if self.side == Bornibus.PURPLE:
+                wheeledbase.set_position(*self.points["Ini"], -pi/2)
+                print(*self.points["Ini"])
+            if self.side == Bornibus.YELLOW:
+                wheeledbase.set_position(*self.points["Ini"], pi/2)
+                print(*self.points["Ini"])
+        except:
+            pass    
 
     def positioning(self):
         init_robot()
@@ -115,11 +117,14 @@ class Bornibus(Automaton):
         self.display.start()
         disp.points = 0
         disp.start()
-
+        pass_gold = False
         self.tam.start()
 
         for act in self.action_list:
             
+            if pass_gold and act.name=="goldeniumAction":
+                self.log("MAIN : ", "Pass gold action due to fail on previous act.")
+                continue
             # add before action to the parralel action queue
             self.log("MAIN : ", "Launch Before Action")
             self.tam.putAction(act.getBefore())
@@ -129,6 +134,8 @@ class Bornibus(Automaton):
             try:
                 act.moving()
             except PositionUnreachable:
+                if act.name=="detectorAction":
+                   pass_gold = True 
                 continue
             # wait for parralels action end
             while not self.tam.end():
@@ -139,6 +146,8 @@ class Bornibus(Automaton):
             try:
                 act()
             except PositionUnreachable:
+                if act.name=="detectorAction":
+                   pass_gold = True 
                 continue
             act.done.set()
             self.log("MAIN ; ", "Action End !")
