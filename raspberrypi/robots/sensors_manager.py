@@ -46,7 +46,7 @@ class SensorListener(Thread):
 
 
 class Sensor:
-    HILL_ZONE = ((300, 1400), (200, 2800))
+    HILL_ZONE = ((300, 1490), (200, 2800))
     SCALE_ZONE = ((1150, 1600), (1200, 1800))
     START_ZONE = ((0, 0), (0, 0))
 
