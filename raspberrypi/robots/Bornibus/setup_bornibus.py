@@ -16,7 +16,10 @@ from robots.wheeledbase_manager import *
 from beacons.global_sync import ClientGS
 from robots.wheeledbase_manager import * 
 
-log = Logger(Logger.BOTH, file_name="/home/pi/logs/start.log")
+if ROBOT_ID == BORNIBUS_ID:
+    log = Logger(Logger.BOTH, file_name="/home/pi/logs/start.log")
+else:
+    log = Logger(Logger.SHOW)
 
 led1 = LEDMatrix(manager, 1)
 led2 = LEDMatrix(manager, 2)
