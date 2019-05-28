@@ -2,7 +2,7 @@ BOARD = esp32
 CHIP = esp32
 
 #Arduino file
-SKETCH = server.ino
+SKETCH = new_server.ino
 
 BOARD_UUID = expServ
 COMMON = ../common
@@ -11,6 +11,7 @@ LIBS = $(ESP_LIBS)/EEPROM \
 	   $(COMMON)/BLE \
 	   $(COMMON)/SerialTalks.cpp \
 	   $(COMMON)/CRC16.cpp \
+	   	$(COMMON)/TaskManager.cpp \
 	   instructions.cpp
 
 

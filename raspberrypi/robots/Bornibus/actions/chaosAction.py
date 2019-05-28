@@ -77,6 +77,7 @@ class chaos(Actionnable):
         print("Don du mutex balance")
         self.master.release_ressource("balance")
 
+        self.wheeledbase.linvel_KP.set(25)
         self.wheeledbase.max_linvel.set(300)
         self.display.happy()
 

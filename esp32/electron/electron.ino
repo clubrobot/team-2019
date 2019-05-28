@@ -7,16 +7,16 @@
 
 #define BUILTIN_LED 2
 
-#define EXPERIENCE_SERVICE_UUID     "865d8713-2bf1-4081-9bc1-f009c532a1c7"
-#define EXPERIENCE_START_UUID       "fbb86ffe-879f-4113-ac20-57b39d9b0f66"
-#define EXPERIENCE_STATE_UUID       "dd603e58-bc55-4231-8dfc-52db9e91ba76"
+#define ELECTRON_SERVICE_UUID       "9089189e-353f-44ec-9d84-a767862d3f6e"
+#define ELECTRON_START_UUID         "413a617d-beb5-4932-9b3e-0cc79a1d56d6"
+#define ELECTRON_STATE_UUID         "cae98ae4-9c16-4426-98eb-50b3d4473d5c"
 
 // The remote service we wish to connect to.
-static BLEUUID serviceUUID(EXPERIENCE_SERVICE_UUID);
+static BLEUUID serviceUUID(ELECTRON_SERVICE_UUID);
 
 // The characteristic of the remote service we are interested in.
-static BLEUUID startUUID(EXPERIENCE_START_UUID);
-static BLEUUID stateUUID(EXPERIENCE_STATE_UUID);
+static BLEUUID startUUID(ELECTRON_START_UUID);
+static BLEUUID stateUUID(ELECTRON_STATE_UUID);
 
 static BLEAddress *pServerAddress;
 
@@ -26,7 +26,7 @@ static bool connected = false;
 BLERemoteCharacteristic *pStartCharacteristic;
 BLERemoteCharacteristic *pStateCharacteristic;
 
-ExperienceEffects experience(false);
+ExperienceEffects experience(true);
 
 TaskManager task_manager;
 

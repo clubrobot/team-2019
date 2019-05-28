@@ -8,10 +8,9 @@ ExperienceEffects::ExperienceEffects(boolean electron)
 	isOnTop = false;
 	isElectron = electron;
 	FastLED.addLeds<NEOPIXEL, PINPIXEL>(leds, NUMPIXEL);
-	pinMode(BUILTIN_LED, OUTPUT);
+
 	pinMode(GO_BACK, INPUT_PULLUP);
 	pinMode(GO_FORWARD, INPUT_PULLUP);
-	digitalWrite(BUILTIN_LED, LOW);
 	pinMode(INTERRUPT, INPUT_PULLUP);
 }
 
@@ -66,7 +65,6 @@ void ExperienceEffects::connected()
         }
         FastLED.show();
     }
-	digitalWrite(BUILTIN_LED, HIGH);
 }
 
 void ExperienceEffects::start()
