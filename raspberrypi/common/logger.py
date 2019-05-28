@@ -14,10 +14,9 @@ class Logger:
         self.initial_time = time()
         self.exec_param = exec_param
         if exec_param > 0:
-            self.file = open(file_name, "w") if file_name is not None else open("/tmp/log-{}-{}-{}.T".format(*asctime().split(" ")[1:4]),"w")
+            self.file = open(file_name, "a") if file_name is not None else open("/tmp/log-{}-{}-{}.T".format(*asctime().split(" ")[1:4]),"w")
         else:
             self.file = None
-
 
     def __call__(self, *args, **kwargs):
         self.write(*args, **kwargs)
@@ -38,6 +37,7 @@ class Logger:
             for key, content in kwargs.items():
                 self.file.write("\n{} : ".format(str(key)))
                 self.file.write("\t", str(content))
+
 
     def close(self):
         if self.file is not None :  self.file.close()

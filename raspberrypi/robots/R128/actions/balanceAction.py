@@ -50,10 +50,10 @@ class BalanceAfter6(Actionnable):
 
     def moving(self):
         if self.master.is_active():
-            self.logger(" En attente du mutex balance")
+            self.log(" En attente du mutex balance")
             while not self.master.get_ressource("balance"):
                 time.sleep(0.4)
-            self.logger("mutex récupéré")
+            self.log("mutex récupéré")
 
         self.wheeledbase.lookaheadbis.set(100.0)
         self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
@@ -230,7 +230,7 @@ class BalanceAfter6(Actionnable):
             self.handeledPuck = self.arm.tank.get_puck()
         
     def after(self):
-        self.logger("don du mutex balance")
+        self.log("don du mutex balance")
         self.master.release_ressource("balance")
 
     #override
@@ -280,10 +280,10 @@ class BalanceAfter3(Actionnable):
 
     def moving(self):
         if self.master.is_active():
-            self.logger("En attente du mutex balance")
+            self.log("En attente du mutex balance")
             while not self.master.get_ressource("balance"):
                 time.sleep(0.4)
-            self.logger("Mutex récupéré !")
+            self.log("Mutex récupéré !")
 
 
 
@@ -294,10 +294,10 @@ class BalanceAfter3(Actionnable):
         
         #self.wheeledbase.wait()
         if self.master.is_active():
-            self.logger("En attente du mutex passage")
+            self.log("En attente du mutex passage")
             while not self.master.get_ressource("passage"):
                 time.sleep(0.4)
-            self.logger("mutex récupéré !")
+            self.log("mutex récupéré !")
 
 
         if self.side == self.YELLOW:
@@ -306,7 +306,7 @@ class BalanceAfter3(Actionnable):
         else:
             self.mover.purepursuit(self.path, safe_mode=True, direction='backward')
             #self.wheeledbase.wait()
-        self.logger("don du mutex passage")
+        self.log("don du mutex passage")
         self.master.release_ressource("passage")
 
         self.mover.turnonthespot(pi/2)
@@ -366,7 +366,7 @@ class BalanceAfter3(Actionnable):
             self.handeledPuck2 = self.arm2.sucker.get_puck()
         
     def after(self):
-        self.logger("Don du mutex balance")
+        self.log("Don du mutex balance")
         self.master.release_ressource("balance")
 
 

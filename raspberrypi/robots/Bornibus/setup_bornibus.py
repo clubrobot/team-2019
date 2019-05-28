@@ -15,7 +15,8 @@ from robots.get_robot_name import *
 from robots.wheeledbase_manager import *
 from beacons.global_sync import ClientGS
 from robots.wheeledbase_manager import * 
-log = Logger(Logger.SHOW)
+
+log = Logger(Logger.BOTH, file_name="/home/pi/logs/start.log")
 
 led1 = LEDMatrix(manager, 1)
 led2 = LEDMatrix(manager, 2)
