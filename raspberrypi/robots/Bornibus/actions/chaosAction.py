@@ -68,6 +68,7 @@ class chaos(Actionnable):
             self.pushers.down_l()
             self.mover.turnonthespot(pi/2)
 
+        self.wheeledbase.linvel_KP.set(25)
         self.wheeledbase.max_linvel.set(300)
         self.display.happy()
 

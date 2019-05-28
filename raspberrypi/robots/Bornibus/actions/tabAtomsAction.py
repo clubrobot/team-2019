@@ -33,15 +33,6 @@ class tabAtoms(Actionnable):
 
     def moving(self):
         self.wheeledbase.reset_parameters()
-        # self.wheeledbase.max_linvel.set(700)
-        # self.wheeledbase.max_linacc.set(500.0)
-        # self.wheeledbase.max_lindec.set(700.0)
-        # self.wheeledbase.max_angvel.set(10)
-        # self.wheeledbase.lookahead.set(150.0)
-        # self.wheeledbase.lookahead.set(150.0)
-        # self.wheeledbase.right_wheel_maxPWM.set(1)
-        # self.wheeledbase.left_wheel_maxPWM.set(1)
-
     
         # Vers palets
         self.log("TABATOMS ACTION : ", "Vers palets")
