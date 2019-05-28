@@ -104,6 +104,7 @@ class Mover:
             self.wheeledbase.start_purepursuit()
             self.interupted_status.clear()
             self.interupted_lock.release()
+            self.logger("Mover : ", "Interuption end")
             return
 
 
@@ -200,6 +201,7 @@ class Mover:
             self.wheeledbase.start_purepursuit()
             self.interupted_status.clear()
             self.interupted_lock.release()
+            self.logger("Mover : ", "Interuption end")
             return
 
 
