@@ -14,7 +14,7 @@ class Logger:
         self.initial_time = time()
         self.exec_param = exec_param
         if exec_param > 0:
-            self.file = open(file_name, "a", newline='\n') if file_name is not None else open("/tmp/log-{}-{}-{}.T".format(*asctime().split(" ")[1:4]),"w")
+            self.file = open(file_name, "a", newline='\n', encoding="utf-8") if file_name is not None else open("/tmp/log-{}-{}-{}.T".format(*asctime().split(" ")[1:4]),"w")
         else:
             self.file = None
 
@@ -36,6 +36,7 @@ class Logger:
             for arg in args: self.file.write(" {}".format(str(arg)))
             for key, content in kwargs.items():
                 self.file.write("\n{} : ".format(str(key)), "\t", str(content))
+            self.file.write("\n")
             self.file.flush()
 
 

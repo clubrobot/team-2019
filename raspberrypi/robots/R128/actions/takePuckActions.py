@@ -140,13 +140,13 @@ class TakePuckSync(Actionnable):
             # else go to point
             self.wheeledbase.lookaheadbis.set(5)
             if self.master.is_active():
-                self.logger("En attente du mutex passage")
+                self.log("En attente du mutex passage")
                 while not self.master.get_ressource("passage"):
                     time.sleep(0.4)
-                self.logger("Mutex récupéré !")
+                self.log("Mutex récupéré !")
             self.point = (self.actionPoint.point[0] - offset_x, self.actionPoint.point[1])
             self.mover.goto(*self.point, theta=self.actionPoint.theta, safe_mode=True)
-            self.logger("don du mutex passage")
+            self.log("don du mutex passage")
             self.master.release_ressource("passage")
             
     def realize(self):
@@ -451,7 +451,7 @@ class TakePuckSingle(Actionnable):
     def realize(self):
         
         if self.master.is_active():
-            self.logger("En attente du mutex balance")
+            self.log("En attente du mutex balance")
             while not  self.master.get_ressource("balance"):
                 time.sleep(0.4)
 
