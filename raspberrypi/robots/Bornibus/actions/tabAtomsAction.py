@@ -46,7 +46,7 @@ class tabAtoms(Actionnable):
         # Vers palets
         self.log("TABATOMS ACTION : ", "Vers palets")
 
-        self.mover.goto(*self.points["Tab2"], direction='forward')
+        self.mover.goto(*self.points["Tab2"], safe_mode=True, direction='forward')
         self.display.sleep()
 
     def realize(self):

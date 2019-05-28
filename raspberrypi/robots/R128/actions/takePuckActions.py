@@ -100,16 +100,16 @@ class TakePuckSync(Actionnable):
 
             # Start Path
             if self.side == self.YELLOW:
-                self.mover.purepursuit(self.path, direction = 'forward')
+                self.mover.purepursuit(self.path, safe_mode=True, direction = 'forward')
             else:
-                self.mover.purepursuit(self.path, direction = 'backward')
+                self.mover.purepursuit(self.path, safe_mode=True, direction = 'backward')
             #self.wheeledbase.wait()
 
             if self.RECALAGE is self.WALL:
                 self.log("RECALAGE : face au mur en x")
                 # prepare recalage
-                self.wheeledbase.turnonthespot(pi)
-                self.wheeledbase.wait()
+                self.mover.turnonthespot(pi)
+                #self.wheeledbase.wait()
                 # recalage
 
                 self.log("RECALAGE : fonce dans le mur")
@@ -130,7 +130,7 @@ class TakePuckSync(Actionnable):
                 self.arm2.move(PREPARE_TAKING_POS_ROAD)
 
                 self.log("RECALAGE : Se repositionne correctement")
-                self.wheeledbase.goto(*self.point, theta=pi/2, direction = 'forward')
+                self.mover.goto(*self.point, theta=pi/2, safe_mode=True, direction = 'forward')
 
             while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
                 time.sleep(0.1)
@@ -139,13 +139,13 @@ class TakePuckSync(Actionnable):
             # else go to point
             self.wheeledbase.lookaheadbis.set(5)
             self.point = (self.actionPoint.point[0] - offset_x, self.actionPoint.point[1])
-            self.wheeledbase.goto(*self.point, theta=self.actionPoint.theta)
+            self.mover.goto(*self.point, theta=self.actionPoint.theta, safe_mode=True)
 
     def realize(self):
         # starting two pump
         self.arm1.start_pump()
         self.arm2.start_pump()
-
+        self.display.sleep(duration=4)
         # prepare to taking
         self.arm1.move(PREPARE_TAKING_POS_STATIC)
         self.arm2.move(PREPARE_TAKING_POS_STATIC)
@@ -159,7 +159,7 @@ class TakePuckSync(Actionnable):
         self.arm2.move(arm2_pos)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
-
+        self.display.happy()
         # get the current time
         self.init_time = time.time()
 
@@ -357,11 +357,11 @@ class TakePuckSingle(Actionnable):
     def moving(self):
         # reach little distributor
         if self.side == self.YELLOW:
-            self.wheeledbase.purepursuit(self.path, direction = 'backward')
+            self.mover.purepursuit(self.path, direction = 'backward')
         else:
-            self.wheeledbase.purepursuit(self.path, direction = 'forward')
+            self.mover.purepursuit(self.path, direction = 'forward')
         
-        self.wheeledbase.wait()
+        #self.wheeledbase.wait()
 
         # correct robot orientation
         if self.side == self.YELLOW:
@@ -552,6 +552,8 @@ class TakePuckSyncMaintain(Actionnable):
 
         self.wheeledbase    = daughter_cards['wheeledbase']
 
+        self.display        = daughter_cards["display"]
+
         # action Points
         self.point          = self.geogebra.get('Distrib{}_{}'.format(self.side,self.distrib_pos))
         self.actionPoint    = ActPoint(self.point, pi/2)
@@ -581,7 +583,7 @@ class TakePuckSyncMaintain(Actionnable):
         # starting two pump
         self.arm1.start_pump()
         self.arm2.start_pump()
-
+        self.display.sleep(duration=4)
         # prepare to taking
         self.arm1.move(PREPARE_TAKING_POS_STATIC)
         self.arm2.move(PREPARE_TAKING_POS_STATIC)
@@ -596,7 +598,7 @@ class TakePuckSyncMaintain(Actionnable):
         self.arm2.move(arm2_pos)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
-
+        self.display.happy()
         # get the current time
         self.init_time = time.time()
 

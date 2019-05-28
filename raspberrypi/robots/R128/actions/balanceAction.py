@@ -283,21 +283,21 @@ class BalanceAfter3(Actionnable):
 
 
         if self.side == self.YELLOW:
-            self.wheeledbase.turnonthespot(-pi)
+            self.mover.turnonthespot(-pi)
         else:
-            self.wheeledbase.turnonthespot(0)
+            self.mover.turnonthespot(0)
         
-        self.wheeledbase.wait()
+        #self.wheeledbase.wait()
 
         if self.side == self.YELLOW:
-            self.wheeledbase.purepursuit(self.path, direction='forward')
-            self.wheeledbase.wait()
+            self.mover.purepursuit(self.path, safe_mode=True, direction='forward')
+            #self.wheeledbase.wait()
         else:
-            self.wheeledbase.purepursuit(self.path, direction='backward')
-            self.wheeledbase.wait()
+            self.mover.purepursuit(self.path, safe_mode=True, direction='backward')
+            #self.wheeledbase.wait()
 
-        self.wheeledbase.turnonthespot(pi/2)
-        self.wheeledbase.wait()
+        self.mover.turnonthespot(pi/2)
+        #self.wheeledbase.wait()
 
         if self.side == self.YELLOW:
             self.wheeledbase.set_velocities(50,0)
@@ -315,7 +315,7 @@ class BalanceAfter3(Actionnable):
         self.arm2.move(BALANCE)
         while not (self.arm1.is_arrived()and self.arm2.is_arrived()):
             time.sleep(0.1)
-
+        self.display.surprised(duration=0.5)
         if not self.arm1.get_atmosphere_pressure():
             self.display.addPoints(self.handeledPuck1.getPoints().Balance)
             self.log("BALANCE3", "Add {} points".format(self.handeledPuck1.getPoints().Balance))
