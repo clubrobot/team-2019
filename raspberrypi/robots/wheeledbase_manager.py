@@ -56,7 +56,7 @@ class Mover:
         self.running = Event()
         self.direction = "forward"
         self.params = {}
-        self.goal = (0, 0, 0)
+        self.goal = (0, 0)
         self.nb_try = 0
         self.timeout = 1
         self.try_limit = 4
@@ -350,7 +350,7 @@ class Mover:
     
     def turnonthespot_dir(self, theta, try_limit=3, direction="clock"):
         self.enable_sensors()
-        self.goal = (*self.wheeledbase.get_position()[:-1], theta)
+        self.goal = self.wheeledbase.get_position()[:-1]
         self.nb_try = 0
         self.try_limit = try_limit
         arrived = False
@@ -388,7 +388,7 @@ class Mover:
   
     def turnonthespot(self, theta, try_limit=3, way="forward"):
         self.enable_sensors()
-        self.goal = (*self.wheeledbase.get_position()[:-1], theta)
+        self.goal = self.wheeledbase.get_position()[:-1]
         self.nb_try = 0
         self.try_limit = try_limit
         arrived = False
@@ -427,7 +427,7 @@ class Mover:
 
     def turnonthespot_hard(self, theta, try_limit=3, way="forward"):
         self.enable_sensors()
-        self.goal = (*self.wheeledbase.get_position()[:-1], theta)
+        self.goal = self.wheeledbase.get_position()[:-1]
         self.nb_try = 0
         self.try_limit = try_limit
         arrived = False
