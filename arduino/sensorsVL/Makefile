@@ -1,5 +1,5 @@
 BOARD_UUID = sensorsA
-#BOARD_UUID = sensorsB
+BOARD_UUID = sensorsB
 #BOARD_UUID = sensorsC
 #BOARD_UUID = sensorsD
 BOARD_TAG  = nano

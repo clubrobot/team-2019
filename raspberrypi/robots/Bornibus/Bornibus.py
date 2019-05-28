@@ -118,6 +118,7 @@ class Bornibus(Automaton):
         disp.points = 0
         disp.start()
         pass_gold = False
+
         self.tam.start()
 
         for act in self.action_list:
