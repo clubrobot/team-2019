@@ -32,6 +32,12 @@ class SensorsIR(SecureSerialTalksProxy):
     def get_range2(self):
         return self.get_both_range()[1]
 
+    def is_ready(self):
+        try:
+            return self.is_connected
+        except:
+            return False
+
     def check_errors(self):
         deser = self.execute(CHECK_ERROR_OPCODE)
         error1 = deser.read(SHORT)

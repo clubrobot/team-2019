@@ -11,6 +11,7 @@ from daughter_cards.electron import *
 from beacons.global_sync import ClientGS
 from daughter_cards.sensors_IR import *
 from robots.sensors_manager import *
+from robots.wheeledbase_manager import * 
 import time
 
 log = Logger(Logger.SHOW)
@@ -28,16 +29,16 @@ sensorsB = SensorsIR(manager, uuid="sensorsB")
 sensorsC = SensorsIR(manager, uuid="sensorsC")
 sensorsD = SensorsIR(manager, uuid="sensorsD")
 
-sensorsFront = [Sensor(wheeledbase, "Avant gauche",   sensorsD.get_range2, (110, 110), pi/4, sensorsD.is_connected),
-                Sensor(wheeledbase, "Avant      ",    sensorsD.get_range1, (140, -50), 0, sensorsD.is_connected),
-                Sensor(wheeledbase, "Avant droit",    sensorsC.get_range2, (110, -110), -pi/4, sensorsC.is_connected)]
+sensorsFront = [Sensor(wheeledbase, "Avant gauche",   sensorsD.get_range2, (110, 110), pi/4, sensorsD.is_ready()),
+                Sensor(wheeledbase, "Avant      ",    sensorsD.get_range1, (140, -50), 0, sensorsD.is_ready()),
+                Sensor(wheeledbase, "Avant droit",    sensorsC.get_range2, (110, -110), -pi/4, sensorsC.is_ready())]
 
-sensorsLat =   [Sensor(wheeledbase, "Lateral avant",  sensorsC.get_range1, (60, -130), -pi/2, sensorsC.is_connected),
-                Sensor(wheeledbase, "Lateral arriere",sensorsB.get_range1, (-60, -130), -pi/2, sensorsB.is_connected)]
+sensorsLat =   [Sensor(wheeledbase, "Lateral avant",  sensorsC.get_range1, (60, -130), -pi/2, sensorsC.is_ready()),
+                Sensor(wheeledbase, "Lateral arriere",sensorsB.get_range1, (-60, -130), -pi/2, sensorsB.is_ready())]
 
-sensorsBack  = [Sensor(wheeledbase, "Arrière droit",  sensorsB.get_range2, (-110, -110), -3*pi/4, sensorsB.is_connected),
-                Sensor(wheeledbase, "Arrière",        sensorsA.get_range1, (-110, -50), pi, sensorsA.is_connected),
-                Sensor(wheeledbase, "Arrière gauche", sensorsA.get_range2, (-110, 110), 3*pi/4, sensorsA.is_connected)]
+sensorsBack  = [Sensor(wheeledbase, "Arrière droit",  sensorsB.get_range2, (-110, -110), -3*pi/4, sensorsB.is_ready()),
+                Sensor(wheeledbase, "Arrière",        sensorsA.get_range1, (-110, -50), pi, sensorsA.is_ready()),
+                Sensor(wheeledbase, "Arrière gauche", sensorsA.get_range2, (-110, 110), 3*pi/4, sensorsA.is_ready())]
 sens_manager = SensorsManager(wheeledbase, sensorsFront, sensorsBack, sensorsLat)
 
 import os
@@ -70,6 +71,15 @@ def init_robot():
 
 if __name__ == "__main__":
         from robots.arm_recalibration import *  
-        a = ArmRecalibration(sensorsLat,1,log)
+        #a = ArmRecalibration(sensorsLat,1,log)
         init_robot()
-
+        daughter_cards = dict( wheeledbase     = wheeledbase, 
+                                    armFront        = armFront,
+                                    armBack         = armBack,
+                                    display         = disp,
+                                    master          = beacons)
+        mover = Mover(daughter_cards, log, sensorsFront, sensorsBack)
+        wheeledbase.set_position(780, 2595, -pi/2)
+        while True:
+                mover.goto(780,1000,safe_mode=True)
+                mover.goto(780,2595,safe_mode=True)
