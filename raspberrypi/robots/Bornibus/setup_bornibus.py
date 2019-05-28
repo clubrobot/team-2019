@@ -66,13 +66,3 @@ def init_robot():
     wheeledbase.stop()
 
 
-if __name__ == "__main__":
-    init_robot()
-    wheeledbase.reset_parameters()
-    wheeledbase.max_linvel.set(300)
-    wheeledbase.set_position(780, 2595, -pi/2)
-    #wheeledbase_manager = Mover(wheeledbase, print,sensorsFront, sensorsBack)
-    wheeledbase.purepursuit([[780,2500],[780,2800],[780,500]])
-    wheeledbase.wait()
-    
-
