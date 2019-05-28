@@ -43,6 +43,7 @@ sensorsBack  = [Sensor(wheeledbase, "Arrière droit", sensorsA.get_range2, (-50,
 try:
     beacons = ClientGS(1)
     beacons.connect()
+    beacons.reset_ressources()
 except TimeoutError:
     pass
     
