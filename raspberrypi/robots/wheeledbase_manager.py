@@ -93,14 +93,13 @@ class Mover:
             return
         self.interupted_status.set()
         self.wheeledbase.set_velocities(0,0)
-        sleep(0.2)
+        sleep(0.4)
         if self.safe_mode:
             self.logger("MOVER : ", "Just wait a little (Safe mode ON) !")
             obstacle = True
             while obstacle:
                 sleep(1)
                 obstacle  = self.front_center.get_dist() if self.direction == Mover.FORWARD else self.back_center.get_dist()
-                print("lseofsefsefse", obstacle)
                 if obstacle: self.logger("MOVER : ", " Steel an obstacle on path, wait 1s more !")
             self.wheeledbase.start_purepursuit()
             self.interupted_status.clear()
@@ -114,11 +113,15 @@ class Mover:
 
         if hypot(x-self.goal[0],y-self.goal[1])<300:
             # Si on est proche de l'arrivé on fait rien 
-            sleep(1.5)
-            self.nb_try +=1
-            self.logger("MOVER : Try number {}, {} tries remaning",self.nb_try, 4)
-            if self.nb_try>self.try_limit:
-                self.goto_interrupt.set()
+            obstacle = True
+            while obstacle and self.nb_try<=self.try_limit :
+                self.nb_try +=1
+                sleep(1)
+                self.logger("MOVER : Try number {}, {} tries remaning",self.nb_try, 4)
+                obstacle  = self.front_center.get_dist() if self.direction == Mover.FORWARD else self.back_center.get_dist()
+                if obstacle: self.logger("MOVER : ", " Steel an obstacle on the objectif!")
+                if self.nb_try>self.try_limit:
+                    self.goto_interrupt.set()
             self.interupted_status.clear()
             self.interupted_lock.release()
             return 
@@ -282,9 +285,9 @@ class Mover:
 
     def purepursuit(self, path, nb_try=4, safe_mode=False, **params):
         self.params = params
-        self.wheeledbase.max_lindec.set(2000000)
+        #self.wheeledbase.max_lindec.set(2000000)
         #self.wheeledbase.max_linacc.set(2000)
-        self.wheeledbase.max_linvel.set(200)
+        #self.wheeledbase.max_linvel.set(200)
         self.goal = path[-1]
         self.path = path
         self.nb_try = 0
