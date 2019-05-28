@@ -28,15 +28,14 @@ class Mover:
     MINIMUM_WALL_DIST = 200
     AVOIDING_ZONE = ((100, 1600), (0, 3000))
     BALANCE_SEP_ZONE = ((1350, 2000), (1400, 1600))
-
     def __init__(self, daughter_cards, log_meth, sensorsFront, sensorsBack):
         self.wheeledbase = daughter_cards["wheeledbase"]
         self.display = daughter_cards["display"]
 
         self.logger = log_meth
         self.front_center = SensorListener(sensorsFront[1])
-        self.front_left = SensorListener(sensorsFront[2], threshold=100)
-        self.front_right = SensorListener(sensorsFront[0], threshold=100)
+        self.front_left = SensorListener(sensorsFront[2], threshold=80)
+        self.front_right = SensorListener(sensorsFront[0], threshold=80)
 
         self.back_center = SensorListener(sensorsBack[1])
         self.back_left = SensorListener(sensorsBack[2], threshold=80)
@@ -60,8 +59,25 @@ class Mover:
         self.timeout = 1
         self.try_limit = 4
         self.safe_mode = False
+        self.disable_sensors()
 
+    def disable_sensors(self):
+        self.front_center.disable()
+        self.front_left.disable()
+        self.front_right.disable()
+        self.back_center.disable()
+        self.back_left.disable()
+        self.back_right.disable()
 
+    def enable_sensors(self, direction=None):
+        if direction is None or direction == Mover.FORWARD:
+            self.front_center.enable()
+            self.front_left.enable()
+            self.front_right.enable()
+        if direction is None or direction == Mover.BACKWARD: 
+            self.back_center.enable()
+            self.back_left.enable()
+            self.back_right.enable()
 
     def front_obstacle(self):
         if (self.goto_interrupt.is_set()):
@@ -72,14 +88,22 @@ class Mover:
             self.logger("MOVER : ", "Abort !")
             return
         self.interupted_status.set()
+        self.wheeledbase.set_velocities(0,0)
+        sleep(0.2)
         if self.safe_mode:
             self.logger("MOVER : ", "Just wait a little (Safe mode ON) !")
-            self.wheeledbase.stop()
-            sleep(1)
+            obstacle = True
+            while obstacle:
+                sleep(1)
+                obstacle  = self.front_center.get_dist() if self.direction == Mover.FORWARD else self.back_center.get_dist()
+                print("lseofsefsefse", obstacle)
+                if obstacle: self.logger("MOVER : ", " Steel an obstacle on path, wait 1s more !")
             self.wheeledbase.start_purepursuit()
             self.interupted_status.clear()
             self.interupted_lock.release()
             return
+
+
         self.wheeledbase.stop()
         self.display.angry()
         x, y, theta = self.wheeledbase.get_position()
@@ -138,6 +162,7 @@ class Mover:
         self.interupted_status.clear()
         self.interupted_lock.release()
 
+
     def lateral_obstacle(self, side):
         if (self.goto_interrupt.is_set()):
             return
@@ -148,13 +173,13 @@ class Mover:
             self.logger("MOVER : ", "Abort !")
             return
         self.interupted_status.set()
+        self.wheeledbase.set_velocities(0,0)
+        sleep(0.1)
         self.wheeledbase.stop()
-
         self.display.angry()
 
         x, y, theta = self.wheeledbase.get_position()
         if self.safe_mode:
-            self.wheeledbase.stop()
             self.logger("MOVER : ", "Just wait a little (Safe mode ON) !")
             sleep(1)
             self.wheeledbase.start_purepursuit()
@@ -227,10 +252,12 @@ class Mover:
         self.interupted_status.clear()
         self.goto_interrupt.clear()
         self.params ={}
+        self.disable_sensors()
         self.nb_try = 0
         self.try_limit = 4
 
     def goto(self, x, y, safe_mode=False,**params):
+        
         if params.get("direction", None) is None:
             x0, y0, theta0 = self.wheeledbase.get_position()
             if math.cos(math.atan2(y - y0, x - x0) - theta0) >= 0:
@@ -239,11 +266,14 @@ class Mover:
                 params["direction"] = 'backward'
         self.purepursuit([self.wheeledbase.get_position()[:2], (x, y)],safe_mode=safe_mode, **params)
         if not params.get("theta", None)  is None:
-            self.wheeledbase.turnonthespot(params["theta"])
-            self.wheeledbase.wait()
+            self.turnonthespot(params["theta"])
+            #self.wheeledbase.wait()
 
-    def purepursuit(self, path, nb_try=4,safe_mode=False, **params):
+    def purepursuit(self, path, nb_try=4, safe_mode=False, **params):
         self.params = params
+        self.wheeledbase.max_lindec.set(2000000)
+        #self.wheeledbase.max_linacc.set(2000)
+        self.wheeledbase.max_linvel.set(200)
         self.goal = path[-1]
         self.path = path
         self.nb_try = 0
@@ -266,6 +296,7 @@ class Mover:
             self.left_flag.bind(self.back_left.signal)
             self.right_flag.bind(self.back_right.signal)
 
+        self.enable_sensors(direction=self.direction)
         self.isarrived = False
         x, y, _ = self.wheeledbase.get_position()
         self.logger("MOVER : ", "path ", self.path)
@@ -288,6 +319,7 @@ class Mover:
                 if self.safe_mode:
                     sleep(0.2)
                     self.wheeledbase.purepursuit(self.path, **self.params)
+                    self.interupted_lock.release()
                     continue
                 x, y, _ = self.wheeledbase.get_position()
                 vel, ang = self.wheeledbase.get_velocities_wanted(True)
@@ -306,6 +338,7 @@ class Mover:
             raise PositionUnreachable()
     
     def turnonthespot_dir(self, theta, try_limit=3, direction="clock"):
+        self.enable_sensors()
         self.goal = (*self.wheeledbase.get_position()[:-1], theta)
         self.nb_try = 0
         self.try_limit = try_limit
@@ -338,10 +371,12 @@ class Mover:
         if self.try_limit>0:
             self.wheeledbase.left_wheel_maxPWM.set(1)
             self.wheeledbase.right_wheel_maxPWM.set(1)
+        self.disable_sensors()
         if  self.nb_try>=self.try_limit:
             raise PositionUnreachable()
   
     def turnonthespot(self, theta, try_limit=3, way="forward"):
+        self.enable_sensors()
         self.goal = (*self.wheeledbase.get_position()[:-1], theta)
         self.nb_try = 0
         self.try_limit = try_limit
@@ -372,6 +407,7 @@ class Mover:
                             self.wheeledbase.left_wheel_maxPWM.set(0.5)
                             self.wheeledbase.right_wheel_maxPWM.set(0.5) 
                             sleep(1)
+        self.disable_sensors()
         if self.try_limit>0:
                 self.wheeledbase.left_wheel_maxPWM.set(1)
                 self.wheeledbase.right_wheel_maxPWM.set(1)             
@@ -379,6 +415,7 @@ class Mover:
             raise PositionUnreachable()
 
     def turnonthespot_hard(self, theta, try_limit=3, way="forward"):
+        self.enable_sensors()
         self.goal = (*self.wheeledbase.get_position()[:-1], theta)
         self.nb_try = 0
         self.try_limit = try_limit
@@ -401,7 +438,7 @@ class Mover:
 
                 sleep(0.4)
                 self.wheeledbase.stop()
-
+        self.disable_sensors()
         if self.try_limit>0:
                 self.wheeledbase.left_wheel_maxPWM.set(1)
                 self.wheeledbase.right_wheel_maxPWM.set(1)             
@@ -426,6 +463,7 @@ class Mover:
         self.interupted_lock.release()
 
     def withdraw(self, x, y, direction="forward", timeout=5):
+        self.enable_sensors()
         w_x, w_y, _ = self.wheeledbase.get_position()
         self.goal = (w_x + x, w_y + y)
         self.timeout = timeout

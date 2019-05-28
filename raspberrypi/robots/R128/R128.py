@@ -114,6 +114,7 @@ class R128(Automaton):
         self.tam.stop()
         sens_manager.stop()
         wheeledbase.stop()
+        self.display.love(duration=10)
         self.display.stop()
         armFront.stop_pump()
         armBack.stop_pump()

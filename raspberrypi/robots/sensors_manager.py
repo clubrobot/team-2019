@@ -7,6 +7,7 @@ import math
 from common.sync_flag_signal import Signal
 
 
+
 class SensorListener(Thread):
     def __init__(self, sensors, timestep = 0.05, threshold = 300):
         Thread.__init__(self)
@@ -18,10 +19,23 @@ class SensorListener(Thread):
         self.threshold = threshold
         self.error    = 0
         self.start()
+        self.run_event = Event()
+        self.run_event.set()
+
+    def enable(self):
+        self.run_event.set()
+    
+    def disable(self):
+        self.run_event.clear()
+
+    def get_dist(self):
+        return self.getter(self.threshold)
 
     def run(self):
         while not self.stop.is_set():
             time.sleep(self.timestep)
+            if not self.run_event.is_set():
+                self.run_event.wait()
             try:
                 obstacle = self.getter(self.threshold)
             except TimeoutError:
