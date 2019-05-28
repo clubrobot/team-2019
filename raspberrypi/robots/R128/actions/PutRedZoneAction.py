@@ -71,7 +71,7 @@ class PutRedZone(Actionnable):
 
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
-
+        self.display.happy()
         if not self.arm1.get_atmosphere_pressure():
             self.display.addPoints(self.handeledPuck1.getPoints().Tab)
             self.log("REDZONE", "Add {} points".format(self.handeledPuck1.getPoints().Tab))
@@ -100,7 +100,7 @@ class PutRedZone(Actionnable):
             self.arm1.move(self.TankPos[self.arm1.tank.index()-1])
             while not self.arm1.is_arrived():
                 time.sleep(0.1)
-
+            self.display.sleep(duration=0.5)
             while not self.arm1TakingState.is_set():
                 if not self.arm1.get_atmosphere_pressure():
                     # move after take
