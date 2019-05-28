@@ -35,9 +35,7 @@ class Logger:
             self.file.write("[{0:.3g}] :".format(time() - self.initial_time))
             for arg in args: self.file.write(" {}".format(str(arg)))
             for key, content in kwargs.items():
-                self.file.write("\n{} : ".format(str(key)))
-                self.file.write("\t", str(content))
-                self.file.write("\n")
+                self.file.write("\n{} : ".format(str(key)), "\t", str(content), "\n")
             self.file.flush()
 
 
