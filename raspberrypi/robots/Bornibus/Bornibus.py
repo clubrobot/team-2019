@@ -69,18 +69,13 @@ class Bornibus(Automaton):
         self.tabAtomsAct    = tabAtoms(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
         self.chaosAct       = chaos(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
 
-
         self.action_list = [
-            self.chaosAct
+            self.detectorAct,
+            self.goldeniumAct,
+            self.chaosAct,
+            self.tabAtomsAct,
+            self.balanceGAct,
         ]
-
-        # self.action_list = [
-        #     self.detectorAct,
-        #     self.goldeniumAct,
-        #     self.chaosAct,
-        #     self.tabAtomsAct,
-        #     self.balanceGAct,
-        # ]
 
         for sensor in sensorsBack+sensorsFront:
             sensor.set_side(self.side)
@@ -123,7 +118,6 @@ class Bornibus(Automaton):
         disp.points = 0
         disp.start()
         pass_gold = False
-        gripper.close()
 
         self.tam.start()
 
