@@ -3,8 +3,12 @@
 #include <BLEUtils.h>
 #include <BLEServer.h>
 
-extern BLECharacteristic *pStartCharacteristic;
-extern BLECharacteristic *pIsOnTopCharacteristic;
+
+extern BLECharacteristic *pStartElectronCharacteristic;
+extern BLECharacteristic *pStartExperienceCharacteristic;
+
+extern BLECharacteristic *pStateElectronCharacteristic;
+extern BLECharacteristic *pStateExperienceCharacteristic;
 
 extern boolean deviceConnected;
 
@@ -15,17 +19,33 @@ void IS_CONNECTED(SerialTalks &inst, Deserializer &input, Serializer &output)
 
 void START(SerialTalks &inst, Deserializer &input, Serializer &output)
 {
-    pStartCharacteristic->setValue("start\0");
+    pStartElectronCharacteristic->setValue("ON\0");
+    pStartElectronCharacteristic->notify(); 
+
+    pStartExperienceCharacteristic->setValue("ON\0");
+    pStartExperienceCharacteristic->notify(); 
 }
 
-void ISONTOP(SerialTalks &inst, Deserializer &input, Serializer &output)
+void EXPERIENCE_STATE(SerialTalks &inst, Deserializer &input, Serializer &output)
 {
-    if(pIsOnTopCharacteristic->getValue().c_str()=="top")
+    if(pStateExperienceCharacteristic->getValue().c_str()== "RUN\0")
     {
         output.write<bool>(1);
     }
-	else
+    else
     {
         output.write<bool>(0);
     }
 }
+void ELECTRON_STATE(SerialTalks &inst, Deserializer &input, Serializer &output)
+{
+    if(pStateElectronCharacteristic->getValue().c_str()== "RUN\0")
+    {
+        output.write<bool>(1);
+    }
+    else
+    {
+        output.write<bool>(0);
+    }
+}
+
