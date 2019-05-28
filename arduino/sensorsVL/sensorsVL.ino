@@ -13,10 +13,15 @@ VL53L0X s2 = VL53L0X();
 VL6180X s3 = VL6180X();
 VL6180X s4 = VL6180X();
 
-uint16_t range_1 = 3000;
-uint16_t range_2 = 3000;
-uint16_t range_3 = 255;
-uint16_t range_4 = 255;
+uint16_t range_1[3] = {3000, 3000, 3000};
+uint16_t range_2[3] = {3000, 3000, 3000};
+uint16_t range_3[3] = {255, 255, 255};
+uint16_t range_4[3] = {255, 255, 255};
+uint16_t range_1_med = 3000;
+uint16_t range_2_med = 3000;
+uint16_t range_3_med = 255;
+uint16_t range_4_med = 255;
+uint8_t tabPos = 0;
 
 bool failedToBoot[] = {true, true, true, true};
 
@@ -24,6 +29,25 @@ void enableSensor(uint8_t shutpin, bool mode);
 
 void talksExecuteWrapper(){
     talks.execute();
+}
+
+uint16_t median3(uint16_t a, uint16_t b, uint16_t c)
+{
+    uint16_t middle;
+
+    if ((a <= b) && (a <= c))
+    {
+        middle = (b <= c) ? b : c;
+    }
+    else if ((b <= a) && (b <= c))
+    {
+        middle = (a <= c) ? a : c;
+    }
+    else
+    {
+        middle = (a <= b) ? a : b;
+    }
+    return middle;
 }
 
 void setup() {
@@ -93,16 +117,32 @@ void setup() {
     //Set the period but not too low
     s3.startRangeContinuous(60);
     s4.startRangeContinuous(60);
+
+    for(int i = 0; i<3; i++){
+        range_1[i] = s1.readRangeContinuousMillimeters(talksExecuteWrapper);
+        range_2[i] = s2.readRangeContinuousMillimeters(talksExecuteWrapper);
+        range_3[i] = s3.readRangeContinuousMillimeters(talksExecuteWrapper);
+        range_4[i] = s4.readRangeContinuousMillimeters(talksExecuteWrapper);
+    }
+    range_1_med = median3(range_1[0], range_1[1], range_1[2]);
+    range_2_med = median3(range_2[0], range_2[1], range_2[2]);
+    range_3_med = median3(range_3[0], range_3[1], range_3[2]);
+    range_4_med = median3(range_4[0], range_4[1], range_4[2]);
 }
 
 
 void loop() {
   talks.execute();
   //Retrieve last measure and execute SerialTalks loop while waiting for new data
-  range_1 = s1.readRangeContinuousMillimeters(talksExecuteWrapper);
-  range_2 = s2.readRangeContinuousMillimeters(talksExecuteWrapper);
-  range_3 = s3.readRangeContinuousMillimeters(talksExecuteWrapper);
-  range_4 = s4.readRangeContinuousMillimeters(talksExecuteWrapper);
+  range_1[tabPos] = s1.readRangeContinuousMillimeters(talksExecuteWrapper);
+  range_2[tabPos] = s2.readRangeContinuousMillimeters(talksExecuteWrapper);
+  range_3[tabPos] = s3.readRangeContinuousMillimeters(talksExecuteWrapper);
+  range_4[tabPos] = s4.readRangeContinuousMillimeters(talksExecuteWrapper);
+  tabPos = (tabPos + 1) % 3;
+  range_1_med = median3(range_1[0], range_1[1], range_1[2]);
+  range_2_med = median3(range_2[0], range_2[1], range_2[2]);
+  range_3_med = median3(range_3[0], range_3[1], range_3[2]);
+  range_4_med = median3(range_4[0], range_4[1], range_4[2]);
 }
 
 void enableSensor(uint8_t shutpin, bool mode)
