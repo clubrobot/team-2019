@@ -58,7 +58,7 @@ class ServerGS(TCPTalksServer):
 
     def __init__(self):
         TCPTalksServer.__init__(self, _BEACON_PORT)
-        self.ressources = {"balance": -1, "gold": -1}
+        self.ressources = {"balance": -1, "depart": -1, "passage": -1}
         self.mutex = RLock()
         self.bornibus_id = -1
         self.r128_id = -1
