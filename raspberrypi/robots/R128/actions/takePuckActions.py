@@ -364,11 +364,17 @@ class TakePuckSingle(Actionnable):
 
     def moving(self):
         # reach little distributor
+        if self.master.is_active():
+            self.log("En attente du mutex passage")
+            while not  self.master.get_ressource("passage"):
+                time.sleep(0.4)
         if self.side == self.YELLOW:
-            self.mover.purepursuit(self.path, direction = 'backward')
+            self.mover.purepursuit(self.path,safe_mode=True,  direction = 'backward')
         else:
-            self.mover.purepursuit(self.path, direction = 'forward')
+            self.mover.purepursuit(self.path, safe_mode= True, direction = 'forward')
         
+        self.master.release_ressource("passage")
+        self.log("mutex passage donné ")
         #self.wheeledbase.wait()
 
         # correct robot orientation

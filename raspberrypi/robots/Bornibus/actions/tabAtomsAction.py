@@ -19,7 +19,7 @@ class tabAtoms(Actionnable):
         self.wheeledbase    = daughter_cards['wheeledbase']
         self.display        = daughter_cards['display']
         self.pushers        = daughter_cards['pushers']
-
+        self.master         = daughter_cards["master"]
         if self.side == self.YELLOW:
             color = "Y"
         else:
@@ -39,6 +39,10 @@ class tabAtoms(Actionnable):
 
         self.mover.goto(*self.points["Tab2"], safe_mode=True, direction='forward')
         self.display.sleep()
+        if self.master.is_active():
+            while not self.master.get_ressource("passage"):
+                time.sleep(0.3)
+
 
     def realize(self):
 
@@ -50,6 +54,7 @@ class tabAtoms(Actionnable):
         self.mover.turnonthespot(-pi)
 
         self.display.happy()
+        self.master.release_ressource("passage")
         self.mover.goto(*self.points["Tab1"], safe_mode=False, direction='forward')
 
         #se tourner pour mettre les palets dans le tableau

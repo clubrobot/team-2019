@@ -74,8 +74,8 @@ class chaos(Actionnable):
             self.mover.goto(*self.points["Cha2"],safe_mode=True, theta=2*pi/3)
             self.pushers.down_l()
             self.mover.turnonthespot(pi/2)
-        print("Don du mutex balance")
-        self.master.release_ressource("balance")
+        print("Don du mutex passage")
+        self.master.release_ressource("passage")
 
         self.wheeledbase.linvel_KP.set(25)
         self.wheeledbase.max_linvel.set(300)

@@ -52,13 +52,14 @@ class balance(Actionnable):
                                     direction="forward", lookahead=200, lookaheadbis=120)
         # Si on a la com mais on a pas la balance on attend 
         elif self.master.is_active():
+            print("Liberation du mutex depart")
+            self.master.release_ressource("depart")
+
+            self.mover.goto(self.points["Bal1"][0],self.points["Bal1"][1],direction="forward")
             if self.master.is_active():
                 print("Récupération du mutex balance")
                 while not self.master.get_ressource("balance"):
                     time.sleep(0.4)
-            self.mover.goto(self.points["Bal1"][0],self.points["Bal1"][1],direction="forward")
-            print("Liberation du mutex depart")
-            self.master.release_ressource("depart")
             self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal2"], self.points["Bal3"]],
                                     direction="forward", lookahead=200, lookaheadbis=120)
         # Sinon on y go avec une attente 
