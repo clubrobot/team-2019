@@ -5,69 +5,48 @@
 #include <BLEDevice.h>
 #include <BLEClient.h>
 
+#define BUILTIN_LED 2
+
+#define EXPERIENCE_SERVICE_UUID     "865d8713-2bf1-4081-9bc1-f009c532a1c7"
+#define EXPERIENCE_START_UUID       "fbb86ffe-879f-4113-ac20-57b39d9b0f66"
+#define EXPERIENCE_STATE_UUID       "dd603e58-bc55-4231-8dfc-52db9e91ba76"
+
 // The remote service we wish to connect to.
-static BLEUUID serviceUUID("6a54cace-89bf-4e0b-a9f9-7f78a7aab1ef");
+static BLEUUID serviceUUID(EXPERIENCE_SERVICE_UUID);
+
 // The characteristic of the remote service we are interested in.
-static BLEUUID startCharUUID("bc4878c0-426a-45ed-b5db-2a9e1a1e43d7");
-static BLEUUID isOnTopUUID("561a3414-8b23-462e-ab59-1cdb47905789");
+static BLEUUID startUUID(EXPERIENCE_START_UUID);
+static BLEUUID stateUUID(EXPERIENCE_STATE_UUID);
 
 static BLEAddress *pServerAddress;
-static boolean doConnect = false;
-static boolean connected = false;
-static BLERemoteCharacteristic *pStartCharacteristic;
-static BLERemoteCharacteristic *pIsOnTopCharacteristic;
 
-ExperienceEffects experience(true);
+static bool doConnect = false;
+static bool connected = false;
+
+BLERemoteCharacteristic *pStartCharacteristic;
+BLERemoteCharacteristic *pStateCharacteristic;
+
+ExperienceEffects experience(false);
 
 TaskManager task_manager;
 
-static TickType_t xDelay = 100 / portTICK_PERIOD_MS; // 100 ms task Delay
-
 static void secondary_loop(void * parameters);
-
+bool connectToServer(BLEAddress pAddress);
 
 class ClientCallbacks : public BLEClientCallbacks
 {
     void onDisconnect(BLEClient *pClient)
     {
-        ESP.restart(); // TODO : find a better way to handle disconnections
+        doConnect = false;
+        connected = false;
+        digitalWrite(BUILTIN_LED, LOW);
     }
 
     void onConnect(BLEClient *pClient) 
     {
-        experience.connected();
+        digitalWrite(BUILTIN_LED, HIGH);
     }
 };
-
-bool connectToServer(BLEAddress pAddress)
-{
-    BLEClient *pClient = BLEDevice::createClient();
-
-    pClient->connect(pAddress);
-    pClient->setClientCallbacks(new ClientCallbacks());
-
-    BLERemoteService *pRemoteService = pClient->getService(serviceUUID);
-    if (pRemoteService == nullptr)
-    {
-        return false;
-    }
-
-    pStartCharacteristic = pRemoteService->getCharacteristic(startCharUUID);
-    if (pStartCharacteristic == nullptr) 
-    {
-        return false;
-    }
-
-    if (experience.isElectron)
-    {
-        pIsOnTopCharacteristic = pRemoteService->getCharacteristic(isOnTopUUID);
-        if (pIsOnTopCharacteristic == nullptr) 
-        {
-        return false;
-        }
-    }
-  //pRemoteCharacteristic->registerForNotify(notifyCallback);
-}
 /**
 * Scan for BLE servers and find the first one that advertises the service we are looking for.
 */
@@ -89,10 +68,10 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks
     } 
 };
 
-
-
 void setup()
 {   
+    pinMode(BUILTIN_LED, OUTPUT);
+
     Serial.begin(115200);
 
     /* init task manager */
@@ -101,11 +80,14 @@ void setup()
     /* setup experience */
     experience.setup();
 
-    BLEDevice::init("");
+    BLEDevice::init("INSA_ELECTRON");
+
     BLEScan *pBLEScan = BLEDevice::getScan();
     pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
     pBLEScan->setActiveScan(true);
-    pBLEScan->start(15);
+    pBLEScan->setInterval(100);
+    pBLEScan->setWindow(99);  // less or equal setInterval value
+    pBLEScan->start(5,true);
 }
 
 void loop()
@@ -124,9 +106,10 @@ void loop()
     if (connected)
     {
         String result = pStartCharacteristic->readValue().c_str();
-        Serial.println(result);
-        if (result=="start\0")
+        
+        if (result=="ON\0")
         {
+            pStartCharacteristic->writeValue("RUN\0");
             experience.start();
         }
     }
@@ -134,10 +117,10 @@ void loop()
     if ((experience.getStart() == 1)&& experience.getTimer()+TEMPS_MIN*1000 < millis() && experience.isElectron && connected)
     {
         experience.stayOnTop();
-        //pIsOnTopCharacteristic->writeValue("top");
+        pStateCharacteristic->writeValue("RUN\0");
     }
     
-    vTaskDelay( xDelay );   /* include 10 ms delay for better task management by ordonnancer */
+    vTaskDelay( 200 / portTICK_PERIOD_MS );   /* include 10 ms delay for better task management by ordonnancer */
 }
 
 static void secondary_loop(void * parameters)
@@ -157,6 +140,35 @@ static void secondary_loop(void * parameters)
             experience.motorStop();
         }
         
-        vTaskDelay( xDelay );   /* include 10 ms delay for better task management by ordonnancer */
+        vTaskDelay( 200 / portTICK_PERIOD_MS );   /* include 10 ms delay for better task management by ordonnancer */
     }
+}
+
+bool connectToServer(BLEAddress pAddress)
+{
+    pinMode(BUILTIN_LED, OUTPUT);
+
+    BLEClient *pClient = BLEDevice::createClient();
+
+    pClient->connect(pAddress);
+    pClient->setClientCallbacks(new ClientCallbacks());
+
+    BLERemoteService *pRemoteService = pClient->getService(serviceUUID);
+    if (pRemoteService == nullptr)
+    {
+        return false;
+    }
+
+    pStartCharacteristic = pRemoteService->getCharacteristic(startUUID);
+    if (pStartCharacteristic == nullptr) 
+    {
+        return false;
+    }
+
+    pStateCharacteristic = pRemoteService->getCharacteristic(stateUUID); 
+    if (pStateCharacteristic == nullptr) 
+    {
+        return false;
+    }
+    return true;
 }
