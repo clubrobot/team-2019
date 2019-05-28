@@ -69,7 +69,7 @@ class Goldenium(Actionnable):
                             self.display.angry()
                             self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]-4)
                             self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]-4)
-                            print(*self.points["Gold2"])
+                            self.logger(*self.points["Gold2"])
                             raise GripperError("Gripper left touched")
 
                         elif self.endstops.get_ES1():
@@ -78,7 +78,7 @@ class Goldenium(Actionnable):
                             self.display.angry()
                             self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]+4)
                             self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]+4)
-                            print(*self.points["Gold2"])
+                            self.logger(*self.points["Gold2"])
                             raise GripperError("Gripper right touched")
                         time.sleep(0.1)
                     raise BaseException("Reached position")
