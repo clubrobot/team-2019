@@ -94,6 +94,9 @@ class R128(Automaton):
             self.putRedZoneAct,
         ]
 
+        for sensor in sensorsBack+sensorsFront+sensorsLat:
+            sensor.set_side(self.side)
+
     def set_position(self):
         if self.side == R128.YELLOW:
             self.wheeledbase.set_position(*self.points["Ini"], pi/2)

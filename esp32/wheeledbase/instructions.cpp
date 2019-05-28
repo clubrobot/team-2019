@@ -41,6 +41,7 @@ void DISABLE(SerialTalks& talks, Deserializer& input, Serializer& output)
 	positionControl.disable();
 	leftWheel .setVelocity(0);
 	rightWheel.setVelocity(0);	
+    ESP.restart();
 }
 
 void SET_OPENLOOP_VELOCITIES(SerialTalks& talks, Deserializer& input, Serializer& output)

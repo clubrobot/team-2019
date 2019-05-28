@@ -1,22 +1,22 @@
 #!/usr/bin/python3
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
-import time
-from math import pi,atan2
+from math import pi
 from common.actions.action import *
-from common.funcutils      import *
-from common.geogebra import Geogebra
 from daughter_cards.wheeledbase import *
 
 MAX_TIME_FOR_GOLDENIUM = 20
 
-class gripperError(Exception) :
+
+class GripperError(Exception) :
     def __init__(self,*args, **kwargs) :
         Exception.__init__(self,*args, kwargs)
 
-class goldenium(Actionnable):
+
+class Goldenium(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
+
     def __init__(self, geogebra, daughter_cards, mover, side, log):
         self.geogebra       = geogebra
         self.log            = log
@@ -54,7 +54,7 @@ class goldenium(Actionnable):
         beginGoldeniumTime = time.time()
         while (goldenium!=1) & (time.time()-beginGoldeniumTime<=MAX_TIME_FOR_GOLDENIUM) :
             if self.endstops.get_ES3():
-                self.logger("GOLDENIUM : pris")
+                self.log("GOLDENIUM : pris")
                 goldenium = 1
             else:
                 self.gripper.open()
@@ -70,7 +70,7 @@ class goldenium(Actionnable):
                             self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]-4)
                             self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]-4)
                             print(*self.points["Gold2"])
-                            raise gripperError("Gripper left touched")
+                            raise GripperError("Gripper left touched")
 
                         elif self.endstops.get_ES1():
                             # Touched right
@@ -79,11 +79,11 @@ class goldenium(Actionnable):
                             self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]+4)
                             self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]+4)
                             print(*self.points["Gold2"])
-                            raise gripperError("Gripper right touched")
+                            raise GripperError("Gripper right touched")
                         time.sleep(0.1)
                     raise BaseException("Reached position")
 
-                except gripperError as e :
+                except GripperError as e:
                     self.log("GOLDENIUM ACTION : ", "gripperException :", e)
                     try :
                         self.wheeledbase.right_wheel_maxPWM.set(1)
@@ -92,7 +92,7 @@ class goldenium(Actionnable):
                     except :
                         pass
 
-                except BaseException as e :
+                except BaseException as e:
                     self.log("GOLDENIUM ACTION : ", "BaseException :", e)
                     self.gripper.close()
                     time.sleep(1.2)
@@ -110,19 +110,18 @@ class goldenium(Actionnable):
                         self.log("GOLDENIUM ACTION : ", "Recule")
                         self.display.surprised()
 
-
         self.log("GOLDENIUM ACTION : ", "fin")
 
         if self.endstops.get_ES3():
             self.log("GOLDENIUM ACTION : ", "Goldenium pris : +24 PTS")
             self.display.addPoints(20)
             self.display.love()
+
     def before(self):
         pass
 
     def after(self):
         pass
 
-    #override
     def getAction(self):
         return Action(lambda : self.moving(), lambda : self.realize(), self.before, self.after, 'goldeniumAction')
