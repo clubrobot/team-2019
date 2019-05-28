@@ -37,8 +37,10 @@ class Logger:
             for key, content in kwargs.items():
                 self.file.write("\n{} : ".format(str(key)))
                 self.file.write("\t", str(content))
+                self.file.write("\n")
             self.file.flush()
 
 
     def close(self):
-        if self.file is not None :  self.file.close()
+        if self.file is not None:
+            self.file.close()
