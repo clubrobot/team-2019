@@ -106,10 +106,13 @@ class R128(Automaton):
     def positioning(self):
         init_robot()
         self.wheeledbase.lookaheadbis.set(5)
-        if self.side == R128.YELLOW:
-            wheeledbase.goto(*self.points["Ini1"], theta=0)
-        else:
-            wheeledbase.goto(*self.points["Ini1"], theta=pi)
+        try:
+            if self.side == R128.YELLOW:
+                wheeledbase.goto(*self.points["Ini1"], theta=0)
+            else:
+                wheeledbase.goto(*self.points["Ini1"], theta=pi)
+        except:
+            pass    
         self.wheeledbase.reset_parameters()
 
     def stop_match(self):

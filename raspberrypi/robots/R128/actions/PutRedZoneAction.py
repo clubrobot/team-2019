@@ -28,6 +28,8 @@ class PutRedZone(Actionnable):
         self.wheeledbase    = daughter_cards['wheeledbase']
         
         self.display        = daughter_cards['display']
+
+        self.master = daughter_cards["master"]
         # action Points
         #self.point          = self.geogebra.get('Ini{}'.format(self.side))
         # self.actionPoint    = ActPoint(self.point, -pi/2)
@@ -53,6 +55,11 @@ class PutRedZone(Actionnable):
 
 
     def moving(self):
+        if self.master.is_active():
+            print("En attente du mutex depart")
+            while not self.master.get_ressource("depart"):
+                time.sleep(0.4)
+            print("Mutex récupéré")
         # Start Path
         if self.side == self.YELLOW:
             self.wheeledbase.purepursuit(self.path, direction='backward')
@@ -68,7 +75,8 @@ class PutRedZone(Actionnable):
         
         self.arm1.move(RED_ZONE1)
         self.arm2.move(RED_ZONE1)
-
+        print("Don du mutex depart")
+        self.master.release_ressource("depart")
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
         self.display.happy()

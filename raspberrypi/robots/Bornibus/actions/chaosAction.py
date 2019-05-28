@@ -22,6 +22,7 @@ class chaos(Actionnable):
         self.display        = daughter_cards['display']
         self.gripper        = daughter_cards['gripper']
         self.pushers        = daughter_cards['pushers']
+        self.master         = daughter_cards['master']
 
         if self.side == self.YELLOW:
             color = "Y"
@@ -57,6 +58,12 @@ class chaos(Actionnable):
         self.wheeledbase.lookaheadbis.set(150)
         self.wheeledbase.linpos_threshold.set(5)
 
+        if self.master.is_active():
+            print("En attente du mutex passage")
+            while not self.master.get_ressource("passage"):
+                time.sleep(0.4)
+            print("Mutex récupéré !")
+
         if self.side == self.YELLOW:
             self.pushers.down_l()
             self.mover.goto(*self.points["Cha2"],safe_mode=True, theta=-2*pi/3)
@@ -67,10 +74,17 @@ class chaos(Actionnable):
             self.mover.goto(*self.points["Cha2"],safe_mode=True, theta=2*pi/3)
             self.pushers.down_l()
             self.mover.turnonthespot(pi/2)
+        print("Don du mutex balance")
+        self.master.release_ressource("balance")
 
         self.wheeledbase.max_linvel.set(300)
         self.display.happy()
 
+        if self.master.is_active():
+            print("En attente du mutex depart")
+            while not self.master.get_ressource("depart"):
+                time.sleep(0.4)
+            print("mutex récupéré")
         if self.side == self.YELLOW:
             self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Cha4"], self.points["Cha5"], self.points["Cha6"]],safe_mode=True, direction='forward', finalangle=-pi/2)#,lookahead=150, lookaheadbis=150)
         else :

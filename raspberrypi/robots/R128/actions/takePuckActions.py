@@ -56,6 +56,7 @@ class TakePuckSync(Actionnable):
 
         self.mover = mover
 
+        self.master = daughter_cards["master"]
 
         # action Points
         self.point          = self.geogebra.get('Distrib{}_{}'.format(self.side,self.distrib_pos))
@@ -138,9 +139,16 @@ class TakePuckSync(Actionnable):
         else:
             # else go to point
             self.wheeledbase.lookaheadbis.set(5)
+            if self.master.is_active():
+                print("En attente du mutex passage")
+                while not self.master.get_ressource("passage"):
+                    time.sleep(0.4)
+                print("Mutex récupéré !")
             self.point = (self.actionPoint.point[0] - offset_x, self.actionPoint.point[1])
             self.mover.goto(*self.point, theta=self.actionPoint.theta, safe_mode=True)
-
+            print("don du mutex passage")
+            self.master.release_ressource("passage")
+            
     def realize(self):
         # starting two pump
         self.arm1.start_pump()
@@ -437,7 +445,9 @@ class TakePuckSingle(Actionnable):
     def realize(self):
         
         if self.master.is_active():
-            self.master.get_ressource("balance")
+            print("En attente du mutex balance")
+            while not  self.master.get_ressource("balance"):
+                time.sleep(0.4)
 
 
         self.arm.start_pump()

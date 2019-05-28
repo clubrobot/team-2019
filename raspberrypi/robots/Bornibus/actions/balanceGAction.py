@@ -39,23 +39,36 @@ class balance(Actionnable):
 
     def moving(self):
         self.wheeledbase.reset_parameters()
-        # self.wheeledbase.max_linvel.set(700)
-        # self.wheeledbase.max_linacc.set(500.0)
-        # self.wheeledbase.max_lindec.set(700.0)
-        # self.wheeledbase.max_angvel.set(10)
-        # self.wheeledbase.lookahead.set(150.0)
-        # self.wheeledbase.right_wheel_maxPWM.set(1)
-        # self.wheeledbase.left_wheel_maxPWM.set(1)
-        # Waiting for mutex
 
-        if self.master.is_active():
-            while not self.master.get_ressource("balance"):
-                time.sleep(0.4)
         # Vers balance
         self.log("BALANCE ACTION :", "Vers la balance")
         self.wheeledbase.linpos_threshold.set(10)
-        self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal1"], self.points["Bal2"], self.points["Bal3"]],
-                                direction="forward", lookahead=200, lookaheadbis=120)
+        #TODO sans master enable
+
+        # Si on a la com et que la balance est libre on fonce
+        if self.master.is_active() and self.master.get_ressource("balance"):
+            self.master.release_ressource("depart")
+            self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal1"], self.points["Bal2"], self.points["Bal3"]],
+                                    direction="forward", lookahead=200, lookaheadbis=120)
+        # Si on a la com mais on a pas la balance on attend 
+        elif self.master.is_active():
+            if self.master.is_active():
+                print("Récupération du mutex balance")
+                while not self.master.get_ressource("balance"):
+                    time.sleep(0.4)
+            self.mover.goto(self.points["Bal1"][0],self.points["Bal1"][1],direction="forward")
+            print("Liberation du mutex depart")
+            self.master.release_ressource("depart")
+            self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal2"], self.points["Bal3"]],
+                                    direction="forward", lookahead=200, lookaheadbis=120)
+        # Sinon on y go avec une attente 
+        else:
+            time.sleep(0) # TODO
+            print("Liberation du mutex depart")
+            self.master.release_ressource("depart")
+            self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal1"], self.points["Bal2"], self.points["Bal3"]],
+                                    direction="forward", lookahead=200, lookaheadbis=120)
+
         self.wheeledbase.linpos_threshold.set(3)
         self.wheeledbase.max_linacc.set(300)
         self.wheeledbase.max_lindec.set(300)
@@ -156,6 +169,7 @@ class balance(Actionnable):
         pass
 
     def after(self):
+        print("Liberation du mutex balance")
         self.master.release_ressource("balance")
         #  self.wheeledbase.stop()
 
