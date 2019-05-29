@@ -33,6 +33,8 @@ class tabAtoms(Actionnable):
 
     def moving(self):
         self.wheeledbase.reset_parameters()
+        self.wheeledbase.linpos_threshold.set(10)
+        self.wheeledbase.angpos_threshold.set(0.1)
     
         # Vers palets
         self.log("TABATOMS ACTION : ", "Vers palets")
