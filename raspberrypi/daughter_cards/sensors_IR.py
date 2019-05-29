@@ -13,6 +13,25 @@ CHECK_ERROR_OPCODE    = 0x12
 GET_BOTH_RANGE_OPCODE     = 0x13
 
 
+class FakeSensorsIR:
+    def __init__(self):
+       pass
+
+    def get_range1(self):
+        return SensorsIR.ERROR_DIST
+
+    def get_range2(self):
+        return SensorsIR.ERROR_DIST
+
+    def is_ready(self):
+        return True
+
+    def check_errors(self):
+        return 0, 0
+
+    def get_both_range(self):
+        return SensorsIR.ERROR_DIST, SensorsIR.ERROR_DIST
+
 class SensorsIR(SecureSerialTalksProxy):
     MIN_TIMESTEP = 0.05
     ERROR_DIST = 1000
