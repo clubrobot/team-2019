@@ -19,12 +19,17 @@ _GET_POS_OPCODE = 0x10
 _GET_OTHER_OPCODE = 0x20
 _PING_OPCODE    = 0x40
 _IS_OK_OPCODE   = 0x50
+_RESET_OPCODE   = 0x60
 
 class ClientGS(TCPTalks):
     def __init__(self, ROBOT, ip="192.168.12.1",port=_BEACON_PORT):
         TCPTalks.__init__(self,ip=ip, port=port, id=ROBOT)
         self.bind(_PING_OPCODE, self._refresh)
         self.bind(_GET_POS_OPCODE, self._get_my_pos)
+
+
+    def reset_ressources(self):
+        self.send(_RESET_OPCODE)
 
     def get_ressource(self, name):
         return self.execute(_GET_RESSOURCE_OPCODE, self.id, name)
@@ -66,6 +71,7 @@ class ServerGS(TCPTalksServer):
         self.bind(_GET_RESSOURCE_OPCODE, self.get_ressource)
         self.bind(_RELEASE_RESSOURCE_OPCODE, self.release_ressource)
         self.bind(_IS_OK_OPCODE, self._is_ok)
+        self.bind(_RESET_OPCODE, self._reset)
 
     def run(self):
         while True:
@@ -81,6 +87,9 @@ class ServerGS(TCPTalksServer):
                 continue
 
 
+    def _reset(self):
+        for key in list(self.ressources.keys()):
+            self.ressources[key] = -1
                 
     def _is_ok(self, idx):
         if _BORNIBUS_ID in list(self.client.keys()) and _R128_ID in list(self.client.keys()):

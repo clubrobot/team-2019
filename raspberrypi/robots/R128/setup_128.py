@@ -59,6 +59,7 @@ else:
 try:
     beacons = ClientGS(2)
     beacons.connect()
+    beacons.reset_ressources()
 except TimeoutError:
     pass
 
@@ -73,13 +74,13 @@ if __name__ == "__main__":
         from robots.arm_recalibration import *  
         #a = ArmRecalibration(sensorsLat,1,log)
         init_robot()
-        daughter_cards = dict( wheeledbase     = wheeledbase, 
-                                    armFront        = armFront,
-                                    armBack         = armBack,
-                                    display         = disp,
-                                    master          = beacons)
-        mover = Mover(daughter_cards, log, sensorsFront, sensorsBack)
-        wheeledbase.set_position(780, 2595, -pi/2)
-        while True:
-                mover.goto(780,1000,safe_mode=True)
-                mover.goto(780,2595,safe_mode=True)
+        #daughter_cards = dict( wheeledbase     = wheeledbase, 
+        #                            armFront        = armFront,
+        #                            armBack         = armBack,
+        #                            display         = disp,
+        #                            master          = beacons)
+        #mover = Mover(daughter_cards, log, sensorsFront, sensorsBack)
+        #wheeledbase.set_position(780, 2595, -pi/2)
+        #while True:
+        #        mover.goto(780,1000,safe_mode=True)
+        #        mover.goto(780,2595,safe_mode=True)
