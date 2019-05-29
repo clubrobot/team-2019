@@ -56,7 +56,7 @@ class BalanceAfter6(Actionnable):
             print("mutex récupéré")
 
         self.wheeledbase.lookaheadbis.set(100.0)
-        self.wheeledbase.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
+        self.mover.goto(*self.actionPoint.point, safe_mode=True, theta=self.actionPoint.theta)
 
     def realize(self):
 
