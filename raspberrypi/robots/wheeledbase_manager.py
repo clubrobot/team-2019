@@ -311,8 +311,8 @@ class Mover:
             self.left_flag.bind(self.back_left.signal)
             self.right_flag.bind(self.back_right.signal)
 
-        self.enable_sensors()#direction=self.direction)
-        sleep(4)
+        self.enable_sensors(direction=self.direction)
+        
         self.isarrived = False
         x, y, _ = self.wheeledbase.get_position()
         self.logger("MOVER : ", "path ", self.path)
