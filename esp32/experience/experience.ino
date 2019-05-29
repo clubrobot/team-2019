@@ -10,14 +10,12 @@
 
 #define ELECTRON_SERVICE_UUID       "9089189e-353f-44ec-9d84-a767862d3f6e"
 #define ELECTRON_START_UUID         "413a617d-beb5-4932-9b3e-0cc79a1d56d6"
-#define ELECTRON_STATE_UUID         "cae98ae4-9c16-4426-98eb-50b3d4473d5c"
 
 // The remote service we wish to connect to.
 static BLEUUID serviceUUID(ELECTRON_SERVICE_UUID);
 
 // The characteristic of the remote service we are interested in.
 static BLEUUID startUUID(ELECTRON_START_UUID);
-static BLEUUID stateUUID(ELECTRON_STATE_UUID);
 
 static BLEAddress *pServerAddress;
 
@@ -27,7 +25,6 @@ static bool doConnect = false;
 static bool connected = false;
 
 BLERemoteCharacteristic *pStartCharacteristic;
-BLERemoteCharacteristic *pStateCharacteristic;
 
 ExperienceEffects experience(true);
 
@@ -66,7 +63,6 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks
         {
             advertisedDevice.getScan()->stop();
 
-            std::cout << advertisedDevice.toString() << std::endl;
             pServerAddress = new BLEAddress(advertisedDevice.getAddress());
             doConnect = true;
         }
@@ -77,7 +73,7 @@ void setup()
 {   
     pinMode(BUILTIN_LED, OUTPUT);
 
-    Serial.begin(115200);
+   // Serial.begin(115200);
 
     /* setup experience */
     experience.setup();
@@ -135,12 +131,6 @@ bool connectToServer(BLEAddress pAddress)
 
     pStartCharacteristic = pRemoteService->getCharacteristic(startUUID);
     if (pStartCharacteristic == nullptr) 
-    {
-        return false;
-    }
-
-    pStateCharacteristic = pRemoteService->getCharacteristic(stateUUID); 
-    if (pStateCharacteristic == nullptr) 
     {
         return false;
     }
