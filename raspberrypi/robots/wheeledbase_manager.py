@@ -93,7 +93,7 @@ class Mover:
             return
         self.interupted_status.set()
         self.wheeledbase.set_velocities(0,0)
-        sleep(0.4)
+        sleep(1)
         if self.safe_mode:
             self.logger("MOVER : ", "Just wait a little (Safe mode ON) !")
             obstacle = True
@@ -104,6 +104,7 @@ class Mover:
             self.wheeledbase.start_purepursuit()
             self.interupted_status.clear()
             self.interupted_lock.release()
+            self.logger("Mover : ", "Interuption end")
             return
 
 
@@ -189,7 +190,7 @@ class Mover:
             return
         self.interupted_status.set()
         self.wheeledbase.set_velocities(0,0)
-        sleep(0.1)
+        sleep(1)
         self.wheeledbase.stop()
         self.display.angry()
 
@@ -200,6 +201,7 @@ class Mover:
             self.wheeledbase.start_purepursuit()
             self.interupted_status.clear()
             self.interupted_lock.release()
+            self.logger("Mover : ", "Interuption end")
             return
 
 
@@ -285,9 +287,9 @@ class Mover:
 
     def purepursuit(self, path, nb_try=4, safe_mode=False, **params):
         self.params = params
-        #self.wheeledbase.max_lindec.set(2000000)
+        self.wheeledbase.max_lindec.set(2000000)
         #self.wheeledbase.max_linacc.set(2000)
-        #self.wheeledbase.max_linvel.set(200)
+        self.wheeledbase.max_linvel.set(200)
         self.goal = path[-1]
         self.path = path
         self.nb_try = 0
@@ -309,7 +311,8 @@ class Mover:
             self.left_flag.bind(self.back_left.signal)
             self.right_flag.bind(self.back_right.signal)
 
-        self.enable_sensors(direction=self.direction)
+        self.enable_sensors()#direction=self.direction)
+        sleep(4)
         self.isarrived = False
         x, y, _ = self.wheeledbase.get_position()
         self.logger("MOVER : ", "path ", self.path)
