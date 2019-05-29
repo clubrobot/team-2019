@@ -14,7 +14,10 @@ from robots.sensors_manager import *
 from robots.wheeledbase_manager import * 
 import time
 
-log = Logger(Logger.SHOW)
+if ROBOT_ID == R128_ID:
+    log = Logger(Logger.BOTH, file_name="/home/pi/logs/start.log")
+else:
+    log = Logger(Logger.SHOW)
 
 armF = RobotArm(manager, uuid='arm_front')
 armB = RobotArm(manager, uuid='arm_back')

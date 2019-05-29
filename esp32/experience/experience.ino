@@ -4,21 +4,24 @@
 #include "../common/TaskManager.h"
 #include <BLEDevice.h>
 #include <BLEClient.h>
+#include <iostream>
 
 #define BUILTIN_LED 2
 
-#define EXPERIENCE_SERVICE_UUID     "865d8713-2bf1-4081-9bc1-f009c532a1c7"
-#define EXPERIENCE_START_UUID       "fbb86ffe-879f-4113-ac20-57b39d9b0f66"
-#define EXPERIENCE_STATE_UUID       "dd603e58-bc55-4231-8dfc-52db9e91ba76"
+#define ELECTRON_SERVICE_UUID       "9089189e-353f-44ec-9d84-a767862d3f6e"
+#define ELECTRON_START_UUID         "413a617d-beb5-4932-9b3e-0cc79a1d56d6"
+#define ELECTRON_STATE_UUID         "cae98ae4-9c16-4426-98eb-50b3d4473d5c"
 
 // The remote service we wish to connect to.
-static BLEUUID serviceUUID(EXPERIENCE_SERVICE_UUID);
+static BLEUUID serviceUUID(ELECTRON_SERVICE_UUID);
 
 // The characteristic of the remote service we are interested in.
-static BLEUUID startUUID(EXPERIENCE_START_UUID);
-static BLEUUID stateUUID(EXPERIENCE_STATE_UUID);
+static BLEUUID startUUID(ELECTRON_START_UUID);
+static BLEUUID stateUUID(ELECTRON_STATE_UUID);
 
 static BLEAddress *pServerAddress;
+
+static BLEScan *pBLEScan;
 
 static bool doConnect = false;
 static bool connected = false;
@@ -26,7 +29,7 @@ static bool connected = false;
 BLERemoteCharacteristic *pStartCharacteristic;
 BLERemoteCharacteristic *pStateCharacteristic;
 
-ExperienceEffects experience(false);
+ExperienceEffects experience(true);
 
 TaskManager task_manager;
 
@@ -40,6 +43,7 @@ class ClientCallbacks : public BLEClientCallbacks
         doConnect = false;
         connected = false;
         digitalWrite(BUILTIN_LED, LOW);
+        pBLEScan->start(15,true);
     }
 
     void onConnect(BLEClient *pClient) 
@@ -62,6 +66,7 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks
         {
             advertisedDevice.getScan()->stop();
 
+            std::cout << advertisedDevice.toString() << std::endl;
             pServerAddress = new BLEAddress(advertisedDevice.getAddress());
             doConnect = true;
         }
@@ -74,20 +79,17 @@ void setup()
 
     Serial.begin(115200);
 
-    /* init task manager */
-    task_manager.create_task(secondary_loop , NULL);
-
     /* setup experience */
     experience.setup();
 
     BLEDevice::init("INSA_ELECTRON");
 
-    BLEScan *pBLEScan = BLEDevice::getScan();
+    pBLEScan = BLEDevice::getScan();
     pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
     pBLEScan->setActiveScan(true);
     pBLEScan->setInterval(100);
     pBLEScan->setWindow(99);  // less or equal setInterval value
-    pBLEScan->start(5,true);
+    pBLEScan->start(15,true);
 }
 
 void loop()
@@ -97,9 +99,9 @@ void loop()
         if (connectToServer(*pServerAddress))
         {
             connected = true;
+            digitalWrite(BUILTIN_LED, HIGH);
             experience.connected();
         }
-        
         doConnect = false;
     }
 
@@ -109,39 +111,11 @@ void loop()
         
         if (result=="ON\0")
         {
-            pStartCharacteristic->writeValue("RUN\0");
             experience.start();
         }
     }
-
-    if ((experience.getStart() == 1)&& experience.getTimer()+TEMPS_MIN*1000 < millis() && experience.isElectron && connected)
-    {
-        experience.stayOnTop();
-        pStateCharacteristic->writeValue("RUN\0");
-    }
     
     vTaskDelay( 200 / portTICK_PERIOD_MS );   /* include 10 ms delay for better task management by ordonnancer */
-}
-
-static void secondary_loop(void * parameters)
-{
-    while(1)
-    {
-        if((digitalRead(GO_BACK) == LOW) && (experience.getStart() == 0))
-        {
-            experience.goBack();
-        }
-        else if ((digitalRead(GO_FORWARD) == LOW) && (experience.getStart() == 0))
-        {
-            experience.goForward();
-        }
-        else if (experience.getStart() == 0)
-        {
-            experience.motorStop();
-        }
-        
-        vTaskDelay( 200 / portTICK_PERIOD_MS );   /* include 10 ms delay for better task management by ordonnancer */
-    }
 }
 
 bool connectToServer(BLEAddress pAddress)

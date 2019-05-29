@@ -149,7 +149,7 @@ class TakePuckSync(Actionnable):
             self.mover.goto(*self.point, theta=self.actionPoint.theta, safe_mode=True)
             self.log("TakePuckAction :"," don du mutex passage")
             self.master.release_ressource("passage")
-            
+
     def realize(self):
         # starting two pump
         self.arm1.start_pump()
@@ -452,7 +452,9 @@ class TakePuckSingle(Actionnable):
     def realize(self):
         
         if self.master.is_active():
-            print("En attente du mutex balance")
+
+            self.log("En attente du mutex balance")
+
             while not  self.master.get_ressource("balance"):
                 time.sleep(0.4)
 

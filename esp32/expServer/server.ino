@@ -85,7 +85,7 @@ void setup()
                                             | BLECharacteristic::PROPERTY_NOTIFY);
 
 
-    pStartCharacteristic->setCallbacks(new MyCallbacks());
+    pStartCharacteristic->setCallbacks(new MyCallback());
     // pStateExpCharacteristic->setCallbacks(new MyCallbacks());
     // pStateElecCharacteristic->setCallbacks(new MyCallbacks());
 
@@ -111,11 +111,11 @@ void setup()
     Serial.begin(SERIALTALKS_BAUDRATE);
     talks.begin(Serial);
 
-    talks.bind(IS_CONNECTED_OPCODE, IS_CONNECTED);
-    talks.bind(START_OPCODE, START);
+    // talks.bind(IS_CONNECTED_OPCODE, IS_CONNECTED);
+    // talks.bind(START_OPCODE, START);
 
-    talks.bind(EXPERIENCE_STATE_OPCODE, EXPERIENCE_STATE);
-    talks.bind(ELECTRON_STATE_OPCODE, ELECTRON_STATE);
+    // talks.bind(EXPERIENCE_STATE_OPCODE, EXPERIENCE_STATE);
+    // talks.bind(ELECTRON_STATE_OPCODE, ELECTRON_STATE);
 }
 
 void loop()

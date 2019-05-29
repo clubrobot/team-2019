@@ -10,23 +10,16 @@
 #define BUILTIN_LED 2
 
 /* used for multiple device connection */
-#define ELECTRON_SERVICE_UUID       "9089189e-353f-44ec-9d84-a767862d3f6e"
-#define EXPERIENCE_SERVICE_UUID     "865d8713-2bf1-4081-9bc1-f009c532a1c7"
+#define SERVICE_UUID       "9089189e-353f-44ec-9d84-a767862d3f6e"
 
-#define ELECTRON_START_UUID         "413a617d-beb5-4932-9b3e-0cc79a1d56d6"
-#define EXPERIENCE_START_UUID       "fbb86ffe-879f-4113-ac20-57b39d9b0f66"
+#define START_UUID         "413a617d-beb5-4932-9b3e-0cc79a1d56d6"
+#define STATE_UUID         "cae98ae4-9c16-4426-98eb-50b3d4473d5c"
 
-#define ELECTRON_STATE_UUID         "cae98ae4-9c16-4426-98eb-50b3d4473d5c"
-
-#define EXPERIENCE_STATE_UUID       "dd603e58-bc55-4231-8dfc-52db9e91ba76"
 
 BLEServer *pServer;
 
-BLECharacteristic *pStartElectronCharacteristic;
-BLECharacteristic *pStartExperienceCharacteristic;
-
-BLECharacteristic *pStateElectronCharacteristic;
-BLECharacteristic *pStateExperienceCharacteristic;
+BLECharacteristic *pStartCharacteristic;
+BLECharacteristic *pStateCharacteristic;
 
 bool deviceConnected     = false;
 bool previouslyConnected = false;
@@ -42,7 +35,7 @@ class MyServerCallbacks : public BLEServerCallbacks
         deviceConnected = true;
         
         digitalWrite(BUILTIN_LED, HIGH);
-        //BLEDevice::startAdvertising();
+        BLEDevice::startAdvertising();
     };
 
     void onDisconnect(BLEServer *pServer)
@@ -69,6 +62,44 @@ void setup()
     pinMode(BUILTIN_LED, OUTPUT);
 
     /* serial talks config */
+
+
+    BLEDevice::init("INSA_RENNES");
+    pServer = BLEDevice::createServer();
+
+    BLEService *pService    = pServer->createService(SERVICE_UUID);
+
+    pServer->setCallbacks(new MyServerCallbacks());
+    /***************** Electron Characteristics *****************/
+    pStartCharacteristic = pService->createCharacteristic(START_UUID,    \
+                                                            BLECharacteristic::PROPERTY_READ    | \
+                                                            BLECharacteristic::PROPERTY_WRITE   | \
+                                                            BLECharacteristic::PROPERTY_NOTIFY);
+
+    pStateCharacteristic = pService->createCharacteristic(STATE_UUID,    \
+                                                            BLECharacteristic::PROPERTY_READ    | \
+                                                            BLECharacteristic::PROPERTY_WRITE   | \
+                                                            BLECharacteristic::PROPERTY_NOTIFY);
+
+
+    pStartCharacteristic->setCallbacks(new MyCallback());
+    pStateCharacteristic->setCallbacks(new MyCallback());
+
+    pStartCharacteristic->setValue("OFF\0");
+    pStateCharacteristic->setValue("00\0");
+
+    pService->start();
+
+    BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+    pAdvertising->addServiceUUID(SERVICE_UUID);
+    pAdvertising->setScanResponse(true);
+    pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
+    pAdvertising->setMinPreferred(0x12);
+    BLEDevice::startAdvertising(); 
+
+    /* init task manager */
+  //  task_manager.create_task(secondary_loop , NULL);
+
     Serial.begin(SERIALTALKS_BAUDRATE);
     talks.begin(Serial);
 
@@ -77,72 +108,6 @@ void setup()
 
     talks.bind(EXPERIENCE_STATE_OPCODE, EXPERIENCE_STATE);
     talks.bind(ELECTRON_STATE_OPCODE, ELECTRON_STATE);
-
-    BLEDevice::init("INSA_RENNES");
-    pServer = BLEDevice::createServer();
-
-    pServer->setCallbacks(new MyServerCallbacks());
-
-    BLEService *pElectronService    = pServer->createService(ELECTRON_SERVICE_UUID);
-    BLEService *pExperienceService  = pServer->createService(EXPERIENCE_SERVICE_UUID);
-
-    /***************** Electron Characteristics *****************/
-    pStartElectronCharacteristic = pElectronService->createCharacteristic(ELECTRON_START_UUID,    \
-                                                            BLECharacteristic::PROPERTY_READ    | \
-                                                            BLECharacteristic::PROPERTY_WRITE   | \
-                                                            BLECharacteristic::PROPERTY_NOTIFY);
-
-    pStateElectronCharacteristic = pElectronService->createCharacteristic(ELECTRON_STATE_UUID,    \
-                                                            BLECharacteristic::PROPERTY_READ    | \
-                                                            BLECharacteristic::PROPERTY_WRITE   | \
-                                                            BLECharacteristic::PROPERTY_NOTIFY);
-
-    /***************** Experience Characteristics *****************/
-    pStartExperienceCharacteristic = pElectronService->createCharacteristic(EXPERIENCE_START_UUID,\
-                                                            BLECharacteristic::PROPERTY_READ    | \
-                                                            BLECharacteristic::PROPERTY_WRITE   | \
-                                                            BLECharacteristic::PROPERTY_NOTIFY);
-
-    pStateExperienceCharacteristic = pElectronService->createCharacteristic(EXPERIENCE_STATE_UUID,\
-                                                            BLECharacteristic::PROPERTY_READ    | \
-                                                            BLECharacteristic::PROPERTY_WRITE   | \
-                                                            BLECharacteristic::PROPERTY_NOTIFY);
-
-    pStartElectronCharacteristic->setCallbacks(new MyCallback());
-    pStateElectronCharacteristic->setCallbacks(new MyCallback());
-
-    pStartExperienceCharacteristic->setCallbacks(new MyCallback());
-    pStateExperienceCharacteristic->setCallbacks(new MyCallback());
-
-    pStartElectronCharacteristic->setValue("OFF\0");
-    pStartExperienceCharacteristic->setValue("OFF\0");
-
-    pStateElectronCharacteristic->setValue("STOP\0");
-    pStartExperienceCharacteristic->setValue("STOP\0");
-
-    pElectronService->start();
-    pExperienceService->start();
-
-  /*  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
-    pAdvertising->addServiceUUID(ELECTRON_SERVICE_UUID);
-    pAdvertising->addServiceUUID(EXPERIENCE_SERVICE_UUID);
-    pAdvertising->setScanResponse(true);
-    pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
-    pAdvertising->setMinPreferred(0x12);
-    BLEDevice::startAdvertising(); */
-
-    /* configure advertising */
-    pServer->getAdvertising()->addServiceUUID(ELECTRON_SERVICE_UUID);
-    pServer->getAdvertising()->addServiceUUID(EXPERIENCE_SERVICE_UUID);
-    pServer->getAdvertising()->setScanResponse(true);
-    pServer->getAdvertising()->setMinPreferred(0x06);  // functions that help with iPhone connections issue
-    pServer->getAdvertising()->setMinPreferred(0x12);
-
-    /* start advertising */
-    pServer->getAdvertising()->start();
-
-    /* init task manager */
-    task_manager.create_task(secondary_loop , NULL);
 }
 
 
@@ -154,15 +119,15 @@ void loop()
 
 static void secondary_loop(void * parameters)
 {
-    if(!deviceConnected && previouslyConnected)
-    {
-        delay(500); // give the bluetooth stack the chance to get things ready   
-        pServer->startAdvertising();
-        previouslyConnected = deviceConnected;
-    }
-    if (deviceConnected && !previouslyConnected) 
-    {    
-        previouslyConnected = deviceConnected;
-    }
+    // if(!deviceConnected && previouslyConnected)
+    // {
+    //     delay(500); // give the bluetooth stack the chance to get things ready   
+    //     //pServer->startAdvertising();
+    //     previouslyConnected = deviceConnected;
+    // }
+    // if (deviceConnected && !previouslyConnected) 
+    // {    
+    //     previouslyConnected = deviceConnected;
+    // }
     vTaskDelay( 500 / portTICK_PERIOD_MS );
 }

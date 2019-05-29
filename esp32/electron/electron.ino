@@ -4,6 +4,7 @@
 #include "../common/TaskManager.h"
 #include <BLEDevice.h>
 #include <BLEClient.h>
+#include <iostream>
 
 #define BUILTIN_LED 2
 
@@ -19,6 +20,8 @@ static BLEUUID startUUID(ELECTRON_START_UUID);
 static BLEUUID stateUUID(ELECTRON_STATE_UUID);
 
 static BLEAddress *pServerAddress;
+
+static BLEScan *pBLEScan;
 
 static bool doConnect = false;
 static bool connected = false;
@@ -40,6 +43,7 @@ class ClientCallbacks : public BLEClientCallbacks
         doConnect = false;
         connected = false;
         digitalWrite(BUILTIN_LED, LOW);
+        pBLEScan->start(15,true);
     }
 
     void onConnect(BLEClient *pClient) 
@@ -61,7 +65,6 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks
         if (advertisedDevice.haveServiceUUID() && advertisedDevice.getServiceUUID().equals(serviceUUID))
         {
             advertisedDevice.getScan()->stop();
-
             pServerAddress = new BLEAddress(advertisedDevice.getAddress());
             doConnect = true;
         }
@@ -82,12 +85,12 @@ void setup()
 
     BLEDevice::init("INSA_ELECTRON");
 
-    BLEScan *pBLEScan = BLEDevice::getScan();
+    pBLEScan = BLEDevice::getScan();
     pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
     pBLEScan->setActiveScan(true);
     pBLEScan->setInterval(100);
     pBLEScan->setWindow(99);  // less or equal setInterval value
-    pBLEScan->start(5,true);
+    pBLEScan->start(15,true);
 }
 
 void loop()
@@ -97,6 +100,7 @@ void loop()
         if (connectToServer(*pServerAddress))
         {
             connected = true;
+            digitalWrite(BUILTIN_LED, HIGH);
             experience.connected();
         }
         
@@ -109,7 +113,6 @@ void loop()
         
         if (result=="ON\0")
         {
-            pStartCharacteristic->writeValue("RUN\0");
             experience.start();
         }
     }
@@ -117,7 +120,6 @@ void loop()
     if ((experience.getStart() == 1)&& experience.getTimer()+TEMPS_MIN*1000 < millis() && experience.isElectron && connected)
     {
         experience.stayOnTop();
-        pStateCharacteristic->writeValue("RUN\0");
     }
     
     vTaskDelay( 200 / portTICK_PERIOD_MS );   /* include 10 ms delay for better task management by ordonnancer */
