@@ -596,7 +596,7 @@ class TakePuckSyncMaintain(Actionnable):
         self.mover = mover
 
     def moving(self):
-        self.mover.goto(*self.actionPoint.point, theta=self.actionPoint.theta)
+        self.mover.goto(*self.actionPoint.point,safe_mode=True, theta=self.actionPoint.theta)
 
     def realize(self):
         # starting two pump
