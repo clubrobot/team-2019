@@ -13,10 +13,11 @@ class detector(Actionnable):
     YELLOW = 0
     PURPLE = 1
 
-    def __init__(self, geogebra, daughter_cards, mover, side, log):
+    def __init__(self, geogebra, daughter_cards, mover, side, log, safe_mode=True):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
+        self.safe_mode =safe_mode
 
         self.wheeledbase    = daughter_cards['wheeledbase']
         self.display        = daughter_cards['display']
@@ -44,9 +45,13 @@ class detector(Actionnable):
         self.log("DETECTOR ACTION : ", "Vers l'accelerateur")
         self.wheeledbase.linpos_threshold.set(20)
         self.wheeledbase.angpos_threshold.set(0.1)
-        self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Det1"], self.points["Det2"],
-                                      self.points["Det3"], self.points["Det4"]], direction="forward")
         self.log("DETECTOR ACTION : ", "PurePursuit lance")
+        if self.safe_mode:
+            self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Det1"], self.points["Det2"],
+                                                    self.points["Det3"], self.points["Det4"]], safe_mode=True, all_try=True, nb_try=1, direction="forward")
+        else:
+
+            self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Det4"]], direction="forward")
         #self.wheeledbase.wait()
         self.log("DETECTOR ACTION : ", "Arrive")
 
@@ -81,11 +86,13 @@ class detector(Actionnable):
     def realize(self):
         # Pousse le Blueium
         self.log("DETECTOR ACTION : ", "Pousse le Blueium")
-        self.arm.deploy()
         if self.side == self.YELLOW:
+            self.arm.deploy()
             self.mover.turnonthespot_dir(-2*pi/3, direction="clock", try_limit=1)
-
+ 
         if self.side == self.PURPLE:
+            self.mover.turnonthespot_dir(pi , direction="clock", try_limit=1)
+            self.arm.deploy()
             self.mover.turnonthespot_dir(-pi/3, direction="trig", try_limit=1)
 
         self.display.sick()

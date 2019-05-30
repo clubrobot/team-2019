@@ -3,6 +3,7 @@
 
 from threading import Thread, Event, RLock
 from time import sleep
+from robots.get_robot_name import *
 import sys
 
 from common.tcptalks import TCPTalksServer, TCPTalks
@@ -32,7 +33,12 @@ class ClientGS(TCPTalks):
         self.send(_RESET_OPCODE)
 
     def get_ressource(self, name):
-        return self.execute(_GET_RESSOURCE_OPCODE, self.id, name)
+        try:
+            return self.execute(_GET_RESSOURCE_OPCODE, self.id, name)
+        except:
+            if (BORNIBUS_ID == ROBOT_ID) and name =="passage":
+                return True 
+            return False
 
     def release_ressource(self, name):
         try:

@@ -34,6 +34,7 @@ class Bornibus(Automaton):
         self.geogebra       = geo
         self.log            = log
         self.mover = Mover(self.daughter_cards, log, sensorsFront, sensorsBack)
+        
         # action List
         self.action_list    = []
 
@@ -42,6 +43,9 @@ class Bornibus(Automaton):
 
         # Display screen
         self.display        = self.daughter_cards['display']
+
+        # Daughter cards 
+        self.arm            = self.daughter_cards['arm']
 
         # Action thread manager
         self.tam = ThreadActionManager()
@@ -68,6 +72,8 @@ class Bornibus(Automaton):
         self.balanceGAct    = balance(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
         self.tabAtomsAct    = tabAtoms(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
         self.chaosAct       = chaos(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
+        self.detectorAct_bis    = detector(self.geogebra, self.daughter_cards, self.mover, self.side, self.log, safe_mode=False).getAction()
+        self.goldeniumAct_bis   = Goldenium(self.geogebra, self.daughter_cards, self.mover, self.side, self.log, safe_mode=False).getAction()
 
         self.action_list = [
             self.detectorAct,
@@ -75,6 +81,8 @@ class Bornibus(Automaton):
             self.chaosAct,
             self.tabAtomsAct,
             self.balanceGAct,
+            self.detectorAct_bis,
+            self.goldeniumAct_bis,
         ]
 
         for sensor in sensorsBack+sensorsFront:
@@ -117,15 +125,26 @@ class Bornibus(Automaton):
         self.display.start()
         disp.points = 0
         disp.start()
-        pass_gold = False
+        gold_open = False
+        get_gold = False
 
         self.tam.start()
 
         for act in self.action_list:
-            
-            if pass_gold and act.name=="goldeniumAction":
+            arm.up()
+            #####  VERIFICATION DE L ACTION ###
+            if gold_open and act.name=="detectorAction":
+                self.log("MAIN : ", "Goldenium already open, pass action.")
+                continue
+
+            if (not get_gold) and act.name=="balanceGAction":
+                self.log("MAIN : ", "Don't get gold skip balance")
+                continue
+
+            if (not gold_open) and act.name=="goldeniumAction":
                 self.log("MAIN : ", "Pass gold action due to fail on previous act.")
                 continue
+
             # add before action to the parralel action queue
             self.log("MAIN : ", "Launch Before Action")
             self.tam.putAction(act.getBefore())
@@ -135,8 +154,6 @@ class Bornibus(Automaton):
             try:
                 act.moving()
             except PositionUnreachable:
-                if act.name=="detectorAction":
-                   pass_gold = True 
                 continue
             # wait for parralels action end
             while not self.tam.end():
@@ -146,9 +163,16 @@ class Bornibus(Automaton):
             self.log("MAIN ; ", "Arrived on action point ! Go execute {} =)".format(act.name))
             try:
                 act()
-            except PositionUnreachable:
+                ### MISE A JOUR DE L ETAT
                 if act.name=="detectorAction":
-                   pass_gold = True 
+                    gold_open = True
+                    self.log("MAIN : ", "Goldenium is open !")
+                
+                if act.name=="goldeniumAction":
+                    get_gold = True
+                    self.log("MAIN : ", "Bornibus get Goldenium !")
+                
+            except PositionUnreachable:
                 continue
             act.done.set()
             self.log("MAIN ; ", "Action End !")
