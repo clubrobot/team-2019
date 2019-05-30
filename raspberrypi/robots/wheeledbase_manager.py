@@ -156,9 +156,9 @@ class Mover:
 
         side = 1 if left<right else 1
         if side==1:
-            self.logger("MOVER : ", "Waiting for a second !")
+            self.logger("MOVER : ", "go LEFT !")
         else:
-            self.logger("MOVER : ", "Waiting for a second !")
+            self.logger("MOVER : ", "go RIGHT !")
         if self.direction == self.FORWARD:
             self.wheeledbase.goto_delta(-self.LONGITUDINAL_SHIFT, 0)
         else:
@@ -338,22 +338,24 @@ class Mover:
                     continue
                 x, y, _ = self.wheeledbase.get_position()
                 vel, ang = self.wheeledbase.get_velocities_wanted(True)
+
+                threshold = 200
                 if vel > 0:
-                    while self.back_center.signal() or self.back_left.signal() or self.back_right.signal():
-                        time.sleep(0.5)
+                    while self.back_center.getter(threshold) or self.back_left.getter(threshold) or self.back_right.getter(threshold):
+                        time.sleep(0.3)
                 else:
-                    while self.front_center.signal() or self.front_left.signal() or self.front_right.signal():
-                        time.sleep(0.5)
+                    while self.front_center.getter(threshold) or self.front_left.getter(threshold) or self.front_right.getter(threshold):
+                        time.sleep(0.3)
 
                 self.wheeledbase.set_velocities(copysign(150, -vel), copysign(1, ang))
                 time.sleep(1)  # 0.5
-                self.wheeledbase.set_velocities(copysign(150, vel), 0)
                 if vel < 0:
-                    while self.back_center.signal() or self.back_left.signal() or self.back_right.signal():
+                    while self.back_center.getter(threshold) or self.back_left.getter(threshold) or self.back_right.getter(threshold):
                         time.sleep(0.3)
                 else:
-                    while self.front_center.signal() or self.front_left.signal() or self.front_right.signal():
+                    while self.front_center.getter(threshold) or self.front_left.getter(threshold) or self.front_right.getter(threshold):
                         time.sleep(0.3)
+                self.wheeledbase.set_velocities(copysign(150, vel), 0)
                 time.sleep(1)
                 self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.goal], **self.params)
                 self.interupted_lock.release()
