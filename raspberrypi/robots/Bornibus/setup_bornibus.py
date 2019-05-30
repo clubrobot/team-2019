@@ -33,8 +33,15 @@ endstops = EndStops(manager)
 gripper = Gripper(manager, endstops)
 
 sensorsA = SensorsIR(manager, uuid="sensorsA")
+if not sensorsA.is_ready():
+    sensorsA = FakeSensorsIR()
 sensorsB = SensorsIR(manager, uuid="sensorsB")
+if not sensorsB.is_ready():
+    sensorsB = FakeSensorsIR()
 sensorsC = SensorsIR(manager, uuid="sensorsC")
+if not sensorsC.is_ready():
+    sensorsC = FakeSensorsIR()
+
 sensorsFront = [Sensor(wheeledbase, "Avant droit",   sensorsA.get_range1, (50, -100), -pi/4, sensorsA.is_ready()),
                 Sensor(wheeledbase, "Avant      ",   sensorsB.get_range2, (60, 0), 0, sensorsB.is_ready()),
                 Sensor(wheeledbase, "Avant gauche",  sensorsC.get_range1, (50, 100), pi/4, sensorsC.is_ready())]
@@ -51,9 +58,9 @@ except TimeoutError:
     pass
     
 import os
-#if ROBOT_ID == BORNIBUS_ID:
-#    print("Bornibus")
-#    os.chdir("/home/pi/git/clubrobot/team-2019")
+if ROBOT_ID == BORNIBUS_ID:
+    print("Bornibus")
+    os.chdir("/home/pi/git/clubrobot/team-2019")
 
 roadmap = None
 for root, dirs, files in os.walk("."):

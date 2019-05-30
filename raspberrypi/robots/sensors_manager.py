@@ -62,8 +62,10 @@ class Sensor:
     def set_side(self, side):
         if side == Automaton.YELLOW:
             self.START_ZONE = ((0, 1200), (0, 500))
+            self.SCALE_ZONE = ((1150, 1600), (1480, 1800))
         else:
             self.START_ZONE = ((0, 1200), (2500, 3000))
+            self.SCALE_ZONE = ((1150, 1600), (1200, 1520))
 
     def disable(self):
         self.enabled = False
@@ -72,7 +74,7 @@ class Sensor:
         dist = self.dist()
         if dist > threshold:
             return False
-        wheeledbase_pos = self.wheeledbase.get_position()
+        wheeledbase_pos = self.wheeledbase.get_position_latch()
         
         x = wheeledbase_pos[0] + self.pos[0]*math.cos(wheeledbase_pos[2]) - self.pos[1]*math.sin(wheeledbase_pos[2]) \
             + math.cos(self.angle+wheeledbase_pos[2])*dist

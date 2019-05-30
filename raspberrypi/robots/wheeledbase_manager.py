@@ -36,12 +36,12 @@ class Mover:
 
         self.logger = log_meth
         self.front_center = SensorListener(sensorsFront[1], threshold=300)
-        self.front_left = SensorListener(sensorsFront[2], threshold=80)
-        self.front_right = SensorListener(sensorsFront[0], threshold=80)
+        self.front_left = SensorListener(sensorsFront[2], threshold=100)
+        self.front_right = SensorListener(sensorsFront[0], threshold=100)
 
         self.back_center = SensorListener(sensorsBack[1], threshold=300)
-        self.back_left = SensorListener(sensorsBack[2], threshold=80)
-        self.back_right = SensorListener(sensorsBack[0], threshold=80)
+        self.back_left = SensorListener(sensorsBack[2], threshold=100)
+        self.back_right = SensorListener(sensorsBack[0], threshold=100)
 
         self.front_flag = Flag(self.front_obstacle)
         self.left_flag = Flag(lambda: self.lateral_obstacle(self.LEFT))
@@ -287,9 +287,7 @@ class Mover:
 
     def purepursuit(self, path, nb_try=4, safe_mode=False, **params):
         self.params = params
-        self.wheeledbase.max_lindec.set(2000000)
-        #self.wheeledbase.max_linacc.set(2000)
-        self.wheeledbase.max_linvel.set(200)
+
         self.goal = path[-1]
         self.path = path
         self.nb_try = 0

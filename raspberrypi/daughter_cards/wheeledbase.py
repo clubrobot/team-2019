@@ -90,6 +90,9 @@ class WheeledBase(SecureSerialTalksProxy):
     FORWARD = 1
     BACKWARD = 2
     NO_DIR = 0
+
+    LATCH_TIMESTEP = 0.2
+
     class Parameter():
         def __init__(self, parent, id, type):
             self.parent = parent
@@ -149,6 +152,9 @@ class WheeledBase(SecureSerialTalksProxy):
         self.direction = self.NO_DIR
         self.final_angle = 0
 
+        self.latch = None
+        self.latch_time = None
+
     def set_openloop_velocities(self, left, right):
         self.send(SET_OPENLOOP_VELOCITIES_OPCODE, FLOAT(left), FLOAT(right))
 
@@ -189,7 +195,6 @@ class WheeledBase(SecureSerialTalksProxy):
             self.send(START_TURNONTHESPOT_OPCODE, FLOAT(theta), BYTE({'forward':0, 'backward':1}[way]))
         else:
             self.send(START_TURNONTHESPOT_DIR_OPCODE, FLOAT(theta), BYTE({'clock':0, 'trig':1}[direction]))
-
 
     def isarrived(self, **kwargs):
         output = self.execute(POSITION_REACHED_OPCODE, **kwargs)
@@ -246,6 +251,12 @@ class WheeledBase(SecureSerialTalksProxy):
         self.x, self.y, self.theta = output.read(FLOAT, FLOAT, FLOAT)
         self.previous_measure = time.time()
         return self.x, self.y, self.theta
+
+    def get_position_latch(self, **kwargs):
+        if self.latch is None or time.time() - self.latch_time > self.LATCH_TIMESTEP:
+            self.latch = self.get_position(**kwargs)
+            self.latch_time = time.time()
+        return self.latch
 
     def get_position_previous(self, delta):
         if time.time()-self.previous_measure>delta:

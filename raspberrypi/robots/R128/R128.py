@@ -135,11 +135,11 @@ class R128(Automaton):
         self.log.reset_time()
         Thread(target=self.stop_match).start()
         self.display.start()
-
+        
         self.display.addPoints(5) #pose electron
 
         self.electron.start()
-        self.display.addPoints(35)
+        self.display.addPoints(15)
 
         # starting thread action manager
         self.tam.start()
@@ -189,6 +189,5 @@ if __name__ == '__main__':
         auto.set_side(R128.PURPLE)
         init_robot()
         auto.set_position()
-        self.logger("ready")
         input()
         auto.run()
