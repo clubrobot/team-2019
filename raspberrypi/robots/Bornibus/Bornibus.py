@@ -75,7 +75,6 @@ class Bornibus(Automaton):
 
         self.action_list = [
             self.detectorAct,
-            arm.up(),
             self.goldeniumAct,
             self.chaosAct,
             self.tabAtomsAct,
@@ -127,7 +126,7 @@ class Bornibus(Automaton):
         self.tam.start()
 
         for act in self.action_list:
-            
+            arm.up()
             if pass_gold and act.name=="goldeniumAction":
                 self.log("MAIN : ", "Pass gold action due to fail on previous act.")
                 continue
