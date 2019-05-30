@@ -43,8 +43,8 @@ def start(args):
         auto.start_preparation()
     except Exception as e:
         import traceback
-        etype, value, tb = sys.exc_info()
-        auto.log(str(etype), str(value), str(traceback.extract_tb(tb)))
+        auto.log(traceback.format_exc())
+        auto.log.close()
         auto.wheeledbase.stop()
 
 
