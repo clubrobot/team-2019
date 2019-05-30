@@ -34,6 +34,7 @@ class Bornibus(Automaton):
         self.geogebra       = geo
         self.log            = log
         self.mover = Mover(self.daughter_cards, log, sensorsFront, sensorsBack)
+        
         # action List
         self.action_list    = []
 
@@ -42,6 +43,9 @@ class Bornibus(Automaton):
 
         # Display screen
         self.display        = self.daughter_cards['display']
+
+        # Daughter cards 
+        self.arm            = self.daughter_cards['arm']
 
         # Action thread manager
         self.tam = ThreadActionManager()
@@ -71,6 +75,7 @@ class Bornibus(Automaton):
 
         self.action_list = [
             self.detectorAct,
+            arm.up(),
             self.goldeniumAct,
             self.chaosAct,
             self.tabAtomsAct,
