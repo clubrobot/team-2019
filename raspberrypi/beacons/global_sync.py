@@ -38,7 +38,10 @@ class ClientGS(TCPTalks):
         try:
             self.send(_RELEASE_RESSOURCE_OPCODE, self.id, name)
         except:
-            pass
+            try:
+                self.send(_RELEASE_RESSOURCE_OPCODE, self.id, name)
+            except:
+                pass
 
     def is_active(self):
         if not self.is_connected:
