@@ -346,6 +346,9 @@ class BalanceAfter3(Actionnable):
         self.arm2.move(TANK_POS_INTER)
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
+
+        self.log("Don du mutex balance")
+        self.master.release_ressource("balance")
     
     def before(self):
         time.sleep(1)
