@@ -46,8 +46,14 @@ class balance(Actionnable):
         #TODO sans master enable
 
         # Si on a la com et que la balance est libre on fonce
-        if self.master.is_active() and self.master.get_ressource("balance"):
-            self.master.release_ressource("depart")
+    
+        if (self.master.is_active() and self.master.get_ressource("balance")):
+            def tempo():
+                self.log("TEMPO TEMPO")
+                time.sleep(2)
+                self.log("FIN attente don depart")
+                self.master.release_ressource("depart")
+            threading.Thread(target=tempo).start()
             self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal1"], self.points["Bal2"], self.points["Bal3"]],
                                     direction="forward", lookahead=200, lookaheadbis=120)
         # Si on a la com mais on a pas la balance on attend 
