@@ -18,7 +18,7 @@ void TurnOnTheSpot::computeVelSetpoints(float timestep)
 
 	float linPosSetpoint = cos(theta) * dx + sin(theta) * dy;
 	float angPosSetpoint = inrange((getPosSetpoint().theta - theta), -M_PI, M_PI);
-	if(fabs(angPosSetpoint)>0.5)
+	if(fabs(angPosSetpoint)>0.2)
 	{
 	if (m_direction==TRIG && angPosSetpoint<0)  angPosSetpoint += 2*M_PI;
 	if (m_direction==CLOCK && angPosSetpoint>0) angPosSetpoint -= 2*M_PI;
