@@ -34,6 +34,7 @@ class Bornibus(Automaton):
         self.geogebra       = geo
         self.log            = log
         self.mover = Mover(self.daughter_cards, log, sensorsFront, sensorsBack)
+        
         # action List
         self.action_list    = []
 
@@ -42,6 +43,9 @@ class Bornibus(Automaton):
 
         # Display screen
         self.display        = self.daughter_cards['display']
+
+        # Daughter cards 
+        self.arm            = self.daughter_cards['arm']
 
         # Action thread manager
         self.tam = ThreadActionManager()
@@ -122,7 +126,7 @@ class Bornibus(Automaton):
         self.tam.start()
 
         for act in self.action_list:
-            
+            arm.up()
             if pass_gold and act.name=="goldeniumAction":
                 self.log("MAIN : ", "Pass gold action due to fail on previous act.")
                 continue

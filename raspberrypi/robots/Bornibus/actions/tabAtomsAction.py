@@ -57,7 +57,7 @@ class tabAtoms(Actionnable):
 
         self.display.happy()
         self.master.release_ressource("passage")
-        self.mover.goto(*self.points["Tab1"], safe_mode=False, direction='forward')
+        self.mover.goto(*self.points["Tab1"], safe_mode=True, direction='forward')
 
         #se tourner pour mettre les palets dans le tableau
         if self.side == self.YELLOW:
