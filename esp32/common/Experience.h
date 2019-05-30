@@ -23,21 +23,21 @@
 
 #define INTERRUPT			4
 
-#define TEMPS_MIN			30
+#define TEMPS_MIN			8
 
 #define GO_BACK				32
 #define GO_FORWARD		    25
 
+#define STOP_CONSTANT       0.0
+#define RUN_CONSTANT        0.6
 
 class Experience : public PeriodicProcess
 {
     public:
-        Experience(bool isElectron);
+        Experience();
         
         void start(void);
         void connected(void);
-
-        void updateAnimation(void);
 
         void stayOnTop(void);
 
@@ -48,26 +48,15 @@ class Experience : public PeriodicProcess
 
     private:
 
-        void manageMotorSwitchs(void);
-        
-        void goBack(void);
-		void goForward(void);
-		void motorStop(void);
-
-        bool _isElectron;
         bool _isStarted;
         bool _isOnTop;
-
-        int _time;
 
         DCMotor _motor;
 		DCMotorsDriver _driver;
 
-        bool _motorForward;
-        bool _motorBackward;
-        bool _motorStop;
-
         CRGB _leds[NUMPIXEL];
+
+        Clock _clock;
 
         Mutex _mutex;
 
