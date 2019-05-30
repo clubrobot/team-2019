@@ -11,6 +11,8 @@ LIBS =  $(ESP_LIBS)/EEPROM \
 		$(COMMON)/BLE \
 		$(COMMON)/CRC16.cpp \
 		$(COMMON)/ExperienceEffects.cpp \
+		$(COMMON)/PeriodicProcess.cpp \
+		$(COMMON)/Experience.cpp \
 		$(COMMON)/ESP32-Arduino-Servo-Library/src/Servo.cpp \
 		$(COMMON)/fastLED/FastLED.cpp \
 		$(COMMON)/fastLED/bitswap.cpp \

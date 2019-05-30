@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "Arduino.h"
-#include "../common/ExperienceEffects.h"
+#include "../common/Experience.h"
 #include "../common/TaskManager.h"
 #include <BLEDevice.h>
 #include <BLEClient.h>
@@ -26,9 +26,7 @@ static bool connected = false;
 
 BLERemoteCharacteristic *pStartCharacteristic;
 
-ExperienceEffects experience(true);
-
-TaskManager task_manager;
+Experience experience(false);
 
 static void secondary_loop(void * parameters);
 bool connectToServer(BLEAddress pAddress);
@@ -73,10 +71,9 @@ void setup()
 {   
     pinMode(BUILTIN_LED, OUTPUT);
 
-   // Serial.begin(115200);
-
-    /* setup experience */
-    experience.setup();
+    experience.setTimestep(0.1);
+    experience.enable();
+    experience.updateAnimation();
 
     BLEDevice::init("INSA_ELECTRON");
 
@@ -86,10 +83,12 @@ void setup()
     pBLEScan->setInterval(100);
     pBLEScan->setWindow(99);  // less or equal setInterval value
     pBLEScan->start(15,true);
+    
 }
 
 void loop()
 {
+    experience.update();
     if (doConnect == true)
     {
         if (connectToServer(*pServerAddress))
@@ -110,7 +109,7 @@ void loop()
             experience.start();
         }
     }
-    
+
     vTaskDelay( 200 / portTICK_PERIOD_MS );   /* include 10 ms delay for better task management by ordonnancer */
 }
 
