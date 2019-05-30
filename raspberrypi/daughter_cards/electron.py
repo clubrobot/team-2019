@@ -38,6 +38,22 @@ class Electron(SecureSerialTalksProxy):
         return bool(ret)
 
 
+class ElectronFake:
+    def __init__(self,parent, uuid='expServ'):
+        pass
+    def connect_sate(self):
+        return False
+        
+    def start(self):
+        pass 
+
+    def experience_started(self):
+        return False
+
+    def electron_started(self):
+        return False
+
+
 if __name__ == "__main__":
     from robots.setup_serialtalks import *
 

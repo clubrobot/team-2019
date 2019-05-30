@@ -13,7 +13,6 @@ from daughter_cards.sensors_IR import *
 from robots.sensors_manager import *
 from robots.wheeledbase_manager import * 
 import time
-
 if ROBOT_ID == R128_ID:
     log = Logger(Logger.BOTH, file_name="/home/pi/logs/start.log")
 else:
@@ -21,8 +20,12 @@ else:
 
 armF = RobotArm(manager, uuid='arm_front')
 armB = RobotArm(manager, uuid='arm_back')
-
-electron = Electron(manager)
+try:
+        electron = Electron(manager)
+        log("INIT", "Utilisation du vrai electron")
+except:
+        log("INIT", "Utilisation de l'electron Fake")
+        electron = ElectronFake(manager)
 
 armFront = ArmController(armF, 'ARM FRONT', log)
 armBack  = ArmController(armB, 'ARM BACK' , log)
@@ -31,7 +34,7 @@ sensorsA = SensorsIR(manager, uuid="sensorsA")
 sensorsB = SensorsIR(manager, uuid="sensorsB")
 sensorsC = SensorsIR(manager, uuid="sensorsC")
 sensorsD = SensorsIR(manager, uuid="sensorsD")
-
+        
 sensorsFront = [Sensor(wheeledbase, "Avant gauche",   sensorsD.get_range2, (110, 110), pi/4, sensorsD.is_ready()),
                 Sensor(wheeledbase, "Avant      ",    sensorsD.get_range1, (140, -50), 0, sensorsD.is_ready()),
                 Sensor(wheeledbase, "Avant droit",    sensorsC.get_range2, (110, -110), -pi/4, sensorsC.is_ready())]
