@@ -338,10 +338,23 @@ class Mover:
                     continue
                 x, y, _ = self.wheeledbase.get_position()
                 vel, ang = self.wheeledbase.get_velocities_wanted(True)
+                if vel > 0:
+                    while self.back_center.signal() or self.back_left.signal() or self.back_right.signal():
+                        time.sleep(0.5)
+                else:
+                    while self.front_center.signal() or self.front_left.signal() or self.front_right.signal():
+                        time.sleep(0.5)
+
                 self.wheeledbase.set_velocities(copysign(150, -vel), copysign(1, ang))
                 time.sleep(1)  # 0.5
                 self.wheeledbase.set_velocities(copysign(150, vel), 0)
-                time.sleep(1.2)
+                if vel < 0:
+                    while self.back_center.signal() or self.back_left.signal() or self.back_right.signal():
+                        time.sleep(0.3)
+                else:
+                    while self.front_center.signal() or self.front_left.signal() or self.front_right.signal():
+                        time.sleep(0.3)
+                time.sleep(1)
                 self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.goal], **self.params)
                 self.interupted_lock.release()
             except TimeoutError:
