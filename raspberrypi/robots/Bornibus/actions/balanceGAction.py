@@ -46,8 +46,7 @@ class balance(Actionnable):
         #TODO sans master enable
 
         # Si on a la com et que la balance est libre on fonce
-    
-        if (self.master.is_active() and self.master.get_ressource("balance")):
+        if self.master.is_active() and self.master.get_ressource("balance"):
             def tempo():
                 self.log("TEMPO TEMPO")
                 time.sleep(2)
