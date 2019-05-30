@@ -189,6 +189,5 @@ if __name__ == '__main__':
         auto.set_side(R128.PURPLE)
         init_robot()
         auto.set_position()
-        self.logger("ready")
         input()
         auto.run()

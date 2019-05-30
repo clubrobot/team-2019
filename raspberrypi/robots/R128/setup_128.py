@@ -13,6 +13,9 @@ from daughter_cards.sensors_IR import *
 from robots.sensors_manager import *
 from robots.wheeledbase_manager import * 
 import time
+import warnings
+warnings.filterwarnings('error')
+
 if ROBOT_ID == R128_ID:
     log = Logger(Logger.BOTH, file_name="/home/pi/logs/start.log")
 else:
@@ -31,10 +34,20 @@ armFront = ArmController(armF, 'ARM FRONT', log)
 armBack  = ArmController(armB, 'ARM BACK' , log)
 
 sensorsA = SensorsIR(manager, uuid="sensorsA")
+if not sensorsA.is_ready():
+    sensorsA = FakeSensorsIR()
 sensorsB = SensorsIR(manager, uuid="sensorsB")
+if not sensorsB.is_ready():
+    sensorsB = FakeSensorsIR()
 sensorsC = SensorsIR(manager, uuid="sensorsC")
+if not sensorsC.is_ready():
+    sensorsC = FakeSensorsIR()
 sensorsD = SensorsIR(manager, uuid="sensorsD")
-        
+if not sensorsD.is_ready():
+    sensorsD = FakeSensorsIR()
+
+
+
 sensorsFront = [Sensor(wheeledbase, "Avant gauche",   sensorsD.get_range2, (110, 110), pi/4, sensorsD.is_ready()),
                 Sensor(wheeledbase, "Avant      ",    sensorsD.get_range1, (140, -50), 0, sensorsD.is_ready()),
                 Sensor(wheeledbase, "Avant droit",    sensorsC.get_range2, (110, -110), -pi/4, sensorsC.is_ready())]

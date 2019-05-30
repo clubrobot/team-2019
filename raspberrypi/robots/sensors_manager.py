@@ -70,7 +70,7 @@ class Sensor:
     def disable(self):
         self.enabled = False
 
-    def obstacle(self, threshold, wheeledbase_pos):
+    def obstacle(self, threshold):
         dist = self.dist()
         if dist > threshold:
             return False

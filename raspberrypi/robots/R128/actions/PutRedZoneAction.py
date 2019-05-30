@@ -56,10 +56,10 @@ class PutRedZone(Actionnable):
 
     def moving(self):
         if self.master.is_active():
-            self.logger("En attente du mutex depart")
+            self.log("En attente du mutex depart")
             while not self.master.get_ressource("depart"):
                 time.sleep(0.4)
-            self.logger("Mutex récupéré")
+            self.log("Mutex récupéré")
         # Start Path
         if self.side == self.YELLOW:
             self.wheeledbase.purepursuit(self.path, direction='backward')
@@ -75,7 +75,7 @@ class PutRedZone(Actionnable):
         
         self.arm1.move(RED_ZONE1)
         self.arm2.move(RED_ZONE1)
-        self.logger("Don du mutex depart")
+        self.log("Don du mutex depart")
         self.master.release_ressource("depart")
         while not (self.arm1.is_arrived() and self.arm2.is_arrived()):
             time.sleep(0.1)
