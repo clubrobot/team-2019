@@ -51,9 +51,9 @@ except TimeoutError:
     pass
     
 import os
-#if ROBOT_ID == BORNIBUS_ID:
-#    print("Bornibus")
-#    os.chdir("/home/pi/git/clubrobot/team-2019")
+if ROBOT_ID == BORNIBUS_ID:
+    print("Bornibus")
+    os.chdir("/home/pi/git/clubrobot/team-2019")
 
 roadmap = None
 for root, dirs, files in os.walk("."):
