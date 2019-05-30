@@ -62,8 +62,10 @@ class Sensor:
     def set_side(self, side):
         if side == Automaton.YELLOW:
             self.START_ZONE = ((0, 1200), (0, 500))
+            self.SCALE_ZONE = ((1150, 1600), (1480, 1800))
         else:
             self.START_ZONE = ((0, 1200), (2500, 3000))
+            self.SCALE_ZONE = ((1150, 1600), (1200, 1520))
 
     def disable(self):
         self.enabled = False

@@ -31,7 +31,7 @@ sensorsA = SensorsIR(manager, uuid="sensorsA")
 sensorsB = SensorsIR(manager, uuid="sensorsB")
 sensorsC = SensorsIR(manager, uuid="sensorsC")
 sensorsD = SensorsIR(manager, uuid="sensorsD")
-
+"""
 sensorsFront = [Sensor(wheeledbase, "Avant gauche",   sensorsD.get_range2, (110, 110), pi/4, sensorsD.is_ready()),
                 Sensor(wheeledbase, "Avant      ",    sensorsD.get_range1, (140, -50), 0, sensorsD.is_ready()),
                 Sensor(wheeledbase, "Avant droit",    sensorsC.get_range2, (110, -110), -pi/4, sensorsC.is_ready())]
@@ -43,7 +43,7 @@ sensorsBack  = [Sensor(wheeledbase, "Arrière droit",  sensorsB.get_range2, (-11
                 Sensor(wheeledbase, "Arrière",        sensorsA.get_range1, (-110, -50), pi, sensorsA.is_ready()),
                 Sensor(wheeledbase, "Arrière gauche", sensorsA.get_range2, (-110, 110), 3*pi/4, sensorsA.is_ready())]
 sens_manager = SensorsManager(wheeledbase, sensorsFront, sensorsBack, sensorsLat)
-
+"""
 import os
 if ROBOT_ID == R128_ID:
         print("128")

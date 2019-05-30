@@ -135,7 +135,7 @@ class R128(Automaton):
         self.log.reset_time()
         Thread(target=self.stop_match).start()
         self.display.start()
-
+        
         self.display.addPoints(5) #pose electron
 
         self.electron.start()
