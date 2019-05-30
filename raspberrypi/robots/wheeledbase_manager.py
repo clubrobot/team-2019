@@ -349,6 +349,7 @@ class Mover:
 
                 self.wheeledbase.set_velocities(copysign(150, -vel), copysign(1, ang))
                 time.sleep(1)  # 0.5
+                self.wheeledbase.stop()
                 if vel < 0:
                     while self.back_center.getter(threshold) or self.back_left.getter(threshold) or self.back_right.getter(threshold):
                         time.sleep(0.3)
