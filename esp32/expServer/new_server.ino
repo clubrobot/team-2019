@@ -12,14 +12,14 @@
 /* used for multiple device connection */
 #define SERVICE_UUID       "9089189e-353f-44ec-9d84-a767862d3f6e"
 
-#define START_UUID         "413a617d-beb5-4932-9b3e-0cc79a1d56d6"
-#define STATE_UUID         "cae98ae4-9c16-4426-98eb-50b3d4473d5c"
+#define START_EXP_UUID     "413a617d-beb5-4932-9b3e-0cc79a1d56d6"
+#define START_ELE_UUID     "cae98ae4-9c16-4426-98eb-50b3d4473d5c"
 
 
 BLEServer *pServer;
 
-BLECharacteristic *pStartCharacteristic;
-BLECharacteristic *pStateCharacteristic;
+BLECharacteristic *pStartEXPCharacteristic;
+BLECharacteristic *pStartELECharacteristic;
 
 bool deviceConnected     = false;
 bool previouslyConnected = false;
@@ -71,22 +71,22 @@ void setup()
 
     pServer->setCallbacks(new MyServerCallbacks());
     /***************** Electron Characteristics *****************/
-    pStartCharacteristic = pService->createCharacteristic(START_UUID,    \
+    pStartEXPCharacteristic = pService->createCharacteristic(START_EXP_UUID,    \
                                                             BLECharacteristic::PROPERTY_READ    | \
                                                             BLECharacteristic::PROPERTY_WRITE   | \
                                                             BLECharacteristic::PROPERTY_NOTIFY);
 
-    pStateCharacteristic = pService->createCharacteristic(STATE_UUID,    \
+    pStartELECharacteristic = pService->createCharacteristic(START_ELE_UUID,    \
                                                             BLECharacteristic::PROPERTY_READ    | \
                                                             BLECharacteristic::PROPERTY_WRITE   | \
                                                             BLECharacteristic::PROPERTY_NOTIFY);
 
 
-    pStartCharacteristic->setCallbacks(new MyCallback());
-    pStateCharacteristic->setCallbacks(new MyCallback());
+    pStartEXPCharacteristic->setCallbacks(new MyCallback());
+    pStartELECharacteristic->setCallbacks(new MyCallback());
 
-    pStartCharacteristic->setValue("OFF\0");
-    pStateCharacteristic->setValue("00\0");
+    pStartEXPCharacteristic->setValue("OFF\0");
+    pStartELECharacteristic->setValue("OFF\0");
 
     pService->start();
 
