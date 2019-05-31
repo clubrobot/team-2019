@@ -286,7 +286,6 @@ class Mover:
     def reset(self):
         self.front_flag.clear()
         self.interupted_status.clear()
-        self.goto_interrupt.clear()
         self.params ={}
         self.disable_sensors()
         self.nb_try = 0
