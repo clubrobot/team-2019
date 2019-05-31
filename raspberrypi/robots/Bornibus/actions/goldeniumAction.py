@@ -29,6 +29,7 @@ class Goldenium(Actionnable):
         self.gripper        = daughter_cards['gripper']
         self.endstops       = daughter_cards['endstops']
         self.arm            = daughter_cards['arm']
+        self.master         = daughter_cards['master']
 
 
         if self.side == self.YELLOW:
@@ -43,6 +44,8 @@ class Goldenium(Actionnable):
 
     def moving(self):
         self.wheeledbase.reset_parameters()
+        if self.safe_mode==False:
+            self.master.release_ressource("depart")
         self.log("GOLDENIUM ACTION : ", "Vers goldenium")
         if self.safe_mode:
             self.mover.goto(*self.points["Gold1"], safe_mode=True, all_try=True, nb_try=1, theta=pi)
@@ -119,7 +122,7 @@ class Goldenium(Actionnable):
         self.log("GOLDENIUM ACTION : ", "fin")
 
         if self.endstops.get_ES3():
-            self.log("GOLDENIUM ACTION : ", "Goldenium pris : +24 PTS")
+            self.log("GOLDENIUM ACTION : ", "Goldenium pris : +20 PTS")
             self.display.addPoints(20)
             self.display.love()
 

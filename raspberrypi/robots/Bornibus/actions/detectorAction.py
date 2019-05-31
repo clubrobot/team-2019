@@ -22,6 +22,7 @@ class detector(Actionnable):
         self.wheeledbase    = daughter_cards['wheeledbase']
         self.display        = daughter_cards['display']
         self.arm            = daughter_cards['arm']
+        self.master         = daughter_cards['master']
 
         self.mover = mover
 
@@ -40,7 +41,8 @@ class detector(Actionnable):
 
     def moving(self):
         self.wheeledbase.reset_parameters()
-
+        if self.safe_mode==False:
+            self.master.release_ressource("depart")
         # Vers l'accélérateur
         self.log("DETECTOR ACTION : ", "Vers l'accelerateur")
         self.wheeledbase.linpos_threshold.set(20)
