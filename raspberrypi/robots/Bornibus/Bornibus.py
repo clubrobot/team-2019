@@ -148,6 +148,10 @@ class Bornibus(Automaton):
                 self.log("MAIN : ", "Pass gold action due to fail on previous act.")
                 continue
 
+            if get_gold and act.name=="goldeniumAction":
+                self.log("MAIN : ", "Don't go to gold action because we already did it!")
+                continue
+
             # add before action to the parralel action queue
             self.log("MAIN : ", "Launch Before Action")
             self.tam.putAction(act.getBefore())
