@@ -10,6 +10,7 @@ from robots.Bornibus.actions.tabAtomsAction import *
 from robots.Bornibus.actions.chaosAction import *
 from common.actions.action import ThreadActionManager
 from robots.sensors_manager import *
+import traceback
 from robots.wheeledbase_manager import PositionUnreachable
 COLOR = Automaton.YELLOW
 COLOR = Automaton.PURPLE
@@ -74,6 +75,7 @@ class Bornibus(Automaton):
         self.chaosAct       = chaos(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
         self.detectorAct_bis    = detector(self.geogebra, self.daughter_cards, self.mover, self.side, self.log, safe_mode=False).getAction()
         self.goldeniumAct_bis   = Goldenium(self.geogebra, self.daughter_cards, self.mover, self.side, self.log, safe_mode=False).getAction()
+        self.balanceGAct_bis    = balance(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
 
         self.action_list = [
             self.detectorAct,
@@ -83,6 +85,7 @@ class Bornibus(Automaton):
             self.balanceGAct,
             self.detectorAct_bis,
             self.goldeniumAct_bis,
+            self.balanceGAct_bis,
         ]
 
         for sensor in sensorsBack+sensorsFront:
@@ -154,6 +157,8 @@ class Bornibus(Automaton):
             try:
                 act.moving()
             except PositionUnreachable:
+                self.log("MAIN : ", "Position Unreacheable !")
+                self.log(str(traceback.format_exc()))
                 continue
             # wait for parralels action end
             while not self.tam.end():
@@ -173,6 +178,8 @@ class Bornibus(Automaton):
                     self.log("MAIN : ", "Bornibus get Goldenium !")
                 
             except PositionUnreachable:
+                self.log("MAIN : ", "Position Unreacheable !")
+                self.log(str(traceback.format_exc()))
                 continue
             act.done.set()
             self.log("MAIN ; ", "Action End !")
@@ -184,7 +191,7 @@ class Bornibus(Automaton):
             self.log("MAIN : ", "Let's go to the next action !")
 
         #stop thread action manager
-        self.wheeledbase.goto(*self.points["End"])
+        self.mover.goto(*self.points["End"],safe_mode=True, all_try=True, nb_try=0)
         self.tam.stop()
         self.display.stop()
         self.wheeledbase.stop()
