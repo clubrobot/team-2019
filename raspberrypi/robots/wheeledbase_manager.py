@@ -133,6 +133,7 @@ class Mover:
                 if obstacle: self.logger("MOVER : ", " Steel an obstacle on the objectif!")
                 if self.nb_try>self.try_limit:
                     self.goto_interrupt.set()
+            self.wheeledbase.start_purepursuit()
             self.interupted_status.clear()
             self.interupted_lock.release()
             return 
