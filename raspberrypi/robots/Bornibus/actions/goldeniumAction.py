@@ -27,6 +27,8 @@ class Goldenium(Actionnable):
         self.display        = daughter_cards['display']
         self.gripper        = daughter_cards['gripper']
         self.endstops       = daughter_cards['endstops']
+        self.arm            = daughter_cards['arm']
+
 
         if self.side == self.YELLOW:
             color = "Y"
@@ -118,7 +120,7 @@ class Goldenium(Actionnable):
             self.display.love()
 
     def before(self):
-        pass
+        self.arm.up()
 
     def after(self):
         pass

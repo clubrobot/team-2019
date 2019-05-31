@@ -166,7 +166,7 @@ class Mover:
 
         side = 1 if left<right else 1
         if side==1:
-            self.logger("MOVER : ", "go LEFT  !")
+            self.logger("MOVER : ", "go LEFT !")
         else:
             self.logger("MOVER : ", "go RIGHT !")
         if self.direction == self.FORWARD:
@@ -354,10 +354,26 @@ class Mover:
                     continue
                 x, y, _ = self.wheeledbase.get_position()
                 vel, ang = self.wheeledbase.get_velocities_wanted(True)
+
+                threshold = 200
+                if vel > 0:
+                    while self.back_center.getter(threshold) or self.back_left.getter(threshold) or self.back_right.getter(threshold):
+                        time.sleep(0.3)
+                else:
+                    while self.front_center.getter(threshold) or self.front_left.getter(threshold) or self.front_right.getter(threshold):
+                        time.sleep(0.3)
+
                 self.wheeledbase.set_velocities(copysign(150, -vel), copysign(1, ang))
                 time.sleep(1)  # 0.5
+                self.wheeledbase.stop()
+                if vel < 0:
+                    while self.back_center.getter(threshold) or self.back_left.getter(threshold) or self.back_right.getter(threshold):
+                        time.sleep(0.3)
+                else:
+                    while self.front_center.getter(threshold) or self.front_left.getter(threshold) or self.front_right.getter(threshold):
+                        time.sleep(0.3)
                 self.wheeledbase.set_velocities(copysign(150, vel), 0)
-                time.sleep(1.2)
+                time.sleep(1)
                 self.wheeledbase.purepursuit([self.wheeledbase.get_position()[:2], self.goal], **self.params)
                 self.interupted_lock.release()
             except TimeoutError:

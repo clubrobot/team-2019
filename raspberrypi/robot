@@ -39,7 +39,13 @@ def start(args):
         print("NOT ON A ROBOT")
         return
 
-    auto.start_preparation()
+    try:
+        auto.start_preparation()
+    except Exception as e:
+        import traceback
+        auto.log(traceback.format_exc())
+        auto.log.close()
+        auto.wheeledbase.stop()
 
 
 def dev_mode(args):

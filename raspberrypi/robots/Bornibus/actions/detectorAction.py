@@ -81,11 +81,13 @@ class detector(Actionnable):
     def realize(self):
         # Pousse le Blueium
         self.log("DETECTOR ACTION : ", "Pousse le Blueium")
-        self.arm.deploy()
         if self.side == self.YELLOW:
+            self.arm.deploy()
             self.mover.turnonthespot_dir(-2*pi/3, direction="clock", try_limit=1)
 
         if self.side == self.PURPLE:
+            self.mover.turnonthespot_dir(pi , direction="clock", try_limit=1)
+            self.arm.deploy()
             self.mover.turnonthespot_dir(-pi/3, direction="trig", try_limit=1)
 
         self.display.sick()
