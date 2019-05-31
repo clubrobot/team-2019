@@ -285,6 +285,9 @@ class Mover:
 
     def reset(self):
         self.front_flag.clear()
+        self.left_flag.clear()
+        self.right_flag.clear()
+        self.withdraw_flag.clear()
         self.interupted_status.clear()
         self.params ={}
         self.disable_sensors()
@@ -383,6 +386,7 @@ class Mover:
     
     def turnonthespot_dir(self, theta, try_limit=3, direction="clock"):
         self.enable_sensors()
+        self.reset()
         self.goal = self.wheeledbase.get_position()[:-1]
         self.nb_try = 0
         self.try_limit = try_limit
@@ -421,6 +425,7 @@ class Mover:
   
     def turnonthespot(self, theta, try_limit=3, way="forward"):
         self.enable_sensors()
+        self.reset()
         self.goal = self.wheeledbase.get_position()[:-1]
         self.nb_try = 0
         self.try_limit = try_limit
@@ -460,6 +465,7 @@ class Mover:
 
     def turnonthespot_hard(self, theta, try_limit=3, way="forward"):
         self.enable_sensors()
+        self.reset()
         self.goal = self.wheeledbase.get_position()[:-1]
         self.nb_try = 0
         self.try_limit = try_limit
@@ -508,6 +514,7 @@ class Mover:
 
     def withdraw(self, x, y, direction="forward", timeout=5):
         self.enable_sensors()
+        self.goto_interrupt.clear()
         w_x, w_y, _ = self.wheeledbase.get_position()
         self.goal = (w_x + x, w_y + y)
         self.timeout = timeout
