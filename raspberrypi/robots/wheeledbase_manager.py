@@ -329,7 +329,6 @@ class Mover:
         self.enable_sensors(direction=self.direction)
         
         self.isarrived = False
-        x, y, _ = self.wheeledbase.get_position()
         self.logger("MOVER : ", "path ", self.path)
         self.wheeledbase.purepursuit(self.path, **self.params)
         while not self.isarrived or self.interupted_status.is_set():

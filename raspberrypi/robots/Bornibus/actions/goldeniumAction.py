@@ -17,11 +17,12 @@ class Goldenium(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
 
-    def __init__(self, geogebra, daughter_cards, mover, side, log):
+    def __init__(self, geogebra, daughter_cards, mover, side, log, safe_mode=True):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
         self.mover = mover
+        self.safe_mode = safe_mode
 
         self.wheeledbase    = daughter_cards['wheeledbase']
         self.display        = daughter_cards['display']
@@ -43,7 +44,10 @@ class Goldenium(Actionnable):
     def moving(self):
         self.wheeledbase.reset_parameters()
         self.log("GOLDENIUM ACTION : ", "Vers goldenium")
-        self.mover.goto(*self.points["Gold1"], theta=pi)
+        if self.safe_mode:
+            self.mover.goto(*self.points["Gold1"], safe_mode=True, all_try=True, nb_try=1, theta=pi)
+        else:
+            self.mover.goto(*self.points["Gold1"],theta=pi)
 
     def realize(self):
         self.wheeledbase.angpos_threshold.set(0.1)
