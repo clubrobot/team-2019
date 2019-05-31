@@ -2,14 +2,14 @@
 #-*- coding: utf-8 -*-
 
 from argparse  import ArgumentParser
-
+from common.logger import Logger
 from beacons.global_sync import ServerGS
 
     
 
 def server(args):
-
-    srv = ServerGS()
+    log = Logger(Logger.WRITE, file_name="/home/pi/logs/server.log")
+    srv = ServerGS(log)
     srv.run()
 
 

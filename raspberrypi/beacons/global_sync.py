@@ -70,10 +70,11 @@ class ClientGS(TCPTalks):
 
 class ServerGS(TCPTalksServer):
 
-    def __init__(self):
+    def __init__(self, logger):
         TCPTalksServer.__init__(self, _BEACON_PORT)
         self.ressources = {"balance": -1, "depart": -1, "passage": -1}
         self.mutex = RLock()
+        self.logger = logger
         self.bornibus_id = -1
         self.r128_id = -1
         self.bind(_GET_OTHER_OPCODE, self.get_pos)
@@ -124,7 +125,9 @@ class ServerGS(TCPTalksServer):
         if not self.mutex.acquire(timeout=0.5):
             return False 
         
+        self.logger("Ressource {} asking by {}".format(name, idx))
         if not name in list(self.ressources.keys()):
+            self.logger("Unknown ressource !")
             self.mutex.release()
             raise RuntimeError("Unknown ressource !")
         
@@ -132,12 +135,15 @@ class ServerGS(TCPTalksServer):
             try:
                 self.execute(_PING_OPCODE,id=self.ressources[name])
             except (ConnectionError, TimeoutError, KeyError):
+                self.logger("Pair avec le lock a fail, on peut le reprendre")
                 self.ressources[name] = idx
                 self.mutex.release()
                 return True    
             self.mutex.release()
+            self.logger("Refusé")
             return False
         else:
+            self.logger("Mutex {} attribué a {}".format(name, idx))
             self.ressources[name] = idx
             self.mutex.release()
             return True
@@ -145,7 +151,7 @@ class ServerGS(TCPTalksServer):
     def release_ressource(self, idx, name):
         if not self.mutex.acquire(timeout=0.5):
             return 
-        
+        self.logger("Release mutex {} by {}".format(name, idx))
         if not name in list(self.ressources.keys()):
             self.mutex.release()
         
