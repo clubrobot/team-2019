@@ -139,7 +139,7 @@ class R128(Automaton):
         self.display.addPoints(5) #pose electron
 
         self.electron.start()
-        self.display.addPoints(15)
+        self.display.addPoints(35)
 
         # starting thread action manager
         self.tam.start()

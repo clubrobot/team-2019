@@ -26,7 +26,7 @@ static bool connected = false;
 
 BLERemoteCharacteristic *pStartCharacteristic;
 
-Experience experience(false);
+Experience experience;
 
 static void secondary_loop(void * parameters);
 bool connectToServer(BLEAddress pAddress);
@@ -70,10 +70,10 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks
 void setup()
 {   
     pinMode(BUILTIN_LED, OUTPUT);
+    FastLED.show();
 
     experience.setTimestep(0.1);
     experience.enable();
-    experience.updateAnimation();
 
     BLEDevice::init("INSA_ELECTRON");
 
@@ -109,8 +109,6 @@ void loop()
             experience.start();
         }
     }
-
-    vTaskDelay( 200 / portTICK_PERIOD_MS );   /* include 10 ms delay for better task management by ordonnancer */
 }
 
 bool connectToServer(BLEAddress pAddress)
