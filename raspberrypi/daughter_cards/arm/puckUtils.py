@@ -58,7 +58,8 @@ class Sucker():
             self.tank.append(puck)
             self.full = True
         else :
-            self.logger("puckTank", "tank full")
+            self.logger("sucker", "sucker full")
+
 
     def get_puck(self):
         if self.full:
