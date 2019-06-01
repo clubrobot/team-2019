@@ -76,8 +76,8 @@ class Goldenium(Actionnable):
                             # Touched left
                             self.log("GOLDENIUM ACTION : ", "gripper touched left")
                             self.display.angry()
-                            self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]-4)
-                            self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]-4)
+                            self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]-3)
+                            self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]-3)
                             self.log(*self.points["Gold2"])
                             raise GripperError("Gripper left touched")
 
@@ -85,8 +85,8 @@ class Goldenium(Actionnable):
                             # Touched right
                             self.log("GOLDENIUM ACTION : ", "gripper touched right")
                             self.display.angry()
-                            self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]+4)
-                            self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]+4)
+                            self.points["Gold2"] = (self.points["Gold2"][0], self.points["Gold2"][1]+3)
+                            self.points["Gold1"] = (self.points["Gold1"][0], self.points["Gold1"][1]+3)
                             self.log(*self.points["Gold2"])
                             raise GripperError("Gripper right touched")
                         time.sleep(0.1)

@@ -78,18 +78,5 @@ def init_robot():
     wheeledbase.stop()
 
 if __name__ == "__main__":
-    daughter_cards = dict(wheeledbase=wheeledbase,
-                               pushers=pushers,
-                               arm=arm,
-                               endstops=endstops,
-                               gripper=gripper,
-                               display=disp)
-
-    wheeledbase.set_position(500, 500, pi/2)
-    mover = Mover(daughter_cards,  log, sensorsFront, sensorsBack)
-
-    while True:
-        mover.goto(500, 2000, nb_try=0, all_try=True)
-        mover.goto(500, 500, nb_try=0, all_try=True)
-
+    init_robot()
 

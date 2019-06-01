@@ -11,10 +11,11 @@ from daughter_cards.wheeledbase import *
 class balance(Actionnable):
     YELLOW  = 0
     PURPLE  = 1
-    def __init__(self, geogebra, daughter_cards, mover, side, log):
+    def __init__(self, geogebra, daughter_cards, mover, side, log, way="forward"):
         self.geogebra       = geogebra
         self.log            = log
         self.side           = side
+        self.way            = way
 
         self.wheeledbase    = daughter_cards['wheeledbase']
         self.display        = daughter_cards['display']
@@ -54,7 +55,7 @@ class balance(Actionnable):
                 self.master.release_ressource("depart")
             threading.Thread(target=tempo).start()
             self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal1"], self.points["Bal2"], self.points["Bal3"]],
-                                    direction="forward", lookahead=200, lookaheadbis=120)
+                                    direction=self.way, lookahead=200, lookaheadbis=120)
         # Si on a la com mais on a pas la balance on attend 
         elif self.master.is_active():
             self.log("Liberation du mutex depart")
@@ -66,7 +67,7 @@ class balance(Actionnable):
                 while not self.master.get_ressource("balance"):
                     time.sleep(0.4)
             self.mover.purepursuit([self.wheeledbase.get_position()[:2], self.points["Bal2"], self.points["Bal3"]],
-                                    direction="forward", lookahead=200, lookaheadbis=120)
+                                    direction=self.way, lookahead=200, lookaheadbis=120)
         # Sinon on y go avec une attente 
         else:
             time.sleep(0) # TODO

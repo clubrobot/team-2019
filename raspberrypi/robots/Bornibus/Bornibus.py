@@ -75,7 +75,7 @@ class Bornibus(Automaton):
         self.chaosAct       = chaos(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
         self.detectorAct_bis    = detector(self.geogebra, self.daughter_cards, self.mover, self.side, self.log, safe_mode=False).getAction()
         self.goldeniumAct_bis   = Goldenium(self.geogebra, self.daughter_cards, self.mover, self.side, self.log, safe_mode=False).getAction()
-        self.balanceGAct_bis    = balance(self.geogebra, self.daughter_cards, self.mover, self.side, self.log).getAction()
+        self.balanceGAct_bis    = balance(self.geogebra, self.daughter_cards, self.mover, self.side, self.log, way="backward").getAction()
 
         self.action_list = [
             self.detectorAct,
