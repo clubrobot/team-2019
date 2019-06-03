@@ -23,13 +23,14 @@
 
 #define INTERRUPT			4
 
-#define TEMPS_MIN			8
+#define FULL_SPEED_TIME		3
+#define MID_SPEED_TIME		(FULL_SPEED_TIME + 20)
 
 #define GO_BACK				32
 #define GO_FORWARD		    25
 
-#define STOP_CONSTANT       0.0
-#define RUN_CONSTANT        0.6
+#define MID_CONSTANT        10
+#define RUN_CONSTANT        10
 
 class Experience : public PeriodicProcess
 {
@@ -37,9 +38,12 @@ class Experience : public PeriodicProcess
         Experience();
         
         void start(void);
+
+        void reduce_speed(void);
+
         void connected(void);
 
-        void stayOnTop(void);
+        void stop(void);
 
         bool isStarted(void) const {return _isStarted;}
     

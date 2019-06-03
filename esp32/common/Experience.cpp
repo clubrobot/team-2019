@@ -14,6 +14,8 @@ Experience::Experience()
 	_driver.attach(RST_DC_DRV, FLT_DC_DRV);
 	_driver.reset();
 
+    _motor.setConstant(1/11.1);
+
     for (int i = 0; i < 1; i++)
     {
 		_leds[i] = CRGB::Red;    /* red (Non Connected default status) */
@@ -30,9 +32,13 @@ void Experience::process(float timestep)
 {
     _mutex.acquire();
 
-    if (_isStarted && !_isOnTop && (_clock.getElapsedTime() > TEMPS_MIN))
+    if (_isStarted && !_isOnTop && (_clock.getElapsedTime() > FULL_SPEED_TIME))
     {
-        stayOnTop();
+        reduce_speed();
+    }
+    if (_isStarted && !_isOnTop && (_clock.getElapsedTime() > MID_SPEED_TIME))
+    {
+        stop();
     }
 
     _mutex.release();
@@ -58,11 +64,17 @@ void Experience::start(void)
     _mutex.release();
 }
 
-void Experience::stayOnTop(void)
+void Experience::reduce_speed(void)
 {
-	_motor.setVelocity(STOP_CONSTANT);
-	_isOnTop = true;
+	_motor.setVelocity(MID_CONSTANT);
+    _motor.enable();
+}
 
+void Experience::stop(void)
+{
+	_motor.setVelocity(0);
+    _motor.enable();
+	_isOnTop = true;
 }
 
 void Experience::connected(void)

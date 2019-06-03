@@ -57,4 +57,6 @@ class ElectronFake:
 if __name__ == "__main__":
     from robots.setup_serialtalks import *
 
-    e = Electron(manager)
+    e = Electron(manager, uuid="/dev/tty.SLAB_USBtoUART")
+    e.start()
+    time.sleep(1)
