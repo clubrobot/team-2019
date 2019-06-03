@@ -388,11 +388,7 @@ class TakePuckSingle(Actionnable):
 
 
         if self.RECALAGE == self.WALL:
-            self.wheeledbase.linpos_threshold.set(10)
-            self.wheeledbase.angpos_threshold.set(0.2)
-
             self.log("RECALAGE : face au mur en x")
-            self.wheeledbase.wait()
             if self.side == self.YELLOW:
                 self.wheeledbase.set_velocities(-RECALAGE_VEL, 0)
             else:
@@ -412,6 +408,7 @@ class TakePuckSingle(Actionnable):
 
             self.log("RECALAGE : retour arriere")
             self.wheeledbase.goto(*self.actionPoint.point)
+            self.wheeledbase.angpos_threshold.set(0.05)
             self.wheeledbase.turnonthespot(pi/2)
 
             self.log("RECALAGE : face au mur en y")

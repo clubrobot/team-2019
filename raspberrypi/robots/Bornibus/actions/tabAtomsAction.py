@@ -67,8 +67,13 @@ class tabAtoms(Actionnable):
 
         self.display.love()
         self.display.addPoints(13)
-        
-
+        self.wheeledbase.left_wheel_maxPWM.set(0.5)
+        self.wheeledbase.left_wheel_maxPWM.set(0.5)
+        self.wheeledbase.goto_delta(-250, 0)
+        try:
+            self.wheeledbase.wait()
+        except:
+            pass
     def before(self):
         pass
 

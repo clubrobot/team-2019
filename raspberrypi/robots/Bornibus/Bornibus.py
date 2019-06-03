@@ -78,14 +78,12 @@ class Bornibus(Automaton):
         self.balanceGAct_bis    = balance(self.geogebra, self.daughter_cards, self.mover, self.side, self.log, way="backward").getAction()
 
         self.action_list = [
-            self.detectorAct,
-            self.goldeniumAct,
             self.chaosAct,
             self.tabAtomsAct,
-            self.balanceGAct,
-            self.detectorAct_bis,
-            self.goldeniumAct_bis,
-            self.balanceGAct_bis,
+            #self.balanceGAct,
+            #self.detectorAct_bis,
+            #self.goldeniumAct_bis,
+            #self.balanceGAct_bis,
         ]
 
         for sensor in sensorsBack+sensorsFront:
@@ -193,9 +191,11 @@ class Bornibus(Automaton):
             self.tam.putAction(act.getAfter())
 
             self.log("MAIN : ", "Let's go to the next action !")
-
+        self.master.release_ressource("depart")
+        self.master.release_ressource("passage")
+        self.master.release_ressource("balance")
         #stop thread action manager
-        self.mover.goto(*self.points["End"],safe_mode=True, all_try=True, nb_try=0)
+        #self.mover.goto(*self.points["End"],safe_mode=True, all_try=True, nb_try=0)
         self.tam.stop()
         self.display.stop()
         self.wheeledbase.stop()

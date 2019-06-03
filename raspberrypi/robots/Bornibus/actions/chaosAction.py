@@ -32,6 +32,13 @@ class chaos(Actionnable):
         # action Points
         self.points = dict()
 
+
+        self.points["Cha1P"] = self.geogebra.get("ChaP1"+color)
+        self.points["Cha2P"] = self.geogebra.get("ChaP2"+color)
+        self.points["Cha3P"] = self.geogebra.get("ChaP3"+color)
+        self.points["Cha4P"] = self.geogebra.get("ChaP4"+color)
+        self.points["Cha5P"] = self.geogebra.get("ChaP5"+color)
+
         self.points["Cha1"] = self.geogebra.get("Cha1"+color)
         self.points["Cha2"] = self.geogebra.get("Cha2"+color)
         self.points["Cha3"] = self.geogebra.get("Cha3"+color)
@@ -47,9 +54,9 @@ class chaos(Actionnable):
         self.wheeledbase.lookaheadbis.set(10)
 
         if self.side == self.YELLOW:
-            self.mover.goto(*self.points["Cha1"], theta=-pi/6)
+            self.mover.purepursuit((self.points["Cha1P"],self.points["Cha2P"],self.points["Cha3P"],self.points["Cha4P"],self.points["Cha5P"],self.points["Cha1"]),safe_mode=True,  theta=-pi/6)
         else:
-            self.mover.goto(*self.points["Cha1"], theta=pi/6)
+            self.mover.purepursuit((self.points["Cha1P"],self.points["Cha2P"],self.points["Cha3P"],self.points["Cha4P"],self.points["Cha5P"],self.points["Cha1"]),safe_mode=True,  theta=pi/6)
         self.log("CHAOS ACTION : ", "Arrive zone chaos")
 
     def realize(self):
@@ -57,7 +64,9 @@ class chaos(Actionnable):
         self.wheeledbase.lookahead.set(300)
         self.wheeledbase.lookaheadbis.set(150)
         self.wheeledbase.linpos_threshold.set(5)
-
+        self.log("CHAOS ACTION : ","sleep 25s")
+        time.sleep(25)
+        self.log("CHAOS ACTION : ","GO GO GO ")
         if self.master.is_active():
             self.log("En attente du mutex passage")
             while not self.master.get_ressource("passage"):

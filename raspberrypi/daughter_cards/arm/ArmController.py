@@ -60,8 +60,10 @@ class ArmController():
         m3 = self.arm.get_pressure_kpa()
         m2 = self.arm.get_pressure_kpa()
 
-        return max(m1,m2,m3)<100
-
+        import statistics
+        median = statistics.median([m1,m2,m3])
+        self.log(self.name, "Median pressure :{}".format(median))
+        return median<100
 
     def go_home(self):
         self.log(self.name, "Go Home")
