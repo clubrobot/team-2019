@@ -37,6 +37,7 @@ void SET_MATRIX_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &out
 	}
 }
 
+
 void SET_IPDISPLAY_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &output)
 {
     char buffer[IP_DISPLAY_BUFFER_SIZE] = "";
@@ -61,6 +62,39 @@ void SET_IPDISPLAY_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &
         }
     }
 
+	ipdisplay.addIP(buffer, nbDigits);
+}
+
+void CLEAR_IPDISPLAY_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &output)
+{
+	ipdisplay.clearIPs();
+}
+
+
+void SET_IPDISPLAY_UNIQUE_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &output)
+{
+	char buffer[IP_DISPLAY_BUFFER_SIZE] = "";
+	for (int i = 0; i< IP_DISPLAY_BUFFER_SIZE; i++){
+		buffer[i] = input.read<char>();
+	}
+
+	int nbDigits = 0;
+
+	for (int i = 0; i < IP_DISPLAY_BUFFER_SIZE && buffer[i]!='\0'; i++)
+	{
+		if (buffer[i] >= START_CHAR && buffer[i] <= END_CHAR)
+		{
+			nbDigits++;
+			if(buffer[i+1] == '.' && buffer[i] != '.'){	// gère le cas de l'affichage d'un point après un digit
+				i++;
+			}
+			if(nbDigits>12){		// Buffer overflow case
+				nbDigits--;
+				buffer[i] = 0;
+			}
+		}
+	}
+	ipdisplay.clearIPs();
 	ipdisplay.addIP(buffer, nbDigits);
 }
 
@@ -144,9 +178,4 @@ void SET_EEPROM_DEFAULT_MESSAGE(SerialTalks &talks, Deserializer &input, Seriali
 			ledmatrix3.setMode(mode);
 			ledmatrix3.computeBuffer(buffer);
 	}
-}
-
-void CLEAR_IPDISPLAY_MESSAGE(SerialTalks &talks, Deserializer &input, Serializer &output)
-{
-	ipdisplay.clearIPs();
 }

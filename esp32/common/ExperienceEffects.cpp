@@ -7,27 +7,25 @@ ExperienceEffects::ExperienceEffects(boolean electron)
 	timer = 0;
 	isOnTop = false;
 	isElectron = electron;
-	FastLED.addLeds<NEOPIXEL, PINPIXEL>(leds, NUMPIXEL);
-	pinMode(BUILTIN_LED, OUTPUT);
+    FastLED.addLeds<NEOPIXEL, PINPIXEL>(leds, NUMPIXEL);
+
 	pinMode(GO_BACK, INPUT_PULLUP);
 	pinMode(GO_FORWARD, INPUT_PULLUP);
-	digitalWrite(BUILTIN_LED, LOW);
 	pinMode(INTERRUPT, INPUT_PULLUP);
 }
 
 void ExperienceEffects::setup()
 {
-    for (int i = 0; i < 60; i++)
+    for (int i = 0; i < 1; i++)
     {
-        if(isElectron)
-        {
-		    leds[i] = CRGB::Red;    /* red (Non Connected default status) */
-        }
-        else
-        {
-            leds[i] = CRGB::Black;    /* red (Non Connected default status) */
-        }
+		leds[i] = CRGB::Red;    /* red (Non Connected default status) */
 	}
+
+    for (int i = 1; i < 8; i++)
+    {
+		leds[i] = CRGB::Black;    /* red (Non Connected default status) */
+	}
+
 	FastLED.show();
 
 	if (isElectron)
@@ -58,15 +56,11 @@ void ExperienceEffects::motorStop()
 
 void ExperienceEffects::connected()
 {
-    if(isElectron)
+    for (int i = 0; i < 1; i++)
     {
-        for (int i = 0; i < 60; i++)
-        {
-            leds[i] = CRGB::Green;
-        }
-        FastLED.show();
+        leds[i] = CRGB::Blue;
     }
-	digitalWrite(BUILTIN_LED, HIGH);
+    FastLED.show();
 }
 
 void ExperienceEffects::start()
@@ -74,9 +68,9 @@ void ExperienceEffects::start()
 	if (!hasStarted)
     {
 		timer = millis();
-        for (int i = 0; i < 60; i++)
+        for (int i = 0; i < 8; i++)
         {
-			leds[i] = CRGB::Purple;
+			leds[i] = CRGB::LemonChiffon;
 		}
 		FastLED.show();
 		hasStarted = 1;
@@ -98,7 +92,7 @@ void ExperienceEffects::stayOnTop()
 	}
 	for (int i = 0; i < 60; i++)
     {
-		leds[i] = CRGB::Blue;
+		leds[i] = CRGB::Honeydew;
 	}
 	FastLED.show();
 }

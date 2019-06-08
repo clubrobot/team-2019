@@ -5,7 +5,6 @@ import time
 from daughter_cards.arm.RobotArm import *
 from daughter_cards.arm.ArmPosition import *
 from daughter_cards.arm.puckUtils import *
-from daughter_cards.arm.puckUtils import *
 
 
 
@@ -57,7 +56,12 @@ class ArmController():
         return self.arm.get_pressure_kpa()
 
     def get_atmosphere_pressure(self):
-        return self.arm.atmosphere_pressure()
+        m1 = self.arm.get_pressure_kpa()
+        m3 = self.arm.get_pressure_kpa()
+        m2 = self.arm.get_pressure_kpa()
+
+        return max(m1,m2,m3)<100
+
 
     def go_home(self):
         self.log(self.name, "Go Home")

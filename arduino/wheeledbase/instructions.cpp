@@ -43,7 +43,7 @@ void DISABLE(SerialTalks& talks, Deserializer& input, Serializer& output)
 	velocityControl.disable();
 	positionControl.disable();
 	leftWheel .setVelocity(0);
-	rightWheel.setVelocity(0);	
+	rightWheel.setVelocity(0);
 }
 
 void GOTO_DELTA(SerialTalks& talks, Deserializer& input, Serializer& output)
@@ -171,6 +171,23 @@ void START_TURNONTHESPOT(SerialTalks& talks, Deserializer& input, Serializer& ou
 	positionControl.setMoveStrategy(turnOnTheSpot);
 	positionControl.enable();
 }
+
+void START_TURNONTHESPOT_DIR(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+	Position posSetpoint = odometry.getPosition();
+	posSetpoint.theta = input.read<float>();
+	velocityControl.enable();
+	positionControl.setPosSetpoint(posSetpoint);
+	if (input.read<byte>()){
+		turnOnTheSpot.setDirection(TurnOnTheSpot::TRIG);
+	}
+	else{
+		turnOnTheSpot.setDirection(TurnOnTheSpot::CLOCK);
+	}
+	positionControl.setMoveStrategy(turnOnTheSpot);
+	positionControl.enable();
+}
+
 
 void POSITION_REACHED(SerialTalks& talks, Deserializer& input, Serializer& output)
 {

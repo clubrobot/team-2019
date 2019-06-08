@@ -14,14 +14,14 @@ CREATE_SWITCH_COMPONENT_OPCODE = 0x11
 CREATE_LIGHTBUTTON_COMPONENT_OPCODE = 0x12
 CREATE_PICAMERA_COMPONENT_OPCODE = 0x13
 
-MAKE_COMPONENT_EXECUTE_OPCODE = 0x20
+MAKE_COMPONENT_EXECUTE_OPCODE  = 0x20
 GET_COMPONENT_ATTRIBUTE_OPCODE = 0x21
 SET_COMPONENT_ATTRIBUTE_OPCODE = 0x22
+END_GAME_OPCODE                = 0x23
 
 UPDATE_MANAGER_PICAMERA_OPCODE = 0x30
 MAKE_MANAGER_REPLY_OPCODE = 0x40
 MAKE_MANAGER_EXECUTE_OPCODE = 0x50
-START_MATCH_OPCODE = 0x60
 
 
 class Component():
@@ -85,24 +85,24 @@ except ImportError:
 try:
     from common.gpiodevices import Switch, LightButton, Device
 
-
     class SwitchComponent(Switch, Component):
-
-        def __init__(self, switchpin):
-            Switch.__init__(self, switchpin)
+        def __init__(self, switchpin, active_high=True):
+            Switch.__init__(self, switchpin, active_high=active_high)
 
         def _cleanup(self):
-            self.Close()
+            self.close()
 
 
     class LightButtonComponent(LightButton, Component):
-
         def __init__(self, switchpin, ledpin):
             LightButton.__init__(self, switchpin, ledpin)
 
         def _cleanup(self):
-            self.Close()
+            self.close()
+
 except ImportError:
+    Switch = None
+except RuntimeError:
     pass
 
 try:
@@ -155,7 +155,7 @@ except ImportError:
 
 class Server(TCPTalksServer):
 
-    def __init__(self, port=COMPONENTS_SERVER_DEFAULT_PORT, password=None, size=4, start_match=None):
+    def __init__(self, port=COMPONENTS_SERVER_DEFAULT_PORT, password=None, size=4):
         TCPTalksServer.__init__(self, port=port, password=password, NbClients=size)
         self.bind(CREATE_SERIALTALKS_COMPONENT_OPCODE, self.CREATE_SERIALTALKS_COMPONENT)
         self.bind(CREATE_SWITCH_COMPONENT_OPCODE, self.CREATE_SWITCH_COMPONENT)
@@ -164,9 +164,8 @@ class Server(TCPTalksServer):
         self.bind(MAKE_COMPONENT_EXECUTE_OPCODE, self.MAKE_COMPONENT_EXECUTE)
         self.bind(GET_COMPONENT_ATTRIBUTE_OPCODE, self.GET_COMPONENT_ATTRIBUTE)
         self.bind(SET_COMPONENT_ATTRIBUTE_OPCODE, self.SET_COMPONENT_ATTRIBUTE)
-        self.bind(START_MATCH_OPCODE, self.START_MATCH)
+        self.bind(END_GAME_OPCODE, self.END_GAME)
         self.components = {}
-        self.start_match = start_match
 
     def disconnect(self, id=None):
         TCPTalksServer.disconnect(self, id=id)
@@ -177,11 +176,12 @@ class Server(TCPTalksServer):
             comp._cleanup()
         self.components = {}
 
-    def START_MATCH(self, *args):
-        def core():
-            self.start_match()
-
-        Thread(target=core).run()
+    def END_GAME(self, *args):
+        self.disconnect()
+        for compid in self.components:
+            if isinstance(compid,SerialTalksComponent):
+                compid._cleanup()
+        
 
     def addcomponent(self, comp, compid):
         if not compid in self.components:
@@ -209,13 +209,13 @@ class Server(TCPTalksServer):
         self.addcomponent(comp, compid)
         return compid
 
-    def CREATE_SWITCH_COMPONENT(self, switchpin):
+    def CREATE_SWITCH_COMPONENT(self, switchpin, active_high=True):
         if (switchpin,) in self.components:
             return (switchpin,)
-        comp = SwitchComponent(switchpin)
+        comp = SwitchComponent(switchpin, active_high=active_high)
         compid = (switchpin,)
         self.addcomponent(comp, compid)
-        comp.set_function(self.send, MAKE_MANAGER_EXECUTE_OPCODE, None, compid)
+        comp.set_function(self.send, MAKE_MANAGER_EXECUTE_OPCODE, compid, id=None, broadcast=True)
         return compid
 
     def CREATE_LIGHTBUTTON_COMPONENT(self, switchpin, ledpin):
@@ -224,7 +224,7 @@ class Server(TCPTalksServer):
         comp = LightButtonComponent(switchpin, ledpin)
         compid = (switchpin, ledpin)
         self.addcomponent(comp, compid)
-        comp.SetFunction(self.send, MAKE_MANAGER_EXECUTE_OPCODE, None, compid)
+        comp.set_function(self.send, MAKE_MANAGER_EXECUTE_OPCODE, compid, id=None, broadcast=True)
         return compid
 
     def CREATE_PICAMERA_COMPONENT(self, resolution, framerate):
@@ -238,6 +238,7 @@ class Server(TCPTalksServer):
 
 class Manager(TCPTalks):
     MANAGER_CREATED = None
+
     def __init__(self, ip='localhost', port=COMPONENTS_SERVER_DEFAULT_PORT, password=None):
         TCPTalks.__init__(self, ip, port=port, password=password)
         # PiCamera components
@@ -251,9 +252,6 @@ class Manager(TCPTalks):
         self.bind(MAKE_MANAGER_REPLY_OPCODE, self.MAKE_MANAGER_REPLY)
         self.serial_instructions = {}
         Manager.MANAGER_CREATED = self
-
-    def start_match(self):
-        self.send(MAKE_MATCH_TIMER_OPCODE)
 
     def UPDATE_MANAGER_PICAMERA(self, compid, streamvalue):
         cvimageflags = 1
@@ -271,9 +269,12 @@ class Manager(TCPTalks):
             result = self.serial_instructions[opcode](input)
             return result
 
+    def end_game(self):
+        self.send(END_GAME_OPCODE)
+        self.disconnect()
 
-class Proxy():
 
+class Proxy:
     def __init__(self, manager, compid, attrlist, methlist):
         object.__setattr__(self, '_manager', manager)
         object.__setattr__(self, '_compid', compid)
@@ -425,6 +426,7 @@ class SecureSerialTalksProxy(Proxy):
         object.__setattr__(self, "connect", MethodType(connect, self))
         object.__setattr__(self, "execute", MethodType(execute, self))
         object.__setattr__(self, "send", MethodType(send, self))
+
     def bind(self, opcode, function):
         if not str(opcode) + self._compid in self._manager.instructions:
             self._manager.serial_instructions[str(opcode) + self._compid] = function
@@ -432,16 +434,15 @@ class SecureSerialTalksProxy(Proxy):
             raise KeyError("Opcode already use")
 
 
-
 class SwitchProxy(Proxy):
 
-    def __init__(self, manager, switchpin):
-        compid = manager.execute(CREATE_SWITCH_COMPONENT_OPCODE, switchpin)
-        attrlist = ['state', 'PinInput']
-        methlist = ['Close']
+    def __init__(self, manager, switchpin, active_high=True):
+        compid = manager.execute(CREATE_SWITCH_COMPONENT_OPCODE, switchpin, active_high=active_high)
+        attrlist = ['state', 'input_pin']
+        methlist = ['close', 'set_active_high']
         Proxy.__init__(self, manager, compid, attrlist, methlist)
 
-    def SetFunction(self, function, *args):
+    def set_function(self, function, *args):
         self._manager.functions[self._compid] = function
         self._manager.args[self._compid] = args
 
@@ -450,11 +451,11 @@ class LightButtonProxy(Proxy):
 
     def __init__(self, manager, switchpin, ledpin):
         compid = manager.execute(CREATE_LIGHTBUTTON_COMPONENT_OPCODE, switchpin, ledpin)
-        attrlist = ['state', 'PinInput', 'PinLight']
-        methlist = ['SetAutoSwitch', 'On', 'Off', 'Switch', 'Close']
+        attrlist = ['state', 'input_pin', 'light_pin']
+        methlist = ['set_auto_switch', 'on', 'off', 'switch', 'close']
         Proxy.__init__(self, manager, compid, attrlist, methlist)
 
-    def SetFunction(self, function, *args):
+    def set_function(self, function, *args):
         self._manager.functions[self._compid] = function
         self._manager.args[self._compid] = args
 

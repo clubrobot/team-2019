@@ -4,8 +4,11 @@
 from argparse import ArgumentParser
 
 from common.serialtalks import *
+from common.tcptalks import ForeverAloneError
 from common.components import Manager, Server
 from robots.automaton import *
+from daughter_cards.display import SevenSegments
+import os
 
 DEV_MODE = True
 MATCH_MODE = False
@@ -14,9 +17,35 @@ arduino_list = ['sensors', 'wheeledbase', 'power', 'display', 'modulescollector'
 
 
 def start(args):
-    man = Manager()
-    man.connect()
-    man.send(START_MATCH_OPCODE)
+    print("ROBOT START")
+    try:
+        man = Manager()
+        man.connect(2)
+    except ForeverAloneError:
+        print("NO SERVER")
+
+    from robots.get_robot_name import ROBOT_ID, BORNIBUS_ID, R128_ID
+    if ROBOT_ID == BORNIBUS_ID:
+        print("BORNIBUS")
+        from robots.Bornibus.Bornibus import Bornibus
+        auto = Bornibus()
+
+    elif ROBOT_ID == R128_ID:
+        print("R128")
+        from robots.R128.R128 import R128
+        auto = R128()
+
+    else:
+        print("NOT ON A ROBOT")
+        return
+
+    try:
+        auto.start_preparation()
+    except Exception as e:
+        import traceback
+        auto.log(traceback.format_exc())
+        auto.log.close()
+        auto.wheeledbase.stop()
 
 
 def dev_mode(args):
@@ -42,7 +71,12 @@ def getuuid(args):
 
 def showip(args):
     try:
-        ssd.clear_messages()
+        import time
+        time.sleep(1)
+        man = Manager()
+        man.connect()
+
+        ssd = SevenSegments(man)
         import subprocess
         ips = []
         wlan_up = False
@@ -52,16 +86,18 @@ def showip(args):
             wifi_config = proc.stdout.strip().decode('utf8')
             if wifi_config.find("ESSID:\"") > -1:
                 wlan_up = True
-                time.sleep(5)
+                time.sleep(3)
                 proc = subprocess.run(['hostname', '-I'], stdout=subprocess.PIPE)
                 ips = proc.stdout.strip().decode('utf8').split(" ")
             else:
                 attempts += 1
                 time.sleep(1)
         if wlan_up:
-            [ssd.set_message(ip) for ip in ips]
+            [ssd.set_multi_message(ip) for ip in ips]
         else:
             ssd.set_message("No Ip found ")
+
+        man.disconnect()
     except RuntimeError as e:
         print(e)
 
@@ -80,7 +116,7 @@ def getlogs(args):
 
 
 def server(args):
-    srv = Server(password=args.password, size=args.size, start_match=Automaton.start_preparation)
+    srv = Server(password=args.password, size=args.size)
     while True:
         try:
             while not srv.full():
@@ -131,19 +167,6 @@ def update(args):
         arduino_path = os.path.dirname(os.path.realpath(__file__)) + '/../arduino/' + arduino
         print("updating " + arduino)
         subprocess.run(['/usr/bin/make', 'upload_safe', '-C', arduino_path])
-
-no_server = ["server", "getuuid"]
-if sys.argv[1] not in no_server:
-    manager = Manager("127.0.0.1")
-    manager.connect()
-    if ROBOT_ID == BORNIBUS_ID:
-        from robots.Bornibus.setup_bornibus import *
-        print("Init robot Bornibus")
-        init_robot()
-    else:
-        from robots.R128.setup_128 import *
-        print("Init robot 128")
-        init_robot()
 
 parser = ArgumentParser()
 subparsers = parser.add_subparsers()

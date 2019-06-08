@@ -5,12 +5,21 @@ from robots.setup_serialtalks import *
 from robots.setup_wheeledbase import *
 from daughter_cards.bornibus_actuators import *
 from daughter_cards.display import *
-from daughter_cards.Sensor_IR import *
+from daughter_cards.sensors_IR import *
 from robots.sensors_manager import *
 from robots.display_manager import *
 from math import pi
+from common.logger import *
 from common.geogebra import Geogebra
 from robots.get_robot_name import *
+from robots.wheeledbase_manager import *
+from beacons.global_sync import ClientGS
+from robots.wheeledbase_manager import * 
+
+if ROBOT_ID == BORNIBUS_ID:
+    log = Logger(Logger.BOTH, file_name="/home/pi/logs/start.log")
+else:
+    log = Logger(Logger.SHOW)
 
 led1 = LEDMatrix(manager, 1)
 led2 = LEDMatrix(manager, 2)
@@ -23,17 +32,31 @@ arm = Arm(manager)
 endstops = EndStops(manager)
 gripper = Gripper(manager, endstops)
 
-sensorsA = Sensors(manager, uuid="sensorsA")
-sensorsB = Sensors(manager, uuid="sensorsB")
-sensorsC = Sensors(manager, uuid="sensorsC")
-sensorsFront = [Sensor("Avant droit",   sensorsC.get_range1, (50, -100), -pi/4),
-                Sensor("Avant      ",   sensorsA.get_range1, (60, 0), 0),
-                Sensor("Avant gauche",  sensorsB.get_range1, (50, 100), pi/4)]
-sensorsBack  = [Sensor("Arrière droit", sensorsC.get_range2, (-50, -100), -3*pi/4),
-                Sensor("Arrière",       sensorsA.get_range2, (-60, 0), pi),
-                Sensor("Arrière gauche",sensorsB.get_range2, (-50, 100), 3*pi/4)]
-sens_manager = SensorsManager(wheeledbase, sensorsFront, sensorsBack)
+sensorsA = SensorsIR(manager, uuid="sensorsA")
+if not sensorsA.is_ready():
+    sensorsA = FakeSensorsIR()
+sensorsB = SensorsIR(manager, uuid="sensorsB")
+if not sensorsB.is_ready():
+    sensorsB = FakeSensorsIR()
+sensorsC = SensorsIR(manager, uuid="sensorsC")
+if not sensorsC.is_ready():
+    sensorsC = FakeSensorsIR()
 
+sensorsFront = [Sensor(wheeledbase, "Avant droit",   sensorsA.get_range1, (50, -100), -pi/4, sensorsA.is_ready()),
+                Sensor(wheeledbase, "Avant      ",   sensorsB.get_range2, (60, 0), 0, sensorsB.is_ready()),
+                Sensor(wheeledbase, "Avant gauche",  sensorsC.get_range1, (50, 100), pi/4, sensorsC.is_ready())]
+sensorsBack  = [Sensor(wheeledbase, "Arrière droit", sensorsA.get_range2, (-50, -100), -3*pi/4, sensorsA.is_ready()),
+                Sensor(wheeledbase, "Arrière",       sensorsB.get_range1, (-60, 0), pi, sensorsB.is_ready()),
+                Sensor(wheeledbase, "Arrière gauche",sensorsC.get_range2, (-50, 100), 3*pi/4, sensorsC.is_ready())]
+# sens_manager = SensorsManager(wheeledbase, sensorsFront, sensorsBack, None)
+
+try:
+    beacons = ClientGS(1)
+    beacons.connect()
+    beacons.reset_ressources()
+except TimeoutError:
+    pass
+    
 import os
 if ROBOT_ID == BORNIBUS_ID:
     print("Bornibus")
@@ -54,6 +77,6 @@ def init_robot():
     arm.up()
     wheeledbase.stop()
 
-
 if __name__ == "__main__":
     init_robot()
+

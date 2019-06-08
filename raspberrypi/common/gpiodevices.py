@@ -1,54 +1,62 @@
 from RPi import GPIO
 from gpiozero import Button
-import time
 
-
-# 10 GPIO.BOARD
 
 class Device:
-    list_pin = [0] * 59
+    list_pin = [False] * 59
 
 
 class Switch(Device):
-    def launch_function(self, *args):
-        if self.function != None:
-            self.function(*self.args,**self.kwargs)
-    def __init__(self, input_pin, function=None, *args, **kwargs):
-        if Device.list_pin[input_pin] == 0:
+    def launch_function(self):
+        if self.function:
+            self.function(*self.args, **self.kwargs)
+
+    def __init__(self, input_pin, function=None, active_high=True, *args, **kwargs):
+        if not Device.list_pin[input_pin]:
             self.function = function
             self.state = False
-            Device.list_pin[input_pin] = 1
+            Device.list_pin[input_pin] = True
             self.args = args
             self.kwargs = kwargs
             self.input_pin = input_pin
             self.button = Button(input_pin, pull_up=True)
-            self.button.when_pressed = self.launch_function
+            self.set_active_high(active_high)
+
         else:
             raise RuntimeError('pin already in use')
+
     def set_function(self, function, *args, **kwargs):
         self.function = function
         self.kwargs = kwargs
         self.args = args
 
+    def set_active_high(self, active_high):
+        if active_high:
+            self.button.when_pressed = self.launch_function
+            self.button.when_released = None
+        else:
+            self.button.when_pressed = None
+            self.button.when_released = self.launch_function
+
     def close(self):
-        Device.list_pin[self.input_pin] = 0
+        Device.list_pin[self.input_pin] = False
         self.button.close()
 
-class LightButton(Device):
 
+class LightButton(Device):
     def __init__(self, input_pin, light_pin, function=None, *args, **kwargs):
-        if Device.list_pin[input_pin] == 0 and Device.list_pin[light_pin] == 0:
+        if not Device.list_pin[input_pin] and not Device.list_pin[light_pin]:
             self.function = function
             self.state = False
-            Device.list_pin[input_pin] = 1
-            Device.list_pin[light_pin] = 1
+            Device.list_pin[input_pin] = True
+            Device.list_pin[light_pin] = True
             self.auto_switch = False
             self.args = args
             self.kwargs = kwargs
             self.input_pin = input_pin
             self.light_pin = light_pin
-            if (GPIO.getmode() != 10):
-                GPIO.setmode(GPIO.BOARD)
+            if GPIO.getmode() != GPIO.BCM:
+                GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.input_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
             GPIO.setup(self.light_pin, GPIO.OUT)
             GPIO.add_event_detect(self.input_pin, GPIO.FALLING, callback=self.launch_function, bouncetime=500)
@@ -56,10 +64,10 @@ class LightButton(Device):
             raise RuntimeError('pin already in use')
 
     def launch_function(self, *args):
-        if self.function != None:
+        if self.function:
             self.function(*self.args,**self.kwargs)
 
-        if self.auto_switch == True:
+        if self.auto_switch:
             self.switch()
 
     def set_auto_switch(self, value):
@@ -74,7 +82,7 @@ class LightButton(Device):
         GPIO.output(self.light_pin, GPIO.LOW)
 
     def switch(self):
-        if self.state == False:
+        if not self.state:
             self.on()
         else:
             self.off()
@@ -85,8 +93,9 @@ class LightButton(Device):
         self.kwargs = kwargs
 
     def close(self):
-        Device.list_pin[self.input_pin] = 0
-        Device.list_pin[self.light_pin] = 0
+        Device.list_pin[self.input_pin] = False
         GPIO.remove_event_detect(self.input_pin)
-        GPIO.cleanup(self.light_pin)
         GPIO.cleanup(self.input_pin)
+
+        Device.list_pin[self.light_pin] = False
+        GPIO.cleanup(self.light_pin)

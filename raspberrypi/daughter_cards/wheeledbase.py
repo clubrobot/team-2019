@@ -34,6 +34,8 @@ GOTO_DELTA_OPCODE               = 0x1E
 RESET_PARAMETERS_OPCODE         = 0x1F
 SAVE_PARAMETERS_OPCODE          = 0x20
 
+START_TURNONTHESPOT_DIR_OPCODE = 0x21
+
 LEFTWHEEL_RADIUS_ID	            = 0x10
 LEFTWHEEL_CONSTANT_ID           = 0x11
 LEFTWHEEL_MAXPWM_ID             = 0x12
@@ -88,6 +90,9 @@ class WheeledBase(SecureSerialTalksProxy):
     FORWARD = 1
     BACKWARD = 2
     NO_DIR = 0
+
+    LATCH_TIMESTEP = 0.2
+
     class Parameter():
         def __init__(self, parent, id, type):
             self.parent = parent
@@ -145,6 +150,10 @@ class WheeledBase(SecureSerialTalksProxy):
         self.theta                          = 0
         self.previous_measure               = 0
         self.direction = self.NO_DIR
+        self.final_angle = 0
+
+        self.latch = None
+        self.latch_time = None
 
     def set_openloop_velocities(self, left, right):
         self.send(SET_OPENLOOP_VELOCITIES_OPCODE, FLOAT(left), FLOAT(right))
@@ -157,7 +166,7 @@ class WheeledBase(SecureSerialTalksProxy):
     def set_velocities(self, linear_velocity, angular_velocity):
         self.send(SET_VELOCITIES_OPCODE, FLOAT(linear_velocity), FLOAT(angular_velocity))
 
-    def purepursuit(self, waypoints, direction='forward', finalangle=None, lookahead=None, lookaheadbis=None, linvelmax=None, angvelmax=None):
+    def purepursuit(self, waypoints, direction='forward', finalangle=None, lookahead=None, lookaheadbis=None, linvelmax=None, angvelmax=None, **kwargs):
         if len(waypoints) < 2:
             raise ValueError('not enough waypoints')
         self.send(RESET_PUREPURSUIT_OPCODE)
@@ -174,10 +183,18 @@ class WheeledBase(SecureSerialTalksProxy):
         if finalangle is None:
             finalangle = math.atan2(waypoints[-1][1] - waypoints[-2][1], waypoints[-1][0] - waypoints[-2][0])
         self.direction = {'forward':self.FORWARD, 'backward':self.BACKWARD}[direction]
+        self.final_angle = finalangle
         self.send(START_PUREPURSUIT_OPCODE, BYTE({'forward':0, 'backward':1}[direction]), FLOAT(finalangle))
 
-    def turnonthespot(self, theta, direction='forward'):
-        self.send(START_TURNONTHESPOT_OPCODE, FLOAT(theta), BYTE({'forward':0, 'backward':1}[direction]))
+    def start_purepursuit(self):
+        self.send(START_PUREPURSUIT_OPCODE, BYTE({self.NO_DIR:0, self.FORWARD:0, self.BACKWARD:1}[self.direction]),
+                  FLOAT(self.final_angle))
+
+    def turnonthespot(self, theta, direction=None, way='forward'):
+        if direction is None:
+            self.send(START_TURNONTHESPOT_OPCODE, FLOAT(theta), BYTE({'forward':0, 'backward':1}[way]))
+        else:
+            self.send(START_TURNONTHESPOT_DIR_OPCODE, FLOAT(theta), BYTE({'clock':0, 'trig':1}[direction]))
 
     def isarrived(self, **kwargs):
         output = self.execute(POSITION_REACHED_OPCODE, **kwargs)
@@ -234,6 +251,12 @@ class WheeledBase(SecureSerialTalksProxy):
         self.x, self.y, self.theta = output.read(FLOAT, FLOAT, FLOAT)
         self.previous_measure = time.time()
         return self.x, self.y, self.theta
+
+    def get_position_latch(self, **kwargs):
+        if self.latch is None or time.time() - self.latch_time > self.LATCH_TIMESTEP:
+            self.latch = self.get_position(**kwargs)
+            self.latch_time = time.time()
+        return self.latch
 
     def get_position_previous(self, delta):
         if time.time()-self.previous_measure>delta:

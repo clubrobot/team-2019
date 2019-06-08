@@ -12,6 +12,17 @@ extern EndStop endStop1;
 extern EndStop endStop2;
 extern EndStop endStop3;
 
+void DISABLE(SerialTalks& talks, Deserializer& input, Serializer& output)
+{
+    pusher1.detach();
+    pusher2.detach();
+    arm.detach();
+
+    gripper.write(90);
+    delay(0.5);
+    gripper.detach();
+}
+
 void SET_POSITION_GRIPPER(SerialTalks &inst, Deserializer &input, Serializer &output){
 	if(!gripper.attached()){gripper.attach(SERVO1);}
 	gripper.write(input.read<int>());

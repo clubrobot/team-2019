@@ -17,6 +17,8 @@ class Puck():
 RedPuck     = Puck('red'    ,Point(4    ,5+1,10))
 GreenPuck   = Puck('green'  ,Point(8    ,5+1,10))
 BluePuck    = Puck('blue'   ,Point(12   ,5+1,10))
+NonePuck    = Puck('None'   ,Point(0   ,0, 0))
+
 
 class PuckTank():
     def __init__(self, name, size, logger):
@@ -30,7 +32,7 @@ class PuckTank():
             self.logger(self.name, "Put : {} Puck".format(puck.name))
             self.tank.append(puck)
         else :
-            raise RuntimeError('Tank Full')
+            self.logger("puckTank", "tank full")
 
     def get_puck(self):
         if len(self.tank) > 0 :
@@ -38,7 +40,7 @@ class PuckTank():
             self.logger(self.name, "Get : {} Puck".format(puck.name))
             return puck
         else :
-            raise RuntimeError('Tank empty')
+            return NonePuck
 
     def index(self):
         return len(self.tank)
@@ -56,7 +58,8 @@ class Sucker():
             self.tank.append(puck)
             self.full = True
         else :
-            raise RuntimeError('Sucker Full')
+            self.logger("sucker", "sucker full")
+
 
     def get_puck(self):
         if self.full:
@@ -65,7 +68,7 @@ class Sucker():
             self.logger(self.name, "Get : {} Puck".format(puck.name))
             return puck
         else :
-            raise RuntimeError('Sucker empty')
+            return NonePuck
 
     def index(self):
         return len(self.tank)
@@ -77,10 +80,9 @@ if __name__ == '__main__':
 
     tank = PuckTank('TANK FRONT', 3, log)
 
-    tank.put_puck(RedPuck)
-    tank.put_puck(BluePuck)
-    tank.put_puck(GreenPuck)
-
-    tank.get_puck()
-    tank.get_puck()
-    tank.get_puck()
+    print(tank.get_puck().getPoints().Balance)
+    print(tank.get_puck().getPoints().Tab)
+    print(tank.get_puck().getPoints().Accelerator)
+    print(tank.get_puck().getPoints().Balance)
+    print(tank.get_puck().getPoints().Tab)
+    print(tank.get_puck().getPoints().Accelerator)

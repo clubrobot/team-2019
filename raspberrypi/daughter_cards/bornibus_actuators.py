@@ -12,11 +12,11 @@ _GET_ENDSTOP2_STATE_OPCODE      = 0x14
 _GET_ENDSTOP3_STATE_OPCODE      = 0x15
 
 OPEN_GRIPPER = 90
-CLOSED_GRIPPER = 128
-UP_PUSHER1 = 30
+CLOSED_GRIPPER = 140 ##128 avant #140 avec le premier proto
+UP_PUSHER1 = 10
 DOWN_PUSHER1 = 150
-UP_PUSHER2 = 121
-DOWN_PUSHER2 = 1
+UP_PUSHER2 = 167
+DOWN_PUSHER2 = 43
 DEPLOYED_ARM = 83
 UP_ARM = 8
 
@@ -49,7 +49,7 @@ class Pushers(SecureSerialTalksProxy):
     def __init__(self, parent, uuid='actuators'):
         SecureSerialTalksProxy.__init__(self, parent, uuid, Pushers._DEFAULT)
 
-    def write_position(self, pos_p1, pos_p2):
+    def write_position(self, pos_p2, pos_p1):
         self.send(_SET_POSITION_PUSHERS_OPCODE, INT(pos_p1), INT(pos_p2))
 
     def up_l(self):

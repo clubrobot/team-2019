@@ -10,7 +10,7 @@
 #define _GET_ENDSTOP2_STATE_OPCODE      0x14
 #define _GET_ENDSTOP3_STATE_OPCODE      0x15
 
-
+void DISABLE(SerialTalks& talks, Deserializer& input, Serializer& output);
 void SET_POSITION_GRIPPER(SerialTalks &inst, Deserializer &input, Serializer &output);
 void SET_POSITION_PUSHERS(SerialTalks &inst, Deserializer &input, Serializer &output);
 void SET_POSITION_ARM(SerialTalks &inst, Deserializer &input, Serializer &output);

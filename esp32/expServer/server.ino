@@ -1,54 +1,97 @@
 #include <Arduino.h>
 #include "../common/SerialTalks.h"
+#include "../common/TaskManager.h"
 #include "instructions.h"
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
 #include <BLE2902.h>
 
-#define SERVICE_UUID      "6a54cace-89bf-4e0b-a9f9-7f78a7aab1ef"
-#define STARTCHAR_UUID    "bc4878c0-426a-45ed-b5db-2a9e1a1e43d7"
-#define ISONTOP_UUID      "561a3414-8b23-462e-ab59-1cdb47905789"
+#define BUILTIN_LED 2
+
+/* used for multiple device connection */
+#define SERVICE_UUID            "9089189e-353f-44ec-9d84-a767862d3f6e"
+
+#define START_UUID              "413a617d-beb5-4932-9b3e-0cc79a1d56d6"
+
+#define STATE_EXPERIENCE_UUID   "dd603e58-bc55-4231-8dfc-52db9e91ba76"
+#define STATE_ELECTRON_UUID     "cae98ae4-9c16-4426-98eb-50b3d4473d5c"
 
 BLECharacteristic *pStartCharacteristic;
-BLECharacteristic *pIsOnTopCharacteristic;
+
+BLECharacteristic *pStateExpCharacteristic;
+BLECharacteristic *pStateElecCharacteristic;
+
 boolean deviceConnected = false;
+
+TaskManager task_manager;
+
+static void secondary_loop(void * parameters);
 
 class MyServerCallbacks : public BLEServerCallbacks
 {
     void onConnect(BLEServer *pServer)
     {
         deviceConnected = true;
+        
+        digitalWrite(BUILTIN_LED, HIGH);
         BLEDevice::startAdvertising();
     };
 
     void onDisconnect(BLEServer *pServer)
     {
+        digitalWrite(BUILTIN_LED, LOW);
         deviceConnected = false;
     }
 };
 
-class MyCallbacks : public BLECharacteristicCallbacks
+class MyCallback : public BLECharacteristicCallbacks
 {
-    void onWrite(BLECharacteristic *mCharacteristic){}
+    void onRead(BLECharacteristic* pCharacteristic) 
+    {
+        // Do something before the read completes
+    }
+    void onWrite(BLECharacteristic* pCharacteristic) 
+    {
+        // Do something because a new value was written.
+    }
 };
 
 void setup()
 {
-    BLEDevice::init("Server");
+    pinMode(BUILTIN_LED, OUTPUT);
+
+    BLEDevice::init("INSA_RENNES");
     BLEServer *pServer = BLEDevice::createServer();
 
-    pServer->setCallbacks(new MyServerCallbacks());
     BLEService *pService = pServer->createService(SERVICE_UUID);
 
-    pStartCharacteristic   = pService->createCharacteristic(STARTCHAR_UUID, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE | BLECharacteristic::PROPERTY_NOTIFY);
-    pIsOnTopCharacteristic = pService->createCharacteristic(ISONTOP_UUID, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE | BLECharacteristic::PROPERTY_NOTIFY);
+    pServer->setCallbacks(new MyServerCallbacks());
 
-    pStartCharacteristic->setCallbacks(new MyCallbacks());
-    pIsOnTopCharacteristic->setCallbacks(new MyCallbacks());
+    pStartCharacteristic = pService->createCharacteristic(START_UUID,     \
+                                            BLECharacteristic::PROPERTY_READ            \
+                                            | BLECharacteristic::PROPERTY_WRITE         \
+                                            | BLECharacteristic::PROPERTY_NOTIFY);
+
+    
+    pStateExpCharacteristic = pService->createCharacteristic(STATE_EXPERIENCE_UUID,       \
+                                            BLECharacteristic::PROPERTY_READ            \
+                                            | BLECharacteristic::PROPERTY_WRITE         \
+                                            | BLECharacteristic::PROPERTY_NOTIFY);
+
+    pStateElecCharacteristic = pService->createCharacteristic(STATE_ELECTRON_UUID,       \
+                                            BLECharacteristic::PROPERTY_READ            \
+                                            | BLECharacteristic::PROPERTY_WRITE         \
+                                            | BLECharacteristic::PROPERTY_NOTIFY);
+
+
+    pStartCharacteristic->setCallbacks(new MyCallback());
+    // pStateExpCharacteristic->setCallbacks(new MyCallbacks());
+    // pStateElecCharacteristic->setCallbacks(new MyCallbacks());
 
     pStartCharacteristic->setValue("0");
-    pIsOnTopCharacteristic->setValue("0");
+    // pStateExpCharacteristic->setValue("0");
+    // pStateElecCharacteristic->setValue("0");
 
     pService->start();
     BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
@@ -59,17 +102,30 @@ void setup()
     pAdvertising->setMinPreferred(0x12);
 
     BLEDevice::startAdvertising();
-    pStartCharacteristic->setValue("stop\0");
+
+    pStartCharacteristic->setValue("OFF\0");
+
+    // pStateExpCharacteristic->setValue("STOP\0");
+    // pStateElecCharacteristic->setValue("STOP\0");
 
     Serial.begin(SERIALTALKS_BAUDRATE);
     talks.begin(Serial);
 
-    talks.bind(IS_CONNECTED_OPCODE, IS_CONNECTED);
-    talks.bind(START_OPCODE, START);
-    talks.bind(ISONTOP_OPCODE, ISONTOP);
+    // talks.bind(IS_CONNECTED_OPCODE, IS_CONNECTED);
+    // talks.bind(START_OPCODE, START);
+
+    // talks.bind(EXPERIENCE_STATE_OPCODE, EXPERIENCE_STATE);
+    // talks.bind(ELECTRON_STATE_OPCODE, ELECTRON_STATE);
 }
 
 void loop()
 {
     talks.execute();
+    vTaskDelay( 10 / portTICK_PERIOD_MS );
+}
+
+static void secondary_loop(void * parameters)
+{
+    BLEDevice::startAdvertising();
+    vTaskDelay( 500 / portTICK_PERIOD_MS );
 }

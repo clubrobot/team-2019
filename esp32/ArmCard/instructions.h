@@ -68,4 +68,6 @@ void SET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& ou
 
 void GET_PARAMETER_VALUE(SerialTalks& talks, Deserializer& input, Serializer& output);
 
+void STOP_ALL(SerialTalks& talks, Deserializer& input, Serializer& output);
+
 #endif //__INSTRUCTIONS_H__

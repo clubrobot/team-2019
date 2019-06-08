@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "serialutils.h"
 #include "CRC16.h"
+#include "thread_tools.h"
 
 
 
@@ -159,6 +160,9 @@ protected: // Protected methods
 
 	byte m_crc_tab[SERIALTALKS_CRC_SIZE+1];
 	byte m_crc_tmp[SERIALTALKS_OUTPUT_BUFFER_SIZE];
+
+	Mutex m_mutex; //send mutex
+
 
 private:
 
